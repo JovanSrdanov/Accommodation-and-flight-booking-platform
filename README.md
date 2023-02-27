@@ -2,7 +2,7 @@
 
 ## XML Godina 2022-2023 FTN E2 PRNII  
 ### Platforma za rezervisanje smeštaja
-Projekat iz predmeta XML i veb servisi 
+Projekat iz predmeta XML i veb servisi   
 Fakultet tehničkih nauka  
 Računarstvo i automatika  
 Primenjene računarske nauke i informatika  
