@@ -1,7 +1,7 @@
-# Accommodation booking platform
+# Accommodation and flight booking platform  
 
 ## XML Godina 2022-2023 FTN E2 PRNII  
-### Platforma za rezervisanje smeštaja
+### Platforma za rezervisanje smeštaja i letova  
 Projekat iz predmeta XML i veb servisi   
 Fakultet tehničkih nauka  
 Računarstvo i automatika  
