@@ -4,7 +4,7 @@ services:
   flights-app:
     image: flights-app
     build:
-        context: FlightBookingApp
+        context: FlightBookingApp/Backend
         dockerfile: Dockerfile
     restart: always
     container_name: "flights-app"
