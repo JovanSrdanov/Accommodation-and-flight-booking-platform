@@ -5,7 +5,8 @@ import (
 )
 
 type Airport struct {
-	ID      uuid.UUID `json:"iD"`
-	Name    string    `json:"name"`
-	Address Address   `json:"address"`
+	//TODO: namestiti da automatski generise uuid
+	ID      uuid.UUID `json:"id, omitempty"`
+	Name    string    `json:"name" binding:"required"`
+	Address Address   `json:"address" binding:"required"`
 }

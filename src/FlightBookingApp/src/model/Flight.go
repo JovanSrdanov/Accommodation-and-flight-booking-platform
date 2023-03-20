@@ -6,13 +6,15 @@ import (
 )
 
 type Flight struct {
-	ID          uuid.UUID `json:"id"`
-	Time        time.Time `json:"time"`
-	StartPoint  Airport   `json:"startPoint"`
-	Destination Airport   `json:"destination"`
+	//TODO: namestiti da automatski generise uuid
+	ID uuid.UUID `json:"id, omitempty"`
+	//TODO namestiti da smesta UTC
+	Time        time.Time `json:"time" binding:"required"`
+	StartPoint  Airport   `json:"startPoint" binding:"required"`
+	Destination Airport   `json:"destination" binding:"required"`
 	//TODO u kojoj valuti?
-	Price       float32 `json:"price"`
-	VacantSeats int32   `json:"vacantSeats"`
+	Price       float32 `json:"price" binding:"required"`
+	VacantSeats int32   `json:"vacantSeats" binding:"required"`
 }
 
 func (flight *Flight) decreaseVacantSeats(number int32) {
