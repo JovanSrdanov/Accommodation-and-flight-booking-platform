@@ -3,6 +3,7 @@ package main
 import (
 	"FlightBookingApp/endpoints"
 	"github.com/gin-gonic/gin"
+	"os"
 )
 
 func main() {
@@ -14,5 +15,7 @@ func main() {
 		endpoints.DefineFlightEndpoints(apiRoutes)
 	}
 
-	server.Run(":4200")
+	port := os.Getenv("PORT")
+	//port := "4200"
+	server.Run(":" + port)
 }

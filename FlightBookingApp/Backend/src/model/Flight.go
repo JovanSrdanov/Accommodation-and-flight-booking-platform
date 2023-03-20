@@ -12,9 +12,8 @@ type Flight struct {
 	Time        time.Time `json:"time" binding:"required"`
 	StartPoint  Airport   `json:"startPoint" binding:"required"`
 	Destination Airport   `json:"destination" binding:"required"`
-	//TODO u kojoj valuti?
-	Price       float32 `json:"price" binding:"required"`
-	VacantSeats int32   `json:"vacantSeats" binding:"required"`
+	Price       float32   `json:"price" binding:"required"`
+	VacantSeats int32     `json:"vacantSeats" binding:"required"`
 }
 
 func (flight *Flight) decreaseVacantSeats(number int32) {

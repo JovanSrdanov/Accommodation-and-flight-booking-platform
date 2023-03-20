@@ -9,29 +9,22 @@ import (
 	"net/http"
 )
 
-type flightController struct {
+type FlightController struct {
 	flightService service.FlightService
 }
 
-// TODO da li ovo izmestati u zasebnu klasu ili ide gas?
-type FlightController interface {
-	Create(ctx *gin.Context)
-	GetAll(ctx *gin.Context)
-	GetById(ctx *gin.Context)
-	Delete(ctx *gin.Context)
-}
-
 func NewFlightController(flightService service.FlightService) FlightController {
-	return &flightController{
+	return FlightController{
 		flightService: flightService,
 	}
 }
-func (controller *flightController) Create(ctx *gin.Context) {
+
+func (controller *FlightController) Create(ctx *gin.Context) {
 	var flight model.Flight
 	//Map and validate
 	err := ctx.ShouldBindJSON(&flight)
 	/*
-		TODO da li da pravimo custom message za neuspeli binding?
+		TODO Aleksandar: da li da pravimo custom message za neuspeli binding?
 		U tom slucaju morao bi se napraviti mini parser za ove generic poruke
 	*/
 	if err != nil {
@@ -42,11 +35,11 @@ func (controller *flightController) Create(ctx *gin.Context) {
 	//Service call and return
 	ctx.JSON(http.StatusCreated, controller.flightService.Create(flight))
 }
-func (controller *flightController) GetAll(ctx *gin.Context) {
+func (controller *FlightController) GetAll(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, controller.flightService.GetAll())
 }
 
-func (controller *flightController) GetById(ctx *gin.Context) {
+func (controller *FlightController) GetById(ctx *gin.Context) {
 	id, err := uuid.Parse(ctx.Param("id"))
 
 	if err != nil {
@@ -63,7 +56,7 @@ func (controller *flightController) GetById(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, flight)
 }
 
-func (controller *flightController) Delete(ctx *gin.Context) {
+func (controller *FlightController) Delete(ctx *gin.Context) {
 	//TODO implement me
 	panic("implement me")
 }
