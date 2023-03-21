@@ -4,13 +4,22 @@ import (
 	"FlightBookingApp/controller"
 	"FlightBookingApp/repository"
 	"FlightBookingApp/service"
+	"context"
 	"github.com/gin-gonic/gin"
+	"log"
+	"os"
 )
 
-func DefineFlightEndpoints(uppperRouterGroup *gin.RouterGroup) *gin.RouterGroup {
+func DefineFlightEndpoints(uppperRouterGroup *gin.RouterGroup) (*gin.RouterGroup, error) {
 
+	logger := log.New(os.Stdout, "[flight-repo] ", log.LstdFlags)
+	repository, err := repository.NewFlightRepository(context.Background(), logger)
+	if err != nil {
+		return nil, err
+	}
+
+	repository.Ping()
 	var (
-		repository repository.FlightRepository = repository.NewFlightRepository()
 		service    service.FlightService       = service.NewFlightService(repository)
 		controller controller.FlightController = controller.NewFlightController(service)
 	)
@@ -24,5 +33,5 @@ func DefineFlightEndpoints(uppperRouterGroup *gin.RouterGroup) *gin.RouterGroup 
 		flights.DELETE(":id", nil)
 	}
 
-	return flights
+	return flights, nil
 }
