@@ -12,4 +12,52 @@ services:
       - 4200:4200
     environment:
       - PORT=4200
+      - MONGO_DB_URI=mongodb://root:pass@mongo:27017
+    depends_on:
+        mongo:
+            condition: service_healthy
+         
+  # NoSQL: MongoDB
+  mongo:
+    image: mongo
+    restart: always
+    container_name: "flights-db"
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: pass
+      MONGO_INITDB_DATABASE: mongoDemo
+    # Docker healtcheck - checks if database is "alive"
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok'
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    volumes:
+      - flightsAppDB:/data/db
+   
 
+  # NoSQL: MognoExpress
+  mongo-express:
+    image: mongo-express
+    restart: always
+    container_name: "flights-db-express"
+    environment:
+      # hostname of mongo databse
+      - ME_CONFIG_MONGODB_SERVER=mongo
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=root
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=pass
+      - ME_CONFIG_BASICAUTH_USERNAME=admin
+      - ME_CONFIG_BASICAUTH_PASSWORD=admin
+      - ME_CONFIG_MONGODB_URL=mongodb://mongo:27017/
+    depends_on:
+      - mongo
+    ports:
+      - "8081:8081"
+    volumes:
+      - flightsAppDB_express_data:/data/db
+
+volumes:
+  flightsAppDB:
+  flightsAppDB_express_data:
