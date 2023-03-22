@@ -18,7 +18,6 @@ func DefineFlightEndpoints(uppperRouterGroup *gin.RouterGroup) (*gin.RouterGroup
 		return nil, err
 	}
 
-	repository.Ping()
 	var (
 		service    service.FlightService       = service.NewFlightService(repository)
 		controller controller.FlightController = controller.NewFlightController(service)

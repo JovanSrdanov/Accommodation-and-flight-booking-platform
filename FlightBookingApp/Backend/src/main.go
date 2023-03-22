@@ -8,9 +8,9 @@ import (
 )
 
 func main() {
-	//Has default logging and recovery middleware
 	server := gin.Default()
 	logger := log.New(os.Stdout, "[flight-app-api] ", log.LstdFlags)
+
 	apiRoutes := server.Group("/api")
 	{
 		_, err := endpoints.DefineFlightEndpoints(apiRoutes)
