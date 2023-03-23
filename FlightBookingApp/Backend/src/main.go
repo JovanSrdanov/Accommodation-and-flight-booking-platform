@@ -17,16 +17,20 @@ func main() {
 	logger := log.New(os.Stdout, "[flight-app-api] ", log.LstdFlags)
 
 	//Db initialization (cant be extracted because of defer Disconnect has to be in main
-	dbClient, err := GetClient()
+	dbLogger := log.New(os.Stdout, "[mongo-db] ", log.LstdFlags)
+
+	dbClient, err := GetClient(dbLogger)
 	if err != nil {
 		logger.Println(err.Error())
 	}
-	dbLogger := log.New(os.Stdout, "[mongo-db] ", log.LstdFlags)
 
 	Connect(context.Background(), dbClient, dbLogger)
 	defer Disconnect(context.Background(), dbClient, dbLogger)
 
 	//Routes definition
+	//Remove debug logs
+	//gin.SetMode(gin.ReleaseMode)
+
 	router := gin.Default()
 	apiRoutes := router.Group("/api")
 	{
