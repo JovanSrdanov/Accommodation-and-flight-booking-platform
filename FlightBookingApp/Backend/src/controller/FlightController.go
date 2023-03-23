@@ -2,10 +2,11 @@ package controller
 
 import (
 	"FlightBookingApp/dto"
+	"FlightBookingApp/errors"
 	"FlightBookingApp/model"
 	"FlightBookingApp/service"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
 )
 
@@ -21,7 +22,7 @@ func NewFlightController(flightService service.FlightService) FlightController {
 
 func (controller *FlightController) Create(ctx *gin.Context) {
 	var flight model.Flight
-	//Map and validate
+
 	err := ctx.ShouldBindJSON(&flight)
 	/*
 		TODO Aleksandar: da li da pravimo custom message za neuspeli binding?
@@ -33,14 +34,30 @@ func (controller *FlightController) Create(ctx *gin.Context) {
 	}
 
 	//Service call and return
-	ctx.JSON(http.StatusCreated, controller.flightService.Create(flight))
+	id, err := controller.flightService.Create(flight)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.NewSimpleResponse(err.Error()))
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, dto.NewCreatedResponse(id))
 }
+
 func (controller *FlightController) GetAll(ctx *gin.Context) {
-	ctx.JSON(http.StatusOK, controller.flightService.GetAll())
+	flights, err := controller.flightService.GetAll()
+
+	if err != nil {
+		//Couldn't connect to database
+		//TODO Aleksandar: koji status code?
+		ctx.JSON(http.StatusInternalServerError, dto.NewSimpleResponse("Error while reading from database"))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, flights)
 }
 
 func (controller *FlightController) GetById(ctx *gin.Context) {
-	id, err := uuid.Parse(ctx.Param("id"))
+	id, err := primitive.ObjectIDFromHex(ctx.Param("id"))
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, dto.NewSimpleResponse(err.Error()))
@@ -57,6 +74,25 @@ func (controller *FlightController) GetById(ctx *gin.Context) {
 }
 
 func (controller *FlightController) Delete(ctx *gin.Context) {
-	//TODO implement me
-	panic("implement me")
+	id, err := primitive.ObjectIDFromHex(ctx.Param("id"))
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.NewSimpleResponse(err.Error()))
+		return
+	}
+
+	err = controller.flightService.Delete(id)
+
+	if err != nil {
+		switch err.(type) {
+		case errors.NotFoundError:
+			ctx.JSON(http.StatusNotFound, dto.NewSimpleResponse(err.Error()))
+			return
+		default:
+			ctx.JSON(http.StatusBadRequest, dto.NewSimpleResponse(err.Error()))
+			return
+		}
+	}
+
+	ctx.JSON(http.StatusOK, dto.NewSimpleResponse("Entity deleted"))
 }

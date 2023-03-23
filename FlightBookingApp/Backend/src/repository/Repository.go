@@ -3,7 +3,9 @@ package repository
 import (
 	"context"
 	"fmt"
+	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -17,9 +19,18 @@ type Repository struct {
 	logger *log.Logger
 }
 
-// Nothing to do with repo but contains logic that is used in all repositories
+func NewRepository(client *mongo.Client, logger *log.Logger) Repository {
+	repository := Repository{
+		client: client,
+		logger: logger,
+	}
+	repository.Connect(context.Background())
+	return repository
+}
+
 func GetClient() (*mongo.Client, error) {
 	dbUri := os.Getenv("MONGO_DB_URI")
+	//dbUri := "mongodb://root:pass@localhost:27017"
 	return mongo.NewClient(options.Client().ApplyURI(dbUri))
 }
 
@@ -57,4 +68,13 @@ func (repo *Repository) Ping() {
 		repo.logger.Println(err)
 	}
 	fmt.Println(databases)
+}
+
+func parseId(result *mongo.InsertOneResult, logger *log.Logger) uuid.UUID {
+	idBinary, ok := result.InsertedID.(primitive.Binary)
+	if !ok {
+		logger.Println("Expected type of id is primitive.Binary")
+	}
+	id, _ := uuid.FromBytes(idBinary.Data)
+	return id
 }

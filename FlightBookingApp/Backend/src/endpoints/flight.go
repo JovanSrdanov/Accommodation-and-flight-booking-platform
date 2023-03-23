@@ -29,7 +29,7 @@ func DefineFlightEndpoints(uppperRouterGroup *gin.RouterGroup) (*gin.RouterGroup
 		flights.GET("", controller.GetAll)
 		flights.GET(":id", controller.GetById)
 		flights.POST("", controller.Create)
-		flights.DELETE(":id", nil)
+		flights.DELETE(":id", controller.Delete)
 	}
 
 	return flights, nil

@@ -4,9 +4,11 @@ import (
 	"FlightBookingApp/errors"
 	"FlightBookingApp/model"
 	"context"
-	"github.com/google/uuid"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"log"
+	"time"
 )
 
 type flightRepository struct {
@@ -15,9 +17,9 @@ type flightRepository struct {
 }
 
 type FlightRepository interface {
-	Create(flight model.Flight) model.Flight
-	GetAll() []model.Flight
-	GetById(id uuid.UUID) (model.Flight, error)
+	Create(flight *model.Flight) (primitive.ObjectID, error)
+	GetAll() (model.Flights, error)
+	GetById(id primitive.ObjectID) (model.Flight, error)
 	Delete(id primitive.ObjectID) error
 }
 
@@ -27,38 +29,87 @@ func NewFlightRepository(ctx context.Context, logger *log.Logger) (*flightReposi
 	if err != nil {
 		return nil, err
 	}
-	return &flightRepository{
-		base: Repository{
-			client: client,
-			logger: logger,
-		},
-	}, nil
+
+	base := NewRepository(client, logger)
+	return &flightRepository{base: base}, nil
 }
 
 // TODO Aleksandar: napraviti connection pooling da ne bi morale konstantno da se otvaraju i zatvaraju konekcije sa bazom
-func (repo *flightRepository) Create(flight model.Flight) model.Flight {
-	repo.base.Connect(context.Background())
-	defer repo.base.Disconnect(context.Background())
-	repo.Flights = append(repo.Flights, flight)
-	return flight
-}
+func (repo *flightRepository) Create(flight *model.Flight) (primitive.ObjectID, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
-func (repo *flightRepository) GetAll() []model.Flight {
-	repo.base.Connect(context.Background())
-	defer repo.base.Disconnect(context.Background())
-	return repo.Flights
-}
+	collection := repo.getCollection()
 
-func (repo *flightRepository) GetById(id uuid.UUID) (model.Flight, error) {
-	repo.base.Connect(context.Background())
-	defer repo.base.Disconnect(context.Background())
-	for _, flight := range repo.Flights {
-		if flight.ID == id {
-			return flight, nil
-		}
+	flight.ID = primitive.NewObjectID()
+	result, err := collection.InsertOne(ctx, &flight)
+	if err != nil {
+		repo.base.logger.Println(err)
+		return primitive.ObjectID{}, err
 	}
-	return model.Flight{}, &errors.NotFoundError{}
+	id := result.InsertedID.(primitive.ObjectID)
+	repo.base.logger.Printf("Inserted entity, id = '%s'\n", id)
+	return id, nil
+}
+
+func (repo *flightRepository) GetAll() (model.Flights, error) {
+	// Initialise context (after 5 seconds timeout, abort operation)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	collection := repo.getCollection()
+
+	var flights model.Flights
+	fligtsCursor, err := collection.Find(ctx, bson.M{})
+	if err != nil {
+		repo.base.logger.Println(err)
+		return nil, err
+	}
+	if err = fligtsCursor.All(ctx, &flights); err != nil {
+		repo.base.logger.Println(err)
+		return nil, err
+	}
+
+	return flights, nil
+}
+
+func (repo *flightRepository) GetById(id primitive.ObjectID) (model.Flight, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	collection := repo.getCollection()
+
+	result := collection.FindOne(ctx, bson.M{"_id": id})
+	if result.Err() != nil {
+		return model.Flight{}, result.Err()
+	}
+
+	var flight model.Flight
+	result.Decode(&flight)
+
+	return flight, nil
 }
 func (repo *flightRepository) Delete(id primitive.ObjectID) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	collection := repo.getCollection()
+
+	result, err := collection.DeleteOne(ctx, bson.M{"_id": id})
+
+	if err != nil {
+		return err
+	}
+
+	if result.DeletedCount == 0 {
+		return &errors.NotFoundError{}
+	}
+	repo.base.logger.Printf("Deleted entity, id: %s", id.String())
 	return nil
+}
+
+func (repo *flightRepository) getCollection() *mongo.Collection {
+	db := repo.base.client.Database("flightDb")
+	collection := db.Collection("flights")
+	return collection
 }
