@@ -4,19 +4,16 @@ import (
 	"FlightBookingApp/controller"
 	"FlightBookingApp/repository"
 	"FlightBookingApp/service"
-	"context"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/mongo"
 	"log"
 	"os"
 )
 
-func DefineFlightEndpoints(uppperRouterGroup *gin.RouterGroup) (*gin.RouterGroup, error) {
+func DefineFlightEndpoints(uppperRouterGroup *gin.RouterGroup, client *mongo.Client) {
 
 	logger := log.New(os.Stdout, "[flight-repo] ", log.LstdFlags)
-	repository, err := repository.NewFlightRepository(context.Background(), logger)
-	if err != nil {
-		return nil, err
-	}
+	repository := repository.NewFlightRepository(client, logger)
 
 	var (
 		service    service.FlightService       = service.NewFlightService(repository)
@@ -31,6 +28,4 @@ func DefineFlightEndpoints(uppperRouterGroup *gin.RouterGroup) (*gin.RouterGroup
 		flights.POST("", controller.Create)
 		flights.DELETE(":id", controller.Delete)
 	}
-
-	return flights, nil
 }

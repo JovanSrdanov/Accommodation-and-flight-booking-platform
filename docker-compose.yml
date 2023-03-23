@@ -13,6 +13,7 @@ services:
     environment:
       - PORT=4200
       - MONGO_DB_URI=mongodb://root:pass@mongo:27017
+      - GRACEFUL_SHUTDOWN_TIMEOUT=2
     depends_on:
         mongo:
             condition: service_healthy

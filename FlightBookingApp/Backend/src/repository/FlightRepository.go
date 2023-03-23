@@ -24,14 +24,9 @@ type FlightRepository interface {
 }
 
 // NoSQL: Constructor which reads db configuration from environment
-func NewFlightRepository(ctx context.Context, logger *log.Logger) (*flightRepository, error) {
-	client, err := GetClient()
-	if err != nil {
-		return nil, err
-	}
-
+func NewFlightRepository(client *mongo.Client, logger *log.Logger) *flightRepository {
 	base := NewRepository(client, logger)
-	return &flightRepository{base: base}, nil
+	return &flightRepository{base: base}
 }
 
 // TODO Aleksandar: napraviti connection pooling da ne bi morale konstantno da se otvaraju i zatvaraju konekcije sa bazom
