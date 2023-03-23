@@ -5,9 +5,10 @@ import (
 	"FlightBookingApp/repository"
 	"FlightBookingApp/service"
 	"context"
-	"github.com/gin-gonic/gin"
 	"log"
 	"os"
+
+	"github.com/gin-gonic/gin"
 )
 
 func DefineFlightEndpoints(uppperRouterGroup *gin.RouterGroup) (*gin.RouterGroup, error) {

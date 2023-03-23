@@ -4,9 +4,10 @@ import (
 	"FlightBookingApp/dto"
 	"FlightBookingApp/model"
 	"FlightBookingApp/service"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"net/http"
 )
 
 type FlightController struct {
