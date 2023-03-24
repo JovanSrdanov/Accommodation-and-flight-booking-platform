@@ -1,37 +1,24 @@
-package endpoints
+package model
 
 import (
-	"FlightBookingApp/controller"
-	"FlightBookingApp/repository"
-	"FlightBookingApp/service"
-	"context"
-	"log"
-	"os"
-
-	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"time"
 )
 
-func DefineFlightEndpoints(uppperRouterGroup *gin.RouterGroup) (*gin.RouterGroup, error) {
+type Flight struct {
+	ID primitive.ObjectID `json:"id, omitempty" bson:"_id"`
+	//TODO namestiti da smesta UTC
+	Time        time.Time `json:"time" binding:"required" bson:"time"`
+	StartPoint  Airport   `json:"startPoint" binding:"required" bson:"startPoint"`
+	Destination Airport   `json:"destination" binding:"required" bson:"destination"`
+	Price       float32   `json:"price" binding:"required" bson:"price"`
+	VacantSeats int32     `json:"vacantSeats" binding:"required" bson:"vacantSeats"`
+}
+type Flights []*Flight
 
-	logger := log.New(os.Stdout, "[flight-repo] ", log.LstdFlags)
-	repository, err := repository.NewFlightRepository(context.Background(), logger)
-	if err != nil {
-		return nil, err
-	}
-
-	var (
-		service    service.FlightService       = service.NewFlightService(repository)
-		controller controller.FlightController = controller.NewFlightController(service)
-	)
-
-	flights := uppperRouterGroup.Group("/flight")
-	{
-		//TODO: assgin handlers
-		flights.GET("", controller.GetAll)
-		flights.GET(":id", controller.GetById)
-		flights.POST("", controller.Create)
-		flights.DELETE(":id", nil)
-	}
-
-	return flights, nil
+func (flight *Flight) decreaseVacantSeats(number int32) {
+	flight.VacantSeats -= number
+}
+func (flight *Flight) increaseVacantSeats(number int32) {
+	flight.VacantSeats += number
 }

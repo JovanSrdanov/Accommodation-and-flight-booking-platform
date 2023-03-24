@@ -1,0 +1,149 @@
+definitions:
+  dto.CreatedResponse:
+    properties:
+      id:
+        type: string
+    type: object
+  dto.SimpleResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  model.Address:
+    properties:
+      city:
+        type: string
+      country:
+        type: string
+      street:
+        type: string
+      streetNumber:
+        type: string
+    required:
+    - city
+    - country
+    - street
+    - streetNumber
+    type: object
+  model.Airport:
+    properties:
+      address:
+        $ref: '#/definitions/model.Address'
+      id:
+        type: string
+      name:
+        type: string
+    required:
+    - address
+    - name
+    type: object
+  model.Flight:
+    properties:
+      destination:
+        $ref: '#/definitions/model.Airport'
+      id:
+        type: string
+      price:
+        type: number
+      startPoint:
+        $ref: '#/definitions/model.Airport'
+      time:
+        description: TODO namestiti da smesta UTC
+        type: string
+      vacantSeats:
+        type: integer
+    required:
+    - destination
+    - price
+    - startPoint
+    - time
+    - vacantSeats
+    type: object
+info:
+  contact: {}
+paths:
+  /flight:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Flight'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+    post:
+      parameters:
+      - description: Flight
+        in: body
+        name: flight
+        required: true
+        schema:
+          $ref: '#/definitions/model.Flight'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.CreatedResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+  /flight/{id}:
+    delete:
+      parameters:
+      - description: Flight ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+    get:
+      parameters:
+      - description: Flight ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Flight'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+securityDefinitions:
+  bearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

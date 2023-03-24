@@ -1,12 +1,11 @@
 package model
 
 import (
-	"github.com/google/uuid"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type Airport struct {
-	//TODO: namestiti da automatski generise uuid
-	ID      uuid.UUID `json:"id,omitempty"`
-	Name    string    `json:"name" binding:"required"`
-	Address Address   `json:"address" binding:"required"`
+	ID      primitive.ObjectID `json:"id, omitempty" bson:"_id"`
+	Name    string             `json:"name" binding:"required" bson:"name"`
+	Address Address            `json:"address" binding:"required" bson:"address"`
 }

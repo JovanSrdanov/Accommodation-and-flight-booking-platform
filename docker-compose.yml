@@ -13,6 +13,10 @@ services:
     environment:
       - PORT=4200
       - MONGO_DB_URI=mongodb://root:pass@mongo:27017
+      - CON_POOL_MIN_POOL_SIZE=4
+      - CON_POOL_MAX_POOL_SIZE=10
+      - CONNECTION_POOL_MONITORING=TRUE
+      - GRACEFUL_SHUTDOWN_TIMEOUT=2
     depends_on:
         mongo:
             condition: service_healthy
