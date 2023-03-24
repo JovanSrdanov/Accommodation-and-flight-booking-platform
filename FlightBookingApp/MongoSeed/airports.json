@@ -1,0 +1,45 @@
+[{
+  "_id": {
+    "$oid": "641da45c9bf72d42a37a8461"
+  },
+  "name": "Nikola Tesla",
+  "address": {
+    "city": "Beograd",
+    "country": "Serbia",
+    "street": "Ive Andrica",
+    "streetNumber": "52"
+  }
+},{
+  "_id": {
+    "$oid": "641da56f85e2ca6050058c1a"
+  },
+  "name": "Lisicji Jarak",
+  "address": {
+    "city": "Zrenjanin",
+    "country": "Serbia",
+    "street": "Jovana Subotica",
+    "streetNumber": "12"
+  }
+},{
+  "_id": {
+    "$oid": "641da57fa83100cc5b153eca"
+  },
+  "name": "Frankfurt Airport",
+  "address": {
+    "city": "Frankfurt",
+    "country": "Germany",
+    "street": "Airport platz",
+    "streetNumber": "1"
+  }
+},{
+  "_id": {
+    "$oid": "641da58e81d79e074d787274"
+  },
+  "name": "Charles de Gaulle",
+  "address": {
+    "city": "Paris",
+    "country": "France",
+    "street": "Roissy-en-France",
+    "streetNumber": "95700"
+  }
+}]

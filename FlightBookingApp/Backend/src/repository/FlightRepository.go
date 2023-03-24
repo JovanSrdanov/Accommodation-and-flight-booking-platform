@@ -12,8 +12,7 @@ import (
 )
 
 type flightRepository struct {
-	base    Repository
-	Flights []model.Flight
+	base Repository
 }
 
 type FlightRepository interface {
@@ -53,13 +52,14 @@ func (repo *flightRepository) GetAll() (model.Flights, error) {
 
 	collection := repo.getCollection()
 
-	var flights model.Flights
-	fligtsCursor, err := collection.Find(ctx, bson.M{})
+	cursor, err := collection.Find(ctx, bson.M{})
 	if err != nil {
 		repo.base.logger.Println(err)
 		return nil, err
 	}
-	err = fligtsCursor.All(ctx, &flights)
+
+	var flights model.Flights
+	err = cursor.All(ctx, &flights)
 	if err != nil {
 		repo.base.logger.Println(err)
 		return nil, err

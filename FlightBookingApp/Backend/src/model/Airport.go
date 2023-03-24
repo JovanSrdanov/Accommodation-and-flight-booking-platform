@@ -9,3 +9,5 @@ type Airport struct {
 	Name    string             `json:"name" binding:"required" bson:"name"`
 	Address Address            `json:"address" binding:"required" bson:"address"`
 }
+
+type Airports []*Airport
