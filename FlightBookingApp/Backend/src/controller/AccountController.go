@@ -49,6 +49,7 @@ func (controller *AccountController) Register(ctx *gin.Context) {
 	id, err := controller.accountService.Register(newAccount)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, dto.NewSimpleResponse(err.Error()))
+		return
 	}
 
 	newAccount.ID = id
@@ -61,6 +62,26 @@ func (controller *AccountController) Register(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusCreated, response)
+}
+
+func (controller *AccountController) Login(ctx *gin.Context) {
+	var loginData dto.LoginRequest
+
+	if err := ctx.ShouldBindJSON(&loginData); err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.NewSimpleResponse("invalid request"))
+	}
+
+	tokenString, err := controller.accountService.Login(loginData)
+
+	//TODO Stefan: fix error handleing
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.NewSimpleResponse(err.Error()))
+		return
+	}
+
+	//TODO Stefan: remove tokenString from return message
+	ctx.JSON(http.StatusOK, tokenString)
 }
 
 func (controller *AccountController) GetAll(ctx *gin.Context) {

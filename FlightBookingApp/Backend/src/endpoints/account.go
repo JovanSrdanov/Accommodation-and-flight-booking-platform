@@ -23,7 +23,8 @@ func DefineAccountEndpoints(upperRouterGroup *gin.RouterGroup, client *mongo.Cli
 	{
 		accounts.GET("", accContr.GetAll)
 		accounts.GET(":id", accContr.GetById)
-		accounts.POST("", accContr.Register)
+		accounts.POST("/register", accContr.Register)
+		accounts.POST("/login", accContr.Login)
 		accounts.DELETE(":id", accContr.Delete)
 	}
 }

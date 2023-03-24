@@ -1,6 +1,7 @@
 package jwt
 
 import (
+	"FlightBookingApp/model"
 	"fmt"
 	"time"
 
@@ -10,7 +11,7 @@ import (
 type JwtClaims struct {
 	Username string `json:"username,omitempty"`
 	Password string `json:"password,omitempty"`
-	Roles    []int  `json:"roles,omitempty"`
+	Roles    []model.Role  `json:"roles,omitempty"`
 	jwt.StandardClaims
 }
 
