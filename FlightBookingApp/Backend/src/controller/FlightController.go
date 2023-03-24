@@ -14,8 +14,8 @@ type FlightController struct {
 	flightService service.FlightService
 }
 
-func NewFlightController(flightService service.FlightService) FlightController {
-	return FlightController{
+func NewFlightController(flightService service.FlightService) *FlightController {
+	return &FlightController{
 		flightService: flightService,
 	}
 }

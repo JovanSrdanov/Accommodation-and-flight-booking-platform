@@ -60,7 +60,8 @@ func (repo *flightRepository) GetAll() (model.Flights, error) {
 		repo.base.logger.Println(err)
 		return nil, err
 	}
-	if err = fligtsCursor.All(ctx, &flights); err != nil {
+	err = fligtsCursor.All(ctx, &flights)
+	if err != nil {
 		repo.base.logger.Println(err)
 		return nil, err
 	}

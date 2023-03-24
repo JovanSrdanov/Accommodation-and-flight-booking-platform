@@ -2,16 +2,12 @@ package main
 
 import (
 	"context"
-	"fmt"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/event"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"log"
 	"os"
 	"strconv"
-	"time"
 )
 
 func GetClient(logger *log.Logger) (*mongo.Client, error) {
@@ -25,7 +21,7 @@ func GetClient(logger *log.Logger) (*mongo.Client, error) {
 	//maxPoolSize, _ := 10
 	//setPoolMonitor, _ := true
 
-	options := options.Client().ApplyURI(dbUri).
+	clientOptions := options.Client().ApplyURI(dbUri).
 		SetMinPoolSize(uint64(minPoolSize)).
 		SetMaxPoolSize(uint64(maxPoolSize))
 
@@ -33,47 +29,27 @@ func GetClient(logger *log.Logger) (*mongo.Client, error) {
 	logger.Printf("Max pool size: %d", maxPoolSize)
 
 	if setPoolMonitor {
-		options.SetPoolMonitor(initPoolMonitor())
+		clientOptions.SetPoolMonitor(initPoolMonitor())
 		logger.Println("Pool monitoring on")
 	}
 
-	return mongo.NewClient(options)
+	return mongo.NewClient(clientOptions)
 }
 
-func Connect(ctx context.Context, client *mongo.Client, logger *log.Logger) error {
+func Connect(ctx context.Context, client *mongo.Client, logger *log.Logger) {
 	err := client.Connect(ctx)
 	if err != nil {
-		return err
+		logger.Println(err.Error())
 	}
 	logger.Println("Connected")
-	return nil
 }
 
-func Disconnect(ctx context.Context, client *mongo.Client, logger *log.Logger) error {
+func Disconnect(ctx context.Context, client *mongo.Client, logger *log.Logger) {
 	err := client.Disconnect(ctx)
 	if err != nil {
-		return err
+		logger.Println(err.Error())
 	}
 	logger.Println("Disconnected")
-	return nil
-}
-
-func Ping(client *mongo.Client, logger log.Logger) {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	// Check connection -> if no error, connection is established
-	err := client.Ping(ctx, readpref.Primary())
-	if err != nil {
-		logger.Println(err)
-	}
-
-	// Print available databases
-	databases, err := client.ListDatabaseNames(ctx, bson.M{})
-	if err != nil {
-		logger.Println(err)
-	}
-	fmt.Println(databases)
 }
 
 func initPoolMonitor() *event.PoolMonitor {

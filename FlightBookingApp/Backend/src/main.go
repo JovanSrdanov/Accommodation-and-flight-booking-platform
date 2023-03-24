@@ -16,7 +16,7 @@ import (
 func main() {
 	logger := log.New(os.Stdout, "[flight-app-api] ", log.LstdFlags)
 
-	//Db initialization (cant be extracted because of defer Disconnect has to be in main
+	//DB initialization
 	dbLogger := log.New(os.Stdout, "[mongo-db] ", log.LstdFlags)
 
 	dbClient, err := GetClient(dbLogger)
@@ -38,7 +38,6 @@ func main() {
 	}
 
 	//Server initialization
-
 	port := ":" + os.Getenv("PORT")
 	//port := ":4200"
 
@@ -46,6 +45,7 @@ func main() {
 		Addr:    port,
 		Handler: router,
 	}
+
 	go func() {
 		// service connections
 		err := server.ListenAndServe()
@@ -53,7 +53,6 @@ func main() {
 			logger.Fatalf("Error: %s\n", err)
 		}
 	}()
-	logger.Printf("Listening on port %s\n", port)
 
 	//Graceful shutdown
 	quit := make(chan os.Signal)
@@ -62,6 +61,7 @@ func main() {
 	// kill -9 is syscall. SIGKILL but can"t be catch, so don't need add it
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	//Here it waits for interrupt
+	logger.Printf("Listening on port %s\n", port)
 	<-quit
 
 	log.Println("Shutdown Server...")
@@ -79,10 +79,11 @@ func main() {
 	if err != nil {
 		log.Fatal("Server Shutdown:", err)
 	}
-	// catching ctx.Done(). timeout of 5 seconds.
+	// catching ctx.Done(). timeout of n seconds.
+	// Waits for context to say that n second timeout passed
 	select {
 	case <-ctx.Done():
-		log.Println("timeout of 2 seconds.")
+		log.Printf("Timeout of %d seconds passed.", timeout)
 	}
 
 	logger.Println("Server exiting")

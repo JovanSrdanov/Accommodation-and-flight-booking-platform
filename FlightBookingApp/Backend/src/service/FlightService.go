@@ -17,7 +17,7 @@ type FlightService interface {
 	Delete(id primitive.ObjectID) error
 }
 
-func NewFlightService(flightRepository repository.FlightRepository) FlightService {
+func NewFlightService(flightRepository repository.FlightRepository) *flightService {
 	return &flightService{
 		flightRepository: flightRepository,
 	}

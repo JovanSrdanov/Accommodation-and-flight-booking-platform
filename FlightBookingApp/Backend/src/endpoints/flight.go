@@ -12,20 +12,20 @@ import (
 
 func DefineFlightEndpoints(uppperRouterGroup *gin.RouterGroup, client *mongo.Client) {
 
-	logger := log.New(os.Stdout, "[flight-repo] ", log.LstdFlags)
-	repository := repository.NewFlightRepository(client, logger)
-
+	//shortened variable names to omit collision with package names
 	var (
-		service    service.FlightService       = service.NewFlightService(repository)
-		controller controller.FlightController = controller.NewFlightController(service)
+		logger *log.Logger                  = log.New(os.Stdout, "[flight-repo] ", log.LstdFlags)
+		repo   repository.FlightRepository  = repository.NewFlightRepository(client, logger)
+		serv   service.FlightService        = service.NewFlightService(repo)
+		contr  *controller.FlightController = controller.NewFlightController(serv)
 	)
 
 	flights := uppperRouterGroup.Group("/flight")
 	{
 		//TODO: assgin handlers
-		flights.GET("", controller.GetAll)
-		flights.GET(":id", controller.GetById)
-		flights.POST("", controller.Create)
-		flights.DELETE(":id", controller.Delete)
+		flights.GET("", contr.GetAll)
+		flights.GET(":id", contr.GetById)
+		flights.POST("", contr.Create)
+		flights.DELETE(":id", contr.Delete)
 	}
 }
