@@ -1,24 +1,31 @@
-package model
+package endpoints
 
 import (
-	"go.mongodb.org/mongo-driver/bson/primitive"
-	"time"
+	"FlightBookingApp/controller"
+	"FlightBookingApp/repository"
+	"FlightBookingApp/service"
+	"log"
+	"os"
+
+	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type Flight struct {
-	ID primitive.ObjectID `json:"id, omitempty" bson:"_id"`
-	//TODO namestiti da smesta UTC
-	Time        time.Time `json:"time" binding:"required" bson:"time"`
-	StartPoint  Airport   `json:"startPoint" binding:"required" bson:"startPoint"`
-	Destination Airport   `json:"destination" binding:"required" bson:"destination"`
-	Price       float32   `json:"price" binding:"required" bson:"price"`
-	VacantSeats int32     `json:"vacantSeats" binding:"required" bson:"vacantSeats"`
-}
-type Flights []*Flight
+func DefineFlightEndpoints(uppperRouterGroup *gin.RouterGroup, client *mongo.Client) {
 
-func (flight *Flight) decreaseVacantSeats(number int32) {
-	flight.VacantSeats -= number
-}
-func (flight *Flight) increaseVacantSeats(number int32) {
-	flight.VacantSeats += number
+	//shortened variable names to omit collision with package names
+	var (
+		logger *log.Logger                  = log.New(os.Stdout, "[flight-repo] ", log.LstdFlags)
+		repo   repository.FlightRepository  = repository.NewFlightRepository(client, logger)
+		serv   service.FlightService        = service.NewFlightService(repo)
+		contr  *controller.FlightController = controller.NewFlightController(serv)
+	)
+
+	flights := uppperRouterGroup.Group("/flight")
+	{
+		flights.GET("", contr.GetAll)
+		flights.GET(":id", contr.GetById)
+		flights.POST("", contr.Create)
+		flights.DELETE(":id", contr.Delete)
+	}
 }

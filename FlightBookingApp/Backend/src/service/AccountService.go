@@ -5,7 +5,6 @@ import (
 	"FlightBookingApp/model"
 	"FlightBookingApp/repository"
 
-	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -14,33 +13,33 @@ type accountService struct {
 }
 
 type AccountService interface {
-	Register(account model.Account) (model.Account, error)
-	GetAll() []model.Account
-	GetById(id uuid.UUID) (model.Account, error)
+	Register(account model.Account) (primitive.ObjectID, error)
+	GetAll() (model.Accounts, error)
+	GetById(id primitive.ObjectID) (model.Account, error)
 	Delete(id primitive.ObjectID) error
 }
 
-func NewAccountService(accountRepository repository.AccountRepository) AccountService {
+func NewAccountService(accountRepository repository.AccountRepository) *accountService {
 	return &accountService {
 		accountRepository:  accountRepository,
 	}
 }
 
-func (service *accountService) Register(account model.Account) (model.Account, error) {
-	if isAccountValid(account, service) {
-		service.accountRepository.Create(account)
-		return account, nil
+func (service *accountService) Register(newAccount model.Account) (primitive.ObjectID, error) {
+	allAccounts, _ := service.accountRepository.GetAll()
+
+	if isAccountValid(newAccount, allAccounts) {
+		return service.accountRepository.Create(&newAccount)
 	}
-
-	return account, &errors.UsernameOrEmailExistsError{}
+	return primitive.NilObjectID, &errors.UsernameOrEmailExistsError{}
 }
 
-func  isAccountValid(account model.Account, service *accountService) bool {
-	return isUsernameTaken(account.Username, service) && isEmailTaken(account.Email, service)
+func  isAccountValid(account model.Account, accounts model.Accounts) bool {
+	return isUsernameTaken(account.Username, accounts) && isEmailTaken(account.Email, accounts)
 }
 
-func isUsernameTaken(username string, service *accountService) bool {
-	for _, value := range service.accountRepository.GetAll() {
+func isUsernameTaken(username string, accounts model.Accounts) bool {
+	for _, value := range accounts{
 		if username == value.Username {
 			return false
 		}
@@ -48,8 +47,8 @@ func isUsernameTaken(username string, service *accountService) bool {
 	return true
 }
 
-func isEmailTaken(email string, service *accountService) bool {
-	for _, value := range service.accountRepository.GetAll() {
+func isEmailTaken(email string, accounts model.Accounts) bool {
+	for _, value := range accounts {
 		if email == value.Email {
 			return false
 		}
@@ -57,11 +56,11 @@ func isEmailTaken(email string, service *accountService) bool {
 	return true
 }
 
-func (service *accountService) GetAll() []model.Account {
+func (service *accountService) GetAll() (model.Accounts, error) {
 	return service.accountRepository.GetAll()
 }
 
-func (service *accountService) GetById(id uuid.UUID) (model.Account, error) {
+func (service *accountService) GetById(id primitive.ObjectID) (model.Account, error) {
 	return service.accountRepository.GetById(id)
 }
 

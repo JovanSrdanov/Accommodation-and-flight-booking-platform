@@ -1,6 +1,8 @@
 package model
 
-import "github.com/google/uuid"
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 type Role int32
 
@@ -9,11 +11,14 @@ const (
 	REGULAR_USER
 )
 
+//TODO Stefan: bson
 type Account struct {
-	ID uuid.UUID `json:"id,omitempty" binding:"required"`
-	Username string `json:"username" binding:"required,alphanum"`
-	Password string `json:"password" binding:"required,min=6"`
-	Email string `json:"email" binding:"required, email"`
-	Role Role `json:"role"`
-	IsActivated bool `json:"isActivated" binding:"required"`
+	ID primitive.ObjectID `json:"id,omitempty" bson:"_id"`
+	Username string `json:"username" binding:"required,alphanum" bson:"username"`
+	Password string `json:"password" binding:"required,min=6" bson:"password"`
+	Email string `json:"email" binding:"required, email" bson:"email"`
+	Role Role `json:"role" bson:"role"`
+	IsActivated bool `json:"isActivated" binding:"required" bson:"isActivated"`
 }
+
+type Accounts []*Account

@@ -3,13 +3,11 @@ package dto
 import (
 	"FlightBookingApp/model"
 
-	"github.com/google/uuid"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type CreateUserResponse struct {
-	ID          uuid.UUID
-	Username     string `json:"username" binding:"required,alphanum"`
-	Email       string `json:"email" binding:"required, email"`
+	ID          primitive.ObjectID
 	Role        model.Role   `json:"role"`
 	IsActivated bool   `json:"isActivated" binding:"required"`
 }

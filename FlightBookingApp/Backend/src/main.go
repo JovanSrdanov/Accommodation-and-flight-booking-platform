@@ -4,9 +4,6 @@ import (
 	"FlightBookingApp/docs"
 	"FlightBookingApp/endpoints"
 	"context"
-	"github.com/gin-gonic/gin"
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
 	"log"
 	"net/http"
 	"os"
@@ -14,6 +11,10 @@ import (
 	"strconv"
 	"syscall"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 // TODO Aleksandar: namestiti kako treba, kada se uvede autorizacija i dodati tagove za autorizaciju na svaki endpoint
@@ -49,7 +50,8 @@ func main() {
 	router := gin.Default()
 	apiRoutes := router.Group(docs.SwaggerInfo.BasePath)
 	{
-		endpoints.DefineFlightEndpoints(apiRoutes, dbClient)
+		//endpoints.DefineFlightEndpoints(apiRoutes, dbClient)
+		endpoints.DefineAccountEndpoints(apiRoutes, dbClient)
 	}
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 

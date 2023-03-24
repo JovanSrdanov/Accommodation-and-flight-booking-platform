@@ -1,10 +1,14 @@
 package model
 
-import "github.com/google/uuid"
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 type User struct {
-	ID uuid.UUID `json:"id,omitempty" binding:"required"`
-	Name        string `json:"name" binding:"required"`
-	Surname     string `json:"surname" binding:"required"`
-	PhoneNumber string `json:"phoneNumber" binding:"required"`
+	ID primitive.ObjectID `json:"id,omitempty" binding:"required"  bson:"_id"`
+	Name        string `json:"name" binding:"required" bson:"name"`
+	Surname     string `json:"surname" binding:"required" bson:"surname"`
+	PhoneNumber string `json:"phoneNumber" binding:"required" bson:"phoneNumber"`
 }
+
+type Users []*User

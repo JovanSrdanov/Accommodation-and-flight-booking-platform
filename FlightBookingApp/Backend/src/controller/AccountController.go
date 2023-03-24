@@ -3,20 +3,23 @@ package controller
 import (
 	utils "FlightBookingApp/Utils"
 	"FlightBookingApp/dto"
+	"FlightBookingApp/errors"
 	"FlightBookingApp/model"
 	"FlightBookingApp/service"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
+
+//TODO Stefan: podesi swagger
 
 type AccountController struct {
 	accountService service.AccountService
 }
 
-func NewAccountController(accountService service.AccountService) AccountController {
-	return AccountController{
+func NewAccountController(accountService service.AccountService) *AccountController {
+	return &AccountController{
 		accountService: accountService,
 	}
 }
@@ -36,7 +39,6 @@ func (controller *AccountController) Register(ctx *gin.Context) {
 	}
 
 	newAccount := model.Account {
-		ID: uuid.New(),
 		Username: registrationInfo.Username,
 		Password: hashedPassword,
 		Email: registrationInfo.Email,
@@ -44,29 +46,36 @@ func (controller *AccountController) Register(ctx *gin.Context) {
 		IsActivated: false,
 	}
 
-	account, err := controller.accountService.Register(newAccount)
+	id, err := controller.accountService.Register(newAccount)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, dto.NewSimpleResponse(err.Error()))
 	}
 
-	//not sending hashed password in the reponse
+	newAccount.ID = id
+
+	//not returning sensitive information
 	response := dto.CreateUserResponse {
-		ID: account.ID,
-		Username: account.Username,
-		Email: account.Email,
-		Role: account.Role,
-		IsActivated: account.IsActivated,
+		ID: newAccount.ID,
+		Role: newAccount.Role,
+		IsActivated: newAccount.IsActivated,
 	}
 
 	ctx.JSON(http.StatusCreated, response)
 }
 
 func (controller *AccountController) GetAll(ctx *gin.Context) {
-	ctx.JSON(http.StatusOK, controller.accountService.GetAll())
+	accounts, err := controller.accountService.GetAll()
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, dto.NewSimpleResponse("Error while reading from database"))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, accounts)
 }
 
 func (controller *AccountController) GetById(ctx *gin.Context) {
-	id, err := uuid.Parse(ctx.Param("id"))
+	id, err := primitive.ObjectIDFromHex(ctx.Param("id"))
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, dto.NewSimpleResponse(err.Error()))
@@ -76,12 +85,31 @@ func (controller *AccountController) GetById(ctx *gin.Context) {
 	account, err := controller.accountService.GetById(id)
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, dto.NewSimpleResponse(err.Error()))
+		return
 	}
 
 	ctx.JSON(http.StatusOK, account)
 }
 
 func (controller *AccountController) Delete(ctx *gin.Context) {
-	//TODO Stefan
-	panic("not implemented")
+	id, err := primitive.ObjectIDFromHex(ctx.Param("id"))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.NewSimpleResponse(err.Error()))
+		return
+	}
+
+	err = controller.accountService.Delete(id)
+
+	if err != nil {
+		switch err.(type) {
+		case errors.NotFoundError:
+			ctx.JSON(http.StatusNotFound, dto.NewSimpleResponse(err.Error()))
+			return
+		default:
+			ctx.JSON(http.StatusBadRequest, dto.NewSimpleResponse(err.Error()))
+			return
+		}
+	}
+	
+	ctx.JSON(http.StatusOK, dto.NewSimpleResponse("Entity deleted"))
 }
