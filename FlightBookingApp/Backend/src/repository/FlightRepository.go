@@ -29,7 +29,6 @@ func NewFlightRepository(client *mongo.Client, logger *log.Logger) *flightReposi
 	return &flightRepository{base: base}
 }
 
-// TODO Aleksandar: napraviti connection pooling da ne bi morale konstantno da se otvaraju i zatvaraju konekcije sa bazom
 func (repo *flightRepository) Create(flight *model.Flight) (primitive.ObjectID, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

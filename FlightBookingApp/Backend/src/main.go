@@ -1,9 +1,12 @@
 package main
 
 import (
+	"FlightBookingApp/docs"
 	"FlightBookingApp/endpoints"
 	"context"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"log"
 	"net/http"
 	"os"
@@ -13,6 +16,10 @@ import (
 	"time"
 )
 
+// TODO Aleksandar: namestiti kako treba, kada se uvede autorizacija i dodati tagove za autorizaciju na svaki endpoint
+// @securityDefinitions.apikey bearerAuth
+// @in header
+// @name Authorization
 func main() {
 	logger := log.New(os.Stdout, "[flight-app-api] ", log.LstdFlags)
 
@@ -27,20 +34,26 @@ func main() {
 	Connect(context.Background(), dbClient, dbLogger)
 	defer Disconnect(context.Background(), dbClient, dbLogger)
 
+	//Setting swagger runtime variables
+	port := ":" + os.Getenv("PORT")
+	//port := ":4200"
+	docs.SwaggerInfo.Title = "Flights booking app"
+	docs.SwaggerInfo.Host = "localhost" + port
+	docs.SwaggerInfo.BasePath = "/api"
+	docs.SwaggerInfo.Schemes = []string{"http"}
+
 	//Routes definition
 	//Remove debug logs
 	//gin.SetMode(gin.ReleaseMode)
 
 	router := gin.Default()
-	apiRoutes := router.Group("/api")
+	apiRoutes := router.Group(docs.SwaggerInfo.BasePath)
 	{
 		endpoints.DefineFlightEndpoints(apiRoutes, dbClient)
 	}
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	//Server initialization
-	port := ":" + os.Getenv("PORT")
-	//port := ":4200"
-
 	server := &http.Server{
 		Addr:    port,
 		Handler: router,

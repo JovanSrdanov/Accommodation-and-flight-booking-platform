@@ -22,7 +22,6 @@ func DefineFlightEndpoints(uppperRouterGroup *gin.RouterGroup, client *mongo.Cli
 
 	flights := uppperRouterGroup.Group("/flight")
 	{
-		//TODO: assgin handlers
 		flights.GET("", contr.GetAll)
 		flights.GET(":id", contr.GetById)
 		flights.POST("", contr.Create)
