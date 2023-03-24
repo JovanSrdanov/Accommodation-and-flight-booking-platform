@@ -40,9 +40,17 @@ services:
       retries: 10
     volumes:
       - flightsAppDB:/data/db
-   
+  #MongoDB seeding container
+  mongo-seed:
+    image: "mongo-seed"
+    container_name: "mongo-seed"
+    build:
+      context: ./FlightBookingApp/MongoSeed
+      dockerfile: Dockerfile
+    depends_on:
+      - mongo
 
-  # NoSQL: MognoExpress
+  # NoSQL: MongoExpress
   mongo-express:
     image: mongo-express
     restart: always
