@@ -6,7 +6,6 @@ import (
 )
 
 type Flight struct {
-	//TODO: namestiti da automatski generise uuid
 	ID primitive.ObjectID `json:"id, omitempty" bson:"_id"`
 	//TODO namestiti da smesta UTC
 	Time        time.Time `json:"time" binding:"required" bson:"time"`

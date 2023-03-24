@@ -20,6 +20,13 @@ func NewFlightController(flightService service.FlightService) *FlightController 
 	}
 }
 
+// Create godoc
+// @Param flight body model.Flight true "Flight"
+// @Consume application/json
+// @Produce application/json
+// @Success 201 {object} dto.CreatedResponse
+// @Failure 400 {object} dto.SimpleResponse
+// @Router /flight [post]
 func (controller *FlightController) Create(ctx *gin.Context) {
 	var flight model.Flight
 
@@ -43,6 +50,11 @@ func (controller *FlightController) Create(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, dto.NewCreatedResponse(id))
 }
 
+// GetAll godoc
+// @Produce application/json
+// @Success 200 {array} model.Flight
+// @Failure 500 {object} dto.SimpleResponse
+// @Router /flight [get]
 func (controller *FlightController) GetAll(ctx *gin.Context) {
 	flights, err := controller.flightService.GetAll()
 
@@ -56,6 +68,13 @@ func (controller *FlightController) GetAll(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, flights)
 }
 
+// GetById godoc
+// @Param id path string true "Flight ID"
+// @Produce application/json
+// @Success 200 {object} model.Flight
+// @Failure 400 {object} dto.SimpleResponse
+// @Failure 404 {object} dto.SimpleResponse
+// @Router /flight/{id} [get]
 func (controller *FlightController) GetById(ctx *gin.Context) {
 	id, err := primitive.ObjectIDFromHex(ctx.Param("id"))
 
@@ -73,6 +92,13 @@ func (controller *FlightController) GetById(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, flight)
 }
 
+// Delete godoc
+// @Param id path string true "Flight ID"
+// @Produce application/json
+// @Success 200 {object} dto.SimpleResponse
+// @Failure 400 {object} dto.SimpleResponse
+// @Failure 404 {object} dto.SimpleResponse
+// @Router /flight/{id} [delete]
 func (controller *FlightController) Delete(ctx *gin.Context) {
 	id, err := primitive.ObjectIDFromHex(ctx.Param("id"))
 
