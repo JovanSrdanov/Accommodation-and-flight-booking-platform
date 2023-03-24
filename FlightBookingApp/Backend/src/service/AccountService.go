@@ -45,7 +45,7 @@ func (service *accountService) Login(loginData dto.LoginRequest) (string, error)
 
 	var tokenCreationTime = time.Now().UTC()
 
-	// session ends after 30 minutes
+	// session token lasts for 30 minutes
 	var expirationTime = tokenCreationTime.Add(time.Duration(30) * time.Minute)
 	return token.GenerateToken(claims, expirationTime)
 }
