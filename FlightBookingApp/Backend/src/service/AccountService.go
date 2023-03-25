@@ -3,7 +3,6 @@ package service
 import (
 	utils "FlightBookingApp/Utils"
 	"FlightBookingApp/dto"
-	"FlightBookingApp/errors"
 	"FlightBookingApp/model"
 	"FlightBookingApp/repository"
 	"FlightBookingApp/token"
@@ -45,38 +44,17 @@ func (service *accountService) Login(loginData dto.LoginRequest) (string, string
 }
 
 func (service *accountService) Register(newAccount model.Account) (primitive.ObjectID, error) {
-	allAccounts, _ := service.accountRepository.GetAll()
-
-	if isAccountValid(newAccount, allAccounts) {
-		return service.accountRepository.Create(&newAccount)
+	_, err := service.accountRepository.GetByUsername(newAccount.Username)
+	if err == nil {
+		return primitive.NewObjectID(), fmt.Errorf("username already exists") 
 	}
-	return primitive.NilObjectID, &errors.UsernameOrEmailExistsError{}
-}
 
-func  isAccountValid(account model.Account, accounts model.Accounts) bool {
-	val, _ := usernameExists(account.Username, accounts)
-	if !val && !isEmailTaken(account.Email, accounts) {
-		return true
+	_, err = service.accountRepository.GetByEmail(newAccount.Email)
+	if err == nil {
+		return primitive.NewObjectID(), fmt.Errorf("email already exists") 
 	}
-	return false
-}
 
-func usernameExists(username string, accounts model.Accounts) (bool, model.Account) {
-	for _, value := range accounts{
-		if username == value.Username {
-			return true, *value
-		}
-	}
-	return false, model.Account{}
-}
-
-func isEmailTaken(email string, accounts model.Accounts) bool {
-	for _, value := range accounts {
-		if email == value.Email {
-			return true
-		}
-	}
-	return false
+	return service.accountRepository.Create(&newAccount)
 }
 
 func (service *accountService) GetAll() (model.Accounts, error) {
