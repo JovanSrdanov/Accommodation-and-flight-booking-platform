@@ -4,10 +4,11 @@ import (
 	"FlightBookingApp/controller"
 	"FlightBookingApp/repository"
 	"FlightBookingApp/service"
-	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/mongo"
 	"log"
 	"os"
+
+	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func DefineFlightEndpoints(upperRouterGroup *gin.RouterGroup, client *mongo.Client) {

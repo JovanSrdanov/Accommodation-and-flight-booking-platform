@@ -1,12 +1,13 @@
 package model
 
 import (
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type Flight struct {
-	ID primitive.ObjectID `json:"id, omitempty" bson:"_id"`
+	ID primitive.ObjectID `json:"id,omitempty" bson:"_id"`
 	//TODO namestiti da smesta UTC
 	Time        time.Time `json:"time" binding:"required" bson:"time"`
 	StartPoint  Airport   `json:"startPoint" binding:"required" bson:"startPoint"`
