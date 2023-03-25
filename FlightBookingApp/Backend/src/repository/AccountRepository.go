@@ -21,6 +21,7 @@ type AccountRepository interface {
 	Create(newAccount *model.Account) (primitive.ObjectID, error)
 	GetAll() (model.Accounts, error)
 	GetById(id primitive.ObjectID) (model.Account, error)
+	GetByUsername(username string) (model.Account, error)
 	Delete(id primitive.ObjectID) error
 }
 
@@ -78,6 +79,23 @@ func (repo *accountRepository) GetById(id primitive.ObjectID) (model.Account, er
 	collection := repo.getCollection()
 
 	result := collection.FindOne(ctx, bson.M{"_id": id})
+	if result.Err() != nil {
+		return model.Account{}, result.Err()
+	}
+
+	var account model.Account
+	result.Decode(&account)
+
+	return account, nil
+}
+
+func (repo *accountRepository) GetByUsername(username string) (model.Account, error){
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	collection := repo.getCollection()
+
+	result := collection.FindOne(ctx, bson.M{"username": username})
 	if result.Err() != nil {
 		return model.Account{}, result.Err()
 	}

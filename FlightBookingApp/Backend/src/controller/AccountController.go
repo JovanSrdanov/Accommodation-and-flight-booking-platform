@@ -6,6 +6,7 @@ import (
 	"FlightBookingApp/errors"
 	"FlightBookingApp/model"
 	"FlightBookingApp/service"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -70,7 +71,7 @@ func (controller *AccountController) Login(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, dto.NewSimpleResponse("invalid request"))
 	}
 
-	tokenString, err := controller.accountService.Login(loginData)
+	accessTokenString, refreshTokenString, err := controller.accountService.Login(loginData)
 
 	//TODO Stefan: fix error handleing
 
@@ -79,8 +80,7 @@ func (controller *AccountController) Login(ctx *gin.Context) {
 		return
 	}
 
-	//TODO Stefan: remove tokenString from return message
-	ctx.JSON(http.StatusOK, tokenString)
+	ctx.JSON(http.StatusOK, fmt.Sprintf("-------ACCESS TOKEN-------: %v-------REFRESH TOKEN-------: %v", accessTokenString, refreshTokenString))
 }
 
 func (controller *AccountController) GetAll(ctx *gin.Context) {

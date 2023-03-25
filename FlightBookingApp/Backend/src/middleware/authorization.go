@@ -4,14 +4,15 @@ import (
 	"FlightBookingApp/model"
 	"FlightBookingApp/token"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
 
 func ValidateToken() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		//TODO Stefan: change this logic
-		tokenString := ctx.Request.Header.Get("apiKey")
+		bearerToken := ctx.Request.Header.Get("Authorization")
+		tokenString := strings.Split(bearerToken, " ")[1]
 
 		valid, claims := token.VerifyToken(tokenString)
 
@@ -25,7 +26,6 @@ func ValidateToken() gin.HandlerFunc {
 
 		// gets data from token, appends it to the http context
 		ctx.Keys["ID"] = claims.ID
-		ctx.Keys["Username"] = claims.Username
 		ctx.Keys["Roles"] = claims.Roles
 	}
 }

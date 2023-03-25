@@ -9,14 +9,21 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type JwtClaims struct {
+type AccessJwtClaims struct {
 	ID primitive.ObjectID `json:"id,omitempty"`
-	Username string `json:"username,omitempty"`
+	AccessID string `json:"accessId,omitempty"`
 	Roles    []model.Role  `json:"roles,omitempty"`
 	jwt.StandardClaims
 }
 
-func (claims JwtClaims) Valid() error {
+type RefreshJwtClaims struct {
+	ID primitive.ObjectID `json:"id,omitempty"`
+	RefreshID string `json:"refreshId,omitempty"`
+	Roles    []model.Role  `json:"roles,omitempty"`
+	jwt.StandardClaims
+}
+
+func (claims AccessJwtClaims) Valid() error {
 	var now = time.Now().UTC().Unix()
 	if claims.VerifyExpiresAt(now, true){
 		return nil
