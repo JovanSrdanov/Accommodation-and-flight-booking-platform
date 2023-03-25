@@ -21,6 +21,7 @@ func NewFlightController(flightService service.FlightService) *FlightController 
 }
 
 // Create godoc
+// @Tags Flight
 // @Param flight body model.Flight true "Flight"
 // @Consume application/json
 // @Produce application/json
@@ -51,6 +52,7 @@ func (controller *FlightController) Create(ctx *gin.Context) {
 }
 
 // GetAll godoc
+// @Tags Flight
 // @Produce application/json
 // @Success 200 {array} model.Flight
 // @Failure 500 {object} dto.SimpleResponse
@@ -69,6 +71,7 @@ func (controller *FlightController) GetAll(ctx *gin.Context) {
 }
 
 // GetById godoc
+// @Tags Flight
 // @Param id path string true "Flight ID"
 // @Produce application/json
 // @Success 200 {object} model.Flight
@@ -93,6 +96,7 @@ func (controller *FlightController) GetById(ctx *gin.Context) {
 }
 
 // Delete godoc
+// @Tags Flight
 // @Param id path string true "Flight ID"
 // @Produce application/json
 // @Success 200 {object} dto.SimpleResponse

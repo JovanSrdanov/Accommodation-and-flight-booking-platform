@@ -51,7 +51,7 @@ func main() {
 	apiRoutes := router.Group(docs.SwaggerInfo.BasePath)
 	{
 		endpoints.DefineFlightEndpoints(apiRoutes, dbClient)
-		endpoints.DefineAccountEndpoints(apiRoutes, dbClient)
+		endpoints.DefineAirportEndpoints(apiRoutes, dbClient)
 	}
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 

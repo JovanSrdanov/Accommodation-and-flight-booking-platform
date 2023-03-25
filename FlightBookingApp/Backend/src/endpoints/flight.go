@@ -11,7 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func DefineFlightEndpoints(uppperRouterGroup *gin.RouterGroup, client *mongo.Client) {
+func DefineFlightEndpoints(upperRouterGroup *gin.RouterGroup, client *mongo.Client) {
 
 	//shortened variable names to omit collision with package names
 	var (
@@ -21,7 +21,7 @@ func DefineFlightEndpoints(uppperRouterGroup *gin.RouterGroup, client *mongo.Cli
 		contr  *controller.FlightController = controller.NewFlightController(serv)
 	)
 
-	flights := uppperRouterGroup.Group("/flight")
+	flights := upperRouterGroup.Group("/flight")
 	{
 		flights.GET("", contr.GetAll)
 		flights.GET(":id", contr.GetById)

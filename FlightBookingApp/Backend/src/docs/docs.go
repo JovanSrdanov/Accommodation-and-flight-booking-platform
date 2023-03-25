@@ -16,10 +16,79 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/airport": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Airport"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.Airport"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SimpleResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/airport/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Airport"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Airport ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Airport"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SimpleResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SimpleResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/flight": {
             "get": {
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Flight"
                 ],
                 "responses": {
                     "200": {
@@ -42,6 +111,9 @@ const docTemplate = `{
             "post": {
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Flight"
                 ],
                 "parameters": [
                     {
@@ -74,6 +146,9 @@ const docTemplate = `{
             "get": {
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Flight"
                 ],
                 "parameters": [
                     {
@@ -108,6 +183,9 @@ const docTemplate = `{
             "delete": {
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Flight"
                 ],
                 "parameters": [
                     {
