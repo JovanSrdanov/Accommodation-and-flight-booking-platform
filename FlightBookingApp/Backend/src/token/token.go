@@ -3,21 +3,19 @@ package token
 import (
 	JWT "FlightBookingApp/JWT"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
 )
 
-//TODO Stefan: move to a env file
-const (
-	jWTPrivateToken = "SecretTokenSecretToken"
-	ip = "192.168.0.107"	//issuer
+var (
+	jWTPrivateToken = os.Getenv("SECRET_KEY")
 )
 
 func GenerateToken(claims *JWT.JwtClaims, expirationTime time.Time) (string, error) {
 	claims.ExpiresAt = expirationTime.Unix()
 	claims.IssuedAt = time.Now().UTC().Unix()
-	claims.Issuer = ip
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
@@ -50,7 +48,7 @@ func getTokenFromString(tokenString string, claims *JWT.JwtClaims) (*jwt.Token, 
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 
-		// hmacSampleSecret is a []byyte containing your secret, e.g. []byte("my_secret_key")
+		// hmacSampleSecret is a []byte containing your secret, e.g. []byte("my_secret_key")
 		return []byte(jWTPrivateToken), nil
 	})
 }

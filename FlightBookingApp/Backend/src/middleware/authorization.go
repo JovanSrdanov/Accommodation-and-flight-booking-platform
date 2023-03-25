@@ -26,7 +26,6 @@ func ValidateToken() gin.HandlerFunc {
 		// gets data from token, appends it to the http context
 		ctx.Keys["ID"] = claims.ID
 		ctx.Keys["Username"] = claims.Username
-		ctx.Keys["Password"] = claims.Password
 		ctx.Keys["Roles"] = claims.Roles
 	}
 }
