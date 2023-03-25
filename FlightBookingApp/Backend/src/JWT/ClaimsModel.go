@@ -6,17 +6,19 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type JwtClaims struct {
+	ID primitive.ObjectID `json:"id,omitempty"`
 	Username string `json:"username,omitempty"`
 	Password string `json:"password,omitempty"`
 	Roles    []model.Role  `json:"roles,omitempty"`
 	jwt.StandardClaims
 }
 
-//TODO Stefan temp, remove later
-const ip = "192.168.0.107"
+//TODO Stefan: add an env file
+const ip = "192.168.0.107"	//issuer
 
 func (claims JwtClaims) Valid() error {
 	var now = time.Now().UTC().Unix()

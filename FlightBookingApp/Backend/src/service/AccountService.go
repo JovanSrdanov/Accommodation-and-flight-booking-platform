@@ -35,13 +35,16 @@ func NewAccountService(accountRepository repository.AccountRepository) *accountS
 func (service *accountService) Login(loginData dto.LoginRequest) (string, error) {
 	allAccounts, _ := service.accountRepository.GetAll()
 
-	if !isLoginDataValid(loginData, allAccounts) {
+	val, accountToBeLoggedIn := isLoginDataValid(loginData, allAccounts)
+	if !val {
 		return "", fmt.Errorf("username of password invalid")
 	}
 
+	// after verifying login credentials, generates claims for the jwt session token and generates it
 	var claims = &JWT.JwtClaims{}
+	claims.ID = accountToBeLoggedIn.ID
 	claims.Username = loginData.Username
-	claims.Roles = []model.Role{model.REGULAR_USER}
+	claims.Roles = []model.Role{accountToBeLoggedIn.Role}
 
 	var tokenCreationTime = time.Now().UTC()
 
@@ -50,8 +53,13 @@ func (service *accountService) Login(loginData dto.LoginRequest) (string, error)
 	return token.GenerateToken(claims, expirationTime)
 }
 
-func isLoginDataValid(loginData dto.LoginRequest, accounts model.Accounts) bool{
-	return usernameExists(loginData.Username, accounts) && isPasswordValid(loginData.Password, accounts)
+// if login data is valid returns both true and the id of the logged in account
+func isLoginDataValid(loginData dto.LoginRequest, accounts model.Accounts) (bool, model.Account){
+	val, account := usernameExists(loginData.Username, accounts)
+	if val && isPasswordValid(loginData.Password, accounts) {
+		return true, account
+	}
+	return false, model.Account{}
 }
 
 func isPasswordValid(password string, accounts model.Accounts) bool{
@@ -73,25 +81,29 @@ func (service *accountService) Register(newAccount model.Account) (primitive.Obj
 }
 
 func  isAccountValid(account model.Account, accounts model.Accounts) bool {
-	return !usernameExists(account.Username, accounts) && isEmailTaken(account.Email, accounts)
-}
-
-func usernameExists(username string, accounts model.Accounts) bool {
-	for _, value := range accounts{
-		if username == value.Username {
-			return true
-		}
+	val, _ := usernameExists(account.Username, accounts)
+	if !val && !isEmailTaken(account.Email, accounts) {
+		return true
 	}
 	return false
+}
+
+func usernameExists(username string, accounts model.Accounts) (bool, model.Account) {
+	for _, value := range accounts{
+		if username == value.Username {
+			return true, *value
+		}
+	}
+	return false, model.Account{}
 }
 
 func isEmailTaken(email string, accounts model.Accounts) bool {
 	for _, value := range accounts {
 		if email == value.Email {
-			return false
+			return true
 		}
 	}
-	return true
+	return false
 }
 
 func (service *accountService) GetAll() (model.Accounts, error) {

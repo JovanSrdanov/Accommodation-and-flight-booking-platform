@@ -11,7 +11,7 @@ const (
 	REGULAR_USER
 )
 
-//TODO Stefan: bson
+//TODO Stefan: implement account email activation
 type Account struct {
 	ID primitive.ObjectID `json:"id,omitempty" bson:"_id"`
 	Username string `json:"username" binding:"required,alphanum" bson:"username"`

@@ -24,17 +24,18 @@ func DefineAccountEndpoints(upperRouterGroup *gin.RouterGroup, client *mongo.Cli
 	// temp, only testing authorization
 	accounts := upperRouterGroup.Group("/account")
 	accounts.Use(middleware.ValidateToken())
-	accounts.Use(middleware.Authrorization([]model.Role{model.REGULAR_USER}))
 	{
 		accounts.GET("", middleware.Authrorization([]model.Role{model.ADMIN}),
 										 accContr.GetAll)
-		accounts.GET(":id", accContr.GetById)
-		accounts.POST("/register", accContr.Register)
+		accounts.GET(":id", middleware.Authrorization([]model.Role{model.REGULAR_USER}),
+		 										accContr.GetById)
+		//accounts.POST("/register", accContr.Register)
 		//accounts.POST("/login", accContr.Login)
 		accounts.DELETE(":id", accContr.Delete)
 	}
 
 	//temp, should be in accounts group
-	log_test := upperRouterGroup.Group("/account")
-	log_test.POST("/login", accContr.Login)
+	test := upperRouterGroup.Group("/account")
+	test.POST("/login", accContr.Login)
+	test.POST("/register", accContr.Register)
 }

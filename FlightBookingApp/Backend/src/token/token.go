@@ -8,10 +8,10 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-//TODO Stefan: move to a separate file
+//TODO Stefan: move to a env file
 const (
 	jWTPrivateToken = "SecretTokenSecretToken"
-	ip = "192.168.0.107"
+	ip = "192.168.0.107"	//issuer
 )
 
 func GenerateToken(claims *JWT.JwtClaims, expirationTime time.Time) (string, error) {

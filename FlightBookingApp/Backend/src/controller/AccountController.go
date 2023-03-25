@@ -54,7 +54,6 @@ func (controller *AccountController) Register(ctx *gin.Context) {
 
 	newAccount.ID = id
 
-	//not returning sensitive information
 	response := dto.CreateUserResponse {
 		ID: newAccount.ID,
 		Role: newAccount.Role,

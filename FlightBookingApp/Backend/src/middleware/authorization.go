@@ -10,6 +10,7 @@ import (
 
 func ValidateToken() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		//TODO Stefan: change this logic
 		tokenString := ctx.Request.Header.Get("apiKey")
 
 		valid, claims := token.VerifyToken(tokenString)
@@ -23,6 +24,7 @@ func ValidateToken() gin.HandlerFunc {
 		}
 
 		// gets data from token, appends it to the http context
+		ctx.Keys["ID"] = claims.ID
 		ctx.Keys["Username"] = claims.Username
 		ctx.Keys["Password"] = claims.Password
 		ctx.Keys["Roles"] = claims.Roles
@@ -47,7 +49,6 @@ func Authrorization(validRoles []model.Role) gin.HandlerFunc {
 		for _, val := range roles {
 			validation[val] = 0
 		}
-
 		// checks if the list of roles of the user matches the list of valid roles
 		for _, val := range validRoles {
 			if _, ok := validation[val]; !ok {
