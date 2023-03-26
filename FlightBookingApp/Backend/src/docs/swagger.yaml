@@ -59,6 +59,21 @@ definitions:
     - time
     - vacantSeats
     type: object
+  model.Ticket:
+    properties:
+      buyer:
+        type: string
+      flightId:
+        type: string
+      id:
+        type: string
+      owner:
+        type: string
+    required:
+    - buyer
+    - flightId
+    - owner
+    type: object
 info:
   contact: {}
 paths:
@@ -191,6 +206,93 @@ paths:
             $ref: '#/definitions/dto.SimpleResponse'
       tags:
       - Flight
+  /ticket:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Ticket'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+      tags:
+      - Ticket
+    post:
+      parameters:
+      - description: Ticket
+        in: body
+        name: ticket
+        required: true
+        schema:
+          $ref: '#/definitions/model.Ticket'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.CreatedResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+      tags:
+      - Ticket
+  /ticket/{id}:
+    delete:
+      parameters:
+      - description: Ticket ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+      tags:
+      - Ticket
+    get:
+      parameters:
+      - description: Ticket ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Ticket'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+      tags:
+      - Ticket
 securityDefinitions:
   bearerAuth:
     in: header
