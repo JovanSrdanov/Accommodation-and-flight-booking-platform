@@ -1,11 +1,11 @@
 package service
 
 import (
-	utils "FlightBookingApp/Utils"
 	"FlightBookingApp/dto"
 	"FlightBookingApp/model"
 	"FlightBookingApp/repository"
 	"FlightBookingApp/token"
+	"FlightBookingApp/utils"
 	"fmt"
 	"math/rand"
 	"time"
@@ -29,8 +29,8 @@ type AccountService interface {
 }
 
 func NewAccountService(accountRepository repository.AccountRepository) *accountService {
-	return &accountService {
-		accountRepository:  accountRepository,
+	return &accountService{
+		accountRepository: accountRepository,
 	}
 }
 
@@ -55,16 +55,16 @@ func (service *accountService) Login(loginData dto.LoginRequest) (string, string
 func (service *accountService) Register(newAccount model.Account) (primitive.ObjectID, error) {
 	_, err := service.accountRepository.GetByUsername(newAccount.Username)
 	if err == nil {
-		return primitive.NewObjectID(), fmt.Errorf("username already exists") 
+		return primitive.NewObjectID(), fmt.Errorf("username already exists")
 	}
 
 	_, err = service.accountRepository.GetByEmail(newAccount.Email)
 	if err == nil {
-		return primitive.NewObjectID(), fmt.Errorf("email already exists") 
+		return primitive.NewObjectID(), fmt.Errorf("email already exists")
 	}
 
 	// TODO Stefan: move to separate func
-	// email activation logic 
+	// email activation logic
 	// return time to the nanosecond (1 billionth of a sec)
 	rand.Seed(time.Now().UnixNano())
 	// create random code for email
@@ -73,7 +73,7 @@ func (service *accountService) Register(newAccount model.Account) (primitive.Obj
 	emailVerRandRune := make([]rune, 64)
 	// create a random slice of runes (characters) to create our emailVerPassword (random string of characters)
 	for i := 0; i < 64; i++ {
-		emailVerRandRune[i] = alphaNumRunes[rand.Intn(len(alphaNumRunes) - 1)]
+		emailVerRandRune[i] = alphaNumRunes[rand.Intn(len(alphaNumRunes)-1)]
 	}
 
 	emailVerPassword := string(emailVerRandRune)
@@ -81,7 +81,7 @@ func (service *accountService) Register(newAccount model.Account) (primitive.Obj
 	// func GenerateFromPassword(password []byte, const int) ([]byte, error)
 	emailVerPWhash, err = bcrypt.GenerateFromPassword([]byte(emailVerPassword), bcrypt.DefaultCost)
 	if err != nil {
-		return primitive.NewObjectID(), err 
+		return primitive.NewObjectID(), err
 	}
 	newAccount.EmailVerificationHash = string(emailVerPWhash)
 

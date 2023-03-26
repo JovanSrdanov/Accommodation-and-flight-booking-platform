@@ -1,11 +1,11 @@
 package controller
 
 import (
-	utils "FlightBookingApp/Utils"
 	"FlightBookingApp/dto"
 	"FlightBookingApp/errors"
 	"FlightBookingApp/model"
 	"FlightBookingApp/service"
+	"FlightBookingApp/utils"
 	"fmt"
 	"net/http"
 	"time"
@@ -41,11 +41,11 @@ func (controller *AccountController) Register(ctx *gin.Context) {
 		return
 	}
 
-	newAccount := model.Account {
-		Username: registrationInfo.Username,
-		Password: hashedPassword,
-		Email: registrationInfo.Email,
-		Role: model.REGULAR_USER,
+	newAccount := model.Account{
+		Username:    registrationInfo.Username,
+		Password:    hashedPassword,
+		Email:       registrationInfo.Email,
+		Role:        model.REGULAR_USER,
 		IsActivated: false,
 	}
 
@@ -57,9 +57,9 @@ func (controller *AccountController) Register(ctx *gin.Context) {
 
 	newAccount.ID = id
 
-	response := dto.CreateUserResponse {
-		ID: newAccount.ID,
-		Role: newAccount.Role,
+	response := dto.CreateUserResponse{
+		ID:          newAccount.ID,
+		Role:        newAccount.Role,
 		IsActivated: newAccount.IsActivated,
 	}
 
@@ -157,6 +157,6 @@ func (controller *AccountController) Delete(ctx *gin.Context) {
 			return
 		}
 	}
-	
+
 	ctx.JSON(http.StatusOK, dto.NewSimpleResponse("Entity deleted"))
 }
