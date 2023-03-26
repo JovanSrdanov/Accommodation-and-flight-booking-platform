@@ -44,6 +44,7 @@ func (controller *FlightController) Create(ctx *gin.Context) {
 
 	//Service call and return
 	//Todo Aleksandar (Jovan pisao), ovde mozda treba pokazivac
+	//TODO Aleksandar (Jovan pisao), provera da li su razliciti source i dest aerodromi
 	id, err := controller.flightService.Create(flight)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, dto.NewSimpleResponse(err.Error()))
