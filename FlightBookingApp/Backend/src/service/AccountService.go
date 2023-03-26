@@ -2,12 +2,12 @@ package service
 
 import (
 	JWT "FlightBookingApp/JWT"
-	utils "FlightBookingApp/Utils"
 	"FlightBookingApp/dto"
 	"FlightBookingApp/errors"
 	"FlightBookingApp/model"
 	"FlightBookingApp/repository"
 	"FlightBookingApp/token"
+	utils "FlightBookingApp/utils"
 	"fmt"
 	"time"
 
@@ -27,8 +27,8 @@ type AccountService interface {
 }
 
 func NewAccountService(accountRepository repository.AccountRepository) *accountService {
-	return &accountService {
-		accountRepository:  accountRepository,
+	return &accountService{
+		accountRepository: accountRepository,
 	}
 }
 
@@ -54,7 +54,7 @@ func (service *accountService) Login(loginData dto.LoginRequest) (string, error)
 }
 
 // if login data is valid returns both true and the id of the logged in account
-func isLoginDataValid(loginData dto.LoginRequest, accounts model.Accounts) (bool, model.Account){
+func isLoginDataValid(loginData dto.LoginRequest, accounts model.Accounts) (bool, model.Account) {
 	val, account := usernameExists(loginData.Username, accounts)
 	if val && isPasswordValid(loginData.Password, accounts) {
 		return true, account
@@ -62,9 +62,9 @@ func isLoginDataValid(loginData dto.LoginRequest, accounts model.Accounts) (bool
 	return false, model.Account{}
 }
 
-func isPasswordValid(password string, accounts model.Accounts) bool{
-	for _, value := range accounts{
-		if utils.CheckPassword(password, value.Password) == nil{
+func isPasswordValid(password string, accounts model.Accounts) bool {
+	for _, value := range accounts {
+		if utils.CheckPassword(password, value.Password) == nil {
 			return true
 		}
 	}
@@ -80,7 +80,7 @@ func (service *accountService) Register(newAccount model.Account) (primitive.Obj
 	return primitive.NilObjectID, &errors.UsernameOrEmailExistsError{}
 }
 
-func  isAccountValid(account model.Account, accounts model.Accounts) bool {
+func isAccountValid(account model.Account, accounts model.Accounts) bool {
 	val, _ := usernameExists(account.Username, accounts)
 	if !val && !isEmailTaken(account.Email, accounts) {
 		return true
@@ -89,7 +89,7 @@ func  isAccountValid(account model.Account, accounts model.Accounts) bool {
 }
 
 func usernameExists(username string, accounts model.Accounts) (bool, model.Account) {
-	for _, value := range accounts{
+	for _, value := range accounts {
 		if username == value.Username {
 			return true, *value
 		}

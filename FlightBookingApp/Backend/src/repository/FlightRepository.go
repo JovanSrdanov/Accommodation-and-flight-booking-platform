@@ -1,10 +1,10 @@
 package repository
 
 import (
-	utils "FlightBookingApp/Utils"
 	"FlightBookingApp/dto"
 	"FlightBookingApp/errors"
 	"FlightBookingApp/model"
+	utils "FlightBookingApp/utils"
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"

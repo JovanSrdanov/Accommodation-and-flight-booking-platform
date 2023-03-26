@@ -1,10 +1,10 @@
 package service
 
 import (
-	utils "FlightBookingApp/Utils"
 	"FlightBookingApp/dto"
 	"FlightBookingApp/model"
 	"FlightBookingApp/repository"
+	utils "FlightBookingApp/utils"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )

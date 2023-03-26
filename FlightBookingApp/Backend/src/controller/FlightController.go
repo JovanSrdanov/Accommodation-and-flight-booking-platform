@@ -1,11 +1,11 @@
 package controller
 
 import (
-	"FlightBookingApp/Utils"
 	"FlightBookingApp/dto"
 	"FlightBookingApp/errors"
 	"FlightBookingApp/model"
 	"FlightBookingApp/service"
+	"FlightBookingApp/utils"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
@@ -129,6 +129,23 @@ func (controller *FlightController) Delete(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, dto.NewSimpleResponse("Entity deleted"))
 }
 
+// Search godoc
+// @Tags Flight
+// @Produce application/json
+// @Success 200 {array} utils.Page
+// @Failure 400 {object} dto.SimpleResponse
+// @Failure 500 {object} dto.SimpleResponse
+// @Param time query string true "Time (date) of desired departure, must be in this format YYYY-MM-DD"
+// @Param destinationCountry query string true "Destination country"
+// @Param destinationCity query string true "Destination city"
+// @Param startPointCountry query string true "Starting point country"
+// @Param startPointCity query string true "Starting point  city"
+// @Param desiredNumberOfSeats query string true "Desired Number Of Seats"
+// @Param pageNumber query string true "Page number"
+// @Param resultsPerPage query string true "Results Per Page"
+// @Param sortDirection query string true "Sort Direction"
+// @Param sortType query string true "Sort Type"
+// @Router /flight/search [get]
 func (controller *FlightController) Search(ctx *gin.Context) {
 	flightSearchParameters, err := dto.NewFlightSearchParameters(
 		ctx.Query("time"),
