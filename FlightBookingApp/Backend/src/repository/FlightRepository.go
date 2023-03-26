@@ -1,12 +1,15 @@
 package repository
 
 import (
+	"FlightBookingApp/dto"
 	"FlightBookingApp/errors"
 	"FlightBookingApp/model"
+	utils "FlightBookingApp/utils"
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"time"
 )
@@ -20,6 +23,7 @@ type FlightRepository interface {
 	GetAll() (model.Flights, error)
 	GetById(id primitive.ObjectID) (model.Flight, error)
 	Delete(id primitive.ObjectID) error
+	Search(flightSearchParameters *dto.FlightSearchParameters, pageInfo *utils.PageInfo) (*utils.Page, error)
 }
 
 // NoSQL: Constructor which reads db configuration from environment
@@ -101,6 +105,72 @@ func (repo *flightRepository) Delete(id primitive.ObjectID) error {
 	}
 	repo.base.logger.Printf("Deleted entity, id: %s", id.String())
 	return nil
+}
+
+func (repo *flightRepository) Search(flightSearchParameters *dto.FlightSearchParameters, pageInfo *utils.PageInfo) (*utils.Page, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	collection := repo.getCollection()
+
+	filterOptions := filterSetup(flightSearchParameters)
+	sortOptions, err := sortSetup(pageInfo)
+
+	if err != nil {
+		return nil, err
+	}
+
+	cursor, _ := collection.Find(ctx, filterOptions, sortOptions)
+
+	var flights model.Flights
+	err = cursor.All(ctx, &flights)
+	if err != nil {
+		return nil, err
+	}
+
+	flightSearchResults := createPageData(flightSearchParameters.DesiredNumberOfSeats, flights)
+	count, err := collection.CountDocuments(ctx, filterOptions)
+	if err != nil {
+		return nil, err
+	}
+	page := utils.Page{flightSearchResults, int(count)}
+
+	return &page, nil
+}
+
+func createPageData(DesiredNumberOfSeats int, flights model.Flights) []*dto.FlightSearchResult {
+	var flightSearchResults []*dto.FlightSearchResult
+	for _, element := range flights {
+		flightSearchResults = append(flightSearchResults, dto.NewFlightSearchResult(element, DesiredNumberOfSeats))
+	}
+	return flightSearchResults
+}
+
+func sortSetup(pageInfo *utils.PageInfo) (*options.FindOptions, error) {
+	if pageInfo.SortType != "time" && pageInfo.SortType != "price" {
+		return nil, &errors.InvalidSortTypeError{}
+	}
+	sortDirection := 1
+	if pageInfo.SortDirection == "dsc" {
+		sortDirection = -1
+	}
+	findOptions := options.Find()
+	findOptions.SetSort(bson.D{{pageInfo.SortType, sortDirection}})
+	findOptions.SetSkip(int64(((pageInfo.PageNumber) - 1) * pageInfo.ResultsPerPage))
+	findOptions.SetLimit(int64(pageInfo.ResultsPerPage))
+	return findOptions, nil
+}
+
+func filterSetup(flightSearchParameters *dto.FlightSearchParameters) bson.M {
+	filter := bson.M{
+		"vacantSeats":                 bson.M{"$gte": flightSearchParameters.DesiredNumberOfSeats},
+		"startPoint.address.city":     bson.M{"$regex": primitive.Regex{Pattern: flightSearchParameters.StartPointCity, Options: "i"}},
+		"startPoint.address.country":  bson.M{"$regex": primitive.Regex{Pattern: flightSearchParameters.StartPointCountry, Options: "i"}},
+		"destination.address.city":    bson.M{"$regex": primitive.Regex{Pattern: flightSearchParameters.DestinationCity, Options: "i"}},
+		"destination.address.country": bson.M{"$regex": primitive.Regex{Pattern: flightSearchParameters.DestinationCountry, Options: "i"}},
+		"time":                        bson.M{"$gte": flightSearchParameters.Date, "$lte": flightSearchParameters.Date.AddDate(0, 0, 1)},
+	}
+	return filter
 }
 
 func (repo *flightRepository) getCollection() *mongo.Collection {
