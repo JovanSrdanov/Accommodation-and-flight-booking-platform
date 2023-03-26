@@ -26,7 +26,7 @@ var (
 	refreshTokenSecret = os.Getenv("REFRESH_SECRET_KEY")
 )
 
-func GenerateToken(account model.Account) (string, string, error) {
+func GenerateTokens(account model.Account) (string, string, error) {
 	tokenDetails := &TokenDetails{}
 
 	tokenDetails.AccessTokenExpires = time.Now().UTC().Add(time.Duration(15) * time.Minute).Unix()

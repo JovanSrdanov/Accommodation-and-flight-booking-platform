@@ -49,7 +49,7 @@ func (service *accountService) Login(loginData dto.LoginRequest) (string, string
 		return "", "", fmt.Errorf("account not activated")
 	}
 
-	return token.GenerateToken(accountToBeLoggedIn)
+	return token.GenerateTokens(accountToBeLoggedIn)
 }
 
 func (service *accountService) Register(newAccount model.Account) (primitive.ObjectID, error) {
