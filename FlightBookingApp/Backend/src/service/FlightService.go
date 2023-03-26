@@ -1,6 +1,8 @@
 package service
 
 import (
+	utils "FlightBookingApp/Utils"
+	"FlightBookingApp/dto"
 	"FlightBookingApp/model"
 	"FlightBookingApp/repository"
 
@@ -16,6 +18,7 @@ type FlightService interface {
 	GetAll() (model.Flights, error)
 	GetById(id primitive.ObjectID) (model.Flight, error)
 	Delete(id primitive.ObjectID) error
+	Search(flightSearchParameters *dto.FlightSearchParameters, pageInfo *utils.PageInfo) (*utils.Page, error)
 }
 
 func NewFlightService(flightRepository repository.FlightRepository) *flightService {
@@ -37,4 +40,8 @@ func (service *flightService) GetById(id primitive.ObjectID) (model.Flight, erro
 }
 func (service *flightService) Delete(id primitive.ObjectID) error {
 	return service.flightRepository.Delete(id)
+}
+
+func (service *flightService) Search(flightSearchParameters *dto.FlightSearchParameters, pageInfo *utils.PageInfo) (*utils.Page, error) {
+	return service.flightRepository.Search(flightSearchParameters, pageInfo)
 }

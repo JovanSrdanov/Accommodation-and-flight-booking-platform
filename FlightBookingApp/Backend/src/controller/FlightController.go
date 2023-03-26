@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"FlightBookingApp/Utils"
 	"FlightBookingApp/dto"
 	"FlightBookingApp/errors"
 	"FlightBookingApp/model"
@@ -42,6 +43,7 @@ func (controller *FlightController) Create(ctx *gin.Context) {
 	}
 
 	//Service call and return
+	//Todo Aleksandar (Jovan pisao), ovde mozda treba pokazivac
 	id, err := controller.flightService.Create(flight)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, dto.NewSimpleResponse(err.Error()))
@@ -125,4 +127,36 @@ func (controller *FlightController) Delete(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, dto.NewSimpleResponse("Entity deleted"))
+}
+
+func (controller *FlightController) Search(ctx *gin.Context) {
+	flightSearchParameters, err := dto.NewFlightSearchParameters(
+		ctx.Query("time"),
+		ctx.Query("destinationCountry"),
+		ctx.Query("destinationCity"),
+		ctx.Query("startPointCountry"),
+		ctx.Query("startPointCity"),
+		ctx.Query("desiredNumberOfSeats"),
+	)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.NewSimpleResponse(err.Error()))
+		return
+	}
+
+	pageInfo, err := utils.NewPageInfo(ctx.Query("pageNumber"), ctx.Query("resultsPerPage"), ctx.Query("sortDirection"),
+		ctx.Query("sortType"))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.NewSimpleResponse(err.Error()))
+		return
+	}
+
+	flightsPage, err := controller.flightService.Search(flightSearchParameters, pageInfo)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.NewSimpleResponse(err.Error()))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, flightsPage)
 }
