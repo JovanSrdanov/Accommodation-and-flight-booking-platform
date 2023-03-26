@@ -6,7 +6,6 @@ import (
 	"FlightBookingApp/model"
 	"FlightBookingApp/service"
 	"FlightBookingApp/utils"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -107,7 +106,7 @@ func (controller *AccountController) Login(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, fmt.Sprintf("-------ACCESS TOKEN-------: %v-------REFRESH TOKEN-------: %v", accessTokenString, refreshTokenString))
+	ctx.JSON(http.StatusOK, gin.H{"ACCESS TOKEN":accessTokenString, "REFRESH TOKEN":refreshTokenString})
 }
 
 func (controller *AccountController) GetAll(ctx *gin.Context) {
