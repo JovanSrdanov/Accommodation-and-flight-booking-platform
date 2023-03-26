@@ -23,6 +23,7 @@ type AccountRepository interface {
 	GetById(id primitive.ObjectID) (model.Account, error)
 	GetByUsername(username string) (model.Account, error)
 	GetByEmail(email string) (model.Account, error)
+	Save(account model.Account) (model.Account, error)
 	Delete(id primitive.ObjectID) error
 }
 
@@ -122,6 +123,23 @@ func (repo *accountRepository) GetByEmail(email string) (model.Account, error) {
 	result.Decode(&account)
 
 	return account, nil
+}
+
+func (repo *accountRepository) Save(account model.Account) (model.Account, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	collection := repo.getCollection()
+
+	result := collection.FindOneAndReplace(ctx, bson.M{"username": account.Username}, account)
+	if result.Err() != nil {
+		return model.Account{}, result.Err()
+	}
+
+	var newAccount model.Account
+	result.Decode(&account)
+
+	return newAccount, nil
 }
 
 func (repo *accountRepository) Delete(id primitive.ObjectID) error {

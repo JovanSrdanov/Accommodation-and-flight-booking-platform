@@ -8,9 +8,11 @@ import (
 	"FlightBookingApp/service"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"golang.org/x/crypto/bcrypt"
 )
 
 //TODO Stefan: podesi swagger
@@ -62,6 +64,31 @@ func (controller *AccountController) Register(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusCreated, response)
+}
+
+func (controller *AccountController) VerifyEmail(ctx *gin.Context) {
+	var account model.Account
+	account.Username = ctx.Param("username")
+	linkVerPass := ctx.Param("verPass")
+
+	account, err := controller.accountService.GetByUsername(account.Username)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, dto.NewSimpleResponse("error geting verification hash in db by username"))
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(account.EmailVerificationHash), []byte(linkVerPass))
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, dto.NewSimpleResponse("unauthorized access"))
+	}
+
+	if time.Now().Local().After(account.VerificationTimeout) {
+		ctx.JSON(http.StatusUnauthorized, dto.NewSimpleResponse("email verification link has expired, please try registering again"))
+		return
+	}
+
+	account.IsActivated = true
+	controller.accountService.Save(account)
+	ctx.JSON(http.StatusOK, dto.NewSimpleResponse("email successfuly verified"))
 }
 
 func (controller *AccountController) Login(ctx *gin.Context) {
