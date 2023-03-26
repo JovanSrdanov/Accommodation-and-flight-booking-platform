@@ -21,6 +21,9 @@ type AccountRepository interface {
 	Create(newAccount *model.Account) (primitive.ObjectID, error)
 	GetAll() (model.Accounts, error)
 	GetById(id primitive.ObjectID) (model.Account, error)
+	GetByUsername(username string) (model.Account, error)
+	GetByEmail(email string) (model.Account, error)
+	Save(account model.Account) (model.Account, error)
 	Delete(id primitive.ObjectID) error
 }
 
@@ -86,6 +89,57 @@ func (repo *accountRepository) GetById(id primitive.ObjectID) (model.Account, er
 	result.Decode(&account)
 
 	return account, nil
+}
+
+func (repo *accountRepository) GetByUsername(username string) (model.Account, error){
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	collection := repo.getCollection()
+
+	result := collection.FindOne(ctx, bson.M{"username": username})
+	if result.Err() != nil {
+		return model.Account{}, result.Err()
+	}
+
+	var account model.Account
+	result.Decode(&account)
+
+	return account, nil
+}
+
+func (repo *accountRepository) GetByEmail(email string) (model.Account, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	collection := repo.getCollection()
+
+	result := collection.FindOne(ctx, bson.M{"email": email})
+	if result.Err() != nil {
+		return model.Account{}, result.Err()
+	}
+
+	var account model.Account
+	result.Decode(&account)
+
+	return account, nil
+}
+
+func (repo *accountRepository) Save(account model.Account) (model.Account, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	collection := repo.getCollection()
+
+	result := collection.FindOneAndReplace(ctx, bson.M{"username": account.Username}, account)
+	if result.Err() != nil {
+		return model.Account{}, result.Err()
+	}
+
+	var newAccount model.Account
+	result.Decode(&account)
+
+	return newAccount, nil
 }
 
 func (repo *accountRepository) Delete(id primitive.ObjectID) error {

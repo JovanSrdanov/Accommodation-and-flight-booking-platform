@@ -9,20 +9,23 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type JwtClaims struct {
+type AccessJwtClaims struct {
 	ID primitive.ObjectID `json:"id,omitempty"`
-	Username string `json:"username,omitempty"`
-	Password string `json:"password,omitempty"`
+	AccessID string `json:"accessId,omitempty"`
 	Roles    []model.Role  `json:"roles,omitempty"`
 	jwt.StandardClaims
 }
 
-//TODO Stefan: add an env file
-const ip = "192.168.0.107"	//issuer
+type RefreshJwtClaims struct {
+	ID primitive.ObjectID `json:"id,omitempty"`
+	RefreshID string `json:"refreshId,omitempty"`
+	Roles    []model.Role  `json:"roles,omitempty"`
+	jwt.StandardClaims
+}
 
-func (claims JwtClaims) Valid() error {
+func (claims AccessJwtClaims) Valid() error {
 	var now = time.Now().UTC().Unix()
-	if claims.VerifyExpiresAt(now, true) && claims.VerifyIssuer(ip, true) {
+	if claims.VerifyExpiresAt(now, true){
 		return nil
 	}
 

@@ -5,11 +5,14 @@ import (
 	"FlightBookingApp/errors"
 	"FlightBookingApp/model"
 	"FlightBookingApp/service"
-	utils "FlightBookingApp/utils"
+	"FlightBookingApp/utils"
+	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"golang.org/x/crypto/bcrypt"
 )
 
 //TODO Stefan: podesi swagger
@@ -63,6 +66,31 @@ func (controller *AccountController) Register(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, response)
 }
 
+func (controller *AccountController) VerifyEmail(ctx *gin.Context) {
+	var account model.Account
+	account.Username = ctx.Param("username")
+	linkVerPass := ctx.Param("verPass")
+
+	account, err := controller.accountService.GetByUsername(account.Username)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, dto.NewSimpleResponse("error geting verification hash in db by username"))
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(account.EmailVerificationHash), []byte(linkVerPass))
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, dto.NewSimpleResponse("unauthorized access"))
+	}
+
+	if time.Now().Local().After(account.VerificationTimeout) {
+		ctx.JSON(http.StatusUnauthorized, dto.NewSimpleResponse("email verification link has expired, please try registering again"))
+		return
+	}
+
+	account.IsActivated = true
+	controller.accountService.Save(account)
+	ctx.JSON(http.StatusOK, dto.NewSimpleResponse("email successfuly verified"))
+}
+
 func (controller *AccountController) Login(ctx *gin.Context) {
 	var loginData dto.LoginRequest
 
@@ -70,7 +98,7 @@ func (controller *AccountController) Login(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, dto.NewSimpleResponse("invalid request"))
 	}
 
-	tokenString, err := controller.accountService.Login(loginData)
+	accessTokenString, refreshTokenString, err := controller.accountService.Login(loginData)
 
 	//TODO Stefan: fix error handleing
 
@@ -79,8 +107,7 @@ func (controller *AccountController) Login(ctx *gin.Context) {
 		return
 	}
 
-	//TODO Stefan: remove tokenString from return message
-	ctx.JSON(http.StatusOK, tokenString)
+	ctx.JSON(http.StatusOK, fmt.Sprintf("-------ACCESS TOKEN-------: %v-------REFRESH TOKEN-------: %v", accessTokenString, refreshTokenString))
 }
 
 func (controller *AccountController) GetAll(ctx *gin.Context) {

@@ -36,6 +36,9 @@ func DefineAccountEndpoints(upperRouterGroup *gin.RouterGroup, client *mongo.Cli
 
 	//temp, should be in accounts group
 	test := upperRouterGroup.Group("/account")
-	test.POST("/login", accContr.Login)
-	test.POST("/register", accContr.Register)
+	{
+		test.POST("/login", accContr.Login)
+		test.POST("/register", accContr.Register)
+		test.GET("/emailver/:username/:verPass", accContr.VerifyEmail)
+	}
 }
