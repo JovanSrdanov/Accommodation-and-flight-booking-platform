@@ -22,7 +22,7 @@ type FlightRepository interface {
 	Create(flight *model.Flight) (primitive.ObjectID, error)
 	GetAll() (model.Flights, error)
 	GetById(id primitive.ObjectID) (model.Flight, error)
-	Delete(id primitive.ObjectID) error
+	Cancel(id primitive.ObjectID) error
 	Search(flightSearchParameters *dto.FlightSearchParameters, pageInfo *utils.PageInfo) (*utils.Page, error)
 }
 
@@ -38,7 +38,6 @@ func (repo *flightRepository) Create(flight *model.Flight) (primitive.ObjectID, 
 
 	collection := repo.getCollection()
 
-	flight.ID = primitive.NewObjectID()
 	result, err := collection.InsertOne(ctx, &flight)
 	if err != nil {
 		repo.base.logger.Println(err)
@@ -88,22 +87,22 @@ func (repo *flightRepository) GetById(id primitive.ObjectID) (model.Flight, erro
 
 	return flight, nil
 }
-func (repo *flightRepository) Delete(id primitive.ObjectID) error {
+func (repo *flightRepository) Cancel(id primitive.ObjectID) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	collection := repo.getCollection()
 
-	result, err := collection.DeleteOne(ctx, bson.M{"_id": id})
+	filter := bson.D{{"_id", id}}
+	update := bson.D{{"$set", bson.D{{"canceled", true}}}}
+
+	//Before calling Cancel, object is found so we know it will be found now and updated
+	_, err := collection.UpdateOne(ctx, filter, update)
 
 	if err != nil {
 		return err
 	}
 
-	if result.DeletedCount == 0 {
-		return &errors.NotFoundError{}
-	}
-	repo.base.logger.Printf("Deleted entity, id: %s", id.String())
 	return nil
 }
 
