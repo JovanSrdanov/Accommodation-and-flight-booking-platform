@@ -146,7 +146,7 @@ func createPageData(DesiredNumberOfSeats int, flights model.Flights) []*dto.Flig
 }
 
 func sortSetup(pageInfo *utils.PageInfo) (*options.FindOptions, error) {
-	if pageInfo.SortType != "time" && pageInfo.SortType != "price" {
+	if pageInfo.SortType != "departureDateTime" && pageInfo.SortType != "price" {
 		return nil, &errors.InvalidSortTypeError{}
 	}
 	sortDirection := 1
@@ -167,7 +167,8 @@ func filterSetup(flightSearchParameters *dto.FlightSearchParameters) bson.M {
 		"startPoint.address.country":  bson.M{"$regex": primitive.Regex{Pattern: flightSearchParameters.StartPointCountry, Options: "i"}},
 		"destination.address.city":    bson.M{"$regex": primitive.Regex{Pattern: flightSearchParameters.DestinationCity, Options: "i"}},
 		"destination.address.country": bson.M{"$regex": primitive.Regex{Pattern: flightSearchParameters.DestinationCountry, Options: "i"}},
-		"time":                        bson.M{"$gte": flightSearchParameters.Date, "$lte": flightSearchParameters.Date.AddDate(0, 0, 1)},
+		"departureDateTime":           bson.M{"$gte": flightSearchParameters.DepartureDate, "$lte": flightSearchParameters.DepartureDate.AddDate(0, 0, 1)},
+		"canceled":                    false,
 	}
 	return filter
 }

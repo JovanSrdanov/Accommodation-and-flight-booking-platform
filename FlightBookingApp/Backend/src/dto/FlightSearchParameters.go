@@ -7,7 +7,7 @@ import (
 )
 
 type FlightSearchParameters struct {
-	Date time.Time
+	DepartureDate time.Time
 
 	DestinationCountry string
 	DestinationCity    string
@@ -18,7 +18,7 @@ type FlightSearchParameters struct {
 	DesiredNumberOfSeats int
 }
 
-func NewFlightSearchParameters(Date string, destinationCountry string, destinationCity string,
+func NewFlightSearchParameters(departureDate string, destinationCountry string, destinationCity string,
 	startPointCountry string, startPointCity string, desiredNumberOfSeats string) (*FlightSearchParameters, error) {
 
 	flightSearchParameters := new(FlightSearchParameters)
@@ -31,7 +31,7 @@ func NewFlightSearchParameters(Date string, destinationCountry string, destinati
 	var err error
 	layout := "2006-01-02"
 
-	flightSearchParameters.Date, err = time.Parse(layout, Date)
+	flightSearchParameters.DepartureDate, err = time.Parse(layout, departureDate)
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +54,7 @@ func (flightSearchParameters *FlightSearchParameters) validate() (*FlightSearchP
 		return nil, &errors.DesiredNumberOfSeatsMustBeGreaterThanZeroError{}
 	}
 
-	if flightSearchParameters.Date.Before(time.Now()) {
+	if flightSearchParameters.DepartureDate.Before(time.Now()) {
 		return nil, &errors.SearchDateMustBeInFutureError{}
 	}
 	return nil, nil

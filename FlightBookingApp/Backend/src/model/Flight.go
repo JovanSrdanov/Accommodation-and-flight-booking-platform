@@ -10,7 +10,7 @@ import (
 type Flight struct {
 	ID primitive.ObjectID `json:"id,omitempty" bson:"_id"`
 	//TODO namestiti da smesta UTC
-	DepartureDateTime time.Time `json:"time" binding:"required" validate:"not-before-current-date" bson:"time"`
+	DepartureDateTime time.Time `json:"departureDateTime" binding:"required" validate:"not-before-current-date" bson:"departureDateTime"`
 	StartPoint        Airport   `json:"startPoint" binding:"required" bson:"startPoint"`
 	Destination       Airport   `json:"destination" binding:"required" bson:"destination"`
 	Price             float32   `json:"price" binding:"required,min=0" bson:"price"`

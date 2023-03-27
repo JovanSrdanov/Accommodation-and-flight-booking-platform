@@ -153,8 +153,9 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "DepartureDateTime (date) of desired departure, must be in this format YYYY-MM-DD",
-                        "name": "time",
+                        "format": "yyyy-mm-dd",
+                        "description": "Departure date, must be in this format YYYY-MM-DD",
+                        "name": "departureDate",
                         "in": "query",
                         "required": true
                     },
@@ -187,36 +188,36 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "type": "string",
-                        "description": "Desired Number Of Seats",
+                        "type": "integer",
+                        "description": "Desired number of seats",
                         "name": "desiredNumberOfSeats",
                         "in": "query",
                         "required": true
                     },
                     {
-                        "type": "string",
+                        "type": "integer",
                         "description": "Page number",
                         "name": "pageNumber",
                         "in": "query",
                         "required": true
                     },
                     {
-                        "type": "string",
-                        "description": "Results Per Page",
+                        "type": "integer",
+                        "description": "Results per page",
                         "name": "resultsPerPage",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "Sort Direction",
+                        "description": "Sort direction (asc, dsc, no_sort)",
                         "name": "sortDirection",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "Sort Type",
+                        "description": "Sort type, it can be departureDateTime or price",
                         "name": "sortType",
                         "in": "query",
                         "required": true
@@ -322,6 +323,142 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/ticket": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ticket"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.Ticket"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SimpleResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ticket"
+                ],
+                "parameters": [
+                    {
+                        "description": "Ticket",
+                        "name": "ticket",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.Ticket"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreatedResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SimpleResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/ticket/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ticket"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Ticket ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Ticket"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SimpleResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SimpleResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ticket"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Ticket ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SimpleResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SimpleResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SimpleResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -385,15 +522,19 @@ const docTemplate = `{
         "model.Flight": {
             "type": "object",
             "required": [
+                "departureDateTime",
                 "destination",
                 "numberOfSeats",
                 "price",
-                "startPoint",
-                "time"
+                "startPoint"
             ],
             "properties": {
                 "canceled": {
                     "type": "boolean"
+                },
+                "departureDateTime": {
+                    "description": "TODO namestiti da smesta UTC",
+                    "type": "string"
                 },
                 "destination": {
                     "$ref": "#/definitions/model.Airport"
@@ -412,12 +553,30 @@ const docTemplate = `{
                 "startPoint": {
                     "$ref": "#/definitions/model.Airport"
                 },
-                "time": {
-                    "description": "TODO namestiti da smesta UTC\nTODO Aleksandar (Jovan napisao) , validacija na time, destination i price, ddd na decrease i increase , ne sme da ima negativno dostupnih mesta",
-                    "type": "string"
-                },
                 "vacantSeats": {
                     "type": "integer"
+                }
+            }
+        },
+        "model.Ticket": {
+            "type": "object",
+            "required": [
+                "buyer",
+                "flightId",
+                "owner"
+            ],
+            "properties": {
+                "buyer": {
+                    "type": "string"
+                },
+                "flightId": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "owner": {
+                    "type": "string"
                 }
             }
         },

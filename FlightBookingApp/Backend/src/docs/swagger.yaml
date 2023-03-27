@@ -41,6 +41,9 @@ definitions:
     properties:
       canceled:
         type: boolean
+      departureDateTime:
+        description: TODO namestiti da smesta UTC
+        type: string
       destination:
         $ref: '#/definitions/model.Airport'
       id:
@@ -53,19 +56,29 @@ definitions:
         type: number
       startPoint:
         $ref: '#/definitions/model.Airport'
-      time:
-        description: |-
-          TODO namestiti da smesta UTC
-          TODO Aleksandar (Jovan napisao) , validacija na time, destination i price, ddd na decrease i increase , ne sme da ima negativno dostupnih mesta
-        type: string
       vacantSeats:
         type: integer
     required:
+    - departureDateTime
     - destination
     - numberOfSeats
     - price
     - startPoint
-    - time
+    type: object
+  model.Ticket:
+    properties:
+      buyer:
+        type: string
+      flightId:
+        type: string
+      id:
+        type: string
+      owner:
+        type: string
+    required:
+    - buyer
+    - flightId
+    - owner
     type: object
   utils.Page:
     properties:
@@ -208,10 +221,10 @@ paths:
   /flight/search:
     get:
       parameters:
-      - description: DepartureDateTime (date) of desired departure, must be in this
-          format YYYY-MM-DD
+      - description: Departure date, must be in this format YYYY-MM-DD
+        format: yyyy-mm-dd
         in: query
-        name: time
+        name: departureDate
         required: true
         type: string
       - description: Destination country
@@ -234,27 +247,27 @@ paths:
         name: startPointCity
         required: true
         type: string
-      - description: Desired Number Of Seats
+      - description: Desired number of seats
         in: query
         name: desiredNumberOfSeats
         required: true
-        type: string
+        type: integer
       - description: Page number
         in: query
         name: pageNumber
         required: true
-        type: string
-      - description: Results Per Page
+        type: integer
+      - description: Results per page
         in: query
         name: resultsPerPage
         required: true
-        type: string
-      - description: Sort Direction
+        type: integer
+      - description: Sort direction (asc, dsc, no_sort)
         in: query
         name: sortDirection
         required: true
         type: string
-      - description: Sort Type
+      - description: Sort type, it can be departureDateTime or price
         in: query
         name: sortType
         required: true
@@ -278,6 +291,93 @@ paths:
             $ref: '#/definitions/dto.SimpleResponse'
       tags:
       - Flight
+  /ticket:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Ticket'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+      tags:
+      - Ticket
+    post:
+      parameters:
+      - description: Ticket
+        in: body
+        name: ticket
+        required: true
+        schema:
+          $ref: '#/definitions/model.Ticket'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.CreatedResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+      tags:
+      - Ticket
+  /ticket/{id}:
+    delete:
+      parameters:
+      - description: Ticket ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+      tags:
+      - Ticket
+    get:
+      parameters:
+      - description: Ticket ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Ticket'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+      tags:
+      - Ticket
 securityDefinitions:
   bearerAuth:
     in: header
