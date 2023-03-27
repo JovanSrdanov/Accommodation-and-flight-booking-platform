@@ -119,3 +119,47 @@ func (controller *TicketController) Delete(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, dto.NewSimpleResponse("Entity deleted"))
 }
+
+// BuyTicket godoc
+// @Tags Ticket
+// @Param ticket body dto.BuyTicketDto true "BuyTicketDto"
+// @Consume application/json
+// @Produce application/json
+// @Success 201 {object} dto.CreatedResponse
+// @Failure 400 {object} dto.SimpleResponse
+// @Router /ticket/buy [post]
+func (controller *TicketController) BuyTicket(ctx *gin.Context) {
+	var buyDto dto.BuyTicketDto
+	//TODO Strahinja: Napraviti validaciju da li je ticket > 0
+
+	err := ctx.ShouldBindJSON(&buyDto)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.NewSimpleResponse(err.Error()))
+		return
+	}
+
+	id, err := controller.ticketService.BuyTicket(buyDto.Ticket, buyDto.Ticket.FlightId, buyDto.NumberOfTickets)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.NewSimpleResponse(err.Error()))
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, dto.NewCreatedResponse(id))
+}
+
+// GetAllForCustomer godoc
+// @Tags Ticket
+// @Produce application/json
+// @Success 200 {array} model.Ticket
+// @Failure 500 {object} dto.SimpleResponse
+// @Router /ticket/myTickets [get]
+func (controller *TicketController) GetAllForCustomer(ctx *gin.Context) {
+	tickets, err := controller.ticketService.GetAllForCustomer()
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, dto.NewSimpleResponse("Error while reading from database"))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, tickets)
+}

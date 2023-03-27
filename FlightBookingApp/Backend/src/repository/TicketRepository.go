@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"FlightBookingApp/dto"
 	"FlightBookingApp/errors"
 	"FlightBookingApp/model"
 	"context"
@@ -16,10 +17,11 @@ type ticketRepository struct {
 }
 
 type TicketRepositry interface {
-	Create(flight *model.Ticket) (primitive.ObjectID, error)
+	Create(ticket *model.Ticket) (primitive.ObjectID, error)
 	GetAll() (model.Tickets, error)
 	GetById(id primitive.ObjectID) (model.Ticket, error)
 	Delete(id primitive.ObjectID) error
+	GetAllForCustomer() ([]dto.TicketFullInfo, error)
 }
 
 func NewTicketRepositry(client *mongo.Client, logger *log.Logger) *ticketRepository {
@@ -64,8 +66,6 @@ func (repo *ticketRepository) GetAll() (model.Tickets, error) {
 		return nil, err
 	}
 
-	//TODO Strahinja: Popuniti i polje flight
-
 	return tickets, nil
 }
 
@@ -102,6 +102,59 @@ func (repo *ticketRepository) Delete(id primitive.ObjectID) error {
 	}
 	repo.base.logger.Printf("Deleted entity, id: %s", id.String())
 	return nil
+}
+
+func (repo *ticketRepository) GetAllForCustomer() ([]dto.TicketFullInfo, error) {
+	tickets := repo.getCollection()
+
+	//TODO Strahinja: Iz JWT izvuci cije karte treba prikazati
+	ownerId := "APIKey"
+
+	// Set up the pipeline
+	pipeline := mongo.Pipeline{
+		{
+			// Join the orders collection with the customers collection
+			{"$lookup", bson.D{
+				{"from", "flights"},
+				{"localField", "flightId"},
+				{"foreignField", "_id"},
+				{"as", "flightInfo"},
+			}},
+		},
+		{
+			// Unwind the result array
+			{"$unwind", "$flightInfo"},
+		},
+		{
+			{"$match", bson.D{
+				{"owner", ownerId},
+			}},
+		},
+	}
+
+	// Execute the pipeline
+	cursor, err := tickets.Aggregate(context.Background(), pipeline)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var ticketsArr []dto.TicketFullInfo
+
+	// Iterate through the results
+	for cursor.Next(context.Background()) {
+		var ticket dto.TicketFullInfo
+		err := cursor.Decode(&ticket)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		ticketsArr = append(ticketsArr, ticket)
+
+		//fmt.Printf("Order ID: %d, Owner: %s\n", ticket.ID, ticket.Owner)
+		//fmt.Printf("Flight id: %s\n", ticket.FlightInfo.ID)
+	}
+
+	return ticketsArr, nil
 }
 
 func (repo *ticketRepository) getCollection() *mongo.Collection {
