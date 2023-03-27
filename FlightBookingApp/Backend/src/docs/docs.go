@@ -462,6 +462,21 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "dto.BuyTicketDto": {
+            "type": "object",
+            "required": [
+                "numberOfTickets",
+                "ticket"
+            ],
+            "properties": {
+                "numberOfTickets": {
+                    "type": "integer"
+                },
+                "ticket": {
+                    "$ref": "#/definitions/model.Ticket"
+                }
+            }
+        },
         "dto.CreatedResponse": {
             "type": "object",
             "properties": {
@@ -607,10 +622,3 @@ var SwaggerInfo = &swag.Spec{
 	Schemes:          []string{},
 	Title:            "",
 	Description:      "",
-	InfoInstanceName: "swagger",
-	SwaggerTemplate:  docTemplate,
-}
-
-func init() {
-	swag.Register(SwaggerInfo.InstanceName(), SwaggerInfo)
-}

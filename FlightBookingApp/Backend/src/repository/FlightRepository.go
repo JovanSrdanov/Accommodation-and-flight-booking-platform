@@ -6,12 +6,13 @@ import (
 	"FlightBookingApp/model"
 	utils "FlightBookingApp/utils"
 	"context"
+	"log"
+	"time"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"log"
-	"time"
 )
 
 type flightRepository struct {
@@ -22,6 +23,8 @@ type FlightRepository interface {
 	Create(flight *model.Flight) (primitive.ObjectID, error)
 	GetAll() (model.Flights, error)
 	GetById(id primitive.ObjectID) (model.Flight, error)
+	Delete(id primitive.ObjectID) error
+	Save(flight model.Flight) (model.Flight, error)
 	Cancel(id primitive.ObjectID) error
 	Search(flightSearchParameters *dto.FlightSearchParameters, pageInfo *utils.PageInfo) (*utils.Page, error)
 }
@@ -104,6 +107,23 @@ func (repo *flightRepository) Cancel(id primitive.ObjectID) error {
 	}
 
 	return nil
+}
+
+func (repo *flightRepository) Save(flight model.Flight) (model.Flight, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	collection := repo.getCollection()
+
+	result := collection.FindOneAndReplace(ctx, bson.M{"_id": flight.ID}, flight)
+	if result.Err() != nil {
+		return model.Flight{}, result.Err()
+	}
+
+	var newFlight model.Flight
+	result.Decode(&newFlight)
+
+	return newFlight, nil
 }
 
 func (repo *flightRepository) Search(flightSearchParameters *dto.FlightSearchParameters, pageInfo *utils.PageInfo) (*utils.Page, error) {
