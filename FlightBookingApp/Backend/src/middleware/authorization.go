@@ -20,7 +20,7 @@ func ValidateToken() gin.HandlerFunc {
 
 		valid, claims := token.VerifyToken(tokenString)
 
-		if !valid {
+		if !valid || claims.TokenType != "access" {
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error":"Invalid authentication token"})
 		}
 
