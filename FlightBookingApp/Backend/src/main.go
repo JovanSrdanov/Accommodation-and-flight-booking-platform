@@ -18,7 +18,7 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-// TODO Aleksandar: namestiti kako treba, kada se uvede autorizacija i dodati tagove za autorizaciju na svaki endpoint
+// TODO : namestiti kako treba, kada se uvede autorizacija i dodati tagove za autorizaciju na svaki endpoint
 // @securityDefinitions.apikey bearerAuth
 // @in header
 // @name Authorization
@@ -80,7 +80,7 @@ func main() {
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	//Here it waits for interrupt
 	logger.Printf("Listening on port %s\n", port)
-	
+
 	DrawGoGopher()
 
 	<-quit
