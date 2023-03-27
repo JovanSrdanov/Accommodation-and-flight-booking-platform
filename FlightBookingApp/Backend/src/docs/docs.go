@@ -418,7 +418,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/ticket/getc": {
+        "/ticket/myTickets": {
             "get": {
                 "produces": [
                     "application/json"
@@ -629,9 +629,7 @@ const docTemplate = `{
         "model.Ticket": {
             "type": "object",
             "required": [
-                "buyer",
-                "flightId",
-                "owner"
+                "flightId"
             ],
             "properties": {
                 "buyer": {

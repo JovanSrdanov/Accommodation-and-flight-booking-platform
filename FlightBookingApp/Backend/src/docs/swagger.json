@@ -406,7 +406,7 @@
                 }
             }
         },
-        "/ticket/getc": {
+        "/ticket/myTickets": {
             "get": {
                 "produces": [
                     "application/json"
@@ -617,9 +617,7 @@
         "model.Ticket": {
             "type": "object",
             "required": [
-                "buyer",
-                "flightId",
-                "owner"
+                "flightId"
             ],
             "properties": {
                 "buyer": {

@@ -130,6 +130,7 @@ func (controller *TicketController) Delete(ctx *gin.Context) {
 // @Router /ticket/buy [post]
 func (controller *TicketController) BuyTicket(ctx *gin.Context) {
 	var buyDto dto.BuyTicketDto
+	//TODO Strahinja: Napraviti validaciju da li je ticket > 0
 
 	err := ctx.ShouldBindJSON(&buyDto)
 	if err != nil {
@@ -151,7 +152,7 @@ func (controller *TicketController) BuyTicket(ctx *gin.Context) {
 // @Produce application/json
 // @Success 200 {array} model.Ticket
 // @Failure 500 {object} dto.SimpleResponse
-// @Router /ticket/getc [get]
+// @Router /ticket/myTickets [get]
 func (controller *TicketController) GetAllForCustomer(ctx *gin.Context) {
 	tickets, err := controller.ticketService.GetAllForCustomer()
 

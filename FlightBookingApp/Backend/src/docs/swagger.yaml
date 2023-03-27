@@ -83,9 +83,7 @@ definitions:
       owner:
         type: string
     required:
-    - buyer
     - flightId
-    - owner
     type: object
   utils.Page:
     properties:
@@ -406,7 +404,7 @@ paths:
             $ref: '#/definitions/dto.SimpleResponse'
       tags:
       - Ticket
-  /ticket/getc:
+  /ticket/myTickets:
     get:
       produces:
       - application/json

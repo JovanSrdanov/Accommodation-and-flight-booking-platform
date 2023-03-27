@@ -5,7 +5,6 @@ import (
 	"FlightBookingApp/errors"
 	"FlightBookingApp/model"
 	"context"
-	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -106,11 +105,10 @@ func (repo *ticketRepository) Delete(id primitive.ObjectID) error {
 }
 
 func (repo *ticketRepository) GetAllForCustomer() ([]dto.TicketFullInfo, error) {
-	// Get a handle for the orders collection
-	tickets := repo.base.client.Database("flightDb").Collection("tickets")
+	tickets := repo.getCollection()
 
-	// Get a handle for the customers collection
-	//flights := repo.base.client.Database("flightDb").Collection("flights")
+	//TODO Strahinja: Iz JWT izvuci cije karte treba prikazati
+	ownerId := "APIKey"
 
 	// Set up the pipeline
 	pipeline := mongo.Pipeline{
@@ -127,6 +125,11 @@ func (repo *ticketRepository) GetAllForCustomer() ([]dto.TicketFullInfo, error) 
 			// Unwind the result array
 			{"$unwind", "$flightInfo"},
 		},
+		{
+			{"$match", bson.D{
+				{"owner", ownerId},
+			}},
+		},
 	}
 
 	// Execute the pipeline
@@ -139,16 +142,16 @@ func (repo *ticketRepository) GetAllForCustomer() ([]dto.TicketFullInfo, error) 
 
 	// Iterate through the results
 	for cursor.Next(context.Background()) {
-		var order dto.TicketFullInfo
-		err := cursor.Decode(&order)
+		var ticket dto.TicketFullInfo
+		err := cursor.Decode(&ticket)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		ticketsArr = append(ticketsArr, order)
+		ticketsArr = append(ticketsArr, ticket)
 
-		fmt.Printf("Order ID: %d, Owner: %s\n", order.ID, order.Owner)
-		fmt.Printf("Flight id: %s\n", order.FlightInfo.ID)
+		//fmt.Printf("Order ID: %d, Owner: %s\n", ticket.ID, ticket.Owner)
+		//fmt.Printf("Flight id: %s\n", ticket.FlightInfo.ID)
 	}
 
 	return ticketsArr, nil

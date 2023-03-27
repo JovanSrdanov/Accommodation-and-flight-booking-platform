@@ -51,7 +51,10 @@ func (service *ticketService) BuyTicket(ticket model.Ticket, flightId primitive.
 	ticket.Buyer = "JWT"
 	ticket.Owner = "APIKey"
 
-	flight, _ := service.flightRepository.GetById(flightId)
+	flight, err := service.flightRepository.GetById(flightId)
+	if err != nil {
+		return primitive.ObjectID{}, err
+	}
 
 	if flight.VacantSeats < numberOfTickets {
 		return flightId, &errors.NotEnoughVacantSeats{}
@@ -59,17 +62,20 @@ func (service *ticketService) BuyTicket(ticket model.Ticket, flightId primitive.
 
 	flight.DecreaseVacantSeats(numberOfTickets)
 
-	_, err := service.flightRepository.Save(flight)
+	_, err = service.flightRepository.Save(flight)
 	if err != nil {
-		return flightId, err
+		return primitive.ObjectID{}, err
 	}
 
-	_, err = service.ticketRepository.Create(&ticket)
-	if err != nil {
-		return flightId, err
+	var i int32
+	for i = 0; i < numberOfTickets; i++ {
+		_, err = service.ticketRepository.Create(&ticket)
+		if err != nil {
+			return primitive.ObjectID{}, err
+		}
 	}
 
-	return ticket.ID, nil
+	return flightId, nil
 }
 
 func (service *ticketService) GetAllForCustomer() ([]dto.TicketFullInfo, error) {

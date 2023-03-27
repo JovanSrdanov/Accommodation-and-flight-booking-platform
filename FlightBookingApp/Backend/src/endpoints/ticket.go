@@ -26,7 +26,7 @@ func DefineTicketEndpoints(upperRouterGroup *gin.RouterGroup, client *mongo.Clie
 	{
 		tickets.GET("", contr.GetAll)
 		tickets.GET(":id", contr.GetById)
-		tickets.GET("/getc", contr.GetAllForCustomer)
+		tickets.GET("/myTickets", contr.GetAllForCustomer)
 		tickets.POST("", contr.Create)
 		tickets.POST("/buy", contr.BuyTicket)
 		tickets.DELETE(":id", contr.Delete)
