@@ -6,12 +6,13 @@ import (
 	"FlightBookingApp/model"
 	utils "FlightBookingApp/utils"
 	"context"
+	"log"
+	"time"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"log"
-	"time"
 )
 
 type flightRepository struct {
@@ -23,6 +24,8 @@ type FlightRepository interface {
 	GetAll() (model.Flights, error)
 	GetById(id primitive.ObjectID) (model.Flight, error)
 	Delete(id primitive.ObjectID) error
+	Save(flight model.Flight) (model.Flight, error)
+	Cancel(id primitive.ObjectID) error
 	Search(flightSearchParameters *dto.FlightSearchParameters, pageInfo *utils.PageInfo) (*utils.Page, error)
 }
 
@@ -38,7 +41,6 @@ func (repo *flightRepository) Create(flight *model.Flight) (primitive.ObjectID, 
 
 	collection := repo.getCollection()
 
-	flight.ID = primitive.NewObjectID()
 	result, err := collection.InsertOne(ctx, &flight)
 	if err != nil {
 		repo.base.logger.Println(err)
@@ -88,23 +90,40 @@ func (repo *flightRepository) GetById(id primitive.ObjectID) (model.Flight, erro
 
 	return flight, nil
 }
-func (repo *flightRepository) Delete(id primitive.ObjectID) error {
+func (repo *flightRepository) Cancel(id primitive.ObjectID) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	collection := repo.getCollection()
 
-	result, err := collection.DeleteOne(ctx, bson.M{"_id": id})
+	filter := bson.D{{"_id", id}}
+	update := bson.D{{"$set", bson.D{{"canceled", true}}}}
+
+	//Before calling Cancel, object is found so we know it will be found now and updated
+	_, err := collection.UpdateOne(ctx, filter, update)
 
 	if err != nil {
 		return err
 	}
 
-	if result.DeletedCount == 0 {
-		return &errors.NotFoundError{}
-	}
-	repo.base.logger.Printf("Deleted entity, id: %s", id.String())
 	return nil
+}
+
+func (repo *flightRepository) Save(flight model.Flight) (model.Flight, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	collection := repo.getCollection()
+
+	result := collection.FindOneAndReplace(ctx, bson.M{"_id": flight.ID}, flight)
+	if result.Err() != nil {
+		return model.Flight{}, result.Err()
+	}
+
+	var newFlight model.Flight
+	result.Decode(&newFlight)
+
+	return newFlight, nil
 }
 
 func (repo *flightRepository) Search(flightSearchParameters *dto.FlightSearchParameters, pageInfo *utils.PageInfo) (*utils.Page, error) {
@@ -147,7 +166,7 @@ func createPageData(DesiredNumberOfSeats int, flights model.Flights) []*dto.Flig
 }
 
 func sortSetup(pageInfo *utils.PageInfo) (*options.FindOptions, error) {
-	if pageInfo.SortType != "time" && pageInfo.SortType != "price" {
+	if pageInfo.SortType != "departureDateTime" && pageInfo.SortType != "price" {
 		return nil, &errors.InvalidSortTypeError{}
 	}
 	sortDirection := 1
@@ -168,7 +187,8 @@ func filterSetup(flightSearchParameters *dto.FlightSearchParameters) bson.M {
 		"startPoint.address.country":  bson.M{"$regex": primitive.Regex{Pattern: flightSearchParameters.StartPointCountry, Options: "i"}},
 		"destination.address.city":    bson.M{"$regex": primitive.Regex{Pattern: flightSearchParameters.DestinationCity, Options: "i"}},
 		"destination.address.country": bson.M{"$regex": primitive.Regex{Pattern: flightSearchParameters.DestinationCountry, Options: "i"}},
-		"time":                        bson.M{"$gte": flightSearchParameters.Date, "$lte": flightSearchParameters.Date.AddDate(0, 0, 1)},
+		"departureDateTime":           bson.M{"$gte": flightSearchParameters.DepartureDate, "$lte": flightSearchParameters.DepartureDate.AddDate(0, 0, 1)},
+		"canceled":                    false,
 	}
 	return filter
 }

@@ -27,6 +27,6 @@ func DefineFlightEndpoints(upperRouterGroup *gin.RouterGroup, client *mongo.Clie
 		flights.GET(":id", contr.GetById)
 		flights.GET("/search", contr.Search)
 		flights.POST("", contr.Create)
-		flights.DELETE(":id", contr.Delete)
+		flights.PATCH(":id", contr.Cancel)
 	}
 }

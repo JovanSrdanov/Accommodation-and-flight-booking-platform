@@ -1,6 +1,7 @@
 package model
 
 import (
+	"FlightBookingApp/errors"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -9,19 +10,34 @@ import (
 type Flight struct {
 	ID primitive.ObjectID `json:"id,omitempty" bson:"_id"`
 	//TODO namestiti da smesta UTC
-	//TODO Aleksandar (Jovan napisao) , validacija na time, destination i price, ddd na decrease i increase , ne sme da ima negativno dostupnih mesta
-	//TODO Aleksandar (Jovan pisao), bolji naziv za Time, npr DepartureDateTime ili tako nes, da ima rec date u sebi
-	Time        time.Time `json:"time" binding:"required" bson:"time"`
-	StartPoint  Airport   `json:"startPoint" binding:"required" bson:"startPoint"`
-	Destination Airport   `json:"destination" binding:"required" bson:"destination"`
-	Price       float32   `json:"price" binding:"required" bson:"price"`
-	VacantSeats int32     `json:"vacantSeats" binding:"required" bson:"vacantSeats"`
+	DepartureDateTime time.Time `json:"departureDateTime" binding:"required" validate:"not-before-current-date" bson:"departureDateTime"`
+	StartPoint        Airport   `json:"startPoint" binding:"required" bson:"startPoint"`
+	Destination       Airport   `json:"destination" binding:"required" bson:"destination"`
+	Price             float32   `json:"price" binding:"required,min=0" bson:"price"`
+	NumberOfSeats     int32     `json:"numberOfSeats" binding:"required,min=0" bson:"numberOfSeats"`
+	VacantSeats       int32     `json:"vacantSeats"  bson:"vacantSeats"`
+	Canceled          bool      `json:"canceled"  bson:"canceled"`
 }
 type Flights []*Flight
 
-func (flight *Flight) decreaseVacantSeats(number int32) {
-	flight.VacantSeats -= number
+func (flight *Flight) SelfValidate() error {
+	if flight.StartPoint.ID == flight.Destination.ID {
+		return &errors.SameStartPointAndDestinationError{}
+	}
+	return nil
 }
-func (flight *Flight) increaseVacantSeats(number int32) {
-	flight.VacantSeats += number
+
+func (flight *Flight) DecreaseVacantSeats(number int32) {
+	if flight.VacantSeats > 0 {
+		flight.VacantSeats -= number
+	}
+}
+func (flight *Flight) IncreaseVacantSeats(number int32) {
+	if flight.VacantSeats < flight.NumberOfSeats {
+		flight.VacantSeats += number
+	}
+}
+
+func (flight *Flight) HasPassed() bool {
+	return flight.DepartureDateTime.Before(time.Now())
 }
