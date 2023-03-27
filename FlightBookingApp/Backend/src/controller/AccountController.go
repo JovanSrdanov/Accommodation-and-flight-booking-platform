@@ -137,6 +137,12 @@ func (controller *AccountController) RefreshAccessToken(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"new access token":accessToken})
 }
 
+// GetAll godoc
+// @Tags Account
+// @Produce application/json
+// @Success 200 {array} model.Account
+// @Failure 500 {object} dto.SimpleResponse
+// @Router /account [get]
 func (controller *AccountController) GetAll(ctx *gin.Context) {
 	accounts, err := controller.accountService.GetAll()
 
@@ -166,14 +172,10 @@ func (controller *AccountController) GetById(ctx *gin.Context) {
 	if userID == nil || userRole == nil{
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error":"can't get the user ID or roles"})
 	}
-	
+
 	// a user can only see his information, unless he is an admin
 	if id != userID && !authorization.RoleMatches(model.ADMIN, userRole.([]model.Role)) {
-		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error":"unauthorized access atempt", 
-																																		"id":id,
-																																		"userID":userID,
-																																	"userRole":userRole,
-																																"admin":model.ADMIN})
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error":"unauthorized access atempt"})
 		return
 	}
 
@@ -186,6 +188,14 @@ func (controller *AccountController) GetById(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, account)
 }
 
+// Delete godoc
+// @Tags Account
+// @Param id path string true "Account ID"
+// @Produce application/json
+// @Success 200 {object} dto.SimpleResponse
+// @Failure 400 {object} dto.SimpleResponse
+// @Failure 404 {object} dto.SimpleResponse
+// @Router /account/{id} [delete]
 func (controller *AccountController) Delete(ctx *gin.Context) {
 	id, err := primitive.ObjectIDFromHex(ctx.Param("id"))
 	if err != nil {
