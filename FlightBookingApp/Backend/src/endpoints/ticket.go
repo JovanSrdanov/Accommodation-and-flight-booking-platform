@@ -14,17 +14,20 @@ func DefineTicketEndpoints(upperRouterGroup *gin.RouterGroup, client *mongo.Clie
 
 	//shortened variable names to omit collision with package names
 	var (
-		logger *log.Logger                  = log.New(os.Stdout, "[ticket-repo] ", log.LstdFlags)
-		repo   repository.TicketRepositry   = repository.NewTicketRepositry(client, logger)
-		serv   service.TicketService        = service.NewTicketService(repo)
-		contr  *controller.TicketController = controller.NewTicketController(serv)
+		logger     *log.Logger                  = log.New(os.Stdout, "[ticket-repo] ", log.LstdFlags)
+		logger2    *log.Logger                  = log.New(os.Stdout, "[flight-repo] ", log.LstdFlags)
+		repo       repository.TicketRepositry   = repository.NewTicketRepositry(client, logger)
+		flightRepo repository.FlightRepository  = repository.NewFlightRepository(client, logger2)
+		serv       service.TicketService        = service.NewTicketService(repo, flightRepo)
+		contr      *controller.TicketController = controller.NewTicketController(serv)
 	)
 
-	flights := upperRouterGroup.Group("/ticket")
+	tickets := upperRouterGroup.Group("/ticket")
 	{
-		flights.GET("", contr.GetAll)
-		flights.GET(":id", contr.GetById)
-		flights.POST("", contr.Create)
-		flights.DELETE(":id", contr.Delete)
+		tickets.GET("", contr.GetAll)
+		tickets.GET(":id", contr.GetById)
+		tickets.POST("", contr.Create)
+		tickets.POST("/buy", contr.BuyTicket)
+		tickets.DELETE(":id", contr.Delete)
 	}
 }

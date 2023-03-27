@@ -16,7 +16,7 @@ type ticketRepository struct {
 }
 
 type TicketRepositry interface {
-	Create(flight *model.Ticket) (primitive.ObjectID, error)
+	Create(ticket *model.Ticket) (primitive.ObjectID, error)
 	GetAll() (model.Tickets, error)
 	GetById(id primitive.ObjectID) (model.Ticket, error)
 	Delete(id primitive.ObjectID) error
@@ -63,8 +63,6 @@ func (repo *ticketRepository) GetAll() (model.Tickets, error) {
 		repo.base.logger.Println(err)
 		return nil, err
 	}
-
-	//TODO Strahinja: Popuniti i polje flight
 
 	return tickets, nil
 }

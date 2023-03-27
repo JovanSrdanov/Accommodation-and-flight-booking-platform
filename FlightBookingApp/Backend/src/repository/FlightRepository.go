@@ -23,6 +23,7 @@ type FlightRepository interface {
 	GetAll() (model.Flights, error)
 	GetById(id primitive.ObjectID) (model.Flight, error)
 	Delete(id primitive.ObjectID) error
+	Save(flight model.Flight) (model.Flight, error)
 	Search(flightSearchParameters *dto.FlightSearchParameters, pageInfo *utils.PageInfo) (*utils.Page, error)
 }
 
@@ -105,6 +106,23 @@ func (repo *flightRepository) Delete(id primitive.ObjectID) error {
 	}
 	repo.base.logger.Printf("Deleted entity, id: %s", id.String())
 	return nil
+}
+
+func (repo *flightRepository) Save(flight model.Flight) (model.Flight, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	collection := repo.getCollection()
+
+	result := collection.FindOneAndReplace(ctx, bson.M{"_id": flight.ID}, flight)
+	if result.Err() != nil {
+		return model.Flight{}, result.Err()
+	}
+
+	var newFlight model.Flight
+	result.Decode(&newFlight)
+
+	return newFlight, nil
 }
 
 func (repo *flightRepository) Search(flightSearchParameters *dto.FlightSearchParameters, pageInfo *utils.PageInfo) (*utils.Page, error) {

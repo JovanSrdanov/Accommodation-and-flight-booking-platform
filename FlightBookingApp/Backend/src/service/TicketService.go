@@ -1,6 +1,7 @@
 package service
 
 import (
+	"FlightBookingApp/errors"
 	"FlightBookingApp/model"
 	"FlightBookingApp/repository"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -8,6 +9,7 @@ import (
 
 type ticketService struct {
 	ticketRepository repository.TicketRepositry
+	flightRepository repository.FlightRepository
 }
 
 type TicketService interface {
@@ -15,11 +17,13 @@ type TicketService interface {
 	GetAll() (model.Tickets, error)
 	GetById(id primitive.ObjectID) (model.Ticket, error)
 	Delete(id primitive.ObjectID) error
+	BuyTicket(ticket model.Ticket, flightId primitive.ObjectID, numberOfTickets int32) (primitive.ObjectID, error)
 }
 
-func NewTicketService(ticketRepository repository.TicketRepositry) *ticketService {
+func NewTicketService(ticketRepository repository.TicketRepositry, flightRepository repository.FlightRepository) *ticketService {
 	return &ticketService{
 		ticketRepository: ticketRepository,
+		flightRepository: flightRepository,
 	}
 }
 
@@ -36,4 +40,32 @@ func (service *ticketService) GetById(id primitive.ObjectID) (model.Ticket, erro
 }
 func (service *ticketService) Delete(id primitive.ObjectID) error {
 	return service.ticketRepository.Delete(id)
+}
+
+func (service *ticketService) BuyTicket(ticket model.Ticket, flightId primitive.ObjectID, numberOfTickets int32) (primitive.ObjectID, error) {
+	//TODO Strahinja: buyera izvuci iz JWT
+	//ownera iz api kljuca
+	//Ovo treba da bude transakcija
+	ticket.Buyer = "JWT"
+	ticket.Owner = "APIKey"
+
+	flight, _ := service.flightRepository.GetById(flightId)
+
+	if flight.VacantSeats < numberOfTickets {
+		return flightId, &errors.NotEnoughVacantSeats{}
+	}
+
+	flight.DecreaseVacantSeats(numberOfTickets)
+
+	_, err := service.flightRepository.Save(flight)
+	if err != nil {
+		return flightId, err
+	}
+
+	_, err = service.ticketRepository.Create(&ticket)
+	if err != nil {
+		return flightId, err
+	}
+
+	return ticket.ID, nil
 }

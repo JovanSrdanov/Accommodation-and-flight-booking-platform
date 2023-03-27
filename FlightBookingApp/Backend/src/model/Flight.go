@@ -19,9 +19,9 @@ type Flight struct {
 }
 type Flights []*Flight
 
-func (flight *Flight) decreaseVacantSeats(number int32) {
+func (flight *Flight) DecreaseVacantSeats(number int32) {
 	flight.VacantSeats -= number
 }
-func (flight *Flight) increaseVacantSeats(number int32) {
+func (flight *Flight) IncreaseVacantSeats(number int32) {
 	flight.VacantSeats += number
 }
