@@ -7,7 +7,6 @@ import (
 	"FlightBookingApp/model"
 	"FlightBookingApp/service"
 	token "FlightBookingApp/token"
-	"FlightBookingApp/utils"
 	"net/http"
 	"time"
 
@@ -36,32 +35,10 @@ func (controller *AccountController) Register(ctx *gin.Context) {
 		return
 	}
 
-	hashedPassword, err := utils.HashPassword(registrationInfo.Password)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, dto.NewSimpleResponse(err.Error()))
-		return
-	}
-
-	newAccount := model.Account{
-		Username:    registrationInfo.Username,
-		Password:    hashedPassword,
-		Email:       registrationInfo.Email,
-		Role:        model.REGULAR_USER,
-		IsActivated: false,
-	}
-
-	id, err := controller.accountService.Register(newAccount)
+	response, err := controller.accountService.Register(registrationInfo)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, dto.NewSimpleResponse(err.Error()))
 		return
-	}
-
-	newAccount.ID = id
-
-	response := dto.CreateUserResponse{
-		ID:          newAccount.ID,
-		Role:        newAccount.Role,
-		IsActivated: newAccount.IsActivated,
 	}
 
 	ctx.JSON(http.StatusCreated, response)

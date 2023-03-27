@@ -15,13 +15,14 @@ import (
 
 func DefineAccountEndpoints(upperRouterGroup *gin.RouterGroup, client *mongo.Client) {
 	var (
-		accLogger *log.Logger                  = log.New(os.Stdout, "[account-repo] ", log.LstdFlags)
+		accLogger *log.Logger                   = log.New(os.Stdout, "[account-repo] ", log.LstdFlags)
+		userLogger *log.Logger									= log.New(os.Stdout, "[user-repo] ", log.LstdFlags)
 		accRepo   repository.AccountRepository  = repository.NewAccountRepository(client, accLogger)
-		accServ   service.AccountService        = service.NewAccountService(accRepo)
+		userRepo  repository.UserRepository 		= repository.NewUserRepository(client, userLogger)
+		accServ   service.AccountService        = service.NewAccountService(accRepo, userRepo)
 		accContr  *controller.AccountController = controller.NewAccountController(accServ)
 	)
 
-	// temp, only testing authorization
 	authenticatedAccounts := upperRouterGroup.Group("/account")
 	authenticatedAccounts.Use(middleware.ValidateToken())
 	{
