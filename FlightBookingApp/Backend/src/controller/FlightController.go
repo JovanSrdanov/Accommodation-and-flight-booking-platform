@@ -40,7 +40,6 @@ func (controller *FlightController) Create(ctx *gin.Context) {
 
 	err := ctx.ShouldBindJSON(&flight)
 	/*
-		TODO : da li da pravimo custom message za neuspeli binding?
 		U tom slucaju morao bi se napraviti mini parser za ove generic poruke
 	*/
 	if err != nil {

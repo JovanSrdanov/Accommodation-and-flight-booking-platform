@@ -29,7 +29,6 @@ func (controller *AirportController) GetAll(ctx *gin.Context) {
 
 	if err != nil {
 		//Couldn't connect to database
-		//TODO Aleksandar: koji status code?
 		ctx.JSON(http.StatusInternalServerError, dto.NewSimpleResponse("Error while reading from database"))
 		return
 	}
