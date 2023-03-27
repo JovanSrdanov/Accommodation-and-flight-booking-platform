@@ -145,3 +145,20 @@ func (controller *TicketController) BuyTicket(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusCreated, dto.NewCreatedResponse(id))
 }
+
+// GetAllForCustomer godoc
+// @Tags Ticket
+// @Produce application/json
+// @Success 200 {array} model.Ticket
+// @Failure 500 {object} dto.SimpleResponse
+// @Router /ticket/getc [get]
+func (controller *TicketController) GetAllForCustomer(ctx *gin.Context) {
+	tickets, err := controller.ticketService.GetAllForCustomer()
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, dto.NewSimpleResponse("Error while reading from database"))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, tickets)
+}

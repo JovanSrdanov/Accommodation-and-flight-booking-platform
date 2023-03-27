@@ -1,6 +1,7 @@
 package service
 
 import (
+	"FlightBookingApp/dto"
 	"FlightBookingApp/errors"
 	"FlightBookingApp/model"
 	"FlightBookingApp/repository"
@@ -18,6 +19,7 @@ type TicketService interface {
 	GetById(id primitive.ObjectID) (model.Ticket, error)
 	Delete(id primitive.ObjectID) error
 	BuyTicket(ticket model.Ticket, flightId primitive.ObjectID, numberOfTickets int32) (primitive.ObjectID, error)
+	GetAllForCustomer() ([]dto.TicketFullInfo, error)
 }
 
 func NewTicketService(ticketRepository repository.TicketRepositry, flightRepository repository.FlightRepository) *ticketService {
@@ -68,4 +70,8 @@ func (service *ticketService) BuyTicket(ticket model.Ticket, flightId primitive.
 	}
 
 	return ticket.ID, nil
+}
+
+func (service *ticketService) GetAllForCustomer() ([]dto.TicketFullInfo, error) {
+	return service.ticketRepository.GetAllForCustomer()
 }

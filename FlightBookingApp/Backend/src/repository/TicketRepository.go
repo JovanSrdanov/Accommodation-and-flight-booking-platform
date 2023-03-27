@@ -1,9 +1,11 @@
 package repository
 
 import (
+	"FlightBookingApp/dto"
 	"FlightBookingApp/errors"
 	"FlightBookingApp/model"
 	"context"
+	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -20,6 +22,7 @@ type TicketRepositry interface {
 	GetAll() (model.Tickets, error)
 	GetById(id primitive.ObjectID) (model.Ticket, error)
 	Delete(id primitive.ObjectID) error
+	GetAllForCustomer() ([]dto.TicketFullInfo, error)
 }
 
 func NewTicketRepositry(client *mongo.Client, logger *log.Logger) *ticketRepository {
@@ -100,6 +103,55 @@ func (repo *ticketRepository) Delete(id primitive.ObjectID) error {
 	}
 	repo.base.logger.Printf("Deleted entity, id: %s", id.String())
 	return nil
+}
+
+func (repo *ticketRepository) GetAllForCustomer() ([]dto.TicketFullInfo, error) {
+	// Get a handle for the orders collection
+	tickets := repo.base.client.Database("flightDb").Collection("tickets")
+
+	// Get a handle for the customers collection
+	//flights := repo.base.client.Database("flightDb").Collection("flights")
+
+	// Set up the pipeline
+	pipeline := mongo.Pipeline{
+		{
+			// Join the orders collection with the customers collection
+			{"$lookup", bson.D{
+				{"from", "flights"},
+				{"localField", "flightId"},
+				{"foreignField", "_id"},
+				{"as", "flightInfo"},
+			}},
+		},
+		{
+			// Unwind the result array
+			{"$unwind", "$flightInfo"},
+		},
+	}
+
+	// Execute the pipeline
+	cursor, err := tickets.Aggregate(context.Background(), pipeline)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var ticketsArr []dto.TicketFullInfo
+
+	// Iterate through the results
+	for cursor.Next(context.Background()) {
+		var order dto.TicketFullInfo
+		err := cursor.Decode(&order)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		ticketsArr = append(ticketsArr, order)
+
+		fmt.Printf("Order ID: %d, Owner: %s\n", order.ID, order.Owner)
+		fmt.Printf("Flight id: %s\n", order.FlightInfo.ID)
+	}
+
+	return ticketsArr, nil
 }
 
 func (repo *ticketRepository) getCollection() *mongo.Collection {

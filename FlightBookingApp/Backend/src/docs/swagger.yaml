@@ -1,4 +1,14 @@
 definitions:
+  dto.BuyTicketDto:
+    properties:
+      numberOfTickets:
+        type: integer
+      ticket:
+        $ref: '#/definitions/model.Ticket'
+    required:
+    - numberOfTickets
+    - ticket
+    type: object
   dto.CreatedResponse:
     properties:
       id:
@@ -51,6 +61,7 @@ definitions:
         description: |-
           TODO namestiti da smesta UTC
           TODO Aleksandar (Jovan napisao) , validacija na time, destination i price, ddd na decrease i increase , ne sme da ima negativno dostupnih mesta
+          TODO Aleksandar (Jovan pisao), bolji naziv za Time, npr DepartureDateTime ili tako nes, da ima rec date u sebi
         type: string
       vacantSeats:
         type: integer
@@ -60,6 +71,21 @@ definitions:
     - startPoint
     - time
     - vacantSeats
+    type: object
+  model.Ticket:
+    properties:
+      buyer:
+        type: string
+      flightId:
+        type: string
+      id:
+        type: string
+      owner:
+        type: string
+    required:
+    - buyer
+    - flightId
+    - owner
     type: object
   utils.Page:
     properties:
@@ -271,6 +297,132 @@ paths:
             $ref: '#/definitions/dto.SimpleResponse'
       tags:
       - Flight
+  /ticket:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Ticket'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+      tags:
+      - Ticket
+    post:
+      parameters:
+      - description: Ticket
+        in: body
+        name: ticket
+        required: true
+        schema:
+          $ref: '#/definitions/model.Ticket'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.CreatedResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+      tags:
+      - Ticket
+  /ticket/{id}:
+    delete:
+      parameters:
+      - description: Ticket ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+      tags:
+      - Ticket
+    get:
+      parameters:
+      - description: Ticket ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Ticket'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+      tags:
+      - Ticket
+  /ticket/buy:
+    post:
+      parameters:
+      - description: BuyTicketDto
+        in: body
+        name: ticket
+        required: true
+        schema:
+          $ref: '#/definitions/dto.BuyTicketDto'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.CreatedResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+      tags:
+      - Ticket
+  /ticket/getc:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Ticket'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+      tags:
+      - Ticket
 securityDefinitions:
   bearerAuth:
     in: header
