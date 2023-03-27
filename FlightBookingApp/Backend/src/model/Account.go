@@ -26,6 +26,7 @@ type Account struct {
 	IsActivated bool `json:"isActivated" binding:"required" bson:"isActivated"`
 	//Tokens
 	RefreshToken string `json:"refreshToken" bson:"refreshToken"`
+	UserID primitive.ObjectID `json:"userId" bson:"userId"`
 }
 
 type Accounts []*Account
