@@ -4,6 +4,7 @@ import (
 	"FlightBookingApp/docs"
 	"FlightBookingApp/endpoints"
 	"context"
+	"github.com/fatih/color"
 	"log"
 	"net/http"
 	"os"
@@ -78,6 +79,9 @@ func main() {
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	//Here it waits for interrupt
 	logger.Printf("Listening on port %s\n", port)
+	
+	DrawGoGopher()
+
 	<-quit
 
 	log.Println("Shutdown Server...")
@@ -103,4 +107,23 @@ func main() {
 	}
 
 	logger.Println("Server exiting")
+}
+
+func DrawGoGopher() {
+	cyan := color.New(color.FgCyan).PrintlnFunc()
+	cyan("------------------------------------------------------------------------------------")
+	cyan("         ,_---~~~~~----._         ")
+	cyan("  _,,_,*^____      _____``*g*\\\"*, ")
+	cyan(" / __/ /'     ^.  /      \\ ^@q   f ")
+	cyan("[  @f | @))    |  | @))   l  0 _/  ")
+	cyan(" \\`/   \\~____ / __ \\_____/    \\   ")
+	cyan("  |           _l__l_           I   ")
+	cyan("  }          [______]           I  \t GOLANG! GO! GO! GO!")
+	cyan("  ]            | | |            |  ")
+	cyan("  ]             ~ ~             |  \t YOU CAN DO IT!")
+	cyan("  |                            |   \t THE GO GOPHER BELIEVES IN YOU!")
+	cyan("   |                           |   \t DON'T STOP WHEN YOU ARE TIRED. STOP WHEN YOU ARE DONE.")
+	cyan("   |                           |   ")
+	cyan("   |                           |   ")
+	cyan("------------------------------------------------------------------------------------")
 }
