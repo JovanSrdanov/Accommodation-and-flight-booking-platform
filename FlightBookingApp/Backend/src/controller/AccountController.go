@@ -3,6 +3,7 @@ package controller
 import (
 	"FlightBookingApp/dto"
 	"FlightBookingApp/errors"
+	authorization "FlightBookingApp/middleware"
 	"FlightBookingApp/model"
 	"FlightBookingApp/service"
 	token "FlightBookingApp/token"
@@ -152,6 +153,27 @@ func (controller *AccountController) GetById(ctx *gin.Context) {
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, dto.NewSimpleResponse(err.Error()))
+		return
+	}
+
+	// getting the id from the token
+	if len(ctx.Keys) == 0 {
+			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error":"not authenticated"})
+		}
+
+	userID := ctx.Keys["ID"]
+	userRole := ctx.Keys["Roles"]
+	if userID == nil || userRole == nil{
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error":"can't get the user ID or roles"})
+	}
+	
+	// a user can only see his information, unless he is an admin
+	if id != userID && !authorization.RoleMatches(model.ADMIN, userRole.([]model.Role)) {
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error":"unauthorized access atempt", 
+																																		"id":id,
+																																		"userID":userID,
+																																	"userRole":userRole,
+																																"admin":model.ADMIN})
 		return
 	}
 
