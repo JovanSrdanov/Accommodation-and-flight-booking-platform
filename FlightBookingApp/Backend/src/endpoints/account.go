@@ -32,6 +32,7 @@ func DefineAccountEndpoints(upperRouterGroup *gin.RouterGroup, client *mongo.Cli
 		//accounts.POST("/register", accContr.Register)
 		//accounts.POST("/login", accContr.Login)
 		accounts.DELETE(":id", accContr.Delete)
+		accounts.GET("/refresh-token/:token", accContr.RefreshAccessToken)
 	}
 
 	//temp, should be in accounts group

@@ -8,41 +8,22 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/google/uuid"
 )
-
-// struct for storing metadata for access and refresh tokens
-type TokenDetails struct {
-	AccessToken string
-	RefreshToken string
-	AccessUuid string
-	RefreshUuid string
-	AccessTokenExpires int64
-	RefreshTokenExpires int64
-}
 
 var (
 	accessTokenSecret = os.Getenv("ACCESS_SECRET_KEY")
 	refreshTokenSecret = os.Getenv("REFRESH_SECRET_KEY")
 )
 
-func GenerateToken(account model.Account) (string, string, error) {
-	tokenDetails := &TokenDetails{}
-
-	tokenDetails.AccessTokenExpires = time.Now().UTC().Add(time.Duration(15) * time.Minute).Unix()
-	tokenDetails.AccessUuid = uuid.New().String()
-
-	tokenDetails.RefreshTokenExpires = time.Now().UTC().Add(time.Duration(24) * time.Hour * 7).Unix()
-	tokenDetails.RefreshUuid = uuid.New().String()
-
-	accessTokenString, err := generateAccessToken(account, tokenDetails)
+func GenerateTokens(account model.Account) (string, string, error) {
+	accessTokenString, err := GenerateAccessToken(account)
 
 	if err != nil {
 		return "", "", err
 	}
 
 	// creating a refresh token
-	refreshTokenString, err := generateRefreshToken(account, tokenDetails)
+	refreshTokenString, err := GenerateRefreshToken(account)
 
 	if err != nil {
 		return "", "", err
@@ -51,23 +32,21 @@ func GenerateToken(account model.Account) (string, string, error) {
 	return accessTokenString, refreshTokenString,  nil
 }
 
-func generateAccessToken(account model.Account, tokenDetails *TokenDetails) (string, error){
+func GenerateAccessToken(account model.Account) (string, error){
 	accessTokenClaims := &JWT.AccessJwtClaims{}
 
 	accessTokenClaims.ID = account.ID
 	accessTokenClaims.Roles = []model.Role{account.Role}
-	accessTokenClaims.AccessID = tokenDetails.AccessUuid
+	accessTokenClaims.TokenType = "access"
 
 	// session token lasts for 15 minutes
-	accessTokenClaims.ExpiresAt = tokenDetails.AccessTokenExpires
+	accessTokenClaims.ExpiresAt = time.Now().UTC().Add(time.Duration(15) * time.Minute).Unix()
 	accessTokenClaims.IssuedAt = time.Now().UTC().Unix()
 
 	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, accessTokenClaims)
 
 	// Sign and get the complete encoded token as a string using the secret
 	accessTokenString, err := accessToken.SignedString([]byte(accessTokenSecret))
-
-	tokenDetails.AccessToken = accessTokenString
 
 	if err != nil {
 		return "", err
@@ -76,20 +55,19 @@ func generateAccessToken(account model.Account, tokenDetails *TokenDetails) (str
 	return accessTokenString, nil
 }
 
-func generateRefreshToken(account model.Account, tokenDetails *TokenDetails) (string, error) {
+func GenerateRefreshToken(account model.Account) (string, error) {
 	refreshTokenClaims := &JWT.RefreshJwtClaims{}
 	
 	refreshTokenClaims.ID = account.ID
 	refreshTokenClaims.Roles = []model.Role{account.Role}
-	refreshTokenClaims.RefreshID = tokenDetails.RefreshUuid
+	refreshTokenClaims.TokenType = "refresh"
 
-	refreshTokenClaims.ExpiresAt = tokenDetails.RefreshTokenExpires
+	// refresh token lasts for a week
+	refreshTokenClaims.ExpiresAt = time.Now().UTC().Add(time.Duration(24) * time.Hour * 7).Unix()
 	refreshTokenClaims.IssuedAt = time.Now().UTC().Unix()
 
 	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, refreshTokenClaims)
 	refreshTokenString, err := refreshToken.SignedString([]byte(refreshTokenSecret))
-
-	tokenDetails.RefreshToken = refreshTokenString
 
 	if err != nil {
 		return "",  err
