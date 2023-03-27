@@ -4,7 +4,6 @@ import (
 	"FlightBookingApp/docs"
 	"FlightBookingApp/endpoints"
 	"context"
-	"github.com/fatih/color"
 	"log"
 	"net/http"
 	"os"
@@ -12,6 +11,8 @@ import (
 	"strconv"
 	"syscall"
 	"time"
+
+	"github.com/fatih/color"
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -55,6 +56,7 @@ func main() {
 		endpoints.DefineAirportEndpoints(apiRoutes, dbClient)
 		endpoints.DefineAccountEndpoints(apiRoutes, dbClient)
 		endpoints.DefineTicketEndpoints(apiRoutes, dbClient)
+		endpoints.DefineUserEndpoints(apiRoutes, dbClient)
 	}
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 

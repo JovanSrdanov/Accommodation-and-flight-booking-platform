@@ -147,7 +147,7 @@ func (controller *AccountController) GetById(ctx *gin.Context) {
 	userID := ctx.Keys["ID"]
 	userRole := ctx.Keys["Roles"]
 	if userID == nil || userRole == nil{
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error":"can't get the user ID or roles"})
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error":"can't get the account ID or roles"})
 	}
 
 	// a user can only see his information, unless he is an admin

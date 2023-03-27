@@ -4,6 +4,7 @@ import (
 	"FlightBookingApp/dto"
 	"FlightBookingApp/errors"
 	"FlightBookingApp/model"
+	"FlightBookingApp/repository"
 	"FlightBookingApp/service"
 	"net/http"
 
@@ -13,11 +14,13 @@ import (
 
 type UserController struct {
 	userService service.UserService
+	accountRepository repository.AccountRepository
 }
 
-func NewUserController(userService service.UserService) *UserController {
+func NewUserController(userService service.UserService, accountRepository repository.AccountRepository) *UserController {
 	return &UserController{
 		userService: userService,
+		accountRepository: accountRepository,
 	}
 }
 
@@ -73,6 +76,8 @@ func (controller *UserController) GetAll(ctx *gin.Context) {
 // @Failure 404 {object} dto.SimpleResponse
 // @Router /user/{id} [get]
 func (controller *UserController) GetById(ctx *gin.Context) {
+	// TODO Stefan: make it so a user can only get their own info
+
 	id, err := primitive.ObjectIDFromHex(ctx.Param("id"))
 
 	if err != nil {
@@ -87,6 +92,34 @@ func (controller *UserController) GetById(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, user)
+}
+
+func (controller *UserController) GetLoggedInUserInfo(ctx *gin.Context) {
+	userAccountID := ctx.Keys["ID"]
+	if userAccountID == nil{
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error":"can't get the user accout ID "})
+		return
+	}
+
+	userAccount, err := controller.accountRepository.GetById(userAccountID.(primitive.ObjectID))
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error":"can't find your account info"})
+		return
+	}
+
+	user, err1 := controller.userService.GetById(userAccount.UserID)
+	if err1 != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error":"can't find your user info"})
+		return
+	}
+
+	userInfo := dto.UserInfo {
+		Name: user.Name,
+		Surname: user.Surname,
+		Address: user.Address,
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"user info: ":userInfo})
 }
 
 // Delete godoc
