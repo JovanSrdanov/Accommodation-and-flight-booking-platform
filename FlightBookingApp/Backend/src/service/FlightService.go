@@ -2,10 +2,10 @@ package service
 
 import (
 	"FlightBookingApp/dto"
+	"FlightBookingApp/errors"
 	"FlightBookingApp/model"
 	"FlightBookingApp/repository"
 	utils "FlightBookingApp/utils"
-
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -14,10 +14,10 @@ type flightService struct {
 }
 
 type FlightService interface {
-	Create(flight model.Flight) (primitive.ObjectID, error)
+	Create(flight *model.Flight) (primitive.ObjectID, error)
 	GetAll() (model.Flights, error)
 	GetById(id primitive.ObjectID) (model.Flight, error)
-	Delete(id primitive.ObjectID) error
+	Cancel(id primitive.ObjectID) error
 	Search(flightSearchParameters *dto.FlightSearchParameters, pageInfo *utils.PageInfo) (*utils.Page, error)
 }
 
@@ -27,8 +27,11 @@ func NewFlightService(flightRepository repository.FlightRepository) *flightServi
 	}
 }
 
-func (service *flightService) Create(flight model.Flight) (primitive.ObjectID, error) {
-	return service.flightRepository.Create(&flight)
+func (service *flightService) Create(flight *model.Flight) (primitive.ObjectID, error) {
+	flight.ID = primitive.NewObjectID()
+	flight.VacantSeats = flight.NumberOfSeats
+	flight.Canceled = false
+	return service.flightRepository.Create(flight)
 }
 
 func (service *flightService) GetAll() (model.Flights, error) {
@@ -38,8 +41,17 @@ func (service *flightService) GetAll() (model.Flights, error) {
 func (service *flightService) GetById(id primitive.ObjectID) (model.Flight, error) {
 	return service.flightRepository.GetById(id)
 }
-func (service *flightService) Delete(id primitive.ObjectID) error {
-	return service.flightRepository.Delete(id)
+func (service *flightService) Cancel(id primitive.ObjectID) error {
+	flight, err := service.GetById(id)
+	if err != nil {
+		return err
+	}
+
+	if flight.HasPassed() {
+		return &errors.FlightPassedError{}
+	}
+
+	return service.flightRepository.Cancel(id)
 }
 
 func (service *flightService) Search(flightSearchParameters *dto.FlightSearchParameters, pageInfo *utils.PageInfo) (*utils.Page, error) {

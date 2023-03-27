@@ -5,8 +5,8 @@ import (
 	"FlightBookingApp/errors"
 	"FlightBookingApp/model"
 	"FlightBookingApp/service"
+	token "FlightBookingApp/token"
 	"FlightBookingApp/utils"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -107,7 +107,33 @@ func (controller *AccountController) Login(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, fmt.Sprintf("-------ACCESS TOKEN-------: %v-------REFRESH TOKEN-------: %v", accessTokenString, refreshTokenString))
+	ctx.JSON(http.StatusOK, gin.H{"ACCESS TOKEN":accessTokenString, "REFRESH TOKEN":refreshTokenString})
+}
+
+func (controller *AccountController) RefreshAccessToken(ctx *gin.Context) {
+	// TODO Stefan: endpoint should have :token at the end
+	refreshToken := ctx.Param("token")
+	
+	// refresh token validation
+	valid, claims := token.VerifyToken(refreshToken)
+	if !valid || claims.TokenType != "refresh" {
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error":"Invalid refresh token"})
+		return
+	}
+
+	account, err := controller.accountService.GetById(claims.ID)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error":"Error while generating the access token - user not found"})
+		return
+	}
+
+	accessToken, err1 := token.GenerateAccessToken(account)
+	if err1 != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error":"Error while generating the access token"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"new access token":accessToken})
 }
 
 func (controller *AccountController) GetAll(ctx *gin.Context) {

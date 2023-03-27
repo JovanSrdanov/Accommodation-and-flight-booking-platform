@@ -153,7 +153,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Time (date) of desired departure, must be in this format YYYY-MM-DD",
+                        "description": "DepartureDateTime (date) of desired departure, must be in this format YYYY-MM-DD",
                         "name": "time",
                         "in": "query",
                         "required": true
@@ -285,7 +285,7 @@ const docTemplate = `{
                     }
                 }
             },
-            "delete": {
+            "patch": {
                 "produces": [
                     "application/json"
                 ],
@@ -599,20 +599,28 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "destination",
+                "numberOfSeats",
                 "price",
                 "startPoint",
-                "time",
-                "vacantSeats"
+                "time"
             ],
             "properties": {
+                "canceled": {
+                    "type": "boolean"
+                },
                 "destination": {
                     "$ref": "#/definitions/model.Airport"
                 },
                 "id": {
                     "type": "string"
                 },
+                "numberOfSeats": {
+                    "type": "integer",
+                    "minimum": 0
+                },
                 "price": {
-                    "type": "number"
+                    "type": "number",
+                    "minimum": 0
                 },
                 "startPoint": {
                     "$ref": "#/definitions/model.Airport"

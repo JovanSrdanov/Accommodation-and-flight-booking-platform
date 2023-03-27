@@ -12,12 +12,16 @@ import (
 func ValidateToken() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		bearerToken := ctx.Request.Header.Get("Authorization")
+		if bearerToken == "" {
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error":"No authentication header provided"})
+		}
+
 		tokenString := strings.Split(bearerToken, " ")[1]
 
 		valid, claims := token.VerifyToken(tokenString)
 
-		if !valid {
-			ctx.AbortWithStatusJSON(http.StatusUnauthorized, "unauthorized access")
+		if !valid || claims.TokenType != "access" {
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error":"Invalid authentication token"})
 		}
 
 		if len(ctx.Keys) == 0 {
@@ -31,15 +35,16 @@ func ValidateToken() gin.HandlerFunc {
 }
 
 // role-based authorization
+// TODO Stefan: return sensible error messages
 func Authrorization(validRoles []model.Role) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		if len(ctx.Keys) == 0 {
-			ctx.AbortWithStatusJSON(http.StatusUnauthorized, "unauthorized access")
+			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error":"request has no keys"})
 		}
 
 		rolesVal := ctx.Keys["Roles"]
 		if rolesVal == nil {
-			ctx.AbortWithStatusJSON(http.StatusUnauthorized, "unauthorized access")
+			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error":"No roles provided"})
 		}
 
 		roles := rolesVal.([]model.Role)
@@ -51,7 +56,7 @@ func Authrorization(validRoles []model.Role) gin.HandlerFunc {
 		// checks if the list of roles of the user matches the list of valid roles
 		for _, val := range validRoles {
 			if _, ok := validation[val]; !ok {
-				ctx.AbortWithStatusJSON(http.StatusUnauthorized, "unauthorized access")
+				ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error":"Unauthorized access attempt"})
 			}
 		}
 	}

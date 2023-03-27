@@ -11,15 +11,15 @@ import (
 
 type AccessJwtClaims struct {
 	ID primitive.ObjectID `json:"id,omitempty"`
-	AccessID string `json:"accessId,omitempty"`
 	Roles    []model.Role  `json:"roles,omitempty"`
+	TokenType string `json:"tokenType,omitempty"`
 	jwt.StandardClaims
 }
 
 type RefreshJwtClaims struct {
 	ID primitive.ObjectID `json:"id,omitempty"`
-	RefreshID string `json:"refreshId,omitempty"`
 	Roles    []model.Role  `json:"roles,omitempty"`
+	TokenType string `json:"tokenType,omitempty"`
 	jwt.StandardClaims
 }
 
