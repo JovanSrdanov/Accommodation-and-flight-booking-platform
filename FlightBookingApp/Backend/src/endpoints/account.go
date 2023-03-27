@@ -22,24 +22,27 @@ func DefineAccountEndpoints(upperRouterGroup *gin.RouterGroup, client *mongo.Cli
 	)
 
 	// temp, only testing authorization
-	accounts := upperRouterGroup.Group("/account")
-	accounts.Use(middleware.ValidateToken())
+	authenticatedAccounts := upperRouterGroup.Group("/account")
+	authenticatedAccounts.Use(middleware.ValidateToken())
 	{
-		accounts.GET("", middleware.Authrorization([]model.Role{model.ADMIN}),
+		authenticatedAccounts.GET("", middleware.Authrorization([]model.Role{model.ADMIN}),
 										 accContr.GetAll)
-		accounts.GET(":id", middleware.Authrorization([]model.Role{model.REGULAR_USER}),
-		 										accContr.GetById)
-		//accounts.POST("/register", accContr.Register)
-		//accounts.POST("/login", accContr.Login)
-		accounts.DELETE(":id", accContr.Delete)
-		accounts.GET("/refresh-token/:token", accContr.RefreshAccessToken)
+		authenticatedAccounts.GET(":id", 
+															middleware.Authrorization([]model.Role{model.REGULAR_USER, model.ADMIN}),
+		 													accContr.GetById)
+		authenticatedAccounts.DELETE(":id",
+																	middleware.Authrorization([]model.Role{model.ADMIN}),
+																	accContr.Delete)
+		authenticatedAccounts.GET("/refresh-token/:token", 
+									middleware.Authrorization([]model.Role{model.REGULAR_USER, model.ADMIN}),
+									accContr.RefreshAccessToken)
 	}
 
-	//temp, should be in accounts group
-	test := upperRouterGroup.Group("/account")
+	// anyone can use these 
+	unauthenticated := upperRouterGroup.Group("/account")
 	{
-		test.POST("/login", accContr.Login)
-		test.POST("/register", accContr.Register)
-		test.GET("/emailver/:username/:verPass", accContr.VerifyEmail)
+		unauthenticated.POST("/login", accContr.Login)
+		unauthenticated.POST("/register", accContr.Register)
+		unauthenticated.GET("/emailver/:username/:verPass", accContr.VerifyEmail)
 	}
 }

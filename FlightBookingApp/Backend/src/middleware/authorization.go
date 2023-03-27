@@ -39,25 +39,42 @@ func ValidateToken() gin.HandlerFunc {
 func Authrorization(validRoles []model.Role) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		if len(ctx.Keys) == 0 {
-			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error":"request has no keys"})
+			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error":"not authenticated"})
+			return
 		}
 
-		rolesVal := ctx.Keys["Roles"]
-		if rolesVal == nil {
-			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error":"No roles provided"})
+		roles := ctx.Keys["Roles"]
+		if roles == nil {
+			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error":"user has no roles"})
+			return
 		}
 
-		roles := rolesVal.([]model.Role)
-		validation := make(map[model.Role]int)
+		userRoles := roles.([]model.Role)
 
-		for _, val := range roles {
-			validation[val] = 0
-		}
-		// checks if the list of roles of the user matches the list of valid roles
-		for _, val := range validRoles {
-			if _, ok := validation[val]; !ok {
-				ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error":"Unauthorized access attempt"})
+		userRoleMatches := false
+
+		// checks if any of the user roles are in the valid roles group
+		for _, val := range userRoles {
+			if RoleMatches(val, validRoles) {
+				return
 			}
 		}
+
+		if !userRoleMatches {
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error":"Unauthorized access attempt"})
+			return
+		}
 	}
+}
+
+func RoleMatches(role model.Role, roles []model.Role) bool{
+	returnValue := false
+
+	for _, val := range roles {
+		if role == val{
+			returnValue = true
+			break
+		}		
+	}	
+	return returnValue
 }
