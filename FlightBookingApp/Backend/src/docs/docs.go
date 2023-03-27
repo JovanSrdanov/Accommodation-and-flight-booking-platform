@@ -153,8 +153,9 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "DepartureDateTime (date) of desired departure, must be in this format YYYY-MM-DD",
-                        "name": "time",
+                        "format": "yyyy-mm-dd",
+                        "description": "Departure date, must be in this format YYYY-MM-DD",
+                        "name": "departureDate",
                         "in": "query",
                         "required": true
                     },
@@ -187,36 +188,36 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "type": "string",
-                        "description": "Desired Number Of Seats",
+                        "type": "integer",
+                        "description": "Desired number of seats",
                         "name": "desiredNumberOfSeats",
                         "in": "query",
                         "required": true
                     },
                     {
-                        "type": "string",
+                        "type": "integer",
                         "description": "Page number",
                         "name": "pageNumber",
                         "in": "query",
                         "required": true
                     },
                     {
-                        "type": "string",
-                        "description": "Results Per Page",
+                        "type": "integer",
+                        "description": "Results per page",
                         "name": "resultsPerPage",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "Sort Direction",
+                        "description": "Sort direction (asc, dsc, no_sort)",
                         "name": "sortDirection",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "Sort Type",
+                        "description": "Sort type, it can be departureDateTime or price",
                         "name": "sortType",
                         "in": "query",
                         "required": true
@@ -598,15 +599,19 @@ const docTemplate = `{
         "model.Flight": {
             "type": "object",
             "required": [
+                "departureDateTime",
                 "destination",
                 "numberOfSeats",
                 "price",
-                "startPoint",
-                "time"
+                "startPoint"
             ],
             "properties": {
                 "canceled": {
                     "type": "boolean"
+                },
+                "departureDateTime": {
+                    "description": "TODO namestiti da smesta UTC",
+                    "type": "string"
                 },
                 "destination": {
                     "$ref": "#/definitions/model.Airport"
@@ -624,10 +629,6 @@ const docTemplate = `{
                 },
                 "startPoint": {
                     "$ref": "#/definitions/model.Airport"
-                },
-                "time": {
-                    "description": "TODO namestiti da smesta UTC\nTODO Aleksandar (Jovan napisao) , validacija na time, destination i price, ddd na decrease i increase , ne sme da ima negativno dostupnih mesta\nTODO Aleksandar (Jovan pisao), bolji naziv za Time, npr DepartureDateTime ili tako nes, da ima rec date u sebi",
-                    "type": "string"
                 },
                 "vacantSeats": {
                     "type": "integer"
