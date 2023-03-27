@@ -110,6 +110,7 @@ func (controller *FlightController) GetById(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, flight)
 }
 
+// TODO Aleksandar (Jovan pisao) kod 509 negde da stavis
 // Cancel godoc
 // @Tags Flight
 // @Param id path string true "Flight ID"
