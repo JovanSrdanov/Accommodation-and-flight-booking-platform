@@ -142,6 +142,111 @@ const docTemplate = `{
                 }
             }
         },
+        "/flight/search": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Flight"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Time (date) of desired departure, must be in this format YYYY-MM-DD",
+                        "name": "time",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Destination country",
+                        "name": "destinationCountry",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Destination city",
+                        "name": "destinationCity",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Starting point country",
+                        "name": "startPointCountry",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Starting point  city",
+                        "name": "startPointCity",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Desired Number Of Seats",
+                        "name": "desiredNumberOfSeats",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Page number",
+                        "name": "pageNumber",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Results Per Page",
+                        "name": "resultsPerPage",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort Direction",
+                        "name": "sortDirection",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort Type",
+                        "name": "sortType",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.Page"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SimpleResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SimpleResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/flight/{id}": {
             "get": {
                 "produces": [
@@ -191,142 +296,6 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Flight ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/dto.SimpleResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/dto.SimpleResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/dto.SimpleResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/ticket": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Ticket"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.Ticket"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/dto.SimpleResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Ticket"
-                ],
-                "parameters": [
-                    {
-                        "description": "Ticket",
-                        "name": "ticket",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.Ticket"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/dto.CreatedResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/dto.SimpleResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/ticket/{id}": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Ticket"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Ticket ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.Ticket"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/dto.SimpleResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/dto.SimpleResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Ticket"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Ticket ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -436,7 +405,7 @@ const docTemplate = `{
                     "$ref": "#/definitions/model.Airport"
                 },
                 "time": {
-                    "description": "TODO namestiti da smesta UTC",
+                    "description": "TODO namestiti da smesta UTC\nTODO Aleksandar (Jovan napisao) , validacija na time, destination i price, ddd na decrease i increase , ne sme da ima negativno dostupnih mesta",
                     "type": "string"
                 },
                 "vacantSeats": {
@@ -444,25 +413,12 @@ const docTemplate = `{
                 }
             }
         },
-        "model.Ticket": {
+        "utils.Page": {
             "type": "object",
-            "required": [
-                "buyer",
-                "flightId",
-                "owner"
-            ],
             "properties": {
-                "buyer": {
-                    "type": "string"
-                },
-                "flightId": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "owner": {
-                    "type": "string"
+                "data": {},
+                "entityCount": {
+                    "type": "integer"
                 }
             }
         }

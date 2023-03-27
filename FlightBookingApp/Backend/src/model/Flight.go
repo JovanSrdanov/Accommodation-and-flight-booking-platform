@@ -9,6 +9,8 @@ import (
 type Flight struct {
 	ID primitive.ObjectID `json:"id,omitempty" bson:"_id"`
 	//TODO namestiti da smesta UTC
+	//TODO Aleksandar (Jovan napisao) , validacija na time, destination i price, ddd na decrease i increase , ne sme da ima negativno dostupnih mesta
+	//TODO Aleksandar (Jovan pisao), bolji naziv za Time, npr DepartureDateTime ili tako nes, da ima rec date u sebi
 	Time        time.Time `json:"time" binding:"required" bson:"time"`
 	StartPoint  Airport   `json:"startPoint" binding:"required" bson:"startPoint"`
 	Destination Airport   `json:"destination" binding:"required" bson:"destination"`
