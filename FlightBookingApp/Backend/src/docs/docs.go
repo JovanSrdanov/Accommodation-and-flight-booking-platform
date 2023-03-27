@@ -384,6 +384,68 @@ const docTemplate = `{
                 }
             }
         },
+        "/ticket/buy": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ticket"
+                ],
+                "parameters": [
+                    {
+                        "description": "BuyTicketDto",
+                        "name": "ticket",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.BuyTicketDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreatedResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SimpleResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/ticket/myTickets": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ticket"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.Ticket"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SimpleResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/ticket/{id}": {
             "get": {
                 "produces": [
@@ -576,9 +638,7 @@ const docTemplate = `{
         "model.Ticket": {
             "type": "object",
             "required": [
-                "buyer",
-                "flightId",
-                "owner"
+                "flightId"
             ],
             "properties": {
                 "buyer": {
@@ -622,3 +682,10 @@ var SwaggerInfo = &swag.Spec{
 	Schemes:          []string{},
 	Title:            "",
 	Description:      "",
+	InfoInstanceName: "swagger",
+	SwaggerTemplate:  docTemplate,
+}
+
+func init() {
+	swag.Register(SwaggerInfo.InstanceName(), SwaggerInfo)
+}
