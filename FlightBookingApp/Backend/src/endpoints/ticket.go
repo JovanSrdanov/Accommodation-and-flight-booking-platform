@@ -2,6 +2,7 @@ package endpoints
 
 import (
 	"FlightBookingApp/controller"
+	"FlightBookingApp/dependencyInjection"
 	"FlightBookingApp/repository"
 	"FlightBookingApp/service"
 	"github.com/gin-gonic/gin"
@@ -10,14 +11,13 @@ import (
 	"os"
 )
 
-func DefineTicketEndpoints(upperRouterGroup *gin.RouterGroup, client *mongo.Client) {
+func DefineTicketEndpoints(upperRouterGroup *gin.RouterGroup, client *mongo.Client, depContainer *dependencyInjection.DependencyContainer) {
 
 	//shortened variable names to omit collision with package names
 	var (
 		logger     *log.Logger                  = log.New(os.Stdout, "[ticket-repo] ", log.LstdFlags)
-		logger2    *log.Logger                  = log.New(os.Stdout, "[flight-repo] ", log.LstdFlags)
 		repo       repository.TicketRepositry   = repository.NewTicketRepositry(client, logger)
-		flightRepo repository.FlightRepository  = repository.NewFlightRepository(client, logger2)
+		flightRepo repository.FlightRepository  = depContainer.GetRepository("flight").(repository.FlightRepository)
 		serv       service.TicketService        = service.NewTicketService(repo, flightRepo)
 		contr      *controller.TicketController = controller.NewTicketController(serv)
 	)

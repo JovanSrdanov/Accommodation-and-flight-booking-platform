@@ -1,6 +1,7 @@
 package main
 
 import (
+	"FlightBookingApp/dependencyInjection"
 	"FlightBookingApp/docs"
 	"FlightBookingApp/endpoints"
 	"context"
@@ -50,14 +51,17 @@ func main() {
 	//gin.SetMode(gin.ReleaseMode)
 
 	router := gin.Default()
+	depContainer := dependencyInjection.NewDependencyContainer()
+
 	apiRoutes := router.Group(docs.SwaggerInfo.BasePath)
 	{
-		endpoints.DefineFlightEndpoints(apiRoutes, dbClient)
+		endpoints.DefineFlightEndpoints(apiRoutes, dbClient, depContainer)
 		endpoints.DefineAirportEndpoints(apiRoutes, dbClient)
 		endpoints.DefineAccountEndpoints(apiRoutes, dbClient)
-		endpoints.DefineTicketEndpoints(apiRoutes, dbClient)
+		endpoints.DefineTicketEndpoints(apiRoutes, dbClient, depContainer)
 		endpoints.DefineUserEndpoints(apiRoutes, dbClient)
 	}
+	depContainer.PrintAllDependencies()
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	//Server initialization
