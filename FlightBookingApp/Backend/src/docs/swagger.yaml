@@ -97,12 +97,16 @@ definitions:
   model.Address:
     properties:
       city:
+        example: Novi Sad
         type: string
       country:
+        example: Serbia
         type: string
       street:
+        example: Rumenacka
         type: string
       streetNumber:
+        example: 21a
         type: string
     required:
     - city
@@ -115,8 +119,10 @@ definitions:
       address:
         $ref: '#/definitions/model.Address'
       id:
+        example: 641d71cedd5e51a214a40c14
         type: string
       name:
+        example: Nikola Tesla
         type: string
     required:
     - address
@@ -128,20 +134,25 @@ definitions:
         type: boolean
       departureDateTime:
         description: TODO namestiti da smesta UTC
+        example: "2023-07-18T21:54:42.123Z"
         type: string
       destination:
         $ref: '#/definitions/model.Airport'
       id:
+        example: 641c4e542ce3f0c9dc339384
         type: string
       numberOfSeats:
+        example: 350
         minimum: 0
         type: integer
       price:
+        example: 3000
         minimum: 0
         type: number
       startPoint:
         $ref: '#/definitions/model.Airport'
       vacantSeats:
+        example: 32
         type: integer
     required:
     - departureDateTime
@@ -501,6 +512,10 @@ paths:
             $ref: '#/definitions/dto.SimpleResponse'
         "404":
           description: Not Found
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+        "409":
+          description: Conflict
           schema:
             $ref: '#/definitions/dto.SimpleResponse'
       tags:

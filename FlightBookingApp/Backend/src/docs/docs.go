@@ -269,6 +269,8 @@ const docTemplate = `{
                         "bearerAuth": []
                     }
                 ],
+        "/account/{id}": {
+            "delete": {
                 "produces": [
                     "application/json"
                 ],
@@ -610,6 +612,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.SimpleResponse"
                         }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SimpleResponse"
+                        }
                     }
                 }
             }
@@ -918,6 +926,8 @@ const docTemplate = `{
                         "bearerAuth": []
                     }
                 ],
+        "/user/{id}": {
+            "get": {
                 "produces": [
                     "application/json"
                 ],
@@ -1148,16 +1158,20 @@ const docTemplate = `{
             ],
             "properties": {
                 "city": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Novi Sad"
                 },
                 "country": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Serbia"
                 },
                 "street": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Rumenacka"
                 },
                 "streetNumber": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "21a"
                 }
             }
         },
@@ -1172,10 +1186,12 @@ const docTemplate = `{
                     "$ref": "#/definitions/model.Address"
                 },
                 "id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "641d71cedd5e51a214a40c14"
                 },
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Nikola Tesla"
                 }
             }
         },
@@ -1194,27 +1210,32 @@ const docTemplate = `{
                 },
                 "departureDateTime": {
                     "description": "TODO namestiti da smesta UTC",
-                    "type": "string"
+                    "type": "string",
+                    "example": "2023-07-18T21:54:42.123Z"
                 },
                 "destination": {
                     "$ref": "#/definitions/model.Airport"
                 },
                 "id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "641c4e542ce3f0c9dc339384"
                 },
                 "numberOfSeats": {
                     "type": "integer",
-                    "minimum": 0
+                    "minimum": 0,
+                    "example": 350
                 },
                 "price": {
                     "type": "number",
-                    "minimum": 0
+                    "minimum": 0,
+                    "example": 3000
                 },
                 "startPoint": {
                     "$ref": "#/definitions/model.Airport"
                 },
                 "vacantSeats": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 32
                 }
             }
         },
