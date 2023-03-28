@@ -16,6 +16,72 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/account": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.Account"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SimpleResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/account/{id}": {
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SimpleResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SimpleResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SimpleResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/airport": {
             "get": {
                 "produces": [
@@ -320,6 +386,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.SimpleResponse"
                         }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SimpleResponse"
+                        }
                     }
                 }
             }
@@ -521,6 +593,142 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/user": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.User"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SimpleResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "parameters": [
+                    {
+                        "description": "User",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.User"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreatedResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SimpleResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SimpleResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SimpleResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SimpleResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SimpleResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SimpleResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -555,6 +763,50 @@ const docTemplate = `{
                 }
             }
         },
+        "model.Account": {
+            "type": "object",
+            "required": [
+                "email",
+                "isActivated",
+                "password",
+                "username"
+            ],
+            "properties": {
+                "email": {
+                    "description": "Email verification",
+                    "type": "string"
+                },
+                "emailVerificationHash": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "isActivated": {
+                    "type": "boolean"
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": 6
+                },
+                "refreshToken": {
+                    "description": "Tokens",
+                    "type": "string"
+                },
+                "role": {
+                    "$ref": "#/definitions/model.Role"
+                },
+                "userId": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                },
+                "verificationTimeout": {
+                    "type": "string"
+                }
+            }
+        },
         "model.Address": {
             "type": "object",
             "required": [
@@ -565,16 +817,20 @@ const docTemplate = `{
             ],
             "properties": {
                 "city": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Novi Sad"
                 },
                 "country": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Serbia"
                 },
                 "street": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Rumenacka"
                 },
                 "streetNumber": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "21a"
                 }
             }
         },
@@ -589,10 +845,12 @@ const docTemplate = `{
                     "$ref": "#/definitions/model.Address"
                 },
                 "id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "641d71cedd5e51a214a40c14"
                 },
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Nikola Tesla"
                 }
             }
         },
@@ -611,29 +869,45 @@ const docTemplate = `{
                 },
                 "departureDateTime": {
                     "description": "TODO namestiti da smesta UTC",
-                    "type": "string"
+                    "type": "string",
+                    "example": "2023-07-18T21:54:42.123Z"
                 },
                 "destination": {
                     "$ref": "#/definitions/model.Airport"
                 },
                 "id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "641c4e542ce3f0c9dc339384"
                 },
                 "numberOfSeats": {
                     "type": "integer",
-                    "minimum": 0
+                    "minimum": 0,
+                    "example": 350
                 },
                 "price": {
                     "type": "number",
-                    "minimum": 0
+                    "minimum": 0,
+                    "example": 3000
                 },
                 "startPoint": {
                     "$ref": "#/definitions/model.Airport"
                 },
                 "vacantSeats": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 32
                 }
             }
+        },
+        "model.Role": {
+            "type": "integer",
+            "enum": [
+                0,
+                1
+            ],
+            "x-enum-varnames": [
+                "ADMIN",
+                "REGULAR_USER"
+            ]
         },
         "model.Ticket": {
             "type": "object",
@@ -651,6 +925,28 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "owner": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.User": {
+            "type": "object",
+            "required": [
+                "address",
+                "name",
+                "surname"
+            ],
+            "properties": {
+                "address": {
+                    "$ref": "#/definitions/model.Address"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "surname": {
                     "type": "string"
                 }
             }
