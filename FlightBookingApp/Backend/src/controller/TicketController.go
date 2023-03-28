@@ -130,7 +130,10 @@ func (controller *TicketController) Delete(ctx *gin.Context) {
 // @Router /ticket/buy [post]
 func (controller *TicketController) BuyTicket(ctx *gin.Context) {
 	var buyDto dto.BuyTicketDto
-	//TODO Strahinja: Napraviti validaciju da li je ticket > 0
+
+	if buyDto.NumberOfTickets <= 0 {
+		ctx.JSON(http.StatusBadRequest, dto.NewSimpleResponse("Number of tickets is less than 1"))
+	}
 
 	err := ctx.ShouldBindJSON(&buyDto)
 	if err != nil {
