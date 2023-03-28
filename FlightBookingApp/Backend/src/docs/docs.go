@@ -18,6 +18,11 @@ const docTemplate = `{
     "paths": {
         "/account": {
             "get": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -126,6 +131,11 @@ const docTemplate = `{
         },
         "/account/refresh-token/{token}": {
             "get": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -199,7 +209,66 @@ const docTemplate = `{
             }
         },
         "/account/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Account"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SimpleResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "unauthorized access atempt",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SimpleResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "can't get the account ID or roles",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
             "delete": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -745,6 +814,11 @@ const docTemplate = `{
         },
         "/user": {
             "get": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -770,6 +844,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -805,6 +884,11 @@ const docTemplate = `{
         },
         "/user/logged-in": {
             "get": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -829,6 +913,11 @@ const docTemplate = `{
         },
         "/user/{id}": {
             "get": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -866,6 +955,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],

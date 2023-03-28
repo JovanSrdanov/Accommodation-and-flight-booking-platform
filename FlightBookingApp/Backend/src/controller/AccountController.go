@@ -15,8 +15,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-//TODO Stefan: podesi swagger
-
 type AccountController struct {
 	accountService service.AccountService
 }
@@ -114,6 +112,7 @@ func (controller *AccountController) Login(ctx *gin.Context) {
 }
 
 // RefreshAccessToken godoc
+// @Security bearerAuth
 // @Tags Account
 // @Param token path string true "Refresh token"
 // @Produce application/json
@@ -148,6 +147,7 @@ func (controller *AccountController) RefreshAccessToken(ctx *gin.Context) {
 }
 
 // GetAll godoc
+// @Security bearerAuth
 // @Tags Account
 // @Produce application/json
 // @Success 200 {array} model.Account
@@ -165,15 +165,16 @@ func (controller *AccountController) GetAll(ctx *gin.Context) {
 }
 
 // GetById godoc
+// @Security bearerAuth
 // @Tags Account
-// @Param id path string true "ACcount ID"
+// @Param id path string true "Account ID"
 // @Produce application/json
 // @Success 200 {object} model.Account
 // @Failure 400 {object} dto.SimpleResponse
 // @Failure 404 {object} dto.SimpleResponse
 // @Failure 500 {object} string "can't get the account ID or roles"
 // @Failure 401 {object} string "unauthorized access atempt"
-// @Router /ticket/{id} [get]
+// @Router /account/{id} [get]
 func (controller *AccountController) GetById(ctx *gin.Context) {
 	id, err := primitive.ObjectIDFromHex(ctx.Param("id"))
 
@@ -211,6 +212,7 @@ func (controller *AccountController) GetById(ctx *gin.Context) {
 }
 
 // Delete godoc
+// @Security bearerAuth
 // @Tags Account
 // @Param id path string true "Account ID"
 // @Produce application/json

@@ -210,6 +210,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/dto.SimpleResponse'
+      security:
+      - bearerAuth: []
       tags:
       - Account
   /account/{id}:
@@ -235,6 +237,42 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/dto.SimpleResponse'
+      security:
+      - bearerAuth: []
+      tags:
+      - Account
+    get:
+      parameters:
+      - description: Account ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Account'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+        "401":
+          description: unauthorized access atempt
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+        "500":
+          description: can't get the account ID or roles
+          schema:
+            type: string
+      security:
+      - bearerAuth: []
       tags:
       - Account
   /account/emailver/{username}/{verPass}:
@@ -312,6 +350,8 @@ paths:
           description: Error while generating the token
           schema:
             type: string
+      security:
+      - bearerAuth: []
       tags:
       - Account
   /account/register:
@@ -679,6 +719,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/dto.SimpleResponse'
+      security:
+      - bearerAuth: []
       tags:
       - User
     post:
@@ -700,6 +742,8 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/dto.SimpleResponse'
+      security:
+      - bearerAuth: []
       tags:
       - User
   /user/{id}:
@@ -725,6 +769,8 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/dto.SimpleResponse'
+      security:
+      - bearerAuth: []
       tags:
       - User
     get:
@@ -749,6 +795,8 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/dto.SimpleResponse'
+      security:
+      - bearerAuth: []
       tags:
       - User
   /user/logged-in:
@@ -764,6 +812,8 @@ paths:
           description: can't find your account info
           schema:
             type: string
+      security:
+      - bearerAuth: []
       tags:
       - User
 securityDefinitions:

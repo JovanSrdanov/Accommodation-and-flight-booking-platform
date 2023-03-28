@@ -25,6 +25,7 @@ func NewUserController(userService service.UserService, accountRepository reposi
 }
 
 // Create godoc
+// @Security bearerAuth
 // @Tags User
 // @Param user body model.User true "User"
 // @Consume application/json
@@ -51,6 +52,7 @@ func (controller *UserController) Create(ctx *gin.Context) {
 }
 
 // GetAll godoc
+// @Security bearerAuth
 // @Tags User
 // @Produce application/json
 // @Success 200 {array} model.User
@@ -68,6 +70,7 @@ func (controller *UserController) GetAll(ctx *gin.Context) {
 }
 
 // GetById godoc
+// @Security bearerAuth
 // @Tags User
 // @Param id path string true "User ID"
 // @Produce application/json
@@ -95,6 +98,7 @@ func (controller *UserController) GetById(ctx *gin.Context) {
 }
 
 // GetLoggedInUserInfo godoc
+// @Security bearerAuth
 // @Tags User
 // @Produce application/json
 // @Success 200 {object} dto.UserInfo
@@ -129,6 +133,7 @@ func (controller *UserController) GetLoggedInUserInfo(ctx *gin.Context) {
 }
 
 // Delete godoc
+// @Security bearerAuth
 // @Tags User
 // @Param id path string true "User ID"
 // @Produce application/json
