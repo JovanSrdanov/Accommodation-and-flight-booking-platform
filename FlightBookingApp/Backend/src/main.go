@@ -5,6 +5,10 @@ import (
 	"FlightBookingApp/endpoints"
 	"context"
 	"github.com/fatih/color"
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"log"
 	"net/http"
 	"os"
@@ -12,10 +16,6 @@ import (
 	"strconv"
 	"syscall"
 	"time"
-
-	"github.com/gin-gonic/gin"
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 // TODO : namestiti kako treba, kada se uvede autorizacija i dodati tagove za autorizaciju na svaki endpoint
@@ -49,6 +49,7 @@ func main() {
 	//gin.SetMode(gin.ReleaseMode)
 
 	router := gin.Default()
+	router.Use(cors.Default())
 	apiRoutes := router.Group(docs.SwaggerInfo.BasePath)
 	{
 		endpoints.DefineFlightEndpoints(apiRoutes, dbClient)
