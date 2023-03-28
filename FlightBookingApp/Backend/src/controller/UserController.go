@@ -94,6 +94,12 @@ func (controller *UserController) GetById(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, user)
 }
 
+// GetLoggedInUserInfo godoc
+// @Tags User
+// @Produce application/json
+// @Success 200 {object} dto.UserInfo
+// @Failure 500 {object} string "can't find your account info"
+// @Router /user/logged-in [get]
 func (controller *UserController) GetLoggedInUserInfo(ctx *gin.Context) {
 	userAccountID := ctx.Keys["ID"]
 	if userAccountID == nil{
@@ -119,7 +125,7 @@ func (controller *UserController) GetLoggedInUserInfo(ctx *gin.Context) {
 		Address: user.Address,
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"user info: ":userInfo})
+	ctx.JSON(http.StatusOK, userInfo)
 }
 
 // Delete godoc
