@@ -269,8 +269,6 @@ const docTemplate = `{
                         "bearerAuth": []
                     }
                 ],
-        "/account/{id}": {
-            "delete": {
                 "produces": [
                     "application/json"
                 ],
@@ -926,8 +924,6 @@ const docTemplate = `{
                         "bearerAuth": []
                     }
                 ],
-        "/user/{id}": {
-            "get": {
                 "produces": [
                     "application/json"
                 ],

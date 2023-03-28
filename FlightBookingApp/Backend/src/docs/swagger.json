@@ -257,8 +257,6 @@
                         "bearerAuth": []
                     }
                 ],
-        "/account/{id}": {
-            "delete": {
                 "produces": [
                     "application/json"
                 ],
@@ -914,8 +912,6 @@
                         "bearerAuth": []
                     }
                 ],
-        "/user/{id}": {
-            "get": {
                 "produces": [
                     "application/json"
                 ],
