@@ -118,6 +118,7 @@ func (controller *FlightController) GetById(ctx *gin.Context) {
 // @Success 200 {object} dto.SimpleResponse
 // @Failure 400 {object} dto.SimpleResponse
 // @Failure 404 {object} dto.SimpleResponse
+// @Failure 409 {object} dto.SimpleResponse
 // @Router /flight/{id} [patch]
 func (controller *FlightController) Cancel(ctx *gin.Context) {
 	id, err := primitive.ObjectIDFromHex(ctx.Param("id"))
