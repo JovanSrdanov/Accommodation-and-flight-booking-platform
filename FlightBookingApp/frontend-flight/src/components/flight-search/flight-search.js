@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from "react";
+import {useNavigate} from 'react-router-dom';
 import axios from "axios";
 import "./flight-search.css";
 import {DatePicker, LocalizationProvider} from "@mui/x-date-pickers";
@@ -23,7 +24,6 @@ const StyledTableCell = styled(TableCell)(({theme}) => ({
     [`&.${tableCellClasses.head}`]: {
         backgroundColor: theme.palette.common.black,
         color: theme.palette.common.white,
-
     },
     [`&.${tableCellClasses.body}`]: {
         fontSize: 14,
@@ -34,13 +34,10 @@ const StyledTableRow = styled(TableRow)(({theme}) => ({
     '&:nth-of-type(odd)': {
         backgroundColor: theme.palette.action.focusOpacity,
     },
-    // hide last border
     '&:last-child td, &:last-child th': {
         border: 0,
     },
 }));
-
-
 const FlightSearch = () => {
     const [data, setData] = useState([]);
     const [entityCount, setEntityCount] = useState(0);
@@ -59,6 +56,11 @@ const FlightSearch = () => {
         sortDirection: "asc",
         sortType: "departureDateTime",
     });
+    const [selectDesiredNumberOfSeats, setSelectDesiredNumberOfSeats] = React.useState(1);
+    const [openNoFlightsDialog, setOpenNoFlightsDialog] = React.useState(false);
+    const [buyTicketsDialog, setBuyTicketsDialog] = React.useState(false);
+    const [selectedFlight, setSelectedFlight] = React.useState({});
+    const [purchaseDialog, setPurchaseDialog] = React.useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -80,22 +82,16 @@ const FlightSearch = () => {
         };
         fetchData();
     }, [pagination]);
-
     const columns = React.useMemo(
         () => [],
         []
     );
-
-
     const handleSearchParamsChange = (e) => {
         setSearchParams({...searchParams, [e.target.name]: e.target.value});
     };
-
     const handleSelectDesiredNumberOfSeatsChange = (e) => {
-        setSelectDesiredNumberOfSeats(e.target.value ?? 0);
-
+        setSelectDesiredNumberOfSeats(parseInt(e.target.value ?? 0));
     };
-
     const handlePaginationChange = (type) => {
         switch (type) {
             case "next":
@@ -109,33 +105,22 @@ const FlightSearch = () => {
         }
     };
 
-
-    const [openNoFlightsDialog, setOpenNoFlightsDialog] = React.useState(false);
-
     const handleOpenNoFlightsDialog = () => {
         setOpenNoFlightsDialog(true);
     };
-
     const handleCloseNoFlightsDialog = () => {
         setOpenNoFlightsDialog(false);
     };
 
-
-    const [buyTicketsDialog, setBuyTicketsDialog] = React.useState(false);
-    const [selectedFlight, setSelectedFlight] = React.useState({});
-
     const handleOpenBuyTicketsDialog = (flight) => {
-        setBuyTicketsDialog(true);
         setSelectedFlight(flight)
+        setBuyTicketsDialog(true);
 
     };
-
     const handleCloseBuyTicketsDialog = () => {
         setBuyTicketsDialog(false);
         setSelectedFlight({})
     };
-
-    const [selectDesiredNumberOfSeats, setSelectDesiredNumberOfSeats] = React.useState(1);
 
 
     const styles = theme => ({
@@ -145,19 +130,24 @@ const FlightSearch = () => {
             }
         }
     });
-
     const buyTickets = async () => {
-        console.log("aaaaaaaa")
-        await axios.post("http://localhost:4200/api/ticket/buy", {
-            numberOfTickets: selectDesiredNumberOfSeats,
-            ticket: {
-                flightId: selectedFlight.id,
-                id: selectedFlight.id
-            }
-        });
+        try {
 
 
+            const {buyTicketsData} = await axios.post("http://localhost:4200/api/ticket/buy", {
+                numberOfTickets: selectDesiredNumberOfSeats,
+                ticket: {
+                    flightId: selectedFlight.id,
+                }
+            });
+            setPurchaseDialog(true);
+            handleCloseBuyTicketsDialog()
+        } catch (e) {
+            alert("Unexpected error")
+        }
     };
+    const navigate = useNavigate();
+
     return (
         <div className="flight-search">
             <div className="searchParams">
@@ -171,6 +161,7 @@ const FlightSearch = () => {
                                 label="Start Point Country"
                                 type="text"
                                 name="startPointCountry"
+                                value={searchParams.startPointCountry ?? "aaa"}
                                 onChange={handleSearchParamsChange}
                             />
                         </td>
@@ -253,7 +244,6 @@ const FlightSearch = () => {
                 <Dialog
                     open={openNoFlightsDialog}
                     onClose={handleCloseNoFlightsDialog}
-
                 >
                     <DialogTitle id="alert-dialog-title">
                         {"No flights with this parameters found"}
@@ -267,7 +257,6 @@ const FlightSearch = () => {
                         <Button onClick={handleCloseNoFlightsDialog}>Close</Button>
                     </DialogActions>
                 </Dialog>
-
             </div>
             {entityCount > 0 &&
                 <div className="flightResults">
@@ -297,9 +286,8 @@ const FlightSearch = () => {
                                 <StyledTableCell align="center" style={{width: "5%"}}>Buy tickets</StyledTableCell>
                             </TableRow>
                         </TableHead>
-
-                        {data.map((item, i) => (
-                            <TableBody>
+                        <TableBody>
+                            {data.map((item, i) => (
                                 <StyledTableRow hover key={i}>
                                     <StyledTableCell
                                         align="center"
@@ -329,21 +317,13 @@ const FlightSearch = () => {
                                     </Button>
                                         <Dialog
                                             open={buyTicketsDialog}
-                                            onClose={handleCloseBuyTicketsDialog}
-
-                                        >
+                                            onClose={handleCloseBuyTicketsDialog}>
                                             <DialogTitle id="alert-dialog-title">
                                                 {"Select the number of tickets you want to buy"}
                                             </DialogTitle>
                                             <DialogContent>
-                                                <p>Departure
-                                                    time: {moment(selectedFlight.departureDateTime).format("MM.DD.YYYY HH:mm")}{" "}</p>
-                                                <p>Point of departure: </p>
-                                                <p>Destination:</p>
-                                                <p>Ticket
-                                                    price:
-                                                </p>
-
+                                                <h4>Maximum number of tickets you can
+                                                    buy: {selectedFlight.vacantSeats}</h4>
                                                 <DialogContentText id="alert-dialog-description">
                                                     <TextField type="number"
                                                                fullWidth
@@ -351,13 +331,12 @@ const FlightSearch = () => {
                                                                InputProps={{
                                                                    inputProps: {
                                                                        min: 1,
-                                                                       max: selectedFlight.numberOfSeats
+                                                                       max: selectedFlight.vacantSeats
                                                                    }
                                                                }}
+                                                               defaultValue="1"
                                                                label="Desired number of seats:"
                                                                onChange={handleSelectDesiredNumberOfSeatsChange}/>
-
-
                                                 </DialogContentText>
                                             </DialogContent>
                                             <DialogActions>
@@ -366,14 +345,29 @@ const FlightSearch = () => {
                                             </DialogActions>
                                         </Dialog>
 
+                                        <Dialog
+                                            open={purchaseDialog}
+                                            onClose={() => {
+                                                setPurchaseDialog(false)
+                                            }}>
+                                            <DialogTitle id="alert-dialog-title">
+                                                {"Successful purchase"}
+                                            </DialogTitle>
+
+                                            <DialogActions>
+                                                <Button onClick={() => {
+                                                    setPurchaseDialog(false)
+                                                    /*TODO Jovan promei rutu kad stefan doda*/
+                                                    navigate('/');
+                                                }}>Close</Button>
+                                            </DialogActions>
+                                        </Dialog>
+
                                     </StyledTableCell>
-
                                 </StyledTableRow>
-                            </TableBody>
-                        ))}
-
+                            ))}
+                        </TableBody>
                     </TableContainer>
-
                 </div>
             }
         </div>
