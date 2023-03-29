@@ -1,30 +1,33 @@
 :root {
+    --background: #2e4450;
+    --text-background: rgb(227, 226, 212);
+    --outlines: #192830;
     --text: #89dee2;
-    --text-important: #16c2d5;
-    --back: #2e4450;
+    --text-hover: #16c2d5;
     --backs: #527c88;
-    --mat: rgb(227, 226, 212);
-    --text-b: #192830;
 }
 
 /*TODO za stefana od strane jovana ovde u root se nalazi strahinjina paleta boja
    sa PSW i koristi se pomocu var(--mat)
    sve sam ti zakomentarisao samo da ti skrenem paznju na ovaj todo he he */
 
-/*
+
 * {
     box-sizing: border-box;
+
 }
 
 
 body {
     font-family: sans-serif;
     margin: 3rem;
-    background-color: var(--mat);
+    background-color: var(--backs);
+
 }
 
 h1, h2 {
-    color: var(--text-important);
+    color: var(--text-hover);
+
 }
 
 .btn {
@@ -83,4 +86,4 @@ h1, h2 {
     font-size: large;
     font-weight: bold;
 }
-*/
+

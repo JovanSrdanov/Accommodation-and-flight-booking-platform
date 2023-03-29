@@ -1,9 +1,9 @@
 package errors
 
-type SearchDateMustBeInFutureError struct{}
+type SearchDateMustBeTodayOrInFutureError struct{}
 
-func (error SearchDateMustBeInFutureError) Error() string {
-	return "Search date must be in future."
+func (error SearchDateMustBeTodayOrInFutureError) Error() string {
+	return "Search date must be today or in future."
 }
 
 type DesiredNumberOfSeatsMustBeGreaterThanZeroError struct{}

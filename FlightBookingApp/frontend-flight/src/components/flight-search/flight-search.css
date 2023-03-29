@@ -1,5 +1,36 @@
-.flight-search {
+.flight-search .searchParams {
+    border: 1px solid var(--outlines); /* TODO strahinjina boja*/
+    border-radius: 10px; /* TODO PRomenjiva za stalno negde da bude*/
+    padding: 20px 50px; /* TODO PRomenjiva za stalno negde da bude*/
+    background: var(--outlines);
+    width: fit-content;
+    margin: auto;
+}
+
+.flight-search .searchParams table {
+
+    table-layout: fixed;
+}
+
+.flight-search .searchParams table td {
+    padding: 10px;
+    width: 50%;
 
 }
 
-/*TODO Jovan Sort i style i dugme za kupi koje otvara dijalog*/
+.flight-search li {
+    list-style-type: none;
+}
+
+
+.flight-search .flightResults {
+    width: 70%;
+    margin: auto;
+}
+
+
+.flight-search .pageButtons {
+    margin: 10px 0px;
+}
+
+
