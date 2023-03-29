@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/fatih/color"
+	"github.com/gin-contrib/cors"
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -51,6 +52,7 @@ func main() {
 	//gin.SetMode(gin.ReleaseMode)
 
 	router := gin.Default()
+	router.Use(cors.Default())
 	depContainer := dependencyInjection.NewDependencyContainer()
 
 	apiRoutes := router.Group(docs.SwaggerInfo.BasePath)
