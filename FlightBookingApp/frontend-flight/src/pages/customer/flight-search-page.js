@@ -1,7 +1,13 @@
+import FlightSearch from "../../components/flight-search/flight-search";
+import "./flight-search-page.css"
+
 function FlightSearchPage() {
-  return (
-    <div><h1>Flight Search</h1></div>
-  )
+    return (
+        <div className="FlightSearchPage">
+            <h1>Flight Search</h1>
+            <FlightSearch LoggedIn={true}></FlightSearch>
+        </div>
+    )
 }
 
 export default FlightSearchPage
