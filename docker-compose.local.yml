@@ -1,0 +1,47 @@
+version: '3.1'
+services:
+  mongo:
+    image: mongo
+    restart: always
+    container_name: flights-db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: pass
+      MONGO_INITDB_DATABASE: mongoDemo
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok'
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    volumes:
+    - flightsAppDB:/data/db
+    ports:
+    - 27017:27017
+  mongo-seed:
+    image: mongo-seed
+    container_name: mongo-seed
+    build:
+      context: ./FlightBookingApp/MongoSeed
+      dockerfile: Dockerfile
+    depends_on:
+    - mongo
+  mongo-express:
+    image: mongo-express
+    restart: always
+    container_name: flights-db-express
+    environment:
+    - ME_CONFIG_MONGODB_SERVER=mongo
+    - ME_CONFIG_MONGODB_ADMINUSERNAME=root
+    - ME_CONFIG_MONGODB_ADMINPASSWORD=pass
+    - ME_CONFIG_BASICAUTH_USERNAME=admin
+    - ME_CONFIG_BASICAUTH_PASSWORD=admin
+    - ME_CONFIG_MONGODB_URL=mongodb://mongo:27017/
+    depends_on:
+    - mongo
+    ports:
+    - 8081:8081
+    volumes:
+    - flightsAppDB_express_data:/data/db
+volumes:
+  flightsAppDB: null
+  flightsAppDB_express_data: null
