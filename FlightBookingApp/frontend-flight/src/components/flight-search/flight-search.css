@@ -1,0 +1,47 @@
+.flight-search .searchParams {
+    border: 1px solid var(--outlines);
+    border-radius: var(--border-radius);
+    padding: 20px 50px;
+    background: var(--outlines);
+    width: fit-content;
+    margin: auto;
+}
+
+.flight-search .searchParams table {
+    table-layout: fixed;
+}
+
+.flight-search .searchParams table td {
+    padding: 10px;
+    width: 50%;
+}
+
+
+.flight-search .flightResults tr:hover {
+    box-shadow: 0px 0px 5px var(--backs);
+
+}
+
+.flight-search .flightResults button:hover {
+    box-shadow: 0px 0px 5px var(--text-hover);
+
+}
+
+.flight-search li {
+    list-style-type: none;
+}
+
+.flight-search .flightResults {
+    width: 70%;
+    margin: auto;
+}
+
+.flight-search .pageButtons {
+    margin: 10px 0px;
+}
+
+.flight-search .cursor:hover {
+    cursor: pointer;
+    text-shadow: 0px 0px 5px white;
+
+}

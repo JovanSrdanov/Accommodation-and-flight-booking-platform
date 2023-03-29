@@ -1,70 +1,90 @@
-* {
-  box-sizing: border-box;
+:root {
+    --background: #2e4450;
+    --text-background: rgb(227, 226, 212);
+    --outlines: #192830;
+    --text: #89dee2;
+    --text-hover: #16c2d5;
+    --backs: #527c88;
+    --border-radius: 20px;
 }
 
+/*TODO za stefana od strane jovana ovde u root se nalazi strahinjina paleta boja
+   sa PSW i koristi se pomocu var(--mat)
+   sve sam ti zakomentarisao samo da ti skrenem paznju na ovaj todo he he */
+
+
+* {
+    box-sizing: border-box;
+    color: var(--text-background);
+}
+
+
 body {
-  font-family: sans-serif;
-  margin: 3rem;
-  background-color: #dfdfdf;
+    font-family: sans-serif;
+    margin: 3rem;
+    background-color: var(--backs);
+
 }
 
 h1, h2 {
-  color: #333333;
+    color: var(--text-hover);
+
 }
 
 .btn {
-  font: inherit;
-  padding: 0.5rem 1.5rem;
-  cursor: pointer;
-  border-radius: 4px;
-  background-color: #572cb5;
-  color: white;
-  border: 1px solid #572cb5;
-  margin: 0 1rem;
+    font: inherit;
+    padding: 0.5rem 1.5rem;
+    cursor: pointer;
+    border-radius: 4px;
+    background-color: #572cb5;
+    color: white;
+    border: 1px solid #572cb5;
+    margin: 0 1rem;
 }
 
 .btn:hover {
-  background-color: #1f0b6f;
-  border-color: #1f0b6f;
+    background-color: #1f0b6f;
+    border-color: #1f0b6f;
 }
 
 .btn--alt {
-  background-color: transparent;
-  color: #572cb5;
+    background-color: transparent;
+    color: #572cb5;
 }
 
 .btn--alt:hover {
-  background-color: #f8dae9;
+    background-color: #f8dae9;
 }
 
 .card {
-  background-color: white;
-  border-radius: 4px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
-  padding: 1rem;
-  width: 20rem;
-  margin: auto;
+    background-color: white;
+    border-radius: 4px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+    padding: 1rem;
+    width: 20rem;
+    margin: auto;
 }
 
 .actions {
-  text-align: right;
+    text-align: right;
 }
 
 .title {
-  padding: 1rem;
-  width: 20rem;
-  margin: auto;
-  font-size: xx-large;
-  font-weight: bolder;
+    padding: 1rem;
+    width: 20rem;
+    margin: auto;
+    font-size: xx-large;
+    font-weight: bolder;
 }
 
 .text-field {
-  margin-left: 5%;
-  padding: 2%;
-  width: 90%;
-  margin-left: 5%;
-  margin-right: 5%;
-  margin-bottom: 3%;
-  font-size: large;
-  font-weight: bold;
+    margin-left: 5%;
+    padding: 2%;
+    width: 90%;
+    margin-left: 5%;
+    margin-right: 5%;
+    margin-bottom: 3%;
+    font-size: large;
+    font-weight: bold;
 }
+

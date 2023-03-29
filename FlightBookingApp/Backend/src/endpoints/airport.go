@@ -2,6 +2,7 @@ package endpoints
 
 import (
 	"FlightBookingApp/controller"
+	"FlightBookingApp/dependencyInjection"
 	"FlightBookingApp/repository"
 	"FlightBookingApp/service"
 	"github.com/gin-gonic/gin"
@@ -10,7 +11,7 @@ import (
 	"os"
 )
 
-func DefineAirportEndpoints(upperRouterGroup *gin.RouterGroup, client *mongo.Client) {
+func DefineAirportEndpoints(upperRouterGroup *gin.RouterGroup, client *mongo.Client, depContainer *dependencyInjection.DependencyContainer) {
 
 	//shortened variable names to omit collision with package names
 	var (
@@ -19,6 +20,7 @@ func DefineAirportEndpoints(upperRouterGroup *gin.RouterGroup, client *mongo.Cli
 		serv   service.AirportService        = service.NewAirportService(repo)
 		contr  *controller.AirportController = controller.NewAirportController(serv)
 	)
+	depContainer.RegisterEntityDependencyBundle("airport", repo, serv, contr)
 
 	airports := upperRouterGroup.Group("/airport")
 	{

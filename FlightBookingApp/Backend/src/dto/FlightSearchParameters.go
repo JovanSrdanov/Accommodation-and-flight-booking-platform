@@ -54,8 +54,8 @@ func (flightSearchParameters *FlightSearchParameters) validate() (*FlightSearchP
 		return nil, &errors.DesiredNumberOfSeatsMustBeGreaterThanZeroError{}
 	}
 
-	if flightSearchParameters.DepartureDate.Before(time.Now()) {
-		return nil, &errors.SearchDateMustBeInFutureError{}
+	if flightSearchParameters.DepartureDate.Before(time.Now().AddDate(0, 0, -1)) {
+		return nil, &errors.SearchDateMustBeTodayOrInFutureError{}
 	}
 	return nil, nil
 }
