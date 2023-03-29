@@ -1,4 +1,25 @@
 definitions:
+  dto.AccountRegistration:
+    properties:
+      address:
+        $ref: '#/definitions/model.Address'
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      surname:
+        type: string
+      username:
+        type: string
+    required:
+    - address
+    - name
+    - password
+    - surname
+    - username
+    type: object
   dto.BuyTicketDto:
     properties:
       numberOfTickets:
@@ -14,20 +35,78 @@ definitions:
       id:
         type: string
     type: object
+  dto.LoginRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
   dto.SimpleResponse:
     properties:
       message:
         type: string
     type: object
+  dto.UserInfo:
+    properties:
+      address:
+        $ref: '#/definitions/model.Address'
+      name:
+        type: string
+      surname:
+        type: string
+    required:
+    - address
+    - name
+    - surname
+    type: object
+  model.Account:
+    properties:
+      email:
+        description: Email verification
+        type: string
+      emailVerificationHash:
+        type: string
+      id:
+        type: string
+      isActivated:
+        type: boolean
+      password:
+        minLength: 6
+        type: string
+      refreshToken:
+        description: Tokens
+        type: string
+      role:
+        $ref: '#/definitions/model.Role'
+      userId:
+        type: string
+      username:
+        type: string
+      verificationTimeout:
+        type: string
+    required:
+    - email
+    - isActivated
+    - password
+    - username
+    type: object
   model.Address:
     properties:
       city:
+        example: Novi Sad
         type: string
       country:
+        example: Serbia
         type: string
       street:
+        example: Rumenacka
         type: string
       streetNumber:
+        example: 21a
         type: string
     required:
     - city
@@ -40,8 +119,10 @@ definitions:
       address:
         $ref: '#/definitions/model.Address'
       id:
+        example: 641d71cedd5e51a214a40c14
         type: string
       name:
+        example: Nikola Tesla
         type: string
     required:
     - address
@@ -53,20 +134,25 @@ definitions:
         type: boolean
       departureDateTime:
         description: TODO namestiti da smesta UTC
+        example: "2023-07-18T21:54:42.123Z"
         type: string
       destination:
         $ref: '#/definitions/model.Airport'
       id:
+        example: 641c4e542ce3f0c9dc339384
         type: string
       numberOfSeats:
+        example: 350
         minimum: 0
         type: integer
       price:
+        example: 3000
         minimum: 0
         type: number
       startPoint:
         $ref: '#/definitions/model.Airport'
       vacantSeats:
+        example: 32
         type: integer
     required:
     - departureDateTime
@@ -75,6 +161,14 @@ definitions:
     - price
     - startPoint
     type: object
+  model.Role:
+    enum:
+    - 0
+    - 1
+    type: integer
+    x-enum-varnames:
+    - ADMIN
+    - REGULAR_USER
   model.Ticket:
     properties:
       buyer:
@@ -88,6 +182,21 @@ definitions:
     required:
     - flightId
     type: object
+  model.User:
+    properties:
+      address:
+        $ref: '#/definitions/model.Address'
+      id:
+        type: string
+      name:
+        type: string
+      surname:
+        type: string
+    required:
+    - address
+    - name
+    - surname
+    type: object
   utils.Page:
     properties:
       data: {}
@@ -97,6 +206,187 @@ definitions:
 info:
   contact: {}
 paths:
+  /account:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Account'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+      security:
+      - bearerAuth: []
+      tags:
+      - Account
+  /account/{id}:
+    delete:
+      parameters:
+      - description: Account ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+      security:
+      - bearerAuth: []
+      tags:
+      - Account
+    get:
+      parameters:
+      - description: Account ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Account'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+        "401":
+          description: unauthorized access atempt
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+        "500":
+          description: can't get the account ID or roles
+          schema:
+            type: string
+      security:
+      - bearerAuth: []
+      tags:
+      - Account
+  /account/emailver/{username}/{verPass}:
+    get:
+      parameters:
+      - description: Username
+        in: path
+        name: username
+        required: true
+        type: string
+      - description: Email verification password
+        in: path
+        name: verPass
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+      tags:
+      - Account
+  /account/login:
+    post:
+      parameters:
+      - description: Login data
+        in: body
+        name: loginData
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+      tags:
+      - Account
+  /account/refresh-token/{token}:
+    get:
+      parameters:
+      - description: Refresh token
+        in: path
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "401":
+          description: Invalid refresh token
+          schema:
+            type: string
+        "500":
+          description: Error while generating the token
+          schema:
+            type: string
+      security:
+      - bearerAuth: []
+      tags:
+      - Account
+  /account/register:
+    post:
+      parameters:
+      - description: Registration info
+        in: body
+        name: registrationInfo
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AccountRegistration'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.CreatedResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+      tags:
+      - Account
   /airport:
     get:
       produces:
@@ -222,6 +512,10 @@ paths:
             $ref: '#/definitions/dto.SimpleResponse'
         "404":
           description: Not Found
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+        "409":
+          description: Conflict
           schema:
             $ref: '#/definitions/dto.SimpleResponse'
       tags:
@@ -425,6 +719,118 @@ paths:
             $ref: '#/definitions/dto.SimpleResponse'
       tags:
       - Ticket
+  /user:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.User'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+      security:
+      - bearerAuth: []
+      tags:
+      - User
+    post:
+      parameters:
+      - description: User
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.User'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.CreatedResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+      security:
+      - bearerAuth: []
+      tags:
+      - User
+  /user/{id}:
+    delete:
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+      security:
+      - bearerAuth: []
+      tags:
+      - User
+    get:
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+      security:
+      - bearerAuth: []
+      tags:
+      - User
+  /user/logged-in:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UserInfo'
+        "500":
+          description: can't find your account info
+          schema:
+            type: string
+      security:
+      - bearerAuth: []
+      tags:
+      - User
 securityDefinitions:
   bearerAuth:
     in: header

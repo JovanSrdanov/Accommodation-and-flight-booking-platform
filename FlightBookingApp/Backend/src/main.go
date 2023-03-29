@@ -1,14 +1,10 @@
 package main
 
 import (
+	"FlightBookingApp/dependencyInjection"
 	"FlightBookingApp/docs"
 	"FlightBookingApp/endpoints"
 	"context"
-	"github.com/fatih/color"
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
 	"log"
 	"net/http"
 	"os"
@@ -16,6 +12,13 @@ import (
 	"strconv"
 	"syscall"
 	"time"
+
+	"github.com/fatih/color"
+	"github.com/gin-contrib/cors"
+
+	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 // TODO : namestiti kako treba, kada se uvede autorizacija i dodati tagove za autorizaciju na svaki endpoint
@@ -50,13 +53,17 @@ func main() {
 
 	router := gin.Default()
 	router.Use(cors.Default())
+	depContainer := dependencyInjection.NewDependencyContainer()
+
 	apiRoutes := router.Group(docs.SwaggerInfo.BasePath)
 	{
-		endpoints.DefineFlightEndpoints(apiRoutes, dbClient)
-		endpoints.DefineAirportEndpoints(apiRoutes, dbClient)
-		endpoints.DefineAccountEndpoints(apiRoutes, dbClient)
-		endpoints.DefineTicketEndpoints(apiRoutes, dbClient)
+		endpoints.DefineFlightEndpoints(apiRoutes, dbClient, depContainer)
+		endpoints.DefineAirportEndpoints(apiRoutes, dbClient, depContainer)
+		endpoints.DefineTicketEndpoints(apiRoutes, dbClient, depContainer)
+		endpoints.DefineAccountEndpoints(apiRoutes, dbClient, depContainer)
+		endpoints.DefineUserEndpoints(apiRoutes, dbClient, depContainer)
 	}
+	depContainer.PrintAllDependencies()
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	//Server initialization

@@ -16,10 +16,11 @@ import (
 
 type accountService struct {
 	accountRepository repository.AccountRepository
+	userRepository repository.UserRepository
 }
 
 type AccountService interface {
-	Register(account model.Account) (primitive.ObjectID, error)
+	Register(registrationInfo dto.AccountRegistration) (dto.CreateUserResponse, error)
 	Login(loginData dto.LoginRequest) (string, string, error)
 	GetAll() (model.Accounts, error)
 	GetById(id primitive.ObjectID) (model.Account, error)
@@ -28,9 +29,10 @@ type AccountService interface {
 	Delete(id primitive.ObjectID) error
 }
 
-func NewAccountService(accountRepository repository.AccountRepository) *accountService {
+func NewAccountService(accountRepository repository.AccountRepository, userRepository repository.UserRepository) *accountService {
 	return &accountService{
 		accountRepository: accountRepository,
+		userRepository: userRepository,
 	}
 }
 
@@ -60,19 +62,68 @@ func (service *accountService) Login(loginData dto.LoginRequest) (string, string
 	return accessTokenString, refreshTokenString, nil
 }
 
-func (service *accountService) Register(newAccount model.Account) (primitive.ObjectID, error) {
-	_, err := service.accountRepository.GetByUsername(newAccount.Username)
+func (service *accountService) Register(registrationInfo dto.AccountRegistration) (dto.CreateUserResponse, error) {
+	_, err := service.accountRepository.GetByUsername(registrationInfo.Username)
 	if err == nil {
-		return primitive.NewObjectID(), fmt.Errorf("username already exists")
+		return dto.CreateUserResponse{}, fmt.Errorf("username already exists")
 	}
 
-	_, err = service.accountRepository.GetByEmail(newAccount.Email)
+	_, err = service.accountRepository.GetByEmail(registrationInfo.Email)
 	if err == nil {
-		return primitive.NewObjectID(), fmt.Errorf("email already exists")
+		return dto.CreateUserResponse{}, fmt.Errorf("email already exists")
 	}
 
-	// TODO Stefan: move to separate func
+	hashedPassword, err := utils.HashPassword(registrationInfo.Password)
+	if err != nil {
+		return dto.CreateUserResponse{}, err
+	}
+
+	newAccount := model.Account{
+		Username:    registrationInfo.Username,
+		Password:    hashedPassword,
+		Email:       registrationInfo.Email,
+		Role:        model.REGULAR_USER,
+		IsActivated: false,
+	}
+
+	//Pravljenje user-a
+	newUser := model.User {
+		Name: registrationInfo.Name,
+		Surname: registrationInfo.Surname,
+		Address: registrationInfo.Address,
+	}
+
+	userId, err := service.userRepository.Create(&newUser)
+	if err != nil {
+		return dto.CreateUserResponse{}, fmt.Errorf("an error has occured while trying to create the user")
+	}
+
+	newAccount.UserID = userId
+
+	err = PrepareAndSendConfirmationEmail(&newAccount)
+	if err != nil {
+		return dto.CreateUserResponse{}, fmt.Errorf("an error has occured while sending the verification email")
+	}
+
+	id, err1 := service.accountRepository.Create(&newAccount)
+	if err1 != nil {
+		return dto.CreateUserResponse{}, fmt.Errorf("an error has occured while trying to create your account")
+	}
+
+	newAccount.ID = id
+
+	response := dto.CreateUserResponse{
+		ID:          newAccount.ID,
+		Role:        newAccount.Role,
+		IsActivated: newAccount.IsActivated,
+	}
+
+	return response, nil
+}
+
 	// email activation logic
+func PrepareAndSendConfirmationEmail(account *model.Account) error {
+	
 	// return time to the nanosecond (1 billionth of a sec)
 	rand.Seed(time.Now().UnixNano())
 	// create random code for email
@@ -87,20 +138,23 @@ func (service *accountService) Register(newAccount model.Account) (primitive.Obj
 	emailVerPassword := string(emailVerRandRune)
 	var emailVerPWhash []byte
 	// func GenerateFromPassword(password []byte, const int) ([]byte, error)
-	emailVerPWhash, err = bcrypt.GenerateFromPassword([]byte(emailVerPassword), bcrypt.DefaultCost)
+	emailVerPWhash, err := bcrypt.GenerateFromPassword([]byte(emailVerPassword), bcrypt.DefaultCost)
 	if err != nil {
-		return primitive.NewObjectID(), err
+		return err
 	}
-	newAccount.EmailVerificationHash = string(emailVerPWhash)
+	account.EmailVerificationHash = string(emailVerPWhash)
 
 	// create u.timeout after 48 hours
 	timeout := time.Now().Local().AddDate(0, 0, 2)
-	newAccount.VerificationTimeout = timeout
+	account.VerificationTimeout = timeout
 
 	// TODO Stefan: add a transaction, in case the email sending fails abort database modification
-	utils.SendConfirmationEmail(newAccount, emailVerPassword)
-
-	return service.accountRepository.Create(&newAccount)
+	err = utils.SendConfirmationEmail(*account, emailVerPassword)
+	if err != nil {
+		return err
+	}
+	
+	return nil
 }
 
 func (service *accountService) GetAll() (model.Accounts, error) {

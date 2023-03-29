@@ -2,6 +2,7 @@ package endpoints
 
 import (
 	"FlightBookingApp/controller"
+	"FlightBookingApp/dependencyInjection"
 	"FlightBookingApp/repository"
 	"FlightBookingApp/service"
 	"log"
@@ -11,7 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func DefineFlightEndpoints(upperRouterGroup *gin.RouterGroup, client *mongo.Client) {
+func DefineFlightEndpoints(upperRouterGroup *gin.RouterGroup, client *mongo.Client, depContainer *dependencyInjection.DependencyContainer) {
 
 	//shortened variable names to omit collision with package names
 	var (
@@ -20,6 +21,7 @@ func DefineFlightEndpoints(upperRouterGroup *gin.RouterGroup, client *mongo.Clie
 		serv   service.FlightService        = service.NewFlightService(repo)
 		contr  *controller.FlightController = controller.NewFlightController(serv)
 	)
+	depContainer.RegisterEntityDependencyBundle("flight", repo, serv, contr)
 
 	flights := upperRouterGroup.Group("/flight")
 	{

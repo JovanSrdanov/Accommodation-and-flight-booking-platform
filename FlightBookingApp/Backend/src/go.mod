@@ -10,7 +10,7 @@ require (
 	github.com/go-playground/validator/v10 v10.12.0
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/gin-swagger v1.5.3
-	github.com/swaggo/swag v1.8.11
+	github.com/swaggo/swag v1.8.12
 	go.mongodb.org/mongo-driver v1.11.3
 	golang.org/x/crypto v0.7.0
 )
