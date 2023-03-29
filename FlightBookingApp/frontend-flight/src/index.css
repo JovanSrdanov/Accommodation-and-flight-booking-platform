@@ -5,6 +5,7 @@
     --text: #89dee2;
     --text-hover: #16c2d5;
     --backs: #527c88;
+    --border-radius: 20px;
 }
 
 /*TODO za stefana od strane jovana ovde u root se nalazi strahinjina paleta boja
@@ -14,7 +15,7 @@
 
 * {
     box-sizing: border-box;
-
+    color: var(--text-background);
 }
 
 

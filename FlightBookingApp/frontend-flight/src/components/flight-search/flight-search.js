@@ -18,6 +18,9 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ImportExportIcon from '@mui/icons-material/ImportExport';
 
 
 const StyledTableCell = styled(TableCell)(({theme}) => ({
@@ -33,12 +36,10 @@ const StyledTableCell = styled(TableCell)(({theme}) => ({
 const StyledTableRow = styled(TableRow)(({theme}) => ({
     '&:nth-of-type(odd)': {
         backgroundColor: theme.palette.action.focusOpacity,
-    },
-    '&:last-child td, &:last-child th': {
-        border: 0,
-    },
+    }
 }));
-const FlightSearch = () => {
+const FlightSearch = ({LoggedIn}) => {
+
     const [data, setData] = useState([]);
     const [entityCount, setEntityCount] = useState(0);
     const [loading, setLoading] = useState(false);
@@ -52,7 +53,7 @@ const FlightSearch = () => {
     });
     const [pagination, setPagination] = useState({
         pageNumber: 1,
-        resultsPerPage: 3,
+        resultsPerPage: 5,
         sortDirection: "asc",
         sortType: "departureDateTime",
     });
@@ -68,7 +69,7 @@ const FlightSearch = () => {
                 setLoading(true);
                 return
             }
-            const {data} = await axios.get("http://localhost:4200/api/flight/search", {
+            const {data} = await axios.get(process.env.REACT_APP_FLIGHT_APP_API + "flight/search", {
                 params: {...searchParams, ...pagination},
             });
             console.log(data)
@@ -82,10 +83,7 @@ const FlightSearch = () => {
         };
         fetchData();
     }, [pagination]);
-    const columns = React.useMemo(
-        () => [],
-        []
-    );
+
     const handleSearchParamsChange = (e) => {
         setSearchParams({...searchParams, [e.target.name]: e.target.value});
     };
@@ -113,6 +111,7 @@ const FlightSearch = () => {
     };
 
     const handleOpenBuyTicketsDialog = (flight) => {
+
         setSelectedFlight(flight)
         setBuyTicketsDialog(true);
 
@@ -121,8 +120,6 @@ const FlightSearch = () => {
         setBuyTicketsDialog(false);
         setSelectedFlight({})
     };
-
-
     const styles = theme => ({
         tableRow: {
             "&:hover": {
@@ -132,9 +129,7 @@ const FlightSearch = () => {
     });
     const buyTickets = async () => {
         try {
-
-
-            const {buyTicketsData} = await axios.post("http://localhost:4200/api/ticket/buy", {
+            const {buyTicketsData} = await axios.post(process.env.REACT_APP_FLIGHT_APP_API + "ticket/buy", {
                 numberOfTickets: selectDesiredNumberOfSeats,
                 ticket: {
                     flightId: selectedFlight.id,
@@ -276,14 +271,56 @@ const FlightSearch = () => {
                     <TableContainer component={Paper}>
                         <TableHead>
                             <TableRow>
-                                <StyledTableCell align="center" style={{width: "5%"}}>Departure Time</StyledTableCell>
-                                <StyledTableCell align="center" style={{width: "35%"}}>Point of
+                                <StyledTableCell className="cursor" align="center" style={{width: "20%"}}
+                                                 onClick={() => {
+                                                     setPagination({
+                                                         ...pagination,
+                                                         sortDirection: pagination.sortDirection === "asc" ? "dsc" : "asc",
+                                                         sortType: "departureDateTime"
+                                                     });
+                                                 }
+                                                 }>Departure
+                                    Time {pagination.sortDirection === "asc" && pagination.sortType === "departureDateTime" &&
+                                        <ArrowDownwardIcon> </ArrowDownwardIcon>
+                                    }
+                                    {pagination.sortDirection === "dsc" && pagination.sortType === "departureDateTime" &&
+                                        <ArrowUpwardIcon> </ArrowUpwardIcon>
+                                    }
+                                    {pagination.sortType === "price" &&
+                                        <ImportExportIcon></ImportExportIcon>
+                                    }</StyledTableCell>
+                                <StyledTableCell align="center" style={{width: "25%"}}>Point of
                                     departure</StyledTableCell>
-                                <StyledTableCell align="center" style={{width: "35%"}}>Destination</StyledTableCell>
-                                <StyledTableCell align="center" style={{width: "15%"}}>Seats</StyledTableCell>
-                                <StyledTableCell align="center" style={{width: "5%"}}>Ticket price</StyledTableCell>
+                                <StyledTableCell align="center" style={{width: "25%"}}>Destination</StyledTableCell>
+                                <StyledTableCell align="center" style={{width: "5%"}}>Seats</StyledTableCell>
+                                <StyledTableCell sortable="down" align="center" style={{width: "20%"}}
+                                                 className="cursor"
+                                                 onClick={() => {
+                                                     setPagination({
+                                                         ...pagination,
+                                                         sortDirection: pagination.sortDirection === "asc" ? "dsc" : "asc",
+                                                         sortType: "price"
+                                                     });
+                                                 }}
+                                >Ticket price
+                                    {pagination.sortDirection === "asc" && pagination.sortType === "price" &&
+                                        <ArrowDownwardIcon> </ArrowDownwardIcon>
+                                    }
+                                    {pagination.sortDirection === "dsc" && pagination.sortType === "price" &&
+                                        <ArrowUpwardIcon> </ArrowUpwardIcon>
+                                    }
+                                    {pagination.sortType === "departureDateTime" &&
+                                        <ImportExportIcon></ImportExportIcon>
+                                    }
+
+
+                                </StyledTableCell>
                                 <StyledTableCell align="center" style={{width: "5%"}}>Total price</StyledTableCell>
-                                <StyledTableCell align="center" style={{width: "5%"}}>Buy tickets</StyledTableCell>
+                                {LoggedIn &&
+
+                                    <StyledTableCell align="center" style={{width: "5%"}}>Buy tickets</StyledTableCell>
+
+                                }
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -310,60 +347,58 @@ const FlightSearch = () => {
                                     </StyledTableCell>
                                     <StyledTableCell align="center">{item.Flight.price}</StyledTableCell>
                                     <StyledTableCell align="center">{item.TotalPrice}</StyledTableCell>
-                                    <StyledTableCell align="center"> <Button
-                                        onClick={() => handleOpenBuyTicketsDialog(item.Flight)}
-                                        variant="contained">
-                                        Buy now
-                                    </Button>
-                                        <Dialog
-                                            open={buyTicketsDialog}
-                                            onClose={handleCloseBuyTicketsDialog}>
-                                            <DialogTitle id="alert-dialog-title">
-                                                {"Select the number of tickets you want to buy"}
-                                            </DialogTitle>
-                                            <DialogContent>
-                                                <h4>Maximum number of tickets you can
-                                                    buy: {selectedFlight.vacantSeats}</h4>
-                                                <DialogContentText id="alert-dialog-description">
-                                                    <TextField type="number"
-                                                               fullWidth
-                                                               variant="filled"
-                                                               InputProps={{
-                                                                   inputProps: {
-                                                                       min: 1,
-                                                                       max: selectedFlight.vacantSeats
-                                                                   }
-                                                               }}
-                                                               defaultValue="1"
-                                                               label="Desired number of seats:"
-                                                               onChange={handleSelectDesiredNumberOfSeatsChange}/>
-                                                </DialogContentText>
-                                            </DialogContent>
-                                            <DialogActions>
-                                                <Button onClick={handleCloseBuyTicketsDialog}>Close</Button>
-                                                <Button onClick={buyTickets}>Buy</Button>
-                                            </DialogActions>
-                                        </Dialog>
-
-                                        <Dialog
-                                            open={purchaseDialog}
-                                            onClose={() => {
-                                                setPurchaseDialog(false)
-                                            }}>
-                                            <DialogTitle id="alert-dialog-title">
-                                                {"Successful purchase"}
-                                            </DialogTitle>
-
-                                            <DialogActions>
-                                                <Button onClick={() => {
+                                    {LoggedIn &&
+                                        <StyledTableCell align="center"> <Button
+                                            onClick={() => handleOpenBuyTicketsDialog(item.Flight)}
+                                            variant="contained">
+                                            Buy now
+                                        </Button>
+                                            <Dialog
+                                                open={buyTicketsDialog}
+                                                onClose={handleCloseBuyTicketsDialog}>
+                                                <DialogTitle id="alert-dialog-title">
+                                                    {"Select the number of tickets you want to buy"}
+                                                </DialogTitle>
+                                                <DialogContent>
+                                                    <h4>Maximum number of tickets you can
+                                                        buy: {selectedFlight.vacantSeats}</h4>
+                                                    <DialogContentText id="alert-dialog-description">
+                                                        <TextField type="number"
+                                                                   fullWidth
+                                                                   variant="filled"
+                                                                   InputProps={{
+                                                                       inputProps: {
+                                                                           min: 1,
+                                                                           max: selectedFlight.vacantSeats
+                                                                       }
+                                                                   }}
+                                                                   defaultValue="1"
+                                                                   label="Desired number of seats:"
+                                                                   onChange={handleSelectDesiredNumberOfSeatsChange}/>
+                                                    </DialogContentText>
+                                                </DialogContent>
+                                                <DialogActions>
+                                                    <Button onClick={handleCloseBuyTicketsDialog}>Close</Button>
+                                                    <Button onClick={buyTickets}>Buy</Button>
+                                                </DialogActions>
+                                            </Dialog>
+                                            <Dialog
+                                                open={purchaseDialog}
+                                                onClose={() => {
                                                     setPurchaseDialog(false)
-                                                    /*TODO Jovan promei rutu kad stefan doda*/
-                                                    navigate('/');
-                                                }}>Close</Button>
-                                            </DialogActions>
-                                        </Dialog>
-
-                                    </StyledTableCell>
+                                                }}>
+                                                <DialogTitle id="alert-dialog-title">
+                                                    {"Successful purchase"}
+                                                </DialogTitle>
+                                                <DialogActions>
+                                                    <Button onClick={() => {
+                                                        setPurchaseDialog(false)
+                                                        /*TODO Jovan promei rutu kad stefan doda*/
+                                                        navigate('/');
+                                                    }}>Close</Button>
+                                                </DialogActions>
+                                            </Dialog>
+                                        </StyledTableCell>}
                                 </StyledTableRow>
                             ))}
                         </TableBody>

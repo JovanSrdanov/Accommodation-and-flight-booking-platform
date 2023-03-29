@@ -5,7 +5,7 @@ function FlightSearchPage() {
     return (
         <div className="FlightSearchPage">
             <h1>Flight Search</h1>
-            <FlightSearch></FlightSearch>
+            <FlightSearch LoggedIn={true}></FlightSearch>
         </div>
     )
 }
