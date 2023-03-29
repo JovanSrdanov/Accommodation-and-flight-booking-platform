@@ -8,7 +8,7 @@ function HomePage() {
   return (
     <div>
       <div className="title">Login</div>
-      <Login></Login>
+      <Login/>
     </div>
   );
 }
