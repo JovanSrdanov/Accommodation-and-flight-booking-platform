@@ -2,27 +2,16 @@ package endpoints
 
 import (
 	"FlightBookingApp/controller"
+	"FlightBookingApp/dependencyInjection"
 	"FlightBookingApp/middleware"
 	"FlightBookingApp/model"
-	"FlightBookingApp/repository"
-	"FlightBookingApp/service"
-	"log"
-	"os"
-
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func DefineUserEndpoints(upperRouterGroup *gin.RouterGroup, client *mongo.Client) {
-	var (
-		accLogger  *log.Logger                   = log.New(os.Stdout, "[account-repo] ", log.LstdFlags)
-		userLogger *log.Logger                   = log.New(os.Stdout, "[user-repo] ", log.LstdFlags)
-		accRepo    repository.AccountRepository  = repository.NewAccountRepository(client, accLogger)
-		userRepo   repository.UserRepository     = repository.NewUserRepository(client, userLogger)
-		userServ   service.UserService           = service.NewUserService(userRepo)
-		userContr  *controller.UserController     = controller.NewUserController(userServ, accRepo)
-	)
-
+func DefineUserEndpoints(upperRouterGroup *gin.RouterGroup, client *mongo.Client, depContainer *dependencyInjection.DependencyContainer) {
+	// Dependencies are instantiated inside account endpoint definition
+	userContr := depContainer.GetController("user").(*controller.UserController)
 	users := upperRouterGroup.Group("/user")
 	users.Use(middleware.ValidateToken())
 	{

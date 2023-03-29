@@ -12,7 +12,7 @@ func NewDependencyContainer() *DependencyContainer {
 	}
 }
 
-func (depCont *DependencyContainer) AddRepository(entityName string, dependency interface{}) {
+func (depCont *DependencyContainer) RegisterRepository(entityName string, dependency interface{}) {
 	completeName := entityName + "-repository"
 	depCont.container[completeName] = dependency
 }
@@ -22,7 +22,7 @@ func (depCont *DependencyContainer) GetRepository(entityName string) interface{}
 	return depCont.container[completeName]
 }
 
-func (depCont *DependencyContainer) AddService(entityName string, dependency interface{}) {
+func (depCont *DependencyContainer) RegisterService(entityName string, dependency interface{}) {
 	completeName := entityName + "-service"
 	depCont.container[completeName] = dependency
 }
@@ -32,7 +32,7 @@ func (depCont *DependencyContainer) GetService(entityName string) interface{} {
 	return depCont.container[completeName]
 }
 
-func (depCont *DependencyContainer) AddController(entityName string, dependency interface{}) {
+func (depCont *DependencyContainer) RegisterController(entityName string, dependency interface{}) {
 	completeName := entityName + "-controller"
 	depCont.container[completeName] = dependency
 }
@@ -41,10 +41,10 @@ func (depCont *DependencyContainer) GetController(entityName string) interface{}
 	return depCont.container[completeName]
 }
 
-func (depCont *DependencyContainer) AddEntityDependencyBundle(entityName string, repository, service, controller interface{}) {
-	depCont.AddRepository(entityName, repository)
-	depCont.AddService(entityName, service)
-	depCont.AddController(entityName, controller)
+func (depCont *DependencyContainer) RegisterEntityDependencyBundle(entityName string, repository, service, controller interface{}) {
+	depCont.RegisterRepository(entityName, repository)
+	depCont.RegisterService(entityName, service)
+	depCont.RegisterController(entityName, controller)
 }
 
 func (depCont *DependencyContainer) PrintAllDependencies() {

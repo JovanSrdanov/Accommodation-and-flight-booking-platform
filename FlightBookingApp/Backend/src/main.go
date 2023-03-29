@@ -56,10 +56,10 @@ func main() {
 	apiRoutes := router.Group(docs.SwaggerInfo.BasePath)
 	{
 		endpoints.DefineFlightEndpoints(apiRoutes, dbClient, depContainer)
-		endpoints.DefineAirportEndpoints(apiRoutes, dbClient)
-		endpoints.DefineAccountEndpoints(apiRoutes, dbClient)
+		endpoints.DefineAirportEndpoints(apiRoutes, dbClient, depContainer)
 		endpoints.DefineTicketEndpoints(apiRoutes, dbClient, depContainer)
-		endpoints.DefineUserEndpoints(apiRoutes, dbClient)
+		endpoints.DefineAccountEndpoints(apiRoutes, dbClient, depContainer)
+		endpoints.DefineUserEndpoints(apiRoutes, dbClient, depContainer)
 	}
 	depContainer.PrintAllDependencies()
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

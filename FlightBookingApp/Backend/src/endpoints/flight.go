@@ -21,7 +21,7 @@ func DefineFlightEndpoints(upperRouterGroup *gin.RouterGroup, client *mongo.Clie
 		serv   service.FlightService        = service.NewFlightService(repo)
 		contr  *controller.FlightController = controller.NewFlightController(serv)
 	)
-	depContainer.AddEntityDependencyBundle("flight", repo, serv, contr)
+	depContainer.RegisterEntityDependencyBundle("flight", repo, serv, contr)
 
 	flights := upperRouterGroup.Group("/flight")
 	{

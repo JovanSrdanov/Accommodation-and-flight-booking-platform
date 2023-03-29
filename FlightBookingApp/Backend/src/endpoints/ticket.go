@@ -21,6 +21,7 @@ func DefineTicketEndpoints(upperRouterGroup *gin.RouterGroup, client *mongo.Clie
 		serv       service.TicketService        = service.NewTicketService(repo, flightRepo)
 		contr      *controller.TicketController = controller.NewTicketController(serv)
 	)
+	depContainer.RegisterEntityDependencyBundle("ticket", repo, serv, contr)
 
 	tickets := upperRouterGroup.Group("/ticket")
 	{
