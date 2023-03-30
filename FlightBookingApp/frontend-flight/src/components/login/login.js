@@ -3,6 +3,7 @@ import { useRef, useState, useEffect, useContext } from "react";
 import AuthContext from "../../context/AuthProvider";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import jwt_decode from "jwt-decode";
 
 import "./login.css"
 
@@ -43,9 +44,17 @@ const Login = () => {
       );
       console.log(JSON.stringify(response?.data));
       //console.log(JSON.stringify(response));
+
       const accessToken = response?.data?.accessToken;
-      const refreshToken = response?.data?.refreshToken;  //TODO Stefan: promeni, trebaju i role
-      setAuth({ user, pwd, accessToken, refreshToken });
+      const refreshToken = response?.data?.refreshToken;
+
+      const decodedToken = jwt_decode(accessToken);
+      console.log('decoded token: ', decodedToken)
+
+      const roles = decodedToken.roles
+      console.log('roles: ', roles)
+
+      setAuth({ user, pwd, accessToken, refreshToken, roles });
       setUser("");
       setPwd("");
       setSuccess(true);

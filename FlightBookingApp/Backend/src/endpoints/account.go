@@ -34,16 +34,16 @@ func DefineAccountEndpoints(upperRouterGroup *gin.RouterGroup, client *mongo.Cli
 	authenticatedAccounts := upperRouterGroup.Group("/account")
 	authenticatedAccounts.Use(middleware.ValidateToken())
 	{
-		authenticatedAccounts.GET("", middleware.Authrorization([]model.Role{model.ADMIN}),
+		authenticatedAccounts.GET("", middleware.Authorization([]model.Role{model.ADMIN}),
 			accContr.GetAll)
 		authenticatedAccounts.GET(":id",
-			middleware.Authrorization([]model.Role{model.REGULAR_USER, model.ADMIN}),
+			middleware.Authorization([]model.Role{model.REGULAR_USER, model.ADMIN}),
 			accContr.GetById)
 		authenticatedAccounts.DELETE(":id",
-			middleware.Authrorization([]model.Role{model.ADMIN}),
+			middleware.Authorization([]model.Role{model.ADMIN}),
 			accContr.Delete)
 		authenticatedAccounts.GET("/refresh-token/:token",
-			middleware.Authrorization([]model.Role{model.REGULAR_USER, model.ADMIN}),
+			middleware.Authorization([]model.Role{model.REGULAR_USER, model.ADMIN}),
 			accContr.RefreshAccessToken)
 	}
 

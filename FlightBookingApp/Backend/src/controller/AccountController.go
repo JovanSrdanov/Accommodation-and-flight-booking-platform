@@ -81,7 +81,8 @@ func (controller *AccountController) VerifyEmail(ctx *gin.Context) {
 
 	account.IsActivated = true
 	controller.accountService.Save(account)
-	ctx.JSON(http.StatusOK, dto.NewSimpleResponse("email successfuly verified"))
+	//ctx.JSON(http.StatusOK, dto.NewSimpleResponse("email successfuly verified"))
+	ctx.Redirect(302, "http://localhost:3000/")
 }
 
 // Login godoc
@@ -108,7 +109,7 @@ func (controller *AccountController) Login(ctx *gin.Context) {
 		return
 	}
 
-	response := dto.LoginResponse {AccessToken: accessTokenString, RefreshToken: refreshTokenString}
+	response := dto.LoginResponse{AccessToken: accessTokenString, RefreshToken: refreshTokenString}
 
 	ctx.JSON(http.StatusOK, response)
 }
@@ -125,27 +126,27 @@ func (controller *AccountController) Login(ctx *gin.Context) {
 func (controller *AccountController) RefreshAccessToken(ctx *gin.Context) {
 	// TODO Stefan: endpoint should have :token at the end
 	refreshToken := ctx.Param("token")
-	
+
 	// refresh token validation
 	valid, claims := token.VerifyToken(refreshToken)
 	if !valid || claims.TokenType != "refresh" {
-		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error":"Invalid refresh token"})
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid refresh token"})
 		return
 	}
 
 	account, err := controller.accountService.GetById(claims.ID)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error":"Error while generating the access token - user not found"})
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Error while generating the access token - user not found"})
 		return
 	}
 
 	accessToken, err1 := token.GenerateAccessToken(account)
 	if err1 != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error":"Error while generating the access token"})
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Error while generating the access token"})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"new access token":accessToken})
+	ctx.JSON(http.StatusOK, gin.H{"new access token": accessToken})
 }
 
 // GetAll godoc
@@ -187,20 +188,20 @@ func (controller *AccountController) GetById(ctx *gin.Context) {
 
 	// getting the id from the token
 	if len(ctx.Keys) == 0 {
-			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error":"not authenticated"})
-			return
-		}
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "not authenticated"})
+		return
+	}
 
 	userID := ctx.Keys["ID"]
 	userRole := ctx.Keys["Roles"]
-	if userID == nil || userRole == nil{
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error":"can't get the account ID or roles"})
+	if userID == nil || userRole == nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "can't get the account ID or roles"})
 		return
 	}
 
 	// a user can only see his information, unless he is an admin
 	if id != userID && !authorization.RoleMatches(model.ADMIN, userRole.([]model.Role)) {
-		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error":"unauthorized access atempt"})
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "unauthorized access atempt"})
 		return
 	}
 
