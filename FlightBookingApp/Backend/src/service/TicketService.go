@@ -18,8 +18,8 @@ type TicketService interface {
 	GetAll() (model.Tickets, error)
 	GetById(id primitive.ObjectID) (model.Ticket, error)
 	Delete(id primitive.ObjectID) error
-	BuyTicket(ticket model.Ticket, flightId primitive.ObjectID, numberOfTickets int32) (primitive.ObjectID, error)
-	GetAllForCustomer() ([]dto.TicketFullInfo, error)
+	BuyTicket(ticket model.Ticket, numberOfTickets int32) (primitive.ObjectID, error)
+	GetAllForUser(userId primitive.ObjectID) ([]dto.TicketFullInfo, error)
 }
 
 func NewTicketService(ticketRepository repository.TicketRepositry, flightRepository repository.FlightRepository) *ticketService {
@@ -44,20 +44,16 @@ func (service *ticketService) Delete(id primitive.ObjectID) error {
 	return service.ticketRepository.Delete(id)
 }
 
-func (service *ticketService) BuyTicket(ticket model.Ticket, flightId primitive.ObjectID, numberOfTickets int32) (primitive.ObjectID, error) {
-	//TODO Strahinja: buyera izvuci iz JWT
-	//ownera iz api kljuca
-	//Ovo treba da bude transakcija
-	ticket.Buyer = "JWT"
-	ticket.Owner = "APIKey"
+func (service *ticketService) BuyTicket(ticket model.Ticket, numberOfTickets int32) (primitive.ObjectID, error) {
+	//TODO Strahinja: ownera iz api kljuca, Ovo treba da bude transakcija
 
-	flight, err := service.flightRepository.GetById(flightId)
+	flight, err := service.flightRepository.GetById(ticket.FlightId)
 	if err != nil {
 		return primitive.ObjectID{}, err
 	}
 
 	if flight.VacantSeats < numberOfTickets {
-		return flightId, &errors.NotEnoughVacantSeats{}
+		return primitive.ObjectID{}, &errors.NotEnoughVacantSeats{}
 	}
 
 	flight.DecreaseVacantSeats(numberOfTickets)
@@ -75,9 +71,9 @@ func (service *ticketService) BuyTicket(ticket model.Ticket, flightId primitive.
 		}
 	}
 
-	return flightId, nil
+	return ticket.FlightId, nil
 }
 
-func (service *ticketService) GetAllForCustomer() ([]dto.TicketFullInfo, error) {
-	return service.ticketRepository.GetAllForCustomer()
+func (service *ticketService) GetAllForUser(userId primitive.ObjectID) ([]dto.TicketFullInfo, error) {
+	return service.ticketRepository.GetAllForUser(userId)
 }
