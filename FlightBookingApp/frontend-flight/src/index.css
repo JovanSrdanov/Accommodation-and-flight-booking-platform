@@ -17,20 +17,18 @@
 * {
     box-sizing: border-box;
     color: var(--text-background);
+    color-scheme: dark;
 }
 
 
 body {
     font-family: 'Space Mono', monospace;
     padding: 2%;
-
     background-color: var(--backs);
-
-
 }
 
 h1, h2 {
-    color: var(--text-hover);
+    color: var(--text-background);
     font-family: 'Space Mono', monospace;
     width: fit-content;
     margin: 20px auto;

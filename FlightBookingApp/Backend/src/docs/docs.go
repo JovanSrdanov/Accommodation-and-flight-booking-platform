@@ -432,7 +432,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/flight/search": {
+        "/flight-search": {
             "get": {
                 "produces": [
                     "application/json"
