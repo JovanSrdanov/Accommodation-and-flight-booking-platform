@@ -16,6 +16,12 @@ function App() {
     return (
         <ThemeProvider theme={darkTheme}>
             <MainNavigation/>
+            <div className="plane">
+                <img src="https://media.tenor.com/qsdblRVNZysAAAAC/flying-airplane.gif"/>
+            </div>
+            <div className="planeToLeft">
+                <img src="https://media.tenor.com/qsdblRVNZysAAAAC/flying-airplane.gif"/>
+            </div>
             <Routes>
                 <Route path="/" element={<HomePage/>}/>
                 <Route path="/flight-search" element={<FlightSearchPage/>}/>

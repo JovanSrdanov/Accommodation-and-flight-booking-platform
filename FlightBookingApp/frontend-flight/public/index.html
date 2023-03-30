@@ -10,13 +10,71 @@
             content="Web site created using create-react-app"
             name="description"
     />
-
-
     <title>Flight booking app</title>
+    <style>
+        .plane{
+            width:20px;
+            mix-blend-mode: multiply;
+        }
+
+        .plane>img{
+            width:200px;
+            mix-blend-mode: multiply;
+        }
+
+        .plane {
+            -webkit-animation-name: plane;
+            -webkit-animation-duration: 5s;
+            -webkit-animation-iteration-count: infinite;
+            -webkit-animation-timing-function: linear;
+            position:absolute;
+            top: 25%;
+            z-index: -1000;
+        }
+
+        .planeToLeft>img{
+            width:200px;
+            mix-blend-mode: multiply;
+        }
+
+        .planeToLeft{
+            -webkit-transform: scaleX(-1);
+            transform: scaleX(-1);
+            width:20px;
+            height: 5px;
+            mix-blend-mode: multiply;
+        }
+
+        .planeToLeft {
+            -webkit-animation-name: planeToLeft;
+            -webkit-animation-duration: 4s;
+            -webkit-animation-iteration-count: infinite;
+            -webkit-animation-timing-function: linear;
+            position:absolute;
+            top: 75%;
+            z-index: -1000;
+        }
+
+        @-webkit-keyframes plane {
+
+            0%      {margin-left: -110%;}
+            100%    {margin-left: 100%;}
+
+        }
+
+        @-webkit-keyframes planeToLeft {
+
+            0%      {margin-left: 100%;}
+            100%    {margin-left: -100%;}
+
+        }
+
+    </style>
 </head>
 <body>
 <noscript>You need to enable JavaScript to run this app.</noscript>
 <div id="root"></div>
+
 
 </body>
 </html>
