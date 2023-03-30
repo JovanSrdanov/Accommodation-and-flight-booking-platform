@@ -8,16 +8,11 @@ import Planes from "./components/Planes/Planes";
 import {useEffect} from "react";
 import AllFlightsPage from "./pages/admin/all-flights-page";
 
-
-
-
 const darkTheme = createTheme({
     palette: {
         mode: 'dark',
-    },
+    }
 });
-
-
 
 
 function App() {
@@ -26,7 +21,7 @@ function App() {
             const uppercaseLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
             const lowercaseLetters = 'abcdefghijklmnopqrstuvwxyz';
 
-            const { target } = event;
+            const {target} = event;
             if (target.tagName === 'H1') {
                 let interval = null;
                 const originalText = target.dataset.originalText || target.innerText.trim();
@@ -90,7 +85,7 @@ function App() {
                     } else {
                         iteration += 0.5;
                     }
-                }, 30);
+                }, 50);
             }
         }
 

@@ -1,4 +1,4 @@
-import React, { useState} from "react";
+import React, {useState} from "react";
 import {useNavigate} from 'react-router-dom';
 import axios from "axios";
 import "./flight-search.css";
@@ -21,7 +21,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ImportExportIcon from '@mui/icons-material/ImportExport';
-
+import de from "dayjs/locale/de";
 
 const StyledTableCell = styled(TableCell)(({theme}) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -65,7 +65,7 @@ const FlightSearch = ({LoggedIn}) => {
 
 
     const fetchData = async () => {
-        try{
+        try {
             const {data} = await axios.get(process.env.REACT_APP_FLIGHT_APP_API + "search-flights", {
                 params: {...searchParams, ...pagination},
             });
@@ -77,7 +77,7 @@ const FlightSearch = ({LoggedIn}) => {
                 setData([])
             }
             setEntityCount(data.EntityCount)
-        }catch (e) {
+        } catch (e) {
             alert("Unexpected error")
         }
     };
@@ -123,7 +123,7 @@ const FlightSearch = ({LoggedIn}) => {
         try {
             await axios.post(process.env.REACT_APP_FLIGHT_APP_API + "ticket/buy", {
                 numberOfTickets: selectDesiredNumberOfSeats,
-                    flightId: selectedFlight.id,
+                flightId: selectedFlight.id,
             });
 
             setPurchaseDialog(true);
@@ -202,7 +202,7 @@ const FlightSearch = ({LoggedIn}) => {
                                        onChange={handleSearchParamsChange}/>
                         </td>
                         <td>
-                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <LocalizationProvider locale={de} dateAdapter={AdapterDayjs}>
                                 <DatePicker label="Departure date"
                                             defaultValue={dayjs((new Date()))}
                                             minDate={dayjs((new Date()))}

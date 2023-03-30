@@ -17,6 +17,7 @@
 * {
     box-sizing: border-box;
     color: var(--text-background);
+    color-scheme: dark;
 }
 
 

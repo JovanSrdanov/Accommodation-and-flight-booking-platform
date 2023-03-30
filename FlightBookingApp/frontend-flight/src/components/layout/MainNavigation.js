@@ -10,7 +10,12 @@ function MainNavigation() {
         <ul>
           <li>
             <Link to='/flight-search'>Flight Search</Link>
+
           </li>
+            <li>
+
+                <Link to='/all-flights'>All flights</Link>
+            </li>
         </ul>
       </nav>
     </header>
