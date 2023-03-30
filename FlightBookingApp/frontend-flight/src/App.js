@@ -6,6 +6,7 @@ import MainNavigation from "./components/layout/MainNavigation";
 import {createTheme, ThemeProvider} from '@mui/material/styles';
 import Planes from "./components/Planes/Planes";
 import {useEffect} from "react";
+import AllFlightsPage from "./pages/admin/all-flights-page";
 
 
 
@@ -21,63 +22,84 @@ const darkTheme = createTheme({
 
 function App() {
     useEffect(() => {
-        const uppercaseLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        const lowercaseLetters = 'abcdefghijklmnopqrstuvwxyz';
-
         function handleHover(event) {
+            const uppercaseLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const lowercaseLetters = 'abcdefghijklmnopqrstuvwxyz';
+
             const { target } = event;
-            if (target.tagName === "H1") {
+            if (target.tagName === 'H1') {
                 let interval = null;
                 const originalText = target.dataset.originalText || target.innerText.trim();
 
                 const text = originalText;
                 let iteration = 0;
+                let animationComplete = false;
+                let animationStarted = false;
+                let animationReversed = false;
+
+                const originalTextWithoutSpaces = originalText.replace(/\s/g, '');
 
                 clearInterval(interval);
 
                 interval = setInterval(() => {
-                    target.innerText = text
-                        .split('')
-                        .map((letter, index) => {
-                            if (letter === ' ') {
-                                return letter;
+                    let newText = '';
+                    for (let i = 0; i < text.length; i++) {
+                        const letter = text[i];
+                        if (letter === ' ') {
+                            newText += letter;
+                            continue;
+                        }
+
+                        if (i < iteration) {
+                            newText += text[i];
+                        } else {
+                            if (!animationStarted) {
+                                animationStarted = true;
+                                target.dataset.originalText = originalText;
                             }
 
-                            if (index < iteration) {
-                                return text[index];
-                            }
-
+                            let newLetter;
                             if (uppercaseLetters.includes(letter)) {
-                                return uppercaseLetters[Math.floor(Math.random() * 26)];
+                                newLetter = uppercaseLetters[Math.floor(Math.random() * 26)];
+                            } else if (lowercaseLetters.includes(letter)) {
+                                newLetter = lowercaseLetters[Math.floor(Math.random() * 26)];
+                            } else {
+                                newLetter = letter;
                             }
 
-                            if (lowercaseLetters.includes(letter)) {
-                                return lowercaseLetters[Math.floor(Math.random() * 26)];
+                            if (animationComplete) {
+                                if (newLetter !== originalText[i]) {
+                                    animationReversed = true;
+                                }
+                                newLetter = originalText[i];
                             }
-
-                            return letter;
-                        })
-                        .join('');
-
-                    if (iteration >= text.replace(/\s/g, '').length) {
-                        clearInterval(interval);
+                            newText += newLetter;
+                        }
                     }
 
-                    iteration += 1 / 3;
-                }, 30);
+                    target.innerText = newText;
 
-                // Store the original text in the dataset
-                target.dataset.originalText = originalText;
+                    if (iteration >= originalTextWithoutSpaces.length) {
+                        clearInterval(interval);
+                        animationComplete = true;
+                        target.innerText = originalText;
+                    }
+
+                    if (animationComplete && animationStarted && !animationReversed) {
+                        iteration -= 0.5;
+                    } else {
+                        iteration += 0.5;
+                    }
+                }, 30);
             }
         }
 
-        document.addEventListener("mouseover", handleHover);
+        document.addEventListener('mouseover', handleHover);
 
         return () => {
-            document.removeEventListener("mouseover", handleHover);
+            document.removeEventListener('mouseover', handleHover);
         };
     }, []);
-
     return (
         <ThemeProvider theme={darkTheme}>
             <MainNavigation/>
@@ -85,6 +107,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<HomePage/>}/>
                 <Route path="/flight-search" element={<FlightSearchPage/>}/>
+                <Route path="/all-flights" element={<AllFlightsPage/>}/>
             </Routes>
         </ThemeProvider>
     );
