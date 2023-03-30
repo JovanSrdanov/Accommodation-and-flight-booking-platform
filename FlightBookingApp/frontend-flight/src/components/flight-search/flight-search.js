@@ -322,14 +322,14 @@ const FlightSearch = ({LoggedIn}) => {
                                 <StyledTableRow hover key={i}>
                                     <StyledTableCell
                                         align="center"
-                                        style={{width: "5%"}}> {moment(item.Flight.departureDateTime).format("MM.DD.YYYY HH:mm")}{" "}</StyledTableCell>
+                                    > {moment(item.Flight.departureDateTime).format("MM.DD.YYYY HH:mm")}{" "}</StyledTableCell>
                                     <StyledTableCell align="center">
                                         <li>Airport name: {item.Flight.startPoint.name}</li>
                                         <li>City: {item.Flight.startPoint.address.city}</li>
                                         <li>Country {item.Flight.startPoint.address.country}</li>
                                         <li>Street: {item.Flight.startPoint.address.street}, {item.Flight.startPoint.address.streetNumber}</li>
                                     </StyledTableCell>
-                                    <StyledTableCell align="center" style={{width: "35%"}}>
+                                    <StyledTableCell align="center">
                                         <li>Airport name: {item.Flight.destination.name}</li>
                                         <li>City: {item.Flight.destination.address.city}</li>
                                         <li>Country {item.Flight.destination.address.country}</li>

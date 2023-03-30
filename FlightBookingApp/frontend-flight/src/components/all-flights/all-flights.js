@@ -80,12 +80,12 @@ function AllFlights() {
             <Table stickyHeader>
                 <TableHead>
                     <TableRow>
-                        <StyledTableCell align="center" style={{width: "20%"}}> Departure Time</StyledTableCell>
+                        <StyledTableCell align="center" style={{width: "10%"}}> Departure Time</StyledTableCell>
                         <StyledTableCell align="center" style={{width: "20%"}}>Point of departure</StyledTableCell>
                         <StyledTableCell align="center" style={{width: "20%"}}>Destination</StyledTableCell>
-                        <StyledTableCell align="center" style={{width: "5%"}}>Seats</StyledTableCell>
-                        <StyledTableCell align="center" style={{width: "5%"}}>Price</StyledTableCell>
-                        <StyledTableCell align="center" style={{width: "5%"}}>Cancel Flight</StyledTableCell>
+                        <StyledTableCell align="center" style={{width: "10%"}}>Seats</StyledTableCell>
+                        <StyledTableCell align="center" style={{width: "20%"}}>Price</StyledTableCell>
+                        <StyledTableCell align="center" style={{width: "20%"}}>Cancel Flight</StyledTableCell>
                     </TableRow>
                 </TableHead>
                 {
@@ -95,9 +95,9 @@ function AllFlights() {
                             <StyledTableRow hover key={i}>
                                 <StyledTableCell
                                     align="center"
-                                    style={{width: "5%"}}> {moment(item.departureDateTime).format("MM.DD.YYYY HH:mm")}{" "}</StyledTableCell>
-                                <StyledTableCell align="center" style={{width: "35%"}}>
-                                    <li>ID {item.id}</li>
+                                > {moment(item.departureDateTime).format("MM.DD.YYYY HH:mm")}{" "}</StyledTableCell>
+                                <StyledTableCell align="center">
+
                                     <li>Airport name: {item.startPoint.name}</li>
                                     <li>City: {item.startPoint.address.city}</li>
                                     <li>Country {item.startPoint.address.country}</li>
