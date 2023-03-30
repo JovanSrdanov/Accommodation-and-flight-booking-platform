@@ -104,11 +104,13 @@ func (controller *AccountController) Login(ctx *gin.Context) {
 	//TODO Stefan: fix error handleing
 
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.NewSimpleResponse(err.Error()))
+		ctx.JSON(http.StatusUnauthorized, dto.NewSimpleResponse(err.Error()))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"ACCESS TOKEN":accessTokenString, "REFRESH TOKEN":refreshTokenString})
+	response := dto.LoginResponse {AccessToken: accessTokenString, RefreshToken: refreshTokenString}
+
+	ctx.JSON(http.StatusOK, response)
 }
 
 // RefreshAccessToken godoc

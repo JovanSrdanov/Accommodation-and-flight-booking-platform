@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import {
   faCheck,
   faTimes,
@@ -60,7 +61,7 @@ const Register = () => {
     try {
       const response = await axios.post(
         REGISTER_URL,
-        JSON.stringify({ user, pwd }),  //TODO Stefan: dodaj user:username, itd (da bude isto kao na back-u)
+        JSON.stringify({ username:user, password:pwd }),  //TODO Stefan: dodaj user:username, itd (da bude isto kao na back-u)
         {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
@@ -228,7 +229,7 @@ const Register = () => {
             <br />
             <span className="line">
               {/*put router link here*/}
-              <a href="#">Sign In</a>
+              <Link to="/">Sign in</Link>
             </span>
           </p>
         </section>
