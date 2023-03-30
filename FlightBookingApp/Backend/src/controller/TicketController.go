@@ -164,6 +164,7 @@ func (controller *TicketController) BuyTicket(ctx *gin.Context) {
 }
 
 // GetAllForCustomer godoc
+// @Security bearerAuth
 // @Tags Ticket
 // @Produce application/json
 // @Success 200 {array} model.Ticket

@@ -727,6 +727,11 @@ const docTemplate = `{
         },
         "/ticket/myTickets": {
             "get": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],

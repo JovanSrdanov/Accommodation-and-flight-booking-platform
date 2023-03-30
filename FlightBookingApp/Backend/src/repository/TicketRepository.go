@@ -124,7 +124,7 @@ func (repo *ticketRepository) GetAllForUser(userId primitive.ObjectID) ([]dto.Ti
 		},
 		{
 			{"$match", bson.D{
-				{"owner", userId},
+				{"owner._id", userId},
 			}},
 		},
 	}

@@ -722,6 +722,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/dto.SimpleResponse'
+      security:
+      - bearerAuth: []
       tags:
       - Ticket
   /user:

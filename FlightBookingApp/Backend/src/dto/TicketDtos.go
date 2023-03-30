@@ -7,8 +7,8 @@ import (
 
 type TicketFullInfo struct {
 	ID         primitive.ObjectID `json:"id,omitempty" bson:"_id"`
-	Buyer      string             `json:"buyer,omitempty" binding:"required" bson:"buyer"`
-	Owner      string             `json:"owner,omitempty" binding:"required" bson:"owner"`
+	Buyer      model.User         `json:"buyer,omitempty" binding:"required" bson:"buyer"`
+	Owner      model.User         `json:"owner,omitempty" binding:"required" bson:"owner"`
 	FlightId   primitive.ObjectID `json:"flightId" binding:"required" bson:"flightId"`
 	FlightInfo model.Flight       `json:"flightInfo" bson:"flightInfo"`
 }
