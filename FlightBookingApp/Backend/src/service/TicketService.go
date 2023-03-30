@@ -52,8 +52,12 @@ func (service *ticketService) BuyTicket(ticket model.Ticket, numberOfTickets int
 		return primitive.ObjectID{}, err
 	}
 
+	if flight.Canceled {
+		return primitive.ObjectID{}, &errors.FlightIsCanceledError{}
+	}
+
 	if flight.VacantSeats < numberOfTickets {
-		return primitive.ObjectID{}, &errors.NotEnoughVacantSeats{}
+		return primitive.ObjectID{}, &errors.NotEnoughVacantSeatsError{}
 	}
 
 	flight.DecreaseVacantSeats(numberOfTickets)
