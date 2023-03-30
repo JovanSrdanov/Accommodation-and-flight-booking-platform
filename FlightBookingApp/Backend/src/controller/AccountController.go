@@ -146,7 +146,11 @@ func (controller *AccountController) RefreshAccessToken(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"new access token": accessToken})
+	response := dto.RefreshTokenResponse{
+		AccessToken: accessToken,
+	}
+
+	ctx.JSON(http.StatusOK, response)
 }
 
 // GetAll godoc

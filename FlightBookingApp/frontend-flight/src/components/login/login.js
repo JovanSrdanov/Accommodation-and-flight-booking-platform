@@ -1,8 +1,7 @@
 import React from "react";
-import { useRef, useState, useEffect, useContext } from "react";
-import AuthContext from "../../context/AuthProvider";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { useRef, useState, useEffect } from "react";
+import useAuth from "../../hooks/useAuth";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 import jwt_decode from "jwt-decode";
 
 import "./login.css"
@@ -12,15 +11,16 @@ const LOGIN_URL = "/api/account/login";
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/"
 
-  const { setAuth } = useContext(AuthContext);
+  const { setAuth } = useAuth();
   const userRef = useRef();
   const errRef = useRef();
 
   const [user, setUser] = useState("");
   const [pwd, setPwd] = useState("");
   const [errMsg, setErrMsg] = useState("");
-  const [success, setSuccess] = useState(false);
 
   useEffect(() => {
     userRef.current?.focus();
@@ -57,7 +57,7 @@ const Login = () => {
       setAuth({ user, pwd, accessToken, refreshToken, roles });
       setUser("");
       setPwd("");
-      setSuccess(true);
+      navigate(from, { replace: true });
     } catch (err) {
       if (!err?.response) {
         setErrMsg("No Server Response");
@@ -73,16 +73,6 @@ const Login = () => {
   };
 
   return (
-    <>
-      {success ? (
-        <section>
-          <h1>You are logged in!</h1>
-          <br />
-          <p>
-            <a href="#">Go to Home</a>
-          </p>
-        </section>
-      ) : (
         <section>
           <p
             ref={errRef}
@@ -123,9 +113,7 @@ const Login = () => {
             </span>
           </p>
         </section>
-      )}
-    </>
-  );
+  )
 }
 
 export default Login;
