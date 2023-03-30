@@ -1,9 +1,8 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 
-const uppercaseLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-const lowercaseLetters = 'abcdefghijklmnopqrstuvwxyz';
-
-const Header = () => {
+const useHoverAnimation = () => {
+    const uppercaseLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const lowercaseLetters = 'abcdefghijklmnopqrstuvwxyz';
     useEffect(() => {
         const headers = document.querySelectorAll('h1');
         headers.forEach((header) => {
@@ -49,8 +48,6 @@ const Header = () => {
             });
         });
     }, []);
-
-    return null;
 };
 
-export default Header;
+export default useHoverAnimation;

@@ -12,62 +12,61 @@
     />
     <title>Flight booking app</title>
     <style>
-        .plane{
-            width:20px;
+
+        .plane-container {
+            position: fixed;
+            width: 100%;
             mix-blend-mode: multiply;
+            z-index: -1;
+
         }
 
-        .plane>img{
-            width:200px;
-            mix-blend-mode: multiply;
+        .planeToRight>img{
+            width: 100%;
         }
 
-        .plane {
-            -webkit-animation-name: plane;
+        .planeToRight {
+            width: 10%;
+            mix-blend-mode: multiply;
+            -webkit-animation-name: planeToRight;
             -webkit-animation-duration: 5s;
             -webkit-animation-iteration-count: infinite;
             -webkit-animation-timing-function: linear;
-            position:absolute;
-            top: 25%;
-            z-index: -1000;
+            opacity: 0.5;
         }
+
+        @-webkit-keyframes planeToRight {
+
+            0%      {margin-left: -10%;}
+            100%    {margin-left: 100%;}
+
+        }
+
 
         .planeToLeft>img{
-            width:200px;
-            mix-blend-mode: multiply;
-        }
-
-        .planeToLeft{
-            -webkit-transform: scaleX(-1);
+            width: 100%;
             transform: scaleX(-1);
-            width:20px;
-            height: 5px;
-            mix-blend-mode: multiply;
+
         }
 
-        .planeToLeft {
+        .planeToLeft  {
+            width: 5%;
+            mix-blend-mode: multiply;
             -webkit-animation-name: planeToLeft;
-            -webkit-animation-duration: 4s;
+            -webkit-animation-duration: 3s;
             -webkit-animation-iteration-count: infinite;
             -webkit-animation-timing-function: linear;
-            position:absolute;
-            top: 75%;
-            z-index: -1000;
-        }
-
-        @-webkit-keyframes plane {
-
-            0%      {margin-left: -110%;}
-            100%    {margin-left: 100%;}
 
         }
 
         @-webkit-keyframes planeToLeft {
 
             0%      {margin-left: 100%;}
-            100%    {margin-left: -100%;}
+            100%    {margin-left: -10%;}
 
         }
+
+
 
     </style>
 </head>
