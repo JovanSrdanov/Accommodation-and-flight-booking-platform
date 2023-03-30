@@ -4,6 +4,8 @@ import (
 	"FlightBookingApp/dependencyInjection"
 	"FlightBookingApp/docs"
 	"FlightBookingApp/endpoints"
+	"FlightBookingApp/repository"
+	"FlightBookingApp/service"
 	"context"
 	"log"
 	"net/http"
@@ -57,11 +59,14 @@ func main() {
 
 	apiRoutes := router.Group(docs.SwaggerInfo.BasePath)
 	{
+		endpoints.DefineAccountEndpoints(apiRoutes, dbClient, depContainer)
+		endpoints.DefineUserEndpoints(apiRoutes, dbClient, depContainer)
+
+		RegisterJwtBundle(depContainer)
+
 		endpoints.DefineFlightEndpoints(apiRoutes, dbClient, depContainer)
 		endpoints.DefineAirportEndpoints(apiRoutes, dbClient, depContainer)
 		endpoints.DefineTicketEndpoints(apiRoutes, dbClient, depContainer)
-		endpoints.DefineAccountEndpoints(apiRoutes, dbClient, depContainer)
-		endpoints.DefineUserEndpoints(apiRoutes, dbClient, depContainer)
 	}
 	depContainer.PrintAllDependencies()
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
@@ -135,4 +140,12 @@ func DrawGoGopher() {
 	cyan("   |                           |   ")
 	cyan("   |                           |   ")
 	cyan("------------------------------------------------------------------------------------")
+}
+
+func RegisterJwtBundle(container *dependencyInjection.DependencyContainer) {
+	accountRepo := container.GetRepository("account").(repository.AccountRepository)
+	userRepo := container.GetRepository("user").(repository.UserRepository)
+	jwtServ := service.NewJwtService(accountRepo, userRepo)
+
+	container.RegisterService("jwt", jwtServ)
 }

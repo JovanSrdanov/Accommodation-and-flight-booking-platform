@@ -3,6 +3,8 @@ package endpoints
 import (
 	"FlightBookingApp/controller"
 	"FlightBookingApp/dependencyInjection"
+	"FlightBookingApp/middleware"
+	"FlightBookingApp/model"
 	"FlightBookingApp/repository"
 	"FlightBookingApp/service"
 	"github.com/gin-gonic/gin"
@@ -19,17 +21,32 @@ func DefineTicketEndpoints(upperRouterGroup *gin.RouterGroup, client *mongo.Clie
 		repo       repository.TicketRepositry   = repository.NewTicketRepositry(client, logger)
 		flightRepo repository.FlightRepository  = depContainer.GetRepository("flight").(repository.FlightRepository)
 		serv       service.TicketService        = service.NewTicketService(repo, flightRepo)
-		contr      *controller.TicketController = controller.NewTicketController(serv)
+		jwtServ    service.JwtService           = depContainer.GetService("jwt").(service.JwtService)
+		contr      *controller.TicketController = controller.NewTicketController(serv, jwtServ)
 	)
 	depContainer.RegisterEntityDependencyBundle("ticket", repo, serv, contr)
 
 	tickets := upperRouterGroup.Group("/ticket")
+	tickets.Use(middleware.ValidateToken())
 	{
-		tickets.GET("", contr.GetAll)
-		tickets.GET(":id", contr.GetById)
-		tickets.GET("/myTickets", contr.GetAllForCustomer)
-		tickets.POST("", contr.Create)
-		tickets.POST("/buy", contr.BuyTicket)
+		tickets.GET("",
+			middleware.Authrorization([]model.Role{model.REGULAR_USER}),
+			contr.GetAll)
+		tickets.GET(":id",
+			middleware.Authrorization([]model.Role{model.REGULAR_USER}),
+			contr.GetById)
+		tickets.GET("/myTickets",
+			middleware.Authrorization([]model.Role{model.REGULAR_USER}),
+			contr.GetAllForCustomer)
+		tickets.POST("",
+			middleware.Authrorization([]model.Role{model.ADMIN}),
+			contr.Create)
+		
 		tickets.DELETE(":id", contr.Delete)
+
+		tickets.POST("/buy",
+			middleware.Authrorization([]model.Role{model.REGULAR_USER}),
+			contr.BuyTicket)
+
 	}
 }

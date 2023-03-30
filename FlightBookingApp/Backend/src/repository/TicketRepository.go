@@ -21,7 +21,7 @@ type TicketRepositry interface {
 	GetAll() (model.Tickets, error)
 	GetById(id primitive.ObjectID) (model.Ticket, error)
 	Delete(id primitive.ObjectID) error
-	GetAllForCustomer() ([]dto.TicketFullInfo, error)
+	GetAllForUser(userId primitive.ObjectID) ([]dto.TicketFullInfo, error)
 }
 
 func NewTicketRepositry(client *mongo.Client, logger *log.Logger) *ticketRepository {
@@ -104,11 +104,8 @@ func (repo *ticketRepository) Delete(id primitive.ObjectID) error {
 	return nil
 }
 
-func (repo *ticketRepository) GetAllForCustomer() ([]dto.TicketFullInfo, error) {
+func (repo *ticketRepository) GetAllForUser(userId primitive.ObjectID) ([]dto.TicketFullInfo, error) {
 	tickets := repo.getCollection()
-
-	//TODO Strahinja: Iz JWT izvuci cije karte treba prikazati
-	ownerId := "APIKey"
 
 	// Set up the pipeline
 	pipeline := mongo.Pipeline{
@@ -127,7 +124,7 @@ func (repo *ticketRepository) GetAllForCustomer() ([]dto.TicketFullInfo, error) 
 		},
 		{
 			{"$match", bson.D{
-				{"owner", ownerId},
+				{"owner._id", userId},
 			}},
 		},
 	}

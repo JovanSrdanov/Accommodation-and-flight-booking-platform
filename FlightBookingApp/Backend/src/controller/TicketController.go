@@ -12,11 +12,13 @@ import (
 
 type TicketController struct {
 	ticketService service.TicketService
+	jwtService    service.JwtService
 }
 
-func NewTicketController(ticketService service.TicketService) *TicketController {
+func NewTicketController(ticketService service.TicketService, jwtService service.JwtService) *TicketController {
 	return &TicketController{
 		ticketService: ticketService,
+		jwtService:    jwtService,
 	}
 }
 
@@ -47,6 +49,7 @@ func (controller *TicketController) Create(ctx *gin.Context) {
 }
 
 // GetAll godoc
+// @Security bearerAuth
 // @Tags Ticket
 // @Produce application/json
 // @Success 200 {array} model.Ticket
@@ -121,6 +124,7 @@ func (controller *TicketController) Delete(ctx *gin.Context) {
 }
 
 // BuyTicket godoc
+// @Security bearerAuth
 // @Tags Ticket
 // @Param ticket body dto.BuyTicketDto true "BuyTicketDto"
 // @Consume application/json
@@ -129,16 +133,28 @@ func (controller *TicketController) Delete(ctx *gin.Context) {
 // @Failure 400 {object} dto.SimpleResponse
 // @Router /ticket/buy [post]
 func (controller *TicketController) BuyTicket(ctx *gin.Context) {
-	var buyDto dto.BuyTicketDto
-	//TODO Strahinja: Napraviti validaciju da li je ticket > 0
+	//DTO i njegova validacija
+	var buyTicketDto dto.BuyTicketDto
 
-	err := ctx.ShouldBindJSON(&buyDto)
+	err := ctx.ShouldBindJSON(&buyTicketDto)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, dto.NewSimpleResponse(err.Error()))
 		return
 	}
 
-	id, err := controller.ticketService.BuyTicket(buyDto.Ticket, buyDto.Ticket.FlightId, buyDto.NumberOfTickets)
+	//Izvlacenje informacija o ulogovanom korisniku iz jwt-a
+	accountID := ctx.Keys["ID"]
+	user, err := controller.jwtService.GetUser(accountID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, dto.NewSimpleResponse(err.Error()))
+		return
+	}
+
+	//TODO Strahinja: buyer treba iz API kljuca
+	ticket := model.NewTicket(user, user, buyTicketDto.FlightId)
+
+	//Kreiranje tiketa u bazi
+	id, err := controller.ticketService.BuyTicket(ticket, buyTicketDto.NumberOfTickets)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, dto.NewSimpleResponse(err.Error()))
 		return
@@ -148,14 +164,21 @@ func (controller *TicketController) BuyTicket(ctx *gin.Context) {
 }
 
 // GetAllForCustomer godoc
+// @Security bearerAuth
 // @Tags Ticket
 // @Produce application/json
 // @Success 200 {array} model.Ticket
 // @Failure 500 {object} dto.SimpleResponse
 // @Router /ticket/myTickets [get]
 func (controller *TicketController) GetAllForCustomer(ctx *gin.Context) {
-	tickets, err := controller.ticketService.GetAllForCustomer()
+	accountID := ctx.Keys["ID"]
+	user, err := controller.jwtService.GetUser(accountID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, dto.NewSimpleResponse(err.Error()))
+		return
+	}
 
+	tickets, err := controller.ticketService.GetAllForUser(user.ID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, dto.NewSimpleResponse("Error while reading from database"))
 		return

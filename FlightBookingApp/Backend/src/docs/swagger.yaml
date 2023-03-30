@@ -22,13 +22,14 @@ definitions:
     type: object
   dto.BuyTicketDto:
     properties:
+      flightId:
+        type: string
       numberOfTickets:
+        minimum: 1
         type: integer
-      ticket:
-        $ref: '#/definitions/model.Ticket'
     required:
+    - flightId
     - numberOfTickets
-    - ticket
     type: object
   dto.CreatedResponse:
     properties:
@@ -172,13 +173,13 @@ definitions:
   model.Ticket:
     properties:
       buyer:
-        type: string
+        $ref: '#/definitions/model.User'
       flightId:
         type: string
       id:
         type: string
       owner:
-        type: string
+        $ref: '#/definitions/model.User'
     required:
     - flightId
     type: object
@@ -608,6 +609,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/dto.SimpleResponse'
+      security:
+      - bearerAuth: []
       tags:
       - Ticket
     post:
@@ -700,6 +703,8 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/dto.SimpleResponse'
+      security:
+      - bearerAuth: []
       tags:
       - Ticket
   /ticket/myTickets:
@@ -717,6 +722,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/dto.SimpleResponse'
+      security:
+      - bearerAuth: []
       tags:
       - Ticket
   /user:
