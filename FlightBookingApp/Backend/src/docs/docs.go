@@ -622,6 +622,11 @@ const docTemplate = `{
         },
         "/ticket": {
             "get": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -682,6 +687,11 @@ const docTemplate = `{
         },
         "/ticket/buy": {
             "post": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -1038,15 +1048,16 @@ const docTemplate = `{
         "dto.BuyTicketDto": {
             "type": "object",
             "required": [
-                "numberOfTickets",
-                "ticket"
+                "flightId",
+                "numberOfTickets"
             ],
             "properties": {
-                "numberOfTickets": {
-                    "type": "integer"
+                "flightId": {
+                    "type": "string"
                 },
-                "ticket": {
-                    "$ref": "#/definitions/model.Ticket"
+                "numberOfTickets": {
+                    "type": "integer",
+                    "minimum": 1
                 }
             }
         },
@@ -1253,7 +1264,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "buyer": {
-                    "type": "string"
+                    "$ref": "#/definitions/model.User"
                 },
                 "flightId": {
                     "type": "string"
@@ -1262,7 +1273,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "owner": {
-                    "type": "string"
+                    "$ref": "#/definitions/model.User"
                 }
             }
         },

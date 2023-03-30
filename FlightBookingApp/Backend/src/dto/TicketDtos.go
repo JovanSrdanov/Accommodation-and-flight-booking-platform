@@ -12,3 +12,8 @@ type TicketFullInfo struct {
 	FlightId   primitive.ObjectID `json:"flightId" binding:"required" bson:"flightId"`
 	FlightInfo model.Flight       `json:"flightInfo" bson:"flightInfo"`
 }
+
+type BuyTicketDto struct {
+	FlightId        primitive.ObjectID `json:"flightId" binding:"required" bson:"flightId"`
+	NumberOfTickets int32              `json:"numberOfTickets" binding:"required,min=1" bson:"numberOfTickets"`
+}
