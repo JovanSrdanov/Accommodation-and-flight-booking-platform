@@ -1,10 +1,10 @@
 import React from 'react'
 import Register from '../../components/register/register'
-import "./register-page.module.css"
+import "./register-page.css"
 
 const RegisterPage = () => {
   return (
-    <div>
+    <div className='App'>
       <Register/>
     </div>
   )
