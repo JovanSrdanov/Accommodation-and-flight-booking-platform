@@ -63,7 +63,6 @@ function App() {
               <Route path="*" element={<Missing />} />
             </Route>
           </Routes>{" "}
-          origin/develop
         </ThemeProvider>
       </main>
     );

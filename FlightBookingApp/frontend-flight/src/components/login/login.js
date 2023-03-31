@@ -2,7 +2,8 @@ import React, {useEffect, useRef, useState} from "react";
 import useAuth from "../../hooks/useAuth";
 import {Link, useLocation, useNavigate} from "react-router-dom";
 import jwt_decode from "jwt-decode";
-
+import useLocalStorage from "../../hooks/useLocalStorage";
+import useInput from "../../hooks/useInput";
 
 import axios from "../../api/axios";
 
@@ -17,7 +18,7 @@ const Login = () => {
     const userRef = useRef();
     const errRef = useRef();
 
-    const [user, setUser] = useState("");
+    const [user, resetUser, userAttributes] = useInput('') //useState("");
     const [pwd, setPwd] = useState("");
     const [errMsg, setErrMsg] = useState("");
 
@@ -54,7 +55,8 @@ const Login = () => {
             console.log('roles: ', roles)
 
             setAuth({user, pwd, roles, accessToken});
-            setUser("");
+            //setUser("");
+            resetUser();
             setPwd("");
             navigate(from, {replace: true});
         } catch (err) {
@@ -71,48 +73,66 @@ const Login = () => {
         }
     };
 
-    return (
-        <section>
-            <p
-                ref={errRef}
-                className={errMsg ? "errmsg" : "offscreen"}
-                aria-live="assertive"
-            >
-                {errMsg}
-            </p>
-       
-            <form onSubmit={handleSubmit}>
-                <label htmlFor="username">Username:</label>
-                <input
-                    type="text"
-                    id="username"
-                    ref={userRef}
-                    autoComplete="off"
-                    onChange={(e) => setUser(e.target.value)}
-                    value={user}
-                    required
-                />
+    const togglePersist = () => {
+      setPersist((prev) => !prev);
+    };
 
-                <label htmlFor="password">Password:</label>
-                <input
-                    type="password"
-                    id="password"
-                    onChange={(e) => setPwd(e.target.value)}
-                    value={pwd}
-                    required
-                />
-                <button>Sign In</button>
-            </form>
-            <p>
-                Need an Account?
-                <br/>
-                <span className="line">
-              {/*put router link here*/}
-                    <Link to="/register">Sign up</Link>
-            </span>
-            </p>
-        </section>
-    )
+    useEffect(() => {
+      localStorage.setItem("persist", persist);
+    }, [persist]);
+
+    return (
+      <section>
+        <p
+          ref={errRef}
+          className={errMsg ? "errmsg" : "offscreen"}
+          aria-live="assertive"
+        >
+          {errMsg}
+        </p>
+
+        <form onSubmit={handleSubmit}>
+          <label htmlFor="username">Username:</label>
+          <input
+            type="text"
+            id="username"
+            ref={userRef}
+            autoComplete="off"
+            {...userAttributes}
+            value={user}
+            required
+          />
+
+          <label htmlFor="password">Password:</label>
+          <input
+            type="password"
+            id="password"
+            onChange={(e) => setPwd(e.target.value)}
+            value={pwd}
+            required
+          />
+          <button>Sign In</button>
+          <div className="persistCheck">
+            <input
+              className="persistCheckbox"
+              type="checkbox"
+              id="persist"
+              onChange={togglePersist}
+              checked={persist}
+            />
+            <label htmlFor="persist">Trust This Device</label>
+          </div>
+        </form>
+        <p>
+          Need an Account?
+          <br />
+          <span className="line">
+            {/*put router link here*/}
+            <Link to="/register">Sign up</Link>
+          </span>
+        </p>
+      </section>
+    );
 }
 
 export default Login;
