@@ -113,7 +113,7 @@ function AllFlights() {
                 <Table stickyHeader>
                     <TableHead>
                         <TableRow>
-                            <StyledTableCell align="center" style={{width: "10%"}}> Departure Time</StyledTableCell>
+                            <StyledTableCell align="center" style={{width: "10%"}}>Departure Time</StyledTableCell>
                             <StyledTableCell align="center" style={{width: "20%"}}>Point of departure</StyledTableCell>
                             <StyledTableCell align="center" style={{width: "20%"}}>Destination</StyledTableCell>
                             <StyledTableCell align="center" style={{width: "10%"}}>Seats</StyledTableCell>
@@ -158,8 +158,6 @@ function AllFlights() {
                                             item.canceled === true &&
                                             <span>CANCELED</span>
                                         }
-
-
                                     </StyledTableCell>
                                 </StyledTableRow>))}
                         </TableBody>
