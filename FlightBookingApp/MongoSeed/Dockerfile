@@ -1,14 +1,13 @@
 FROM mongo:latest
 
-ENV DB_URI=mongodb://root:pass@mongo:27017 
-
 COPY airports.json /airports.json
+COPY users.json /users.json
+COPY accounts.json /accounts.json
 
-CMD mongoimport --uri $DB_URI --db flightDb --collection airports  --file ./airports.json --authenticationDatabase=admin  --jsonArray --drop
-	&& \ 
-	mongoimport --uri $DB_URI --db flightDb --collection users  --file ./users.json --authenticationDatabase=admin  --jsonArray --drop
-	&& \
-	mongoimport --uri $DB_URI --db flightDb --collection accounts  --file ./accounts.json --authenticationDatabase=admin  --jsonArray --drop
-# Trebalo bi se sve staviti u jednu CMD komandu tako da konkateniraj pomocu && \ 
-# pa sledeca komanda
+COPY import.sh /import.sh
+
+RUN chmod +x import.sh
+
+CMD ./import.sh
+
 
