@@ -1,8 +1,9 @@
 .page {
-    width: fit-content;
+    width: 100%;
     align-content: center;
     align-items: center;
     text-align: center;
     margin: auto;
 
 }
+

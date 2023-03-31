@@ -1,10 +1,10 @@
-import { Outlet } from "react-router-dom"
-import "./Layout.css"
+import {Outlet} from "react-router-dom"
+
 
 export const Layout = () => {
-  return (
-    <main className="App">
-      <Outlet/>
-    </main>
-  )
+    return (
+        <main className="App">
+            <Outlet/>
+        </main>
+    )
 }

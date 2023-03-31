@@ -7,11 +7,10 @@ import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import SearchSharpIcon from '@mui/icons-material/SearchSharp';
-import dayjs from "dayjs";
 import {styled} from '@mui/material/styles';
 import TableCell, {tableCellClasses} from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
-import {Paper, TableBody, TableContainer, TableHead} from "@mui/material";
+import {Paper, Table, TableBody, TableContainer, TableHead} from "@mui/material";
 import moment from "moment";
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -21,7 +20,9 @@ import DialogTitle from '@mui/material/DialogTitle';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ImportExportIcon from '@mui/icons-material/ImportExport';
-import de from "dayjs/locale/de";
+import dayjs from "dayjs";
+import {axiosPrivate} from "../../api/axios";
+import useAuth from "../../hooks/useAuth";
 
 const StyledTableCell = styled(TableCell)(({theme}) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -44,7 +45,7 @@ const FlightSearch = ({LoggedIn}) => {
     const [entityCount, setEntityCount] = useState(0);
 
     const [searchParams, setSearchParams] = useState({
-        departureDate: (new Date()).toISOString().substring(0, 10),
+        departureDate: dayjs((new Date())),
         destinationCountry: "",
         destinationCity: "",
         startPointCountry: "",
@@ -65,9 +66,15 @@ const FlightSearch = ({LoggedIn}) => {
 
 
     const fetchData = async () => {
+
+
         try {
             const {data} = await axios.get(process.env.REACT_APP_FLIGHT_APP_API + "search-flights", {
-                params: {...searchParams, ...pagination},
+                params: {
+                    ...searchParams,
+                    departureDate: searchParams.departureDate.toISOString().substring(0, 10), // convert to ISO string format
+                    ...pagination,
+                },
             });
             console.log(data)
             if (data.Data != null)
@@ -121,7 +128,7 @@ const FlightSearch = ({LoggedIn}) => {
 
     const buyTickets = async () => {
         try {
-            await axios.post(process.env.REACT_APP_FLIGHT_APP_API + "ticket/buy", {
+            await axiosPrivate.post(process.env.REACT_APP_FLIGHT_APP_API + "ticket/buy", {
                 numberOfTickets: selectDesiredNumberOfSeats,
                 flightId: selectedFlight.id,
             });
@@ -135,6 +142,9 @@ const FlightSearch = ({LoggedIn}) => {
 
     };
     const navigate = useNavigate();
+    const {auth} = useAuth()
+    console.log(auth)
+
 
     return (
         <div className="flight-search">
@@ -149,7 +159,7 @@ const FlightSearch = ({LoggedIn}) => {
                                 label="Start Point Country"
                                 type="text"
                                 name="startPointCountry"
-                                value={searchParams.startPointCountry ?? "aaa"}
+                                value={searchParams.startPointCountry}
                                 onChange={handleSearchParamsChange}
                             />
                         </td>
@@ -160,6 +170,7 @@ const FlightSearch = ({LoggedIn}) => {
                                 label="Destination country"
                                 type="text"
                                 name="destinationCountry"
+                                value={searchParams.destinationCountry}
                                 onChange={handleSearchParamsChange}
                             />
                         </td>
@@ -172,6 +183,7 @@ const FlightSearch = ({LoggedIn}) => {
                                 label="Start Point city"
                                 type="text"
                                 name="startPointCity"
+                                value={searchParams.startPointCity}
                                 onChange={handleSearchParamsChange}
                             />
                         </td>
@@ -182,6 +194,7 @@ const FlightSearch = ({LoggedIn}) => {
                                 label="Destination city"
                                 type="text"
                                 name="destinationCity"
+                                value={searchParams.destinationCity}
                                 onChange={handleSearchParamsChange}
                             />
                         </td>
@@ -196,22 +209,22 @@ const FlightSearch = ({LoggedIn}) => {
                                                min: 1
                                            }
                                        }}
+                                       value={searchParams.desiredNumberOfSeats}
                                        name="desiredNumberOfSeats"
-                                       defaultValue="1"
                                        label="Desired number of seats:"
                                        onChange={handleSearchParamsChange}/>
                         </td>
                         <td>
-                            <LocalizationProvider locale={de} dateAdapter={AdapterDayjs}>
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
                                 <DatePicker label="Departure date"
-                                            defaultValue={dayjs((new Date()))}
+                                            value={searchParams.departureDate}
                                             minDate={dayjs((new Date()))}
                                             onChange={
                                                 (newValue) => {
                                                     const result = new Date(newValue);
                                                     setSearchParams({
                                                             ...searchParams,
-                                                            departureDate: result.toISOString().substring(0, 10)
+                                                            departureDate: newValue
                                                         }
                                                     )
                                                 }
@@ -263,142 +276,141 @@ const FlightSearch = ({LoggedIn}) => {
                         </Button>
                     </div>
                     <TableContainer component={Paper}>
-                        <TableHead>
-                            <TableRow>
-                                <StyledTableCell className="cursor" align="center" style={{width: "20%"}}
-                                                 onClick={() => {
-                                                     setPagination({
-                                                         ...pagination,
-                                                         sortDirection: pagination.sortDirection === "asc" ? "dsc" : "asc",
-                                                         sortType: "departureDateTime"
-                                                     });
-                                                 }
-                                                 }>Departure
-                                    Time {pagination.sortDirection === "asc" && pagination.sortType === "departureDateTime" &&
-                                        <ArrowDownwardIcon> </ArrowDownwardIcon>
-                                    }
-                                    {pagination.sortDirection === "dsc" && pagination.sortType === "departureDateTime" &&
-                                        <ArrowUpwardIcon> </ArrowUpwardIcon>
-                                    }
-                                    {pagination.sortType === "price" &&
-                                        <ImportExportIcon></ImportExportIcon>
-                                    }</StyledTableCell>
-                                <StyledTableCell align="center" style={{width: "20%"}}>Point of
-                                    departure</StyledTableCell>
-                                <StyledTableCell align="center" style={{width: "20%"}}>Destination</StyledTableCell>
-                                <StyledTableCell align="center" style={{width: "5%"}}>Seats</StyledTableCell>
-                                <StyledTableCell sortable="down" align="center" style={{width: "20%"}}
-                                                 className="cursor"
-                                                 onClick={() => {
-                                                     setPagination({
-                                                         ...pagination,
-                                                         sortDirection: pagination.sortDirection === "asc" ? "dsc" : "asc",
-                                                         sortType: "price"
-                                                     });
-                                                 }}
-                                >Ticket price
-                                    {pagination.sortDirection === "asc" && pagination.sortType === "price" &&
-                                        <ArrowDownwardIcon> </ArrowDownwardIcon>
-                                    }
-                                    {pagination.sortDirection === "dsc" && pagination.sortType === "price" &&
-                                        <ArrowUpwardIcon> </ArrowUpwardIcon>
-                                    }
-                                    {pagination.sortType === "departureDateTime" &&
-                                        <ImportExportIcon></ImportExportIcon>
-                                    }
+                        <Table>
+                            <TableHead>
+                                <StyledTableRow>
+                                    <StyledTableCell className="cursor" align="center" style={{width: "20%"}}
+                                                     onClick={() => {
+                                                         setPagination({
+                                                             ...pagination,
+                                                             sortDirection: pagination.sortDirection === "asc" ? "dsc" : "asc",
+                                                             sortType: "departureDateTime"
+                                                         });
+                                                     }
+                                                     }>Departure
+                                        Time {pagination.sortDirection === "asc" && pagination.sortType === "departureDateTime" &&
+                                            <ArrowDownwardIcon> </ArrowDownwardIcon>
+                                        }
+                                        {pagination.sortDirection === "dsc" && pagination.sortType === "departureDateTime" &&
+                                            <ArrowUpwardIcon> </ArrowUpwardIcon>
+                                        }
+                                        {pagination.sortType === "price" &&
+                                            <ImportExportIcon></ImportExportIcon>
+                                        }</StyledTableCell>
+                                    <StyledTableCell align="center" style={{width: "20%"}}>Point of
+                                        departure</StyledTableCell>
+                                    <StyledTableCell align="center" style={{width: "20%"}}>Destination</StyledTableCell>
+                                    <StyledTableCell align="center" style={{width: "5%"}}>Seats</StyledTableCell>
+                                    <StyledTableCell sortable="down" align="center" style={{width: "20%"}}
+                                                     className="cursor"
+                                                     onClick={() => {
+                                                         setPagination({
+                                                             ...pagination,
+                                                             sortDirection: pagination.sortDirection === "asc" ? "dsc" : "asc",
+                                                             sortType: "price"
+                                                         });
+                                                     }}
+                                    >Ticket price
+                                        {pagination.sortDirection === "asc" && pagination.sortType === "price" &&
+                                            <ArrowDownwardIcon> </ArrowDownwardIcon>
+                                        }
+                                        {pagination.sortDirection === "dsc" && pagination.sortType === "price" &&
+                                            <ArrowUpwardIcon> </ArrowUpwardIcon>
+                                        }
+                                        {pagination.sortType === "departureDateTime" &&
+                                            <ImportExportIcon></ImportExportIcon>
+                                        }
 
 
-                                </StyledTableCell>
-                                <StyledTableCell align="center" style={{width: "10%"}}>Total price</StyledTableCell>
-                                {LoggedIn &&
-
-                                    <StyledTableCell align="center" style={{width: "5%"}}>Buy tickets</StyledTableCell>
-
-                                }
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {data.map((item, i) => (
-                                <StyledTableRow hover key={i}>
-                                    <StyledTableCell
-                                        align="center"
-                                    > {moment(item.Flight.departureDateTime).format("MM.DD.YYYY HH:mm")}{" "}</StyledTableCell>
-                                    <StyledTableCell align="center">
-                                        <li>Airport name: {item.Flight.startPoint.name}</li>
-                                        <li>City: {item.Flight.startPoint.address.city}</li>
-                                        <li>Country {item.Flight.startPoint.address.country}</li>
-                                        <li>Street: {item.Flight.startPoint.address.street}, {item.Flight.startPoint.address.streetNumber}</li>
                                     </StyledTableCell>
-                                    <StyledTableCell align="center">
-                                        <li>Airport name: {item.Flight.destination.name}</li>
-                                        <li>City: {item.Flight.destination.address.city}</li>
-                                        <li>Country {item.Flight.destination.address.country}</li>
-                                        <li>Street: {item.Flight.destination.address.street}, {item.Flight.destination.address.streetNumber}</li>
-                                    </StyledTableCell>
-                                    <StyledTableCell align="center">
-                                        <li>Total: {item.Flight.numberOfSeats}</li>
-                                        <li>Vacant: {item.Flight.vacantSeats}</li>
-                                    </StyledTableCell>
-                                    <StyledTableCell align="center">{item.Flight.price}</StyledTableCell>
-                                    <StyledTableCell align="center">{item.TotalPrice}</StyledTableCell>
+                                    <StyledTableCell align="center" style={{width: "10%"}}>Total price</StyledTableCell>
                                     {LoggedIn &&
-                                        <StyledTableCell align="center"> <Button
-                                            onClick={() => handleOpenBuyTicketsDialog(item.Flight)}
-                                            variant="contained">
-                                            Buy now
-                                        </Button>
-                                            <Dialog
-                                                open={buyTicketsDialog}
-                                                onClose={handleCloseBuyTicketsDialog}>
-                                                <DialogTitle id="alert-dialog-title">
-                                                    {"Select the number of tickets you want to buy"}
-                                                </DialogTitle>
-                                                <DialogContent>
-                                                    <p>Maximum number of tickets you can
-                                                        buy: {selectedFlight.vacantSeats}</p>
-                                                    <DialogContentText id="alert-dialog-description">
-                                                        <TextField type="number"
-                                                                   fullWidth
-                                                                   variant="filled"
-                                                                   InputProps={{
-                                                                       inputProps: {
-                                                                           min: 1,
-                                                                           max: selectedFlight.vacantSeats
-                                                                       }
-                                                                   }}
-                                                                   defaultValue="1"
-                                                                   label="Desired number of seats:"
-                                                                   onChange={handleSelectDesiredNumberOfSeatsChange}/>
-                                                    </DialogContentText>
-                                                </DialogContent>
-                                                <DialogActions>
-                                                    <Button onClick={handleCloseBuyTicketsDialog}>Close</Button>
-                                                    <Button onClick={buyTickets}>Buy</Button>
-                                                </DialogActions>
-                                            </Dialog>
-                                            <Dialog
-                                                open={purchaseDialog}
-                                                onClose={() => {
-                                                    setPurchaseDialog(false)
-                                                }}>
-                                                <DialogTitle id="alert-dialog-title">
-                                                    {"Successful purchase"}
-                                                </DialogTitle>
-                                                <DialogActions>
-                                                    <Button onClick={() => {
-                                                        setPurchaseDialog(false)
-                                                        /*TODO Jovan promei rutu kad stefan doda*/
-                                                        navigate('/');
-                                                    }}>Close</Button>
-                                                </DialogActions>
-                                            </Dialog>
-                                        </StyledTableCell>}
+
+                                        <StyledTableCell align="center" style={{width: "5%"}}>Buy
+                                            tickets</StyledTableCell>
+
+                                    }
                                 </StyledTableRow>
-                            ))}
-                        </TableBody>
+                            </TableHead>
+                            <TableBody>
+                                {data.map((item, i) => (
+                                    <StyledTableRow hover key={i}>
+                                        <StyledTableCell
+                                            align="center"
+                                        > {moment(item.Flight.departureDateTime).format("MM.DD.YYYY HH:mm")}{" "}</StyledTableCell>
+                                        <StyledTableCell align="center">
+                                            <li>Airport name: {item.Flight.startPoint.name}</li>
+                                            <li>City: {item.Flight.startPoint.address.city}</li>
+                                            <li>Country {item.Flight.startPoint.address.country}</li>
+                                            <li>Street: {item.Flight.startPoint.address.street}, {item.Flight.startPoint.address.streetNumber}</li>
+                                        </StyledTableCell>
+                                        <StyledTableCell align="center">
+                                            <li>Airport name: {item.Flight.destination.name}</li>
+                                            <li>City: {item.Flight.destination.address.city}</li>
+                                            <li>Country {item.Flight.destination.address.country}</li>
+                                            <li>Street: {item.Flight.destination.address.street}, {item.Flight.destination.address.streetNumber}</li>
+                                        </StyledTableCell>
+                                        <StyledTableCell align="center">
+                                            <li>Total: {item.Flight.numberOfSeats}</li>
+                                            <li>Vacant: {item.Flight.vacantSeats}</li>
+                                        </StyledTableCell>
+                                        <StyledTableCell align="center">{item.Flight.price}</StyledTableCell>
+                                        <StyledTableCell align="center">{item.TotalPrice}</StyledTableCell>
+                                        {LoggedIn &&
+                                            <StyledTableCell align="center"> <Button
+                                                onClick={() => handleOpenBuyTicketsDialog(item.Flight)}
+                                                variant="contained">
+                                                Buy now
+                                            </Button>
+
+                                            </StyledTableCell>}
+                                    </StyledTableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
                     </TableContainer>
                 </div>
             }
+            <Dialog
+                open={buyTicketsDialog}
+                onClose={handleCloseBuyTicketsDialog}>
+                <DialogTitle id="alert-dialog-title">
+                    {"Select the number of tickets you want to buy"}
+                </DialogTitle>
+                <DialogContent>
+                    <TextField type="number"
+                               fullWidth
+                               variant="filled"
+                               InputProps={{
+                                   inputProps: {
+                                       min: 1,
+                                       max: selectedFlight.vacantSeats
+                                   }
+                               }}
+                               value={selectDesiredNumberOfSeats}
+                               label="Desired number of seats:"
+                               onChange={handleSelectDesiredNumberOfSeatsChange}/>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseBuyTicketsDialog}>Close</Button>
+                    <Button onClick={buyTickets}>Buy</Button>
+                </DialogActions>
+            </Dialog>
+            <Dialog
+                open={purchaseDialog}
+                onClose={() => {
+                    setPurchaseDialog(false)
+                }}>
+                <DialogTitle id="alert-dialog-title">
+                    {"Successful purchase"}
+                </DialogTitle>
+                <DialogActions>
+                    <Button onClick={() => {
+                        setPurchaseDialog(false)
+                        navigate('/bought-tickets');
+                    }}>Close</Button>
+                </DialogActions>
+            </Dialog>
         </div>
     );
 };
