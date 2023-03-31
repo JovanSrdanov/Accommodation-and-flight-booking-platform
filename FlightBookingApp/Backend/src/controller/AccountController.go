@@ -7,6 +7,7 @@ import (
 	"FlightBookingApp/model"
 	"FlightBookingApp/service"
 	token "FlightBookingApp/token"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -147,18 +148,27 @@ func (controller *AccountController) RefreshAccessToken(ctx *gin.Context) {
 	refreshToken := refreshCookie.Value
 
 	account, err := controller.accountService.GetByRefreshToken(refreshToken)
+
+	fmt.Print(account)
+
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusForbidden,
-			gin.H{"error": "Error while generating the access token - user not found"})
+			gin.H{"error": err.Error()})
 		return
 	}
 
 	// refresh token validation
-	//valid, claims := token.VerifyToken(refreshToken)
-	//if !valid || claims.TokenType != "refresh" {
-	//	ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "Invalid refresh token"})
-	//	return
-	//}
+	err, claims := token.VerifyToken(refreshToken)
+
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": err.Error()})
+		return
+	}
+
+	if claims.TokenType != "refresh" {
+		ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "Not a refresh token"})
+		return
+	}
 
 	accessToken, err1 := token.GenerateAccessToken(account)
 	if err1 != nil {

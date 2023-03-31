@@ -76,17 +76,23 @@ func GenerateRefreshToken(account model.Account) (string, error) {
 	return refreshTokenString, nil
 }
 
-func VerifyToken(tokenString string) (bool, *JWT.AccessJwtClaims) {
+func VerifyToken(tokenString string) (error, *JWT.AccessJwtClaims) {
 	claims := &JWT.AccessJwtClaims{}
-	token, _ := getTokenFromString(tokenString, claims)
+	token, err := getTokenFromString(tokenString, claims)
+
+	fmt.Println("get token from string: ", token)
+
+	if err != nil {
+		return err, claims
+	}
 
 	if token.Valid {
 		if e := claims.Valid(); e == nil {
-			return true, claims
+			return e, claims
 		}
 	}
 
-	return false, claims
+	return nil, claims
 }
 
 func getTokenFromString(tokenString string, claims *JWT.AccessJwtClaims) (*jwt.Token, error) {
@@ -96,6 +102,9 @@ func getTokenFromString(tokenString string, claims *JWT.AccessJwtClaims) (*jwt.T
 		}
 
 		// hmacSampleSecret is a []byte containing your secret, e.g. []byte("my_secret_key")
-		return []byte(accessTokenSecret), nil
+		if claims.TokenType == "access" {
+			return []byte(accessTokenSecret), nil
+		}
+		return []byte(refreshTokenSecret), nil
 	})
 }

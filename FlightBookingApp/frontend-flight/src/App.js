@@ -1,4 +1,5 @@
 import RequireAuth from "./components/Authentication/RequireAuth";
+import PersistLogin from "./components/Authentication/PersistLogin"
 import {Route, Routes} from "react-router-dom";
 
 import HomePage from "./pages/unaunthenticated/home-page";
@@ -110,7 +111,7 @@ function App() {
       <main>
         <ThemeProvider theme={darkTheme}>
           <MainNavigation />
-          <Planes/>
+          <Planes />
           <Routes>
             <Route path="/" element={<Layout />}>
               {/* public rotues*/}
@@ -121,27 +122,21 @@ function App() {
               {/* Ovako se stite rute - stavis rutu sa required auth i prosledis role koje su 
               dozvoljene u allowerRoles */}
               {/* Za zasticene rute ne koristiti axios, vec axiosPrivate, u njega su ugradjeni interceptori */}
-              <Route
-                element={
-                  <RequireAuth allowedRoles={[ROLES.REGULAR]} />
-                }
-              >
-                <Route path="flight-search" element={<FlightSearchPage />} />
-              </Route>
-              
-              <Route
-                element={
-                  <RequireAuth allowedRoles={[ROLES.ADMIN]} />
-                }
-              >
-                <Route path="/all-flights" element={<AllFlightsPage/>}/>
-                <Route path="admin-info" element={<AdminInfoPage />} />
-              </Route>
+              <Route element={<PersistLogin />}>
+                <Route element={<RequireAuth allowedRoles={[ROLES.REGULAR]} />}>
+                  <Route path="flight-search" element={<FlightSearchPage />} />
+                </Route>
 
+                <Route element={<RequireAuth allowedRoles={[ROLES.ADMIN]} />}>
+                  <Route path="/all-flights" element={<AllFlightsPage />} />
+                  <Route path="admin-info" element={<AdminInfoPage />} />
+                </Route>
+              </Route>
               {/* catch all */}
               <Route path="*" element={<Missing />} />
             </Route>
-          </Routes> origin/develop
+          </Routes>{" "}
+          origin/develop
         </ThemeProvider>
       </main>
     );
