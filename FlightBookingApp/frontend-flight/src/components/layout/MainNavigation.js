@@ -17,6 +17,9 @@ function MainNavigation() {
           <li>
             <Link to="/">Home</Link>
           </li>
+          <li>
+              <Link to='/all-flights'>All flights</Link>
+          </li>
         </ul>
       </nav>
     </header>

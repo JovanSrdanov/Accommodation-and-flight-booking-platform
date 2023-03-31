@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {useNavigate} from 'react-router-dom';
 import axios from "axios";
 import "./flight-search.css";
@@ -21,7 +21,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ImportExportIcon from '@mui/icons-material/ImportExport';
-
+import de from "dayjs/locale/de";
 
 const StyledTableCell = styled(TableCell)(({theme}) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -42,7 +42,7 @@ const FlightSearch = ({LoggedIn}) => {
 
     const [data, setData] = useState([]);
     const [entityCount, setEntityCount] = useState(0);
-    const [loading, setLoading] = useState(false);
+
     const [searchParams, setSearchParams] = useState({
         departureDate: (new Date()).toISOString().substring(0, 10),
         destinationCountry: "",
@@ -53,7 +53,7 @@ const FlightSearch = ({LoggedIn}) => {
     });
     const [pagination, setPagination] = useState({
         pageNumber: 1,
-        resultsPerPage: 5,
+        resultsPerPage: 4,
         sortDirection: "asc",
         sortType: "departureDateTime",
     });
@@ -63,13 +63,10 @@ const FlightSearch = ({LoggedIn}) => {
     const [selectedFlight, setSelectedFlight] = React.useState({});
     const [purchaseDialog, setPurchaseDialog] = React.useState(false);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            if (!loading) {
-                setLoading(true);
-                return
-            }
-            const {data} = await axios.get(process.env.REACT_APP_FLIGHT_APP_API + "flight/search", {
+
+    const fetchData = async () => {
+        try {
+            const {data} = await axios.get(process.env.REACT_APP_FLIGHT_APP_API + "search-flights", {
                 params: {...searchParams, ...pagination},
             });
             console.log(data)
@@ -80,9 +77,10 @@ const FlightSearch = ({LoggedIn}) => {
                 setData([])
             }
             setEntityCount(data.EntityCount)
-        };
-        fetchData();
-    }, [pagination]);
+        } catch (e) {
+            alert("Unexpected error")
+        }
+    };
 
     const handleSearchParamsChange = (e) => {
         setSearchParams({...searchParams, [e.target.name]: e.target.value});
@@ -101,11 +99,11 @@ const FlightSearch = ({LoggedIn}) => {
             default:
                 break;
         }
+        fetchData();
+
     };
 
-    const handleOpenNoFlightsDialog = () => {
-        setOpenNoFlightsDialog(true);
-    };
+
     const handleCloseNoFlightsDialog = () => {
         setOpenNoFlightsDialog(false);
     };
@@ -120,26 +118,21 @@ const FlightSearch = ({LoggedIn}) => {
         setBuyTicketsDialog(false);
         setSelectedFlight({})
     };
-    const styles = theme => ({
-        tableRow: {
-            "&:hover": {
-                backgroundColor: "blue !important"
-            }
-        }
-    });
+
     const buyTickets = async () => {
         try {
-            const {buyTicketsData} = await axios.post(process.env.REACT_APP_FLIGHT_APP_API + "ticket/buy", {
+            await axios.post(process.env.REACT_APP_FLIGHT_APP_API + "ticket/buy", {
                 numberOfTickets: selectDesiredNumberOfSeats,
-                ticket: {
-                    flightId: selectedFlight.id,
-                }
+                flightId: selectedFlight.id,
             });
+
             setPurchaseDialog(true);
             handleCloseBuyTicketsDialog()
+
         } catch (e) {
             alert("Unexpected error")
         }
+
     };
     const navigate = useNavigate();
 
@@ -209,7 +202,7 @@ const FlightSearch = ({LoggedIn}) => {
                                        onChange={handleSearchParamsChange}/>
                         </td>
                         <td>
-                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <LocalizationProvider locale={de} dateAdapter={AdapterDayjs}>
                                 <DatePicker label="Departure date"
                                             defaultValue={dayjs((new Date()))}
                                             minDate={dayjs((new Date()))}
@@ -234,6 +227,7 @@ const FlightSearch = ({LoggedIn}) => {
                     variant="contained" endIcon={<SearchSharpIcon/>}
                     onClick={() => {
                         setPagination({...pagination, pageNumber: 1})
+                        fetchData();
                     }}>Search
                 </Button>
                 <Dialog
@@ -289,9 +283,9 @@ const FlightSearch = ({LoggedIn}) => {
                                     {pagination.sortType === "price" &&
                                         <ImportExportIcon></ImportExportIcon>
                                     }</StyledTableCell>
-                                <StyledTableCell align="center" style={{width: "25%"}}>Point of
+                                <StyledTableCell align="center" style={{width: "20%"}}>Point of
                                     departure</StyledTableCell>
-                                <StyledTableCell align="center" style={{width: "25%"}}>Destination</StyledTableCell>
+                                <StyledTableCell align="center" style={{width: "20%"}}>Destination</StyledTableCell>
                                 <StyledTableCell align="center" style={{width: "5%"}}>Seats</StyledTableCell>
                                 <StyledTableCell sortable="down" align="center" style={{width: "20%"}}
                                                  className="cursor"
@@ -315,7 +309,7 @@ const FlightSearch = ({LoggedIn}) => {
 
 
                                 </StyledTableCell>
-                                <StyledTableCell align="center" style={{width: "5%"}}>Total price</StyledTableCell>
+                                <StyledTableCell align="center" style={{width: "10%"}}>Total price</StyledTableCell>
                                 {LoggedIn &&
 
                                     <StyledTableCell align="center" style={{width: "5%"}}>Buy tickets</StyledTableCell>
@@ -328,14 +322,14 @@ const FlightSearch = ({LoggedIn}) => {
                                 <StyledTableRow hover key={i}>
                                     <StyledTableCell
                                         align="center"
-                                        style={{width: "5%"}}> {moment(item.Flight.departureDateTime).format("MM.DD.YYYY HH:mm")}{" "}</StyledTableCell>
+                                    > {moment(item.Flight.departureDateTime).format("MM.DD.YYYY HH:mm")}{" "}</StyledTableCell>
                                     <StyledTableCell align="center">
                                         <li>Airport name: {item.Flight.startPoint.name}</li>
                                         <li>City: {item.Flight.startPoint.address.city}</li>
                                         <li>Country {item.Flight.startPoint.address.country}</li>
                                         <li>Street: {item.Flight.startPoint.address.street}, {item.Flight.startPoint.address.streetNumber}</li>
                                     </StyledTableCell>
-                                    <StyledTableCell align="center" style={{width: "35%"}}>
+                                    <StyledTableCell align="center">
                                         <li>Airport name: {item.Flight.destination.name}</li>
                                         <li>City: {item.Flight.destination.address.city}</li>
                                         <li>Country {item.Flight.destination.address.country}</li>
@@ -360,8 +354,8 @@ const FlightSearch = ({LoggedIn}) => {
                                                     {"Select the number of tickets you want to buy"}
                                                 </DialogTitle>
                                                 <DialogContent>
-                                                    <h4>Maximum number of tickets you can
-                                                        buy: {selectedFlight.vacantSeats}</h4>
+                                                    <p>Maximum number of tickets you can
+                                                        buy: {selectedFlight.vacantSeats}</p>
                                                     <DialogContentText id="alert-dialog-description">
                                                         <TextField type="number"
                                                                    fullWidth

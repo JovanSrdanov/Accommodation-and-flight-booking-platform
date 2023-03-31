@@ -1,9 +1,9 @@
 import FlightSearch from "../../components/flight-search/flight-search";
-import "./flight-search-page.css"
+import "../page.css"
 
 function FlightSearchPage() {
     return (
-        <div className="FlightSearchPage">
+        <div className="page">
             <h1>Flight Search</h1>
             <FlightSearch LoggedIn={true}></FlightSearch>
         </div>

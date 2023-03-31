@@ -468,60 +468,7 @@ paths:
             $ref: '#/definitions/dto.SimpleResponse'
       tags:
       - Flight
-  /flight/{id}:
-    get:
-      parameters:
-      - description: Flight ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Flight'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/dto.SimpleResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/dto.SimpleResponse'
-      tags:
-      - Flight
-    patch:
-      parameters:
-      - description: Flight ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dto.SimpleResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/dto.SimpleResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/dto.SimpleResponse'
-        "409":
-          description: Conflict
-          schema:
-            $ref: '#/definitions/dto.SimpleResponse'
-      tags:
-      - Flight
-  /flight/search:
+  /flight-search:
     get:
       parameters:
       - description: Departure date, must be in this format YYYY-MM-DD
@@ -590,6 +537,59 @@ paths:
             $ref: '#/definitions/dto.SimpleResponse'
         "500":
           description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+      tags:
+      - Flight
+  /flight/{id}:
+    get:
+      parameters:
+      - description: Flight ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Flight'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+      tags:
+      - Flight
+    patch:
+      parameters:
+      - description: Flight ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.SimpleResponse'
+        "409":
+          description: Conflict
           schema:
             $ref: '#/definitions/dto.SimpleResponse'
       tags:
