@@ -46,7 +46,7 @@ const Login = () => {
       //console.log(JSON.stringify(response));
 
       const accessToken = response?.data?.accessToken;
-      const refreshToken = response?.data?.refreshToken;
+      //const refreshToken = response?.data?.refreshToken;
 
       const decodedToken = jwt_decode(accessToken);
       console.log('decoded token: ', decodedToken)
@@ -54,7 +54,7 @@ const Login = () => {
       const roles = decodedToken.roles
       console.log('roles: ', roles)
 
-      setAuth({ user, pwd, accessToken, refreshToken, roles });
+      setAuth({ user, pwd, roles, accessToken });
       setUser("");
       setPwd("");
       navigate(from, { replace: true });

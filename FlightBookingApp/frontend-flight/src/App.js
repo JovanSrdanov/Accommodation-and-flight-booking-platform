@@ -5,6 +5,7 @@ import HomePage from "./pages/unaunthenticated/home-page";
 import FlightSearchPage from "./pages/customer/flight-search-page";
 import MainNavigation from "./components/layout/MainNavigation";
 import RegisterPage from "./pages/unaunthenticated/register-page"
+import AdminInfoPage from "./pages/admin/admin-info-page";
 
 import {createTheme, ThemeProvider} from '@mui/material/styles';
 import { Layout } from "./components/layout/Layout";
@@ -38,8 +39,20 @@ function App() {
               {/* Ovako se stite rute - stavis rutu sa required auth i prosledis role koje su 
               dozvoljene u allowerRoles */}
               {/* Za zasticene rute ne koristiti axios, vec axiosPrivate, u njega su ugradjeni interceptori */}
-              <Route element={<RequireAuth allowedRoles={[ROLES.ADMIN]}/>}>
+              <Route
+                element={
+                  <RequireAuth allowedRoles={[ROLES.REGULAR, ROLES.ADMIN]} />
+                }
+              >
                 <Route path="flight-search" element={<FlightSearchPage />} />
+              </Route>
+
+              <Route
+                element={
+                  <RequireAuth allowedRoles={[ROLES.ADMIN]} />
+                }
+              >
+                <Route path="admin-info" element={<AdminInfoPage />} />
               </Route>
 
               {/* catch all */}

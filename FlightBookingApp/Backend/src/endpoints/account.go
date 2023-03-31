@@ -42,9 +42,6 @@ func DefineAccountEndpoints(upperRouterGroup *gin.RouterGroup, client *mongo.Cli
 		authenticatedAccounts.DELETE(":id",
 			middleware.Authorization([]model.Role{model.ADMIN}),
 			accContr.Delete)
-		authenticatedAccounts.GET("/refresh-token/:token",
-			middleware.Authorization([]model.Role{model.REGULAR_USER, model.ADMIN}),
-			accContr.RefreshAccessToken)
 	}
 
 	// anyone can use these
@@ -52,6 +49,7 @@ func DefineAccountEndpoints(upperRouterGroup *gin.RouterGroup, client *mongo.Cli
 	{
 		unauthenticated.POST("/login", accContr.Login)
 		unauthenticated.POST("/register", accContr.Register)
+		unauthenticated.GET("/refresh-token", accContr.RefreshAccessToken)
 		unauthenticated.GET("/emailver/:username/:verPass", accContr.VerifyEmail)
 	}
 }

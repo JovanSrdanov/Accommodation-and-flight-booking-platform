@@ -9,12 +9,18 @@ function MainNavigation() {
       <nav>
         <ul>
           <li>
-            <Link to='/flight-search'>Flight Search</Link>
+            <Link to="/flight-search">Flight Search</Link>
+          </li>
+          <li>
+            <Link to="/admin-info">Admin Info</Link>
+          </li>
+          <li>
+            <Link to="/">Home</Link>
           </li>
         </ul>
       </nav>
     </header>
-  )
+  );
 } 
 
 export default MainNavigation

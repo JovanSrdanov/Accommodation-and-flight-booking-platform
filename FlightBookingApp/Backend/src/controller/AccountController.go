@@ -102,14 +102,27 @@ func (controller *AccountController) Login(ctx *gin.Context) {
 
 	accessTokenString, refreshTokenString, err := controller.accountService.Login(loginData)
 
-	//TODO Stefan: fix error handleing
-
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, dto.NewSimpleResponse(err.Error()))
 		return
 	}
 
-	response := dto.LoginResponse{AccessToken: accessTokenString, RefreshToken: refreshTokenString}
+	response := dto.LoginResponse{AccessToken: accessTokenString}
+
+	//access tokes is returned to the client, but the refresh token is saved in a http-only cookie
+	cookie := &http.Cookie{
+		Name:     "refresh_token",
+		Value:    refreshTokenString,
+		HttpOnly: true,
+		Secure:   false,
+		SameSite: http.SameSiteStrictMode,
+		Path:     "/",              // not sure what this is
+		MaxAge:   60 * 60 * 24 * 7, // 1 week
+	}
+
+	// TODO Stefan: save the refresh token in the db
+
+	http.SetCookie(ctx.Writer, cookie)
 
 	ctx.JSON(http.StatusOK, response)
 }
@@ -124,21 +137,28 @@ func (controller *AccountController) Login(ctx *gin.Context) {
 // @Failure 500 {object} string "Error while generating the token"
 // @Router /account/refresh-token/{token} [get]
 func (controller *AccountController) RefreshAccessToken(ctx *gin.Context) {
-	// TODO Stefan: endpoint should have :token at the end
-	refreshToken := ctx.Param("token")
+	//refreshToken := ctx.Param("token")
+	refreshCookie, err := ctx.Request.Cookie("refresh_token")
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "No cookie provided"})
+		return
+	}
+
+	refreshToken := refreshCookie.Value
+
+	account, err := controller.accountService.GetByRefreshToken(refreshToken)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusForbidden,
+			gin.H{"error": "Error while generating the access token - user not found"})
+		return
+	}
 
 	// refresh token validation
-	valid, claims := token.VerifyToken(refreshToken)
-	if !valid || claims.TokenType != "refresh" {
-		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid refresh token"})
-		return
-	}
-
-	account, err := controller.accountService.GetById(claims.ID)
-	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Error while generating the access token - user not found"})
-		return
-	}
+	//valid, claims := token.VerifyToken(refreshToken)
+	//if !valid || claims.TokenType != "refresh" {
+	//	ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "Invalid refresh token"})
+	//	return
+	//}
 
 	accessToken, err1 := token.GenerateAccessToken(account)
 	if err1 != nil {
@@ -150,7 +170,7 @@ func (controller *AccountController) RefreshAccessToken(ctx *gin.Context) {
 		AccessToken: accessToken,
 	}
 
-	ctx.JSON(http.StatusOK, response)
+	ctx.JSON(http.StatusCreated, response)
 }
 
 // GetAll godoc
