@@ -18,10 +18,11 @@
             width: 100%;
             mix-blend-mode: multiply;
             z-index: -1;
+    
 
         }
 
-        .planeToRight>img{
+        .planeToRight > img {
             width: 100%;
         }
 
@@ -37,19 +38,23 @@
 
         @-webkit-keyframes planeToRight {
 
-            0%      {margin-left: -10%;}
-            100%    {margin-left: 100%;}
+            0% {
+                margin-left: -10%;
+            }
+            100% {
+                margin-left: 100%;
+            }
 
         }
 
 
-        .planeToLeft>img{
+        .planeToLeft > img {
             width: 100%;
             transform: scaleX(-1);
 
         }
 
-        .planeToLeft  {
+        .planeToLeft {
             width: 5%;
             mix-blend-mode: multiply;
             -webkit-animation-name: planeToLeft;
@@ -61,11 +66,14 @@
 
         @-webkit-keyframes planeToLeft {
 
-            0%      {margin-left: 100%;}
-            100%    {margin-left: -10%;}
+            0% {
+                margin-left: 100%;
+            }
+            100% {
+                margin-left: -10%;
+            }
 
         }
-
 
 
     </style>
@@ -73,7 +81,5 @@
 <body>
 <noscript>You need to enable JavaScript to run this app.</noscript>
 <div id="root"></div>
-
-
 </body>
 </html>

@@ -1,15 +1,12 @@
 import Login from '../../components/login/login';
 import FlightSearch from "../../components/flight-search/flight-search";
 
-import "./home-page.css"
+import "../page.css"
 
 function HomePage() {
-    function clickHandler() {
-
-    }
 
     return (
-        <div className='App'>
+        <div className='page'>
             <Login/>
             <FlightSearch LoggedIn={false}></FlightSearch>
         </div>
