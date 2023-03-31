@@ -55,18 +55,18 @@ function App() {
                                 <Route path="/bought-tickets" element={<BoughtTicketsPage/>}/>
                             </Route>
 
-                            <Route element={<RequireAuth allowedRoles={[ROLES.ADMIN]}/>}>
-                                <Route path="/create-flight" element={<CreateFlightPage/>}/>
-                                <Route path="/all-flights" element={<AllFlightsPage/>}/>
-                                <Route path="admin-info" element={<AdminInfoPage/>}/>
-                            </Route>
-                        </Route>
-                        {/* catch all */}
-                        <Route path="*" element={<Missing/>}/>
-                    </Route>
-                </Routes>{" "}
-            </ThemeProvider>
-        </main>
+                <Route element={<RequireAuth allowedRoles={[ROLES.ADMIN]} />}>
+                  <Route path="/create-flight" element={<CreateFlightPage/>}/>
+                  <Route path="/all-flights" element={<AllFlightsPage />} />
+                  <Route path="admin-info" element={<AdminInfoPage />} />
+                </Route>
+              </Route>
+              {/* catch all */}
+              <Route path="*" element={<Missing />} />
+            </Route>
+          </Routes>
+        </ThemeProvider>
+      </main>
     );
 }
 
