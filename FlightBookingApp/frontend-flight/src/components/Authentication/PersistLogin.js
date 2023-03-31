@@ -23,7 +23,7 @@ const PersistLogin = () => {
       }
     }
 
-    !auth?.accessToken ? verifyRegreshToken() : setIsloading(false);
+    !auth?.accessToken && persist ? verifyRegreshToken() : setIsloading(false);
 
     return () => isMounted = false;
   }, [])
