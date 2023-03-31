@@ -18,10 +18,16 @@ func ValidateToken() gin.HandlerFunc {
 
 		tokenString := strings.Split(bearerToken, " ")[1]
 
-		valid, claims := token.VerifyToken(tokenString)
+		err, claims := token.VerifyToken(tokenString)
 
-		if !valid || claims.TokenType != "access" {
-			ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "Invalid authentication token"})
+		if err != nil {
+			ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": err.Error()})
+			return
+		}
+
+		if claims.TokenType != "access" {
+			ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "Not an access token"})
+			return
 		}
 
 		if len(ctx.Keys) == 0 {

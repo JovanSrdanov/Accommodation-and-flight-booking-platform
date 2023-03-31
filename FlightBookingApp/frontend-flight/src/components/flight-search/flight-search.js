@@ -22,6 +22,7 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ImportExportIcon from '@mui/icons-material/ImportExport';
 import dayjs from "dayjs";
 import {axiosPrivate} from "../../api/axios";
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import useAuth from "../../hooks/useAuth";
 
 const StyledTableCell = styled(TableCell)(({theme}) => ({
@@ -43,6 +44,7 @@ const FlightSearch = ({LoggedIn}) => {
 
     const [data, setData] = useState([]);
     const [entityCount, setEntityCount] = useState(0);
+    const axiosPrivate = useAxiosPrivate();
 
     const [searchParams, setSearchParams] = useState({
         departureDate: dayjs((new Date())),
@@ -126,20 +128,19 @@ const FlightSearch = ({LoggedIn}) => {
         setSelectedFlight({})
     };
 
-    const buyTickets = async () => {
-        try {
-            await axiosPrivate.post(process.env.REACT_APP_FLIGHT_APP_API + "ticket/buy", {
-                numberOfTickets: selectDesiredNumberOfSeats,
-                flightId: selectedFlight.id,
-            });
-
+    const buyTickets = async () => {  
+        await axiosPrivate.post("/api/ticket/buy", {
+            numberOfTickets: selectDesiredNumberOfSeats,
+            flightId: selectedFlight.id,
+        }).then((res) => {
+            console.log(res);
             setPurchaseDialog(true);
-            handleCloseBuyTicketsDialog()
-
-        } catch (e) {
-            alert("Unexpected error")
-        }
-
+            handleCloseBuyTicketsDialog();
+        })
+        .catch(err => {
+            console.error(err)
+            alert("unexpected error")
+        });
     };
     const navigate = useNavigate();
     const {auth} = useAuth()

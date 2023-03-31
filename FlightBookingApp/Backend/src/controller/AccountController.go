@@ -101,7 +101,6 @@ func (controller *AccountController) Login(ctx *gin.Context) {
 	}
 
 	accessTokenString, refreshTokenString, err := controller.accountService.Login(loginData)
-
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, dto.NewSimpleResponse(err.Error()))
 		return
@@ -120,11 +119,46 @@ func (controller *AccountController) Login(ctx *gin.Context) {
 		MaxAge:   60 * 60 * 24 * 7, // 1 week
 	}
 
-	// TODO Stefan: save the refresh token in the db
-
 	http.SetCookie(ctx.Writer, cookie)
 
 	ctx.JSON(http.StatusOK, response)
+}
+
+func (controller *AccountController) Logout(ctx *gin.Context) {
+	refreshCookie, err := ctx.Request.Cookie("refresh_token")
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusNoContent, err.Error())
+		return
+	}
+
+	refreshToken := refreshCookie.Value
+
+	account, err := controller.accountService.GetByRefreshToken(refreshToken)
+	if err != nil {
+		ctx.SetCookie(
+			"refresh-token",
+			"", -1,
+			"/", "localhost",
+			false, true)
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "account matching the cookie not found"})
+		return
+	}
+
+	account.RefreshToken = ""
+	_, err = controller.accountService.Save(account)
+
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "an error has occurred while" +
+			"logging out"})
+		return
+	}
+
+	ctx.SetCookie(
+		"refresh-token",
+		"", -1,
+		"/", "localhost",
+		false, true)
+	ctx.JSON(http.StatusUnauthorized, gin.H{"message": "successfully logged out"})
 }
 
 // RefreshAccessToken godoc
@@ -149,16 +183,21 @@ func (controller *AccountController) RefreshAccessToken(ctx *gin.Context) {
 	account, err := controller.accountService.GetByRefreshToken(refreshToken)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusForbidden,
-			gin.H{"error": "Error while generating the access token - user not found"})
+			gin.H{"error": err.Error()})
 		return
 	}
 
 	// refresh token validation
-	//valid, claims := token.VerifyToken(refreshToken)
-	//if !valid || claims.TokenType != "refresh" {
-	//	ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "Invalid refresh token"})
-	//	return
-	//}
+	err, claims := token.VerifyToken(refreshToken)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": err.Error()})
+		return
+	}
+
+	if claims.TokenType != "refresh" {
+		ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "Not a refresh token"})
+		return
+	}
 
 	accessToken, err1 := token.GenerateAccessToken(account)
 	if err1 != nil {

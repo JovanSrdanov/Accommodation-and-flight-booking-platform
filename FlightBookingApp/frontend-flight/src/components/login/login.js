@@ -13,7 +13,7 @@ const Login = () => {
     const location = useLocation();
     const from = location.state?.from?.pathname || "/"
 
-    const {setAuth} = useAuth();
+    const { setAuth, persist, setPersist } = useAuth();
     const userRef = useRef();
     const errRef = useRef();
 

@@ -1,3 +1,5 @@
+import RequireAuth from "./components/Authentication/RequireAuth";
+import PersistLogin from "./components/Authentication/PersistLogin"
 import {Route, Routes} from "react-router-dom";
 
 import HomePage from "./pages/unaunthenticated/home-page";
@@ -15,7 +17,6 @@ import CreateFlightPage from "./pages/admin/create-flight-page";
 import Planes from "./components/planes/planes";
 import HackerHeaders from "./components/hackerHeaders/hackerHeaders";
 import BoughtTicketsPage from "./pages/customer/bought-tickets-page";
-import RequireAuth from "./components/Authentication/RequireAuth";
 
 
 const darkTheme = createTheme({
@@ -32,33 +33,39 @@ const ROLES = {
 function App() {
     HackerHeaders();
     return (
-        <div>
-            <ThemeProvider theme={darkTheme}>
-                <Planes/>
-                <MainNavigation/>
-                <Routes>
-                    <Route path="/" element={<Layout/>}>
+      <main>
+        <ThemeProvider theme={darkTheme}>
+          <MainNavigation />
+          <Planes />
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              {/* public rotues*/}
+              <Route path="/" element={<HomePage />} />
+              <Route path="register" element={<RegisterPage />} />
+              <Route path="unauthorized" element={<Unauthorized />} />
+              {/* protected routes*/}
+              {/* Ovako se stite rute - stavis rutu sa required auth i prosledis role koje su 
+              dozvoljene u allowerRoles */}
+              {/* Za zasticene rute ne koristiti axios, vec axiosPrivate, u njega su ugradjeni interceptori */}
+              <Route element={<PersistLogin />}>
+                <Route element={<RequireAuth allowedRoles={[ROLES.REGULAR]} />}>
+                  <Route path="flight-search" element={<FlightSearchPage />} />
+                  <Route path="/bought-tickets" element={<BoughtTicketsPage/>}/>
+                </Route>
 
-                        <Route element={<RequireAuth allowedRoles={[ROLES.REGULAR]}/>}>
-                            <Route path="flight-search" element={<FlightSearchPage/>}/>
-                        </Route>
-
-
-                        <Route path="/" element={<HomePage/>}/>
-                        <Route path="register" element={<RegisterPage/>}/>
-                        <Route path="unauthorized" element={<Unauthorized/>}/>
-                        <Route path="flight-search" element={<FlightSearchPage/>}/>
-                        <Route path="/all-flights" element={<AllFlightsPage/>}/>
-                        <Route path="/create-flight" element={<CreateFlightPage/>}/>
-                        <Route path="/bought-tickets" element={<BoughtTicketsPage/>}/>
-                        <Route path="admin-info" element={<AdminInfoPage/>}/>
-
-
-                        <Route path="*" element={<Missing/>}/>
-                    </Route>
-                </Routes>
-            </ThemeProvider>
-        </div>
+                <Route element={<RequireAuth allowedRoles={[ROLES.ADMIN]} />}>
+                  <Route path="/create-flight" element={<CreateFlightPage/>}/>
+                  <Route path="/all-flights" element={<AllFlightsPage />} />
+                  <Route path="admin-info" element={<AdminInfoPage />} />
+                </Route>
+              </Route>
+              {/* catch all */}
+              <Route path="*" element={<Missing />} />
+            </Route>
+          </Routes>{" "}
+          origin/develop
+        </ThemeProvider>
+      </main>
     );
 }
 
