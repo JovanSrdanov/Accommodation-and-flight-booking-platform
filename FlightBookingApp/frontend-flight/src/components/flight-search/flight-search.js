@@ -21,6 +21,8 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ImportExportIcon from '@mui/icons-material/ImportExport';
 import dayjs from "dayjs";
+import {axiosPrivate} from "../../api/axios";
+import useAuth from "../../hooks/useAuth";
 
 const StyledTableCell = styled(TableCell)(({theme}) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -64,6 +66,8 @@ const FlightSearch = ({LoggedIn}) => {
 
 
     const fetchData = async () => {
+
+
         try {
             const {data} = await axios.get(process.env.REACT_APP_FLIGHT_APP_API + "search-flights", {
                 params: {
@@ -124,7 +128,7 @@ const FlightSearch = ({LoggedIn}) => {
 
     const buyTickets = async () => {
         try {
-            await axios.post(process.env.REACT_APP_FLIGHT_APP_API + "ticket/buy", {
+            await axiosPrivate.post(process.env.REACT_APP_FLIGHT_APP_API + "ticket/buy", {
                 numberOfTickets: selectDesiredNumberOfSeats,
                 flightId: selectedFlight.id,
             });
@@ -138,6 +142,9 @@ const FlightSearch = ({LoggedIn}) => {
 
     };
     const navigate = useNavigate();
+    const {auth} = useAuth()
+    console.log(auth)
+
 
     return (
         <div className="flight-search">
