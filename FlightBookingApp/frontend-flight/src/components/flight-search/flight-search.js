@@ -21,7 +21,7 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ImportExportIcon from '@mui/icons-material/ImportExport';
 import dayjs from "dayjs";
-import {axiosPrivate} from "../../api/axios";
+
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import useAuth from "../../hooks/useAuth";
 
@@ -128,7 +128,7 @@ const FlightSearch = ({LoggedIn}) => {
         setSelectedFlight({})
     };
 
-    const buyTickets = async () => {  
+    const buyTickets = async () => {
         await axiosPrivate.post("/api/ticket/buy", {
             numberOfTickets: selectDesiredNumberOfSeats,
             flightId: selectedFlight.id,
@@ -137,10 +137,10 @@ const FlightSearch = ({LoggedIn}) => {
             setPurchaseDialog(true);
             handleCloseBuyTicketsDialog();
         })
-        .catch(err => {
-            console.error(err)
-            alert("unexpected error")
-        });
+            .catch(err => {
+                console.error(err)
+                alert("unexpected error")
+            });
     };
     const navigate = useNavigate();
     const {auth} = useAuth()
