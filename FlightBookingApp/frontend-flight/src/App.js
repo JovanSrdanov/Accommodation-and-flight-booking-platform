@@ -7,6 +7,7 @@ import {createTheme, ThemeProvider} from '@mui/material/styles';
 import Planes from "./components/Planes/Planes";
 import {useEffect} from "react";
 import AllFlightsPage from "./pages/admin/all-flights-page";
+import CreateFlightPage from "./pages/admin/create-flight-page";
 
 const darkTheme = createTheme({
     palette: {
@@ -90,7 +91,6 @@ function App() {
         }
 
         document.addEventListener('mouseover', handleHover);
-
         return () => {
             document.removeEventListener('mouseover', handleHover);
         };
@@ -103,6 +103,7 @@ function App() {
                 <Route path="/" element={<HomePage/>}/>
                 <Route path="/flight-search" element={<FlightSearchPage/>}/>
                 <Route path="/all-flights" element={<AllFlightsPage/>}/>
+                <Route path="/create-flight" element={<CreateFlightPage/>}/>
             </Routes>
         </ThemeProvider>
     );

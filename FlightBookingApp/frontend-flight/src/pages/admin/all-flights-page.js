@@ -5,7 +5,7 @@ import "../page.css"
 function AllFlightsPage() {
     return (
         <div className="page">
-            <h1>All flights</h1>
+            <h1>All Flights</h1>
             <AllFlights></AllFlights>
         </div>
     );
