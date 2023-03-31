@@ -36,7 +36,7 @@ const StyledTableRow = styled(TableRow)(({theme}) => ({
 }));
 
 function CreateFlight() {
-    const [airports, setAirports] = useState([]);
+    const [airports, setAirports] = useState(null);
     const [selectedStartPointAirport, setSelectedStartPointAirport] = useState(null);
     const [selectedDestinationAirport, setSelectedDestinationAirport] = useState(null);
     const [selectCorrectAirportsDialog, setSelectCorrectAirportsDialog] = useState(false);
@@ -102,170 +102,172 @@ function CreateFlight() {
     }
     const navigate = useNavigate();
     return (
-        <div className="createFlight">
-            <div className="airports">
-                <h1>Choose Start Point</h1>
-                <TableContainer component={Paper} sx={{maxHeight: 400}}>
-                    <Table stickyHeader>
-                        <TableHead>
-                            <StyledTableRow>
-                                <StyledTableCell align="center">Airports</StyledTableCell>
-                            </StyledTableRow>
-                        </TableHead>
-                        <TableBody>
-                            {airports.map((airport) => (
-                                <StyledTableRow
-
-                                    key={airport.id}
-                                    style={{
-                                        backgroundColor: isSelectedStartPointAirport(airport) ? "var(--outlines)" : "inherit",
-
-                                    }}
-                                    onClick={() => handleSelectedStartPointAirport(airport)}>
-                                    <StyledTableCell align="center">
-                                        <li>Airport name: {airport.name}</li>
-                                        <li>City: {airport.address.city}</li>
-                                        <li>Country: {airport.address.country}</li>
-                                        <li>Street: {airport.address.street},{airport.address.streetNumber} </li>
-
-                                    </StyledTableCell>
+        airports && (
+            <div className="createFlight">
+                <div className="airports">
+                    <h1>Choose Start Point</h1>
+                    <TableContainer component={Paper} sx={{maxHeight: 400}}>
+                        <Table stickyHeader>
+                            <TableHead>
+                                <StyledTableRow>
+                                    <StyledTableCell align="center">Airports</StyledTableCell>
                                 </StyledTableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-                {
-                    selectedStartPointAirport && (
-                        <div className="wrapper">
-                            <p>Selected start point airport:</p>
-                            <p>{selectedStartPointAirport.name}</p>
-                        </div>
-                    )
-                }
-            </div>
-            <div className="flightInfo">
-                <h1>Fill Flight Info</h1>
-                <div className="flightInfoWrapper">
+                            </TableHead>
+                            <TableBody>
+                                {airports.map((airport) => (
+                                    <StyledTableRow
 
-                    <TextField type="number"
-                               variant="filled"
-                               fullWidth
-                               InputProps={{
-                                   inputProps: {
-                                       min: 1
-                                   }
-                               }}
-                               value={numberOfSeats}
-                               onChange={handleNumberOfSeatsChange}
-                               label="Number of seats:"
-                    />
-                    <TextField type="number"
-                               variant="filled"
-                               fullWidth
-                               InputProps={{
-                                   inputProps: {
-                                       min: 1
-                                   }
-                               }}
-                               value={ticketPrice}
-                               onChange={handleTicketPriceChange}
-                               label="Ticket price:"
-                    />
+                                        key={airport.id}
+                                        style={{
+                                            backgroundColor: isSelectedStartPointAirport(airport) ? "var(--outlines)" : "inherit",
 
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <MobileDateTimePicker label="Departure date"
-                                              value={dateTime}
-                                              minDate={dayjs((new Date()))}
-                                              onChange={handleDateTimeChange}
+                                        }}
+                                        onClick={() => handleSelectedStartPointAirport(airport)}>
+                                        <StyledTableCell align="center">
+                                            <li>Airport name: {airport.name}</li>
+                                            <li>City: {airport.address.city}</li>
+                                            <li>Country: {airport.address.country}</li>
+                                            <li>Street: {airport.address.street},{airport.address.streetNumber} </li>
+
+                                        </StyledTableCell>
+                                    </StyledTableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                    {
+                        selectedStartPointAirport && (
+                            <div className="wrapper">
+                                <p>Selected start point airport:</p>
+                                <p>{selectedStartPointAirport.name}</p>
+                            </div>
+                        )
+                    }
+                </div>
+                <div className="flightInfo">
+                    <h1>Fill Flight Info</h1>
+                    <div className="flightInfoWrapper">
+
+                        <TextField type="number"
+                                   variant="filled"
+                                   fullWidth
+                                   InputProps={{
+                                       inputProps: {
+                                           min: 1
+                                       }
+                                   }}
+                                   value={numberOfSeats}
+                                   onChange={handleNumberOfSeatsChange}
+                                   label="Number of seats:"
                         />
-                    </LocalizationProvider>
+                        <TextField type="number"
+                                   variant="filled"
+                                   fullWidth
+                                   InputProps={{
+                                       inputProps: {
+                                           min: 1
+                                       }
+                                   }}
+                                   value={ticketPrice}
+                                   onChange={handleTicketPriceChange}
+                                   label="Ticket price:"
+                        />
+
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <MobileDateTimePicker label="Departure date"
+                                                  value={dateTime}
+                                                  minDate={dayjs((new Date()))}
+                                                  onChange={handleDateTimeChange}
+                            />
+                        </LocalizationProvider>
 
 
-                    <Button
-                        variant="contained" endIcon={<AirplanemodeActiveIcon color="error"/>}
-                        onClick={createFlight}
-                    >Create flight
-                    </Button>
+                        <Button
+                            variant="contained" endIcon={<AirplanemodeActiveIcon color="error"/>}
+                            onClick={createFlight}
+                        >Create flight
+                        </Button>
+
+                    </div>
 
                 </div>
-
-            </div>
-            <div className="airports">
-                <h1>Choose Destination</h1>
-                <TableContainer component={Paper} sx={{maxHeight: 400}}>
-                    <Table stickyHeader>
-                        <TableHead>
-                            <StyledTableRow>
-                                <StyledTableCell align="center">Airports</StyledTableCell>
-                            </StyledTableRow>
-                        </TableHead>
-                        <TableBody>
-                            {airports.map((airport) => (
-                                <StyledTableRow
-                                    hover
-                                    key={airport.id}
-                                    style={{backgroundColor: isSelectedDestinationAirport(airport) ? "var(--outlines)" : "inherit"}}
-                                    onClick={() => handleSelectedDestinationAirport(airport)}>
-                                    <StyledTableCell align="center">
-                                        <li>Airport name: {airport.name}</li>
-                                        <li>City: {airport.address.city}</li>
-                                        <li>Country: {airport.address.country}</li>
-                                        <li>Street: {airport.address.street},{airport.address.streetNumber} </li>
-                                    </StyledTableCell>
+                <div className="airports">
+                    <h1>Choose Destination</h1>
+                    <TableContainer component={Paper} sx={{maxHeight: 400}}>
+                        <Table stickyHeader>
+                            <TableHead>
+                                <StyledTableRow>
+                                    <StyledTableCell align="center">Airports</StyledTableCell>
                                 </StyledTableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-                {
-                    selectedDestinationAirport && (
-                        <div className="wrapper">
-                            <p>Selected destination airport:</p>
-                            <p>{selectedDestinationAirport.name}</p>
-                        </div>
-                    )
-                }
+                            </TableHead>
+                            <TableBody>
+                                {airports.map((airport) => (
+                                    <StyledTableRow
+                                        hover
+                                        key={airport.id}
+                                        style={{backgroundColor: isSelectedDestinationAirport(airport) ? "var(--outlines)" : "inherit"}}
+                                        onClick={() => handleSelectedDestinationAirport(airport)}>
+                                        <StyledTableCell align="center">
+                                            <li>Airport name: {airport.name}</li>
+                                            <li>City: {airport.address.city}</li>
+                                            <li>Country: {airport.address.country}</li>
+                                            <li>Street: {airport.address.street},{airport.address.streetNumber} </li>
+                                        </StyledTableCell>
+                                    </StyledTableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                    {
+                        selectedDestinationAirport && (
+                            <div className="wrapper">
+                                <p>Selected destination airport:</p>
+                                <p>{selectedDestinationAirport.name}</p>
+                            </div>
+                        )
+                    }
 
-                <Dialog
-                    open={selectCorrectAirportsDialog}
-                    onClose={() => {
-                        setSelectCorrectAirportsDialog(false)
-                    }}
-                >
-                    <DialogTitle id="alert-dialog-title">
-                        {"Both airports must be selected and they must be different from each other"}
-                    </DialogTitle>
-                    <DialogContent>
-
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={() => {
+                    <Dialog
+                        open={selectCorrectAirportsDialog}
+                        onClose={() => {
                             setSelectCorrectAirportsDialog(false)
-                        }}>Close</Button>
-                    </DialogActions>
-                </Dialog>
+                        }}
+                    >
+                        <DialogTitle id="alert-dialog-title">
+                            {"Both airports must be selected and they must be different from each other"}
+                        </DialogTitle>
+                        <DialogContent>
 
-                <Dialog
-                    open={flightCreatedDialog}
-                    onClose={() => {
-                        setFlightCreatedDialog(false)
-                    }}
-                >
-                    <DialogTitle id="alert-dialog-title">
-                        {"Flight created!"}
-                    </DialogTitle>
-                    <DialogContent>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={() => {
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={() => {
+                                setSelectCorrectAirportsDialog(false)
+                            }}>Close</Button>
+                        </DialogActions>
+                    </Dialog>
+
+                    <Dialog
+                        open={flightCreatedDialog}
+                        onClose={() => {
                             setFlightCreatedDialog(false)
-                            navigate('/all-flights');
-                        }}>Close</Button>
-                    </DialogActions>
-                </Dialog>
+                        }}
+                    >
+                        <DialogTitle id="alert-dialog-title">
+                            {"Flight created!"}
+                        </DialogTitle>
+                        <DialogContent>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={() => {
+                                setFlightCreatedDialog(false)
+                                navigate('/all-flights');
+                            }}>Close</Button>
+                        </DialogActions>
+                    </Dialog>
 
+                </div>
             </div>
-        </div>
+        )
     );
 }
 
