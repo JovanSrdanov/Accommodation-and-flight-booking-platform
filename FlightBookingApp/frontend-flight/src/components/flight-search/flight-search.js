@@ -188,18 +188,7 @@ const FlightSearch = ({LoggedIn}) => {
                     </tr>
                     <tr>
                         <td>
-                            <TextField type="number"
-                                       fullWidth
-                                       variant="filled"
-                                       InputProps={{
-                                           inputProps: {
-                                               min: 1
-                                           }
-                                       }}
-                                       name="desiredNumberOfSeats"
-                                       defaultValue="1"
-                                       label="Desired number of seats:"
-                                       onChange={handleSearchParamsChange}/>
+
                         </td>
                         <td>
                             <LocalizationProvider locale={de} dateAdapter={AdapterDayjs}>

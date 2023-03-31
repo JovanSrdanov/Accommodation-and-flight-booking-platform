@@ -80,7 +80,7 @@ const Login = () => {
             >
                 {errMsg}
             </p>
-            <h1>Sign In</h1>
+       
             <form onSubmit={handleSubmit}>
                 <label htmlFor="username">Username:</label>
                 <input

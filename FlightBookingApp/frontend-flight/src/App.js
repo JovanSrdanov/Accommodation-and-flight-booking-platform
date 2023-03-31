@@ -13,7 +13,7 @@ import Missing from "./pages/unaunthenticated/Missing";
 import {useEffect} from "react";
 import AllFlightsPage from "./pages/admin/all-flights-page";
 import CreateFlightPage from "./pages/admin/create-flight-page";
-import Planes from "./components/Planes/Planes";
+import Planes from "./components/planes/planes";
 
 const darkTheme = createTheme({
     palette: {

@@ -5,7 +5,7 @@
     --text: #89dee2;
     --text-hover: #16c2d5;
     --backs: #527c88;
-    --border-radius: 20px;
+    --border-radius: 10px;
 }
 
 * {
@@ -19,6 +19,7 @@ body {
     font-family: 'Space Mono', monospace;
     padding: 2%;
     background-color: var(--backs);
+    overflow-y: scroll;
 }
 
 h1, h2 {

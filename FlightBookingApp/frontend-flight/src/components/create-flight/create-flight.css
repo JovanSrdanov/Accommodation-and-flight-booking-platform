@@ -1,0 +1,36 @@
+.createFlight {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+
+}
+
+
+.createFlight .wrapper {
+    border: 1px solid var(--outlines);
+    border-radius: var(--border-radius);
+    background: var(--outlines);
+    margin-top: 10px;
+
+}
+
+
+.createFlight .airports tr:hover {
+    cursor: pointer;
+    text-shadow: 0px 0px 10px var(--text);
+}
+
+.createFlight .flightInfoWrapper {
+    border: 1px solid var(--outlines);
+    border-radius: var(--border-radius);
+    background: var(--outlines);
+    padding: 20px 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    gap: 20px;
+}
+
+.createFlight li {
+    list-style-type: none;
+}
