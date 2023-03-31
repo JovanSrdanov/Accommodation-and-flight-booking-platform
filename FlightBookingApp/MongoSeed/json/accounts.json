@@ -1,0 +1,52 @@
+[{
+  "_id": {
+    "$oid": "6425b093acb08736fe4ea853"
+  },
+  "username": "stefan",
+  "password": "$2a$10$7IzOKGRnGezLM5r7qjnv5OYA5j903ydUbBLsAhsJjvEvYIAPMb3Oi",
+  "role": 0,
+  "email": "stefanapostolovic1@gmail.com",
+  "emailVerificationHash": "$2a$10$YA78y6h8HnHho4Z9Gnx.YelbUKBqlNqF1immPdzoucLBoVAnvKBrS",
+  "verificationTimeout": {
+    "$date": "2023-04-01T15:53:54.174Z"
+  },
+  "isActivated": true,
+  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0MjViMDkzYWNiMDg3MzZmZTRlYTg1MyIsInJvbGVzIjpbMF0sInRva2VuVHlwZSI6InJlZnJlc2giLCJleHAiOjE2ODA4NTg5OTgsImlhdCI6MTY4MDI1NDE5OH0.FkaxX8OgBtRLOncf1MCbwl7FzbiZSVEfyTikmYuBaOo",
+  "userId": {
+    "$oid": "6425b092acb08736fe4ea852"
+  }
+},{
+  "_id": {
+    "$oid": "6426a9791e67aa02662fab4f"
+  },
+  "username": "user",
+  "password": "$2a$10$LjrZl4q3FuKH78NvK5RnYezD5mmiVn9IUOT9c03F0rg4wYAbMEzHC",
+  "role": 1,
+  "email": "stefanapostolovic2@gmail.com",
+  "emailVerificationHash": "$2a$10$LL7adzDwlsR6YbDt1iviIu5ndWNP2u9ngFMxx4dclTJsO6nsuh5He",
+  "verificationTimeout": {
+    "$date": "2023-04-02T09:35:50.432Z"
+  },
+  "isActivated": true,
+  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0MjViMDkzYWNiMDg3MzZmZTRlYTg1MyIsInJvbGVzIjpbMF0sInRva2VuVHlwZSI6InJlZnJlc2giLCJleHAiOjE2ODA4NTg5OTgsImlhdCI6MTY4MDI1NDE5OH0.FkaxX8OgBtRLOncf1MCbwl7FzbiZSVEfyTikmYuBaOoq",
+  "userId": {
+    "$oid": "6426a9761e67aa02662fab4e"
+  }
+},{
+  "_id": {
+    "$oid": "6426a9a01e67aa02662fab51"
+  },
+  "username": "user1",
+  "password": "$2a$10$1gwZ.kRljBhmcQOYmnXq5eqpTvk0v739McFOSEw/zhn0.mO3ZAfUa",
+  "role": 1,
+  "email": "stefanapostolovic3@gmail.com",
+  "emailVerificationHash": "$2a$10$jCMA6lB556eerp/X1WbD8.C90dj0HV44q39YdPbzpuSmjq37HpFbO",
+  "verificationTimeout": {
+    "$date": "2023-04-02T09:36:16.524Z"
+  },
+  "isActivated": true,
+  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0MjViMDkzYWNiMDg3MzZmZTRlYTg1MyIsInJvbGVzIjpbMF0sInRva2VuVHlwZSI6InJlZnJlc2giLCJleHAiOjE2ODA4NTg5OTgsImlhdCI6MTY4MDI1NDE5OH0.FkaxX8OgBtRLOncf1MCbwl7FzbiZSVEfyTikmYuBaOo",
+  "userId": {
+    "$oid": "6426a9901e67aa02662fab50"
+  }
+}]

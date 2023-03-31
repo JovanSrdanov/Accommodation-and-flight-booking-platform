@@ -1,0 +1,13 @@
+.all-flights li {
+    list-style-type: none;
+}
+
+.all-flights {
+    width: 80%;
+    margin: auto;
+}
+
+
+.all-flights table {
+    table-layout: fixed;
+}

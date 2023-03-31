@@ -1,0 +1,31 @@
+:root {
+    --background: #2e4450;
+    --text-background: rgb(227, 226, 212);
+    --outlines: #192830;
+    --text: #89dee2;
+    --text-hover: #16c2d5;
+    --backs: #527c88;
+    --border-radius: 10px;
+}
+
+
+* {
+    box-sizing: border-box;
+    color: var(--text-background);
+    color-scheme: dark;
+}
+
+
+body {
+    font-family: 'Space Mono', monospace;
+    padding: 2%;
+    background-color: var(--backs);
+    overflow-y: scroll;
+}
+
+h1, h2 {
+    color: var(--text-background);
+    font-family: 'Space Mono', monospace;
+    width: fit-content;
+    margin: 20px auto;
+}
