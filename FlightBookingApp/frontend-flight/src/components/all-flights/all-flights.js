@@ -142,7 +142,10 @@ function AllFlights() {
                                         <li>Country {item.destination.address.country}</li>
                                         <li>Street: {item.destination.address.street}, {item.destination.address.streetNumber}</li>
                                     </StyledTableCell>
-                                    <StyledTableCell align="center">{item.numberOfSeats}</StyledTableCell>
+                                    <StyledTableCell align="center">
+                                        <li>Total: {item.numberOfSeats}</li>
+                                        <li>Vacant: {item.vacantSeats}</li>
+                                    </StyledTableCell>
                                     <StyledTableCell align="center">{item.price}</StyledTableCell>
                                     <StyledTableCell align="center">
                                         {
