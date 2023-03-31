@@ -17,15 +17,10 @@
 }
 
 
-.flight-search .flightResults tr:hover {
-    box-shadow: 0px 0px 5px var(--backs);
-
-}
-
 .flight-search .flightResults button:hover {
     box-shadow: 0px 0px 5px var(--text-hover);
-
 }
+
 
 .flight-search li {
     list-style-type: none;
@@ -46,3 +41,4 @@
     text-shadow: 0px 0px 5px white;
 
 }
+

@@ -1,7 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
 import useLogout from "../../hooks/useLogout";
+import {Link} from "react-router-dom"
 
-import  classes from './MainNavigation.module.css'
+import classes from './MainNavigation.module.css'
 
 //TODO Stefan: napraviti posebne navbar-ove za neautentifikovane, regularne korisnike i admine
 
@@ -32,12 +33,18 @@ const MainNavigation = () => {
             <Link to="/all-flights">All flights</Link>
           </li>
           <li>
+                        <Link to='/create-flight'>Create Flight</Link>
+                    </li>
+                    <li>
+                        <Link to='/bought-tickets'>Bought tickets</Link>
+                    </li>
+          <li>
              <button onClick={signOut}>Logout</button>
           </li>
         </ul>
       </nav>
     </header>
   );
-} 
+}
 
 export default MainNavigation

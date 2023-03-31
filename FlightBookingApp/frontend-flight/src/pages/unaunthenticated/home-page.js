@@ -1,11 +1,13 @@
 import Login from '../../components/login/login';
 import FlightSearch from "../../components/flight-search/flight-search";
 
-import "./home-page.css"
+import "../page.css"
+import React from "react";
 
 function HomePage() {
     return (
-        <div className='App'>
+        <div className='page'>
+            <h1>Home Page</h1>
             <Login/>
             <FlightSearch LoggedIn={false}></FlightSearch>
         </div>

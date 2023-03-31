@@ -5,13 +5,8 @@
     --text: #89dee2;
     --text-hover: #16c2d5;
     --backs: #527c88;
-    --border-radius: 20px;
+    --border-radius: 10px;
 }
-
-/*TODO za stefana od strane jovana ovde u root se nalazi strahinjina paleta boja
-   sa PSW i koristi se pomocu var(--mat)
-   sve sam ti zakomentarisao samo da ti skrenem paznju na ovaj todo he he (jovane ovde ima sva imena osim aleksandra)
-   (edit: sad ima i njegovo xd) */
 
 
 * {
@@ -25,6 +20,7 @@ body {
     font-family: 'Space Mono', monospace;
     padding: 2%;
     background-color: var(--backs);
+    overflow-y: scroll;
 }
 
 h1, h2 {
@@ -32,62 +28,4 @@ h1, h2 {
     font-family: 'Space Mono', monospace;
     width: fit-content;
     margin: 20px auto;
-
-}
-
-.btn {
-    font: inherit;
-    padding: 0.5rem 1.5rem;
-    cursor: pointer;
-    border-radius: 4px;
-    background-color: #572cb5;
-    color: white;
-    border: 1px solid #572cb5;
-    margin: 0 1rem;
-}
-
-.btn:hover {
-    background-color: #1f0b6f;
-    border-color: #1f0b6f;
-}
-
-.btn--alt {
-    background-color: transparent;
-    color: #572cb5;
-}
-
-.btn--alt:hover {
-    background-color: #f8dae9;
-}
-
-.card {
-    background-color: white;
-    border-radius: 4px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
-    padding: 1rem;
-    width: 20rem;
-    margin: auto;
-}
-
-.actions {
-    text-align: right;
-}
-
-.title {
-    padding: 1rem;
-    width: 20rem;
-    margin: auto;
-    font-size: xx-large;
-    font-weight: bolder;
-}
-
-.text-field {
-    margin-left: 5%;
-    padding: 2%;
-    width: 90%;
-    margin-left: 5%;
-    margin-right: 5%;
-    margin-bottom: 3%;
-    font-size: large;
-    font-weight: bold;
 }
