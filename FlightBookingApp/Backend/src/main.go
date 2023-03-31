@@ -54,7 +54,14 @@ func main() {
 	//gin.SetMode(gin.ReleaseMode)
 
 	router := gin.Default()
-	router.Use(cors.Default())
+
+	corsConfig := cors.DefaultConfig()
+	corsConfig.AllowOriginFunc = func(origin string) bool { return true }
+	corsConfig.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}
+	corsConfig.AllowHeaders = []string{"Authorization", "Content-Type"}
+	corsConfig.AllowCredentials = true
+
+	router.Use(cors.New(corsConfig))
 	depContainer := dependencyInjection.NewDependencyContainer()
 
 	apiRoutes := router.Group(docs.SwaggerInfo.BasePath)

@@ -13,7 +13,7 @@ func ValidateToken() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		bearerToken := ctx.Request.Header.Get("Authorization")
 		if bearerToken == "" {
-			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error":"No authentication header provided"})
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "No authentication header provided"})
 		}
 
 		tokenString := strings.Split(bearerToken, " ")[1]
@@ -21,7 +21,7 @@ func ValidateToken() gin.HandlerFunc {
 		valid, claims := token.VerifyToken(tokenString)
 
 		if !valid || claims.TokenType != "access" {
-			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error":"Invalid authentication token"})
+			ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "Invalid authentication token"})
 		}
 
 		if len(ctx.Keys) == 0 {
@@ -34,24 +34,22 @@ func ValidateToken() gin.HandlerFunc {
 	}
 }
 
-// role-based authorization
+// Authorization role-based authorization
 // TODO Stefan: return sensible error messages
-func Authrorization(validRoles []model.Role) gin.HandlerFunc {
+func Authorization(validRoles []model.Role) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		if len(ctx.Keys) == 0 {
-			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error":"not authenticated"})
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "not authenticated"})
 			return
 		}
 
 		roles := ctx.Keys["Roles"]
 		if roles == nil {
-			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error":"user has no roles"})
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "user has no roles"})
 			return
 		}
 
 		userRoles := roles.([]model.Role)
-
-		userRoleMatches := false
 
 		// checks if any of the user roles are in the valid roles group
 		for _, val := range userRoles {
@@ -60,21 +58,19 @@ func Authrorization(validRoles []model.Role) gin.HandlerFunc {
 			}
 		}
 
-		if !userRoleMatches {
-			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error":"Unauthorized access attempt"})
-			return
-		}
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized access attempt"})
+		return
 	}
 }
 
-func RoleMatches(role model.Role, roles []model.Role) bool{
+func RoleMatches(role model.Role, roles []model.Role) bool {
 	returnValue := false
 
 	for _, val := range roles {
-		if role == val{
+		if role == val {
 			returnValue = true
 			break
-		}		
-	}	
+		}
+	}
 	return returnValue
 }
