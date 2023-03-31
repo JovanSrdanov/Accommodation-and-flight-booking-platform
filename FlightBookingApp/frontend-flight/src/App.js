@@ -33,25 +33,27 @@ const ROLES = {
 function App() {
     HackerHeaders();
     return (
-      <main>
-        <ThemeProvider theme={darkTheme}>
-          <MainNavigation />
-          <Planes />
-          <Routes>
-            <Route path="/" element={<Layout />}>
-              {/* public rotues*/}
-              <Route path="/" element={<HomePage />} />
-              <Route path="register" element={<RegisterPage />} />
-              <Route path="unauthorized" element={<Unauthorized />} />
-              {/* protected routes*/}
-              {/* Ovako se stite rute - stavis rutu sa required auth i prosledis role koje su 
+        <main>
+            <ThemeProvider theme={darkTheme}>
+                <MainNavigation/>
+                <Planes/>
+                <Routes>
+                    <Route path="/" element={<Layout/>}>
+                        {/* public rotues*/}
+                        <Route path="/" element={<HomePage/>}/>
+                        <Route path="register" element={<RegisterPage/>}/>
+                        <Route path="unauthorized" element={<Unauthorized/>}/>
+                        {/* protected routes*/}
+                        {/* Ovako se stite rute - stavis rutu sa required auth i prosledis role koje su
               dozvoljene u allowerRoles */}
-              {/* Za zasticene rute ne koristiti axios, vec axiosPrivate, u njega su ugradjeni interceptori */}
-              <Route element={<PersistLogin />}>
-                <Route element={<RequireAuth allowedRoles={[ROLES.REGULAR]} />}>
-                  <Route path="flight-search" element={<FlightSearchPage />} />
-                  <Route path="/bought-tickets" element={<BoughtTicketsPage/>}/>
-                </Route>
+                        {/* Za zasticene rute ne koristiti axios, vec axiosPrivate, u njega su ugradjeni interceptori */}
+                        {/*dodati const axiosPrivate = useAxiosePrivate() za svaki request koji zahteva Auth i sa time praviti pozive*/}
+                        {/*za vise detalja Admin info page*/}
+                        <Route element={<PersistLogin/>}>
+                            <Route element={<RequireAuth allowedRoles={[ROLES.REGULAR]}/>}>
+                                <Route path="flight-search" element={<FlightSearchPage/>}/>
+                                <Route path="/bought-tickets" element={<BoughtTicketsPage/>}/>
+                            </Route>
 
                 <Route element={<RequireAuth allowedRoles={[ROLES.ADMIN]} />}>
                   <Route path="/create-flight" element={<CreateFlightPage/>}/>
@@ -62,7 +64,7 @@ function App() {
               {/* catch all */}
               <Route path="*" element={<Missing />} />
             </Route>
-          </Routes>{" "}
+          </Routes>
         </ThemeProvider>
       </main>
     );
