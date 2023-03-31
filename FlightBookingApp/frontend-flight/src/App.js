@@ -17,7 +17,6 @@ import CreateFlightPage from "./pages/admin/create-flight-page";
 import Planes from "./components/planes/planes";
 import HackerHeaders from "./components/hackerHeaders/hackerHeaders";
 import BoughtTicketsPage from "./pages/customer/bought-tickets-page";
-import RequireAuth from "./components/Authentication/RequireAuth";
 
 
 const darkTheme = createTheme({
