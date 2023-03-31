@@ -16,11 +16,6 @@ func GetClient(logger *log.Logger) (*mongo.Client, error) {
 	maxPoolSize, _ := strconv.ParseInt(os.Getenv("CON_POOL_MAX_POOL_SIZE"), 10, 32)
 	setPoolMonitor, _ := strconv.ParseBool(os.Getenv("CONNECTION_POOL_MONITORING"))
 
-	//dbUri := "mongodb://root:pass@localhost:27017"
-	//minPoolSize, _ := 4
-	//maxPoolSize, _ := 10
-	//setPoolMonitor, _ := true
-
 	clientOptions := options.Client().ApplyURI(dbUri).
 		SetMinPoolSize(uint64(minPoolSize)).
 		SetMaxPoolSize(uint64(maxPoolSize))
