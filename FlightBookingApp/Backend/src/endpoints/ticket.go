@@ -30,22 +30,22 @@ func DefineTicketEndpoints(upperRouterGroup *gin.RouterGroup, client *mongo.Clie
 	tickets.Use(middleware.ValidateToken())
 	{
 		tickets.GET("",
-			middleware.Authrorization([]model.Role{model.REGULAR_USER}),
+			middleware.Authorization([]model.Role{model.REGULAR_USER}),
 			contr.GetAll)
 		tickets.GET(":id",
-			middleware.Authrorization([]model.Role{model.REGULAR_USER}),
+			middleware.Authorization([]model.Role{model.REGULAR_USER}),
 			contr.GetById)
 		tickets.GET("/myTickets",
-			middleware.Authrorization([]model.Role{model.REGULAR_USER}),
+			middleware.Authorization([]model.Role{model.REGULAR_USER}),
 			contr.GetAllForCustomer)
 		tickets.POST("",
-			middleware.Authrorization([]model.Role{model.ADMIN}),
+			middleware.Authorization([]model.Role{model.ADMIN}),
 			contr.Create)
-		
+
 		tickets.DELETE(":id", contr.Delete)
 
 		tickets.POST("/buy",
-			middleware.Authrorization([]model.Role{model.REGULAR_USER}),
+			middleware.Authorization([]model.Role{model.REGULAR_USER}),
 			contr.BuyTicket)
 
 	}

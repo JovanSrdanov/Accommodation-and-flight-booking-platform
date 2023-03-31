@@ -22,6 +22,7 @@ type AccountRepository interface {
 	GetAll() (model.Accounts, error)
 	GetById(id primitive.ObjectID) (model.Account, error)
 	GetByUsername(username string) (model.Account, error)
+	GetByRefreshToken(token string) (model.Account, error)
 	GetByEmail(email string) (model.Account, error)
 	Save(account model.Account) (model.Account, error)
 	Delete(id primitive.ObjectID) error
@@ -59,13 +60,13 @@ func (repo *accountRepository) GetAll() (model.Accounts, error) {
 	collection := repo.getCollection()
 
 	var accounts model.Accounts
-	fligtsCursor, err := collection.Find(ctx, bson.M{})
+	flightsCursor, err := collection.Find(ctx, bson.M{})
 
 	if err != nil {
 		repo.base.logger.Println(err)
 		return nil, err
 	}
-	err = fligtsCursor.All(ctx, &accounts)
+	err = flightsCursor.All(ctx, &accounts)
 	if err != nil {
 		repo.base.logger.Println(err)
 		return nil, err
@@ -86,12 +87,37 @@ func (repo *accountRepository) GetById(id primitive.ObjectID) (model.Account, er
 	}
 
 	var account model.Account
-	result.Decode(&account)
+
+	err := result.Decode(&account)
+	if err != nil {
+		return model.Account{}, err
+	}
 
 	return account, nil
 }
 
-func (repo *accountRepository) GetByUsername(username string) (model.Account, error){
+func (repo *accountRepository) GetByRefreshToken(token string) (model.Account, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	collection := repo.getCollection()
+
+	result := collection.FindOne(ctx, bson.M{"refreshToken": token})
+	if result.Err() != nil {
+		return model.Account{}, result.Err()
+	}
+
+	var account model.Account
+
+	err := result.Decode(&account)
+	if err != nil {
+		return model.Account{}, err
+	}
+
+	return account, nil
+}
+
+func (repo *accountRepository) GetByUsername(username string) (model.Account, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -103,7 +129,11 @@ func (repo *accountRepository) GetByUsername(username string) (model.Account, er
 	}
 
 	var account model.Account
-	result.Decode(&account)
+
+	err := result.Decode(&account)
+	if err != nil {
+		return model.Account{}, err
+	}
 
 	return account, nil
 }
@@ -120,7 +150,11 @@ func (repo *accountRepository) GetByEmail(email string) (model.Account, error) {
 	}
 
 	var account model.Account
-	result.Decode(&account)
+
+	err := result.Decode(&account)
+	if err != nil {
+		return model.Account{}, err
+	}
 
 	return account, nil
 }
@@ -137,7 +171,11 @@ func (repo *accountRepository) Save(account model.Account) (model.Account, error
 	}
 
 	var newAccount model.Account
-	result.Decode(&account)
+
+	err := result.Decode(&account)
+	if err != nil {
+		return model.Account{}, err
+	}
 
 	return newAccount, nil
 }

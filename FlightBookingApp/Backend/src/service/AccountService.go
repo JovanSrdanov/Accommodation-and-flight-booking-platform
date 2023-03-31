@@ -16,7 +16,7 @@ import (
 
 type accountService struct {
 	accountRepository repository.AccountRepository
-	userRepository repository.UserRepository
+	userRepository    repository.UserRepository
 }
 
 type AccountService interface {
@@ -25,6 +25,7 @@ type AccountService interface {
 	GetAll() (model.Accounts, error)
 	GetById(id primitive.ObjectID) (model.Account, error)
 	GetByUsername(username string) (model.Account, error)
+	GetByRefreshToken(token string) (model.Account, error)
 	Save(model.Account) (model.Account, error)
 	Delete(id primitive.ObjectID) error
 }
@@ -32,7 +33,7 @@ type AccountService interface {
 func NewAccountService(accountRepository repository.AccountRepository, userRepository repository.UserRepository) *accountService {
 	return &accountService{
 		accountRepository: accountRepository,
-		userRepository: userRepository,
+		userRepository:    userRepository,
 	}
 }
 
@@ -87,8 +88,8 @@ func (service *accountService) Register(registrationInfo dto.AccountRegistration
 	}
 
 	//Pravljenje user-a
-	newUser := model.User {
-		Name: registrationInfo.Name,
+	newUser := model.User{
+		Name:    registrationInfo.Name,
 		Surname: registrationInfo.Surname,
 		Address: registrationInfo.Address,
 	}
@@ -121,9 +122,9 @@ func (service *accountService) Register(registrationInfo dto.AccountRegistration
 	return response, nil
 }
 
-	// email activation logic
+// email activation logic
 func PrepareAndSendConfirmationEmail(account *model.Account) error {
-	
+
 	// return time to the nanosecond (1 billionth of a sec)
 	rand.Seed(time.Now().UnixNano())
 	// create random code for email
@@ -153,7 +154,7 @@ func PrepareAndSendConfirmationEmail(account *model.Account) error {
 	if err != nil {
 		return err
 	}
-	
+
 	return nil
 }
 
@@ -163,6 +164,10 @@ func (service *accountService) GetAll() (model.Accounts, error) {
 
 func (service *accountService) GetById(id primitive.ObjectID) (model.Account, error) {
 	return service.accountRepository.GetById(id)
+}
+
+func (service *accountService) GetByRefreshToken(token string) (model.Account, error) {
+	return service.accountRepository.GetByRefreshToken(token)
 }
 
 func (service *accountService) GetByUsername(username string) (model.Account, error) {

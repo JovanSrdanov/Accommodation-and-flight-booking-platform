@@ -13,13 +13,13 @@ import (
 )
 
 type UserController struct {
-	userService service.UserService
+	userService       service.UserService
 	accountRepository repository.AccountRepository
 }
 
 func NewUserController(userService service.UserService, accountRepository repository.AccountRepository) *UserController {
 	return &UserController{
-		userService: userService,
+		userService:       userService,
 		accountRepository: accountRepository,
 	}
 }
@@ -106,25 +106,25 @@ func (controller *UserController) GetById(ctx *gin.Context) {
 // @Router /user/logged-in [get]
 func (controller *UserController) GetLoggedInUserInfo(ctx *gin.Context) {
 	userAccountID := ctx.Keys["ID"]
-	if userAccountID == nil{
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error":"can't get the user accout ID "})
+	if userAccountID == nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "can't get the user accout ID "})
 		return
 	}
 
 	userAccount, err := controller.accountRepository.GetById(userAccountID.(primitive.ObjectID))
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error":"can't find your account info"})
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "can't find your account info"})
 		return
 	}
 
 	user, err1 := controller.userService.GetById(userAccount.UserID)
 	if err1 != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error":"can't find your user info"})
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "can't find your user info"})
 		return
 	}
 
-	userInfo := dto.UserInfo {
-		Name: user.Name,
+	userInfo := dto.UserInfo{
+		Name:    user.Name,
 		Surname: user.Surname,
 		Address: user.Address,
 	}

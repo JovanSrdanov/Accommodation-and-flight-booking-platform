@@ -81,7 +81,8 @@ func (controller *AccountController) VerifyEmail(ctx *gin.Context) {
 
 	account.IsActivated = true
 	controller.accountService.Save(account)
-	ctx.JSON(http.StatusOK, dto.NewSimpleResponse("email successfuly verified"))
+	//ctx.JSON(http.StatusOK, dto.NewSimpleResponse("email successfuly verified"))
+	ctx.Redirect(302, "http://localhost:3000/")
 }
 
 // Login godoc
@@ -101,14 +102,29 @@ func (controller *AccountController) Login(ctx *gin.Context) {
 
 	accessTokenString, refreshTokenString, err := controller.accountService.Login(loginData)
 
-	//TODO Stefan: fix error handleing
-
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.NewSimpleResponse(err.Error()))
+		ctx.JSON(http.StatusUnauthorized, dto.NewSimpleResponse(err.Error()))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"ACCESS TOKEN":accessTokenString, "REFRESH TOKEN":refreshTokenString})
+	response := dto.LoginResponse{AccessToken: accessTokenString}
+
+	//access tokes is returned to the client, but the refresh token is saved in a http-only cookie
+	cookie := &http.Cookie{
+		Name:     "refresh_token",
+		Value:    refreshTokenString,
+		HttpOnly: true,
+		Secure:   false,
+		SameSite: http.SameSiteStrictMode,
+		Path:     "/",              // not sure what this is
+		MaxAge:   60 * 60 * 24 * 7, // 1 week
+	}
+
+	// TODO Stefan: save the refresh token in the db
+
+	http.SetCookie(ctx.Writer, cookie)
+
+	ctx.JSON(http.StatusOK, response)
 }
 
 // RefreshAccessToken godoc
@@ -121,29 +137,40 @@ func (controller *AccountController) Login(ctx *gin.Context) {
 // @Failure 500 {object} string "Error while generating the token"
 // @Router /account/refresh-token/{token} [get]
 func (controller *AccountController) RefreshAccessToken(ctx *gin.Context) {
-	// TODO Stefan: endpoint should have :token at the end
-	refreshToken := ctx.Param("token")
-	
-	// refresh token validation
-	valid, claims := token.VerifyToken(refreshToken)
-	if !valid || claims.TokenType != "refresh" {
-		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error":"Invalid refresh token"})
+	//refreshToken := ctx.Param("token")
+	refreshCookie, err := ctx.Request.Cookie("refresh_token")
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "No cookie provided"})
 		return
 	}
 
-	account, err := controller.accountService.GetById(claims.ID)
+	refreshToken := refreshCookie.Value
+
+	account, err := controller.accountService.GetByRefreshToken(refreshToken)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error":"Error while generating the access token - user not found"})
+		ctx.AbortWithStatusJSON(http.StatusForbidden,
+			gin.H{"error": "Error while generating the access token - user not found"})
 		return
 	}
+
+	// refresh token validation
+	//valid, claims := token.VerifyToken(refreshToken)
+	//if !valid || claims.TokenType != "refresh" {
+	//	ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "Invalid refresh token"})
+	//	return
+	//}
 
 	accessToken, err1 := token.GenerateAccessToken(account)
 	if err1 != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error":"Error while generating the access token"})
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Error while generating the access token"})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"new access token":accessToken})
+	response := dto.RefreshTokenResponse{
+		AccessToken: accessToken,
+	}
+
+	ctx.JSON(http.StatusCreated, response)
 }
 
 // GetAll godoc
@@ -185,20 +212,20 @@ func (controller *AccountController) GetById(ctx *gin.Context) {
 
 	// getting the id from the token
 	if len(ctx.Keys) == 0 {
-			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error":"not authenticated"})
-			return
-		}
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "not authenticated"})
+		return
+	}
 
 	userID := ctx.Keys["ID"]
 	userRole := ctx.Keys["Roles"]
-	if userID == nil || userRole == nil{
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error":"can't get the account ID or roles"})
+	if userID == nil || userRole == nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "can't get the account ID or roles"})
 		return
 	}
 
 	// a user can only see his information, unless he is an admin
 	if id != userID && !authorization.RoleMatches(model.ADMIN, userRole.([]model.Role)) {
-		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error":"unauthorized access atempt"})
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "unauthorized access atempt"})
 		return
 	}
 

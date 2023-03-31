@@ -1,0 +1,49 @@
+[{
+  "_id": {
+    "$oid": "6425b092acb08736fe4ea852"
+  },
+  "name": "Stefan",
+  "surname": "Apostolovic",
+  "address": {
+    "country": "Serbia",
+    "city": "Nis",
+    "street": "Pariske komune",
+    "streetNumber": "11/72"
+  }
+},{
+  "_id": {
+    "$oid": "6426a9761e67aa02662fab4e"
+  },
+  "name": "Milos",
+  "surname": "Milosevic",
+  "address": {
+    "country": "Serbia",
+    "city": "Nis",
+    "street": "Pariske komune",
+    "streetNumber": "11/72"
+  }
+},{
+  "_id": {
+    "$oid": "6426a9901e67aa02662fab50"
+  },
+  "name": "Dejan",
+  "surname": "Dejanovic",
+  "address": {
+    "country": "Serbia",
+    "city": "Nis",
+    "street": "Pariske komune",
+    "streetNumber": "11/72"
+  }
+},{
+  "_id": {
+    "$oid": "6426a9b21e67aa02662fab52"
+  },
+  "name": "Bojan",
+  "surname": "Bojanovic",
+  "address": {
+    "country": "Serbia",
+    "city": "Nis",
+    "street": "Pariske komune",
+    "streetNumber": "11/72"
+  }
+}]

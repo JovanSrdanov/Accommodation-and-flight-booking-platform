@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	accessTokenSecret = os.Getenv("ACCESS_SECRET_KEY")
+	accessTokenSecret  = os.Getenv("ACCESS_SECRET_KEY")
 	refreshTokenSecret = os.Getenv("REFRESH_SECRET_KEY")
 )
 
@@ -29,10 +29,10 @@ func GenerateTokens(account model.Account) (string, string, error) {
 		return "", "", err
 	}
 
-	return accessTokenString, refreshTokenString,  nil
+	return accessTokenString, refreshTokenString, nil
 }
 
-func GenerateAccessToken(account model.Account) (string, error){
+func GenerateAccessToken(account model.Account) (string, error) {
 	accessTokenClaims := &JWT.AccessJwtClaims{}
 
 	accessTokenClaims.ID = account.ID
@@ -57,7 +57,7 @@ func GenerateAccessToken(account model.Account) (string, error){
 
 func GenerateRefreshToken(account model.Account) (string, error) {
 	refreshTokenClaims := &JWT.RefreshJwtClaims{}
-	
+
 	refreshTokenClaims.ID = account.ID
 	refreshTokenClaims.Roles = []model.Role{account.Role}
 	refreshTokenClaims.TokenType = "refresh"
@@ -70,18 +70,18 @@ func GenerateRefreshToken(account model.Account) (string, error) {
 	refreshTokenString, err := refreshToken.SignedString([]byte(refreshTokenSecret))
 
 	if err != nil {
-		return "",  err
+		return "", err
 	}
 
 	return refreshTokenString, nil
 }
 
-func VerifyToken(tokenString string) (bool, *JWT.AccessJwtClaims){
+func VerifyToken(tokenString string) (bool, *JWT.AccessJwtClaims) {
 	claims := &JWT.AccessJwtClaims{}
 	token, _ := getTokenFromString(tokenString, claims)
 
 	if token.Valid {
-		if e := claims.Valid() ; e == nil {
+		if e := claims.Valid(); e == nil {
 			return true, claims
 		}
 	}
