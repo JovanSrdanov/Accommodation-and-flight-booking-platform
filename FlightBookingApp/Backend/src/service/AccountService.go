@@ -58,7 +58,10 @@ func (service *accountService) Login(loginData dto.LoginRequest) (string, string
 	}
 
 	accountToBeLoggedIn.RefreshToken = refreshTokenString
-	service.accountRepository.Save(accountToBeLoggedIn)
+	_, err = service.accountRepository.Save(accountToBeLoggedIn)
+	if err != nil {
+		return "", "", err
+	}
 
 	return accessTokenString, refreshTokenString, nil
 }

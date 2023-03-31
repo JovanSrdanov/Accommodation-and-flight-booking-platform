@@ -1,8 +1,19 @@
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom";
+import useLogout from "../../hooks/useLogout";
 
 import  classes from './MainNavigation.module.css'
 
-function MainNavigation() {
+//TODO Stefan: napraviti posebne navbar-ove za neautentifikovane, regularne korisnike i admine
+
+const MainNavigation = () => {
+  const navigate = useNavigate();
+  const logout = useLogout();
+
+  const signOut = async () => {
+    await logout();
+    navigate('/');
+  }
+
   return (
     <header className={classes.header}>
       <div className={classes.logo}>TEMP NAVBAR</div>
@@ -18,7 +29,10 @@ function MainNavigation() {
             <Link to="/">Home</Link>
           </li>
           <li>
-              <Link to='/all-flights'>All flights</Link>
+            <Link to="/all-flights">All flights</Link>
+          </li>
+          <li>
+             <button onClick={signOut}>Logout</button>
           </li>
         </ul>
       </nav>

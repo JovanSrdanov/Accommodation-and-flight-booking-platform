@@ -51,5 +51,6 @@ func DefineAccountEndpoints(upperRouterGroup *gin.RouterGroup, client *mongo.Cli
 		unauthenticated.POST("/register", accContr.Register)
 		unauthenticated.GET("/refresh-token", accContr.RefreshAccessToken)
 		unauthenticated.GET("/emailver/:username/:verPass", accContr.VerifyEmail)
+		unauthenticated.GET("/logout", accContr.Logout)
 	}
 }
