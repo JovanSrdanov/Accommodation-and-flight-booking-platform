@@ -12,5 +12,4 @@ do
     --file $filePath --authenticationDatabase=admin  --jsonArray --drop
 done
 
-echo "Database seeded"
-
+echo "Database seeded"	#u notepad ++-u ides find and replace i zamenis \r ni sa cim
