@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from "react";
 import useAuth from "../../hooks/useAuth";
 import {Link, useLocation, useNavigate} from "react-router-dom";
 import jwt_decode from "jwt-decode";
-import useLocalStorage from "../../hooks/useLocalStorage";
+import useToggle from "../../hooks/useToggle";
 import useInput from "../../hooks/useInput";
 
 import axios from "../../api/axios";
@@ -14,13 +14,15 @@ const Login = () => {
     const location = useLocation();
     const from = location.state?.from?.pathname || "/"
 
-    const { setAuth, persist, setPersist } = useAuth();
+    const { setAuth } = useAuth();
     const userRef = useRef();
     const errRef = useRef();
 
-    const [user, resetUser, userAttributes] = useInput('') //useState("");
+    const [user, resetUser, userAttributes] = useInput('user', '')
     const [pwd, setPwd] = useState("");
     const [errMsg, setErrMsg] = useState("");
+
+    const [check, toggleCheck] = useToggle('persist', false);
 
     useEffect(() => {
         userRef.current?.focus();
@@ -73,13 +75,13 @@ const Login = () => {
         }
     };
 
-    const togglePersist = () => {
-      setPersist((prev) => !prev);
-    };
+    // const togglePersist = () => {
+    //   setPersist((prev) => !prev);
+    // };
 
-    useEffect(() => {
-      localStorage.setItem("persist", persist);
-    }, [persist]);
+    // useEffect(() => {
+    //   localStorage.setItem("persist", persist);
+    // }, [persist]);
 
     return (
       <section>
@@ -99,7 +101,6 @@ const Login = () => {
             ref={userRef}
             autoComplete="off"
             {...userAttributes}
-            value={user}
             required
           />
 
@@ -117,8 +118,8 @@ const Login = () => {
               className="persistCheckbox"
               type="checkbox"
               id="persist"
-              onChange={togglePersist}
-              checked={persist}
+              onChange={toggleCheck}
+              checked={check}
             />
             <label htmlFor="persist">Trust This Device</label>
           </div>
