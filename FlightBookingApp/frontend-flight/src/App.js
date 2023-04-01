@@ -17,6 +17,7 @@ import CreateFlightPage from "./pages/admin/create-flight-page";
 import Planes from "./components/planes/planes";
 import HackerHeaders from "./components/hackerHeaders/hackerHeaders";
 import BoughtTicketsPage from "./pages/customer/bought-tickets-page";
+import CustomerInfoPage from "./pages/customer/customer-info-page"
 
 
 const darkTheme = createTheme({
@@ -53,6 +54,7 @@ function App() {
                   <Route element={<RequireAuth allowedRoles={[ROLES.REGULAR]}/>}>
                       <Route path="flight-search" element={<FlightSearchPage/>}/>
                       <Route path="/bought-tickets" element={<BoughtTicketsPage/>}/>
+                      <Route path="/customer-info" element={<CustomerInfoPage/>}/>
                   </Route>
                   <Route element={<RequireAuth allowedRoles={[ROLES.ADMIN]} />}>
                     <Route path="/create-flight" element={<CreateFlightPage/>}/>

@@ -60,7 +60,7 @@ const Login = () => {
             //setUser("");
             resetUser();
             setPwd("");
-            navigate(from, {replace: true});
+            roles.every(element => element === 1) ? navigate("/customer-info", {replace: true}) : navigate("/admin-info", {replace: true})
         } catch (err) {
             if (!err?.response) {
                 setErrMsg("No Server Response");
@@ -74,14 +74,6 @@ const Login = () => {
             errRef.current.focus();
         }
     };
-
-    // const togglePersist = () => {
-    //   setPersist((prev) => !prev);
-    // };
-
-    // useEffect(() => {
-    //   localStorage.setItem("persist", persist);
-    // }, [persist]);
 
     return (
       <section>
