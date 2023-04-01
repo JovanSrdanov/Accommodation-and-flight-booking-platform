@@ -1,5 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import "./Unauthorized.css";
+import "../page.css"
+import Button from '@material-ui/core/Button';
 
 const Unauthorized = () => {
   const navigate = useNavigate();
@@ -7,12 +9,12 @@ const Unauthorized = () => {
   const goBack = () => navigate(-1);
 
   return (
-    <section>
-      <h1>Unauthorized</h1>
+    <section className="page">
+      <h1 style={{fontSize: "xxx-large", marginTop: '10%'}}>Unauthorized</h1>
       <br />
-      <p>You do not have access to the requested page.</p>
-      <div className="flexGrow">
-        <button onClick={goBack}>Go Back</button>
+      <p style={{fontSize: "xx-large", marginTop: '2%'}}>You do not have access to the requested page.</p>
+      <div>
+        <Button style={{fontSize: "larger", marginTop: '4%'}} variant="contained" color="secondary" onClick={goBack}>Go Back</Button>
       </div>
     </section>
   );

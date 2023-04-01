@@ -5,7 +5,7 @@ import useAuth from "../../hooks/useAuth";
 import useLocalStorage from "../../hooks/useLocalStorage";
 
 const PersistLogin = () => {
-  const [isLoading, setIsloading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const refresh = useRefreshToken();
   const { auth } = useAuth();
   const [persist] = useLocalStorage('persist', false);
@@ -13,7 +13,7 @@ const PersistLogin = () => {
   useEffect(() => {
     let isMounted = true;
 
-    const verifyRegreshToken = async () => {
+    const verifyRefreshToken = async () => {
       try {
         await refresh();
       }
@@ -21,11 +21,11 @@ const PersistLogin = () => {
         console.error(err);
       }
       finally {
-        isMounted && setIsloading(false);
+        isMounted && setIsLoading(false);
       }
     }
 
-    !auth?.accessToken && persist ? verifyRegreshToken() : setIsloading(false);
+    !auth?.accessToken && persist ? verifyRefreshToken() : setIsLoading(false);
 
     return () => isMounted = false;
   }, [])
