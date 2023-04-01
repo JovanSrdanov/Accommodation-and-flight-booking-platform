@@ -4,6 +4,7 @@ import {Link, useLocation, useNavigate} from "react-router-dom";
 import jwt_decode from "jwt-decode";
 import useToggle from "../../hooks/useToggle";
 import useInput from "../../hooks/useInput";
+import "./login.css"
 
 import axios from "../../api/axios";
 
@@ -86,8 +87,9 @@ const Login = () => {
         </p>
 
         <form onSubmit={handleSubmit}>
-          <label htmlFor="username">Username:</label>
+          <label style={{fontSize: 'x-large'}} htmlFor="username">Username:</label>
           <input
+            style={{marginRight: '3%', fontSize: 'x-large'}}
             type="text"
             id="username"
             ref={userRef}
@@ -96,30 +98,32 @@ const Login = () => {
             required
           />
 
-          <label htmlFor="password">Password:</label>
+          <label style={{fontSize: 'x-large'}} htmlFor="password">Password:</label>
           <input
+            style={{fontSize: 'x-large'}}
             type="password"
             id="password"
             onChange={(e) => setPwd(e.target.value)}
             value={pwd}
             required
           />
-          <button>Sign In</button>
+          <button style={{fontSize: 'x-large'}}>Sign In</button>
           <div className="persistCheck">
             <input
+              style={{marginTop:'2%'}}
               className="persistCheckbox"
               type="checkbox"
               id="persist"
               onChange={toggleCheck}
               checked={check}
             />
-            <label htmlFor="persist">Trust This Device</label>
+            <label style={{fontSize: 'x-large'}} htmlFor="persist">Trust This Device</label>
           </div>
         </form>
-        <p>
+        <p style={{fontSize: 'large'}}>
           Need an Account?
           <br />
-          <span className="line">
+          <span style={{fontSize: 'large'}} className="line">
             {/*put router link here*/}
             <Link to="/register">Sign up</Link>
           </span>

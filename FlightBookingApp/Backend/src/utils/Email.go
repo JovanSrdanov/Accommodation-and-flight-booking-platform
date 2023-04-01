@@ -30,7 +30,7 @@ func SendConfirmationEmail(account model.Account, emailVerPassword string) error
 func send(subject, HTMLbody string, account model.Account) error {
 	// sender data
 	to := []string{account.Email}
-	// smtp - SImple Mail Transfer Protocol
+	// smtp - Simple Mail Transfer Protocol
 	host := "smtp.gmail.com"
 	port := "587"
 	address := host + ":" + port
@@ -42,7 +42,7 @@ func send(subject, HTMLbody string, account model.Account) error {
 	auth := smtp.PlainAuth("", "xmlprojekat1@gmail.com", "cmyrhmgnrenxhwuc", host)
 	msg := []byte(
 		"From: " + "FTN Airlines" + ": <" + "xmlprojekat1@gmail.com" + ">\r\n" +
-			"To: " + account.Email + "\r\n" + 
+			"To: " + account.Email + "\r\n" +
 			"Subject: " + subject + "\r\n" +
 			"MIME: MIME-version: 1.0\r\n" +
 			"Content-Type: text/html; charset=\"UTF-8\";\r\n" +
