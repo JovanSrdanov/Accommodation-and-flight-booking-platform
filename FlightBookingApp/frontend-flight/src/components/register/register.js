@@ -98,7 +98,14 @@ const Register = () => {
           </p>
         </section>
       ) : (
-        <section>
+        <section style={{width: '100%',
+                         maxWidth: '420px',
+                         minHeight: '400px',
+                         display: 'flex',
+                         flexDirection: 'column',
+                         justifyContent: 'flex-start',
+                         padding: '1rem',
+                         backgroundColor: 'rgba(0,0,0,0.4)'}}>
           <p
             ref={errRef}
             className={errMsg ? "errmsg" : "offscreen"}
@@ -106,9 +113,21 @@ const Register = () => {
           >
             {errMsg}
           </p>
-          <h1>Register</h1>
-          <form onSubmit={handleSubmit}>
-            <label htmlFor="username">
+          <form style={
+            {
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-evenly',
+              flexGrow: '1',
+              paddingBottom: '1rem',
+            }
+          }
+              onSubmit={handleSubmit}>
+            <label style={{
+              marginTop: '1rem',
+              marginBottom: '1rem'
+            }}
+                htmlFor="username">
               Username:
               <FontAwesomeIcon
                 icon={faCheck}
@@ -120,6 +139,14 @@ const Register = () => {
               />
             </label>
             <input
+                style={
+              {
+                fontFamily: 'Nunito, sans-serif',
+                fontSize: '22px',
+                padding: '0.25rem',
+                borderRadius: '0.5rem',
+              }
+                }
               type="text"
               id="username"
               ref={userRef}
@@ -146,7 +173,11 @@ const Register = () => {
               Letters, numbers, underscores, hyphens allowed.
             </p>
 
-            <label htmlFor="password">
+            <label style={{
+              marginTop: '1rem',
+              marginBottom: '1rem'
+            }}
+                   htmlFor="password">
               Password:
               <FontAwesomeIcon
                 icon={faCheck}
@@ -158,6 +189,14 @@ const Register = () => {
               />
             </label>
             <input
+                style={
+                  {
+                    fontFamily: 'Nunito, sans-serif',
+                    fontSize: '22px',
+                    padding: '0.25rem',
+                    borderRadius: '0.5rem',
+                  }
+                }
               type="password"
               id="password"
               onChange={(e) => setPwd(e.target.value)}
@@ -186,7 +225,11 @@ const Register = () => {
               <span aria-label="percent">%</span>
             </p>
 
-            <label htmlFor="confirm_pwd">
+            <label style={{
+              marginTop: '1rem',
+              marginBottom: '1rem'
+            }}
+                   htmlFor="confirm_pwd">
               Confirm Password:
               <FontAwesomeIcon
                 icon={faCheck}
@@ -198,6 +241,14 @@ const Register = () => {
               />
             </label>
             <input
+                style={
+                  {
+                    fontFamily: 'Nunito, sans-serif',
+                    fontSize: '22px',
+                    padding: '0.25rem',
+                    borderRadius: '0.5rem',
+                  }
+                }
               type="password"
               id="confirm_pwd"
               onChange={(e) => setMatchPwd(e.target.value)}
@@ -219,7 +270,16 @@ const Register = () => {
             </p>
 
             <button
-              disabled={!validName || !validPwd || !validMatch ? true : false}
+                style={
+                  {
+                    fontFamily: 'Nunito, sans-serif',
+                    fontSize: '22px',
+                    borderRadius: '0.5rem',
+                    marginTop: '1rem',
+                    padding: '0.5rem'
+                  }
+                }
+              disabled={!validName || !validPwd || !validMatch}
             >
               Sign Up
             </button>
