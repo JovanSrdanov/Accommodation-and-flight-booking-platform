@@ -3,6 +3,8 @@ package endpoints
 import (
 	"FlightBookingApp/controller"
 	"FlightBookingApp/dependencyInjection"
+	"FlightBookingApp/middleware"
+	"FlightBookingApp/model"
 	"FlightBookingApp/repository"
 	"FlightBookingApp/service"
 	"github.com/gin-gonic/gin"
@@ -23,8 +25,9 @@ func DefineAirportEndpoints(upperRouterGroup *gin.RouterGroup, client *mongo.Cli
 	depContainer.RegisterEntityDependencyBundle("airport", repo, serv, contr)
 
 	airports := upperRouterGroup.Group("/airport")
+	airports.Use(middleware.ValidateToken())
 	{
-		airports.GET("", contr.GetAll)
+		airports.GET("", middleware.Authorization([]model.Role{model.ADMIN}), contr.GetAll)
 		airports.GET(":id", contr.GetById)
 	}
 }

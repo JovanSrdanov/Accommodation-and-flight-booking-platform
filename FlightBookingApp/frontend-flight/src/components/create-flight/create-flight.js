@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from "react";
-import axios from "axios";
 import {Paper, Table, TableBody, TableContainer, TableHead} from "@mui/material";
 import {styled} from "@mui/material/styles";
 import TableCell, {tableCellClasses} from "@mui/material/TableCell";
@@ -17,6 +16,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import {useNavigate} from "react-router-dom";
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 
 
 const StyledTableCell = styled(TableCell)(({theme}) => ({
@@ -44,11 +44,11 @@ function CreateFlight() {
     const [numberOfSeats, setNumberOfSeats] = useState(250);
     const [ticketPrice, setTicketPrice] = useState(175);
     const [dateTime, setDateTime] = useState(dayjs((new Date())));
-
+    const axiosPrivate = useAxiosPrivate();
 
     useEffect(() => {
-        axios
-            .get(process.env.REACT_APP_FLIGHT_APP_API + "airport")
+        axiosPrivate
+            .get("/api/airport")
             .then((response) => setAirports(response.data))
             .catch((error) => console.error(error));
     }, []);
@@ -66,10 +66,11 @@ function CreateFlight() {
     const isSelectedDestinationAirport = (airport) => {
         return selectedDestinationAirport && selectedDestinationAirport.id === airport.id;
     };
-
+  
     const createFlight = () => {
         if (!selectedStartPointAirport || !selectedDestinationAirport || selectedStartPointAirport.id === selectedDestinationAirport.id) {
             setSelectCorrectAirportsDialog(true)
+            return;
         }
         let body = {
             destination: selectedDestinationAirport,
@@ -78,7 +79,7 @@ function CreateFlight() {
             price: ticketPrice,
             numberOfSeats: numberOfSeats
         }
-        axios.post(process.env.REACT_APP_FLIGHT_APP_API + "flight", body).then(r => {
+        axiosPrivate.post("/api/flight", body).then(r => {
             setFlightCreatedDialog(true)
 
         }).catch(e => {

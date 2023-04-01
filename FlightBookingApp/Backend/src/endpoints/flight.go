@@ -3,6 +3,8 @@ package endpoints
 import (
 	"FlightBookingApp/controller"
 	"FlightBookingApp/dependencyInjection"
+	"FlightBookingApp/middleware"
+	"FlightBookingApp/model"
 	"FlightBookingApp/repository"
 	"FlightBookingApp/service"
 	"log"
@@ -24,12 +26,13 @@ func DefineFlightEndpoints(upperRouterGroup *gin.RouterGroup, client *mongo.Clie
 	depContainer.RegisterEntityDependencyBundle("flight", repo, serv, contr)
 
 	flights := upperRouterGroup.Group("/flight")
+	flights.Use(middleware.ValidateToken())
 	{
-		flights.GET("", contr.GetAll)
+		flights.GET("", middleware.Authorization([]model.Role{model.ADMIN}), contr.GetAll)
 		flights.GET(":id", contr.GetById)
 		flights.GET("search", contr.Search)
-		flights.POST("", contr.Create)
-		flights.PATCH(":id", contr.Cancel)
+		flights.POST("", middleware.Authorization([]model.Role{model.ADMIN}), contr.Create)
+		flights.PATCH(":id", middleware.Authorization([]model.Role{model.ADMIN}), contr.Cancel)
 	}
 	searchFlights := upperRouterGroup.Group("/search-flights")
 	{
