@@ -3,7 +3,6 @@ import {Paper, Table, TableBody, TableContainer, TableHead} from "@mui/material"
 import TableRow from "@mui/material/TableRow";
 import {styled} from "@mui/material/styles";
 import TableCell, {tableCellClasses} from "@mui/material/TableCell";
-import axios from "axios";
 import moment from "moment/moment";
 import Button from "@mui/material/Button";
 import "./all-flights.css"
@@ -12,6 +11,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 
 const StyledTableCell = styled(TableCell)(({theme}) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -35,7 +35,7 @@ function AllFlights() {
     const [cancelFlightDialog, setCancelFlightDialog] = React.useState(false);
     const [successfulCancelFlightDialog, setSuccessfulCancelFlightDialog] = React.useState(false);
     const [flightId, setFlightId] = React.useState(false);
-
+    const axiosPrivate = useAxiosPrivate();
     const openCancelFlightDialog = (flightID) => {
         setCancelFlightDialog(true);
         setFlightId(flightID)
@@ -54,7 +54,7 @@ function AllFlights() {
 
     const fetchData = async () => {
         try {
-            const {data} = await axios.get(process.env.REACT_APP_FLIGHT_APP_API + "flight");
+            const {data} = await axiosPrivate.get("/api/flight");
             setData(data)
 
         } catch (e) {
@@ -64,7 +64,7 @@ function AllFlights() {
 
     const cancelFlight = async () => {
         try {
-            const {res} = await axios.patch(process.env.REACT_APP_FLIGHT_APP_API + "flight/" + flightId);
+            const {res} = await axiosPrivate.patch("/api/flight/" + flightId);
             openSuccessfulCancelFlightDialog()
 
         } catch (e) {
@@ -113,7 +113,7 @@ function AllFlights() {
                 <Table stickyHeader>
                     <TableHead>
                         <TableRow>
-                            <StyledTableCell align="center" style={{width: "10%"}}> Departure Time</StyledTableCell>
+                            <StyledTableCell align="center" style={{width: "10%"}}>Departure Time</StyledTableCell>
                             <StyledTableCell align="center" style={{width: "20%"}}>Point of departure</StyledTableCell>
                             <StyledTableCell align="center" style={{width: "20%"}}>Destination</StyledTableCell>
                             <StyledTableCell align="center" style={{width: "10%"}}>Seats</StyledTableCell>
@@ -130,7 +130,6 @@ function AllFlights() {
                                         align="center"
                                     > {moment(item.departureDateTime).format("MM.DD.YYYY HH:mm")}{" "}</StyledTableCell>
                                     <StyledTableCell align="center">
-
                                         <li>Airport name: {item.startPoint.name}</li>
                                         <li>City: {item.startPoint.address.city}</li>
                                         <li>Country {item.startPoint.address.country}</li>
@@ -158,8 +157,6 @@ function AllFlights() {
                                             item.canceled === true &&
                                             <span>CANCELED</span>
                                         }
-
-
                                     </StyledTableCell>
                                 </StyledTableRow>))}
                         </TableBody>

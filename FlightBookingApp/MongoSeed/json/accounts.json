@@ -1,52 +1,69 @@
 [{
   "_id": {
-    "$oid": "6425b093acb08736fe4ea853"
+    "$oid": "64280db50c3467b5d7f7694e"
   },
-  "username": "stefan",
-  "password": "$2a$10$7IzOKGRnGezLM5r7qjnv5OYA5j903ydUbBLsAhsJjvEvYIAPMb3Oi",
+  "username": "regular",
+  "password": "$2a$10$tjtz0eMcbZ9ubyqdOXBd2Oa1tMGuV2UVFvLspgmUhQxD47gTozsXq",
+  "role": 1,
+  "email": "shadowhuntet@gmail.com",
+  "emailVerificationHash": "$2a$10$OytqlqUbFrwD2KA/lNgbDuaXZ1E8xsCRNXSfc9rXUT5/TviT8OT6O",
+  "verificationTimeout": {
+    "$date": "2023-04-03T10:55:46.437Z"
+  },
+  "isActivated": true,
+  "refreshToken": "",
+  "userId": {
+    "$oid": "64280db20c3467b5d7f7694d"
+  }
+},{
+  "_id": {
+    "$oid": "64280e030c3467b5d7f76950"
+  },
+  "username": "admin",
+  "password": "$2a$10$Z/RDeaTABPZChpPRIIQ5nuF.ZahREgKTHrIrkfPFPXL3GFGlqtbQK",
   "role": 0,
   "email": "stefanapostolovic1@gmail.com",
-  "emailVerificationHash": "$2a$10$YA78y6h8HnHho4Z9Gnx.YelbUKBqlNqF1immPdzoucLBoVAnvKBrS",
+  "emailVerificationHash": "$2a$10$YmYh3DpNmqlbDbZXYPCqxuV7N1OvF.gUAYxd74Ih0DHzcQGJQcBMe",
   "verificationTimeout": {
-    "$date": "2023-04-01T15:53:54.174Z"
+    "$date": "2023-04-03T10:57:05.300Z"
   },
   "isActivated": true,
-  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0MjViMDkzYWNiMDg3MzZmZTRlYTg1MyIsInJvbGVzIjpbMF0sInRva2VuVHlwZSI6InJlZnJlc2giLCJleHAiOjE2ODA4NTg5OTgsImlhdCI6MTY4MDI1NDE5OH0.FkaxX8OgBtRLOncf1MCbwl7FzbiZSVEfyTikmYuBaOo",
+  "refreshToken": "",
   "userId": {
-    "$oid": "6425b092acb08736fe4ea852"
+    "$oid": "64280e010c3467b5d7f7694f"
   }
 },{
   "_id": {
-    "$oid": "6426a9791e67aa02662fab4f"
-  },
-  "username": "user",
-  "password": "$2a$10$LjrZl4q3FuKH78NvK5RnYezD5mmiVn9IUOT9c03F0rg4wYAbMEzHC",
-  "role": 1,
-  "email": "stefanapostolovic2@gmail.com",
-  "emailVerificationHash": "$2a$10$LL7adzDwlsR6YbDt1iviIu5ndWNP2u9ngFMxx4dclTJsO6nsuh5He",
-  "verificationTimeout": {
-    "$date": "2023-04-02T09:35:50.432Z"
-  },
-  "isActivated": true,
-  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0MjViMDkzYWNiMDg3MzZmZTRlYTg1MyIsInJvbGVzIjpbMF0sInRva2VuVHlwZSI6InJlZnJlc2giLCJleHAiOjE2ODA4NTg5OTgsImlhdCI6MTY4MDI1NDE5OH0.FkaxX8OgBtRLOncf1MCbwl7FzbiZSVEfyTikmYuBaOoq",
-  "userId": {
-    "$oid": "6426a9761e67aa02662fab4e"
-  }
-},{
-  "_id": {
-    "$oid": "6426a9a01e67aa02662fab51"
+    "$oid": "64280e610c3467b5d7f76952"
   },
   "username": "user1",
-  "password": "$2a$10$1gwZ.kRljBhmcQOYmnXq5eqpTvk0v739McFOSEw/zhn0.mO3ZAfUa",
+  "password": "$2a$10$yMMygeGExV1rTY/ZqSgYKu5nXGNOcOzgwBNs0W/fB8L5iAx0562jS",
   "role": 1,
-  "email": "stefanapostolovic3@gmail.com",
-  "emailVerificationHash": "$2a$10$jCMA6lB556eerp/X1WbD8.C90dj0HV44q39YdPbzpuSmjq37HpFbO",
+  "email": "xmlprojekat1@gmail.com",
+  "emailVerificationHash": "$2a$10$9VomLV3kx0UjsztL988Y5O2IfUajEXxlSZf2szrhukz6ZyuYHT5w6",
   "verificationTimeout": {
-    "$date": "2023-04-02T09:36:16.524Z"
+    "$date": "2023-04-03T10:58:40.712Z"
   },
   "isActivated": true,
-  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0MjViMDkzYWNiMDg3MzZmZTRlYTg1MyIsInJvbGVzIjpbMF0sInRva2VuVHlwZSI6InJlZnJlc2giLCJleHAiOjE2ODA4NTg5OTgsImlhdCI6MTY4MDI1NDE5OH0.FkaxX8OgBtRLOncf1MCbwl7FzbiZSVEfyTikmYuBaOo",
+  "refreshToken": "",
   "userId": {
-    "$oid": "6426a9901e67aa02662fab50"
+    "$oid": "64280e600c3467b5d7f76951"
+  }
+},{
+  "_id": {
+    "$oid": "64280eb10c3467b5d7f76954"
+  },
+  "username": "user2",
+  "password": "$2a$10$HLCQthrdkxbkFKk8qfMVE.0BUjw/ani78L7jEDEKeaIs.OZoXb0GC",
+  "role": 1,
+  "email": "xmlprojekat2@gmail.com",
+  "emailVerificationHash": "$2a$10$AIPjGpI3mNRRqj0BQ298q./RmyVs/UlXyr526dEzJnULP8IHoom6a",
+  "verificationTimeout": {
+    "$date": "2023-04-03T10:59:59.698Z"
+  },
+  "isActivated": false,
+  "refreshToken": "",
+  "userId": {
+    "$oid": "64280eaf0c3467b5d7f76953"
   }
 }]
