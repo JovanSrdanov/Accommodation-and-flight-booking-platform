@@ -1,0 +1,13 @@
+.infoWrapper{
+    background-color: #1e1e1e;
+    padding: 30px;
+    border-radius: 10px;
+}
+h1 {
+    font-size: 250%;
+    margin-top: 5px 0px;
+}
+.infoRow  p {
+    display: inline;
+    font-size: 140%; 
+}
