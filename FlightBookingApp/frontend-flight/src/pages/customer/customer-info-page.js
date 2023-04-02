@@ -1,6 +1,8 @@
+import UserInfo from "../../components/user-info/user-info";
+
 const CustomerInfoPage = () => {
     return (
-        <div>Customer Info Page Works!</div>
+        <UserInfo/>
     )
 }
 
