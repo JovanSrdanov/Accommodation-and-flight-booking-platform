@@ -5,12 +5,15 @@ import {
   faTimes,
   faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "../../api/axios"
 import "./register.css";
 
-const USER_REGEX = /^[A-z][A-z0-9-_]{3,23}$/;
+const USER_REGEX = /^[A-z][A-z0-9]{3,23}$/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/i
 const REGISTER_URL = "/api/account/register";
 
 const Register = () => {
@@ -18,20 +21,27 @@ const Register = () => {
   const errRef = useRef();
   const navigate = useNavigate();
 
+  // User
   const [user, setUser] = useState("");
   const [validName, setValidName] = useState(false);
   const [userFocus, setUserFocus] = useState(false);
 
+  // Password
   const [pwd, setPwd] = useState("");
   const [validPwd, setValidPwd] = useState(false);
   const [pwdFocus, setPwdFocus] = useState(false);
 
+  // Confirm password
   const [matchPwd, setMatchPwd] = useState("");
   const [validMatch, setValidMatch] = useState(false);
   const [matchFocus, setMatchFocus] = useState(false);
 
+  // Email
   const [email, setEmail] = useState("")
+  const [validEmail, setValidEmail] = useState(false)
+  const [emailFocus, setEmailFocus] = useState(false)
 
+  // Error message
   const [errMsg, setErrMsg] = useState("");
   const [success, setSuccess] = useState(false);
 
@@ -44,9 +54,11 @@ const Register = () => {
 
   const [userInfoDialogVisible, setUserInfoDialogVisible] = useState(false)
 
-  // useEffect(() => {
-  //   userRef?.current.focus();
-  // }, []);
+  const [isSecondFormPartDisabled, setIsSecondFormPartDisabled] = useState(true)
+
+  const validSecondPart = () => {
+    return name === "" || surname === "" || country === "" || city === "" || street === "" || streetNumber === ""
+  }
 
   useEffect(() => {
     setValidName(USER_REGEX.test(user));
@@ -58,8 +70,16 @@ const Register = () => {
   }, [pwd, matchPwd]);
 
   useEffect(() => {
+    setValidEmail(EMAIL_REGEX.test(email))
+  }, [email])
+
+  useEffect(() => {
     setErrMsg("");
   }, [user, pwd, matchPwd]);
+
+  useEffect(() => {
+    setIsSecondFormPartDisabled(validSecondPart())
+  }, [name, surname, country, city, street, streetNumber])
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -82,13 +102,13 @@ const Register = () => {
           setPwd("");
           setMatchPwd("");
 
-          navigate("/")
+          //navigate("/")
         })
         .catch(err => {
           if (!err?.response) {
             setErrMsg("No Server Response");
-          } else if (err.response?.status === 409) {
-            setErrMsg("Username Taken");
+          } else if (err.response?.status === 400) {    // TODO Stefan: promeni
+            setErrMsg("Username or Email Taken");
           } else {
             setErrMsg("Registration Failed");
           }
@@ -102,7 +122,7 @@ const Register = () => {
         <section>
           <h1>Success!</h1>
           <p>
-            <a href="#">Sign In</a>
+            <Link to="/" style={{color: 'aquamarine'}}>Sign in</Link>
           </p>
         </section>
       ) : (
@@ -114,7 +134,7 @@ const Register = () => {
                          justifyContent: 'flex-start',
                          padding: '1rem',
                          margin: 'auto',
-                         backgroundColor: 'rgba(0,0,0,0.4)'}}>
+                         backgroundColor: '#282e3b'}}>
           <p
             ref={errRef}
             className={errMsg ? "errmsg" : "offscreen"}
@@ -122,6 +142,7 @@ const Register = () => {
           >
             {errMsg}
           </p>
+          <div style={{color: 'red'}}>All fields are required!</div>
           {!userInfoDialogVisible ?
               <form style={
                 {
@@ -147,7 +168,7 @@ const Register = () => {
                       className={validName || !user ? "hide" : "invalid"}
                   />
                 </label>
-                <input
+                <TextField
                     style={
                       {
                         fontFamily: 'Nunito, sans-serif',
@@ -158,11 +179,13 @@ const Register = () => {
                     }
                     type="text"
                     id="username"
-                    ref={userRef}
+                    variant="standard"
+                    inputRef={userRef}
                     autoComplete="off"
                     onChange={(e) => setUser(e.target.value)}
                     value={user}
                     required
+                    error={!validName}
                     aria-invalid={validName ? "false" : "true"}
                     aria-describedby="uidnote"
                     onFocus={() => setUserFocus(true)}
@@ -197,7 +220,7 @@ const Register = () => {
                       className={validPwd || !pwd ? "hide" : "invalid"}
                   />
                 </label>
-                <input
+                <TextField
                     style={
                       {
                         fontFamily: 'Nunito, sans-serif',
@@ -208,9 +231,11 @@ const Register = () => {
                     }
                     type="password"
                     id="password"
+                    variant="standard"
                     onChange={(e) => setPwd(e.target.value)}
                     value={pwd}
                     required
+                    error={!validPwd}
                     aria-invalid={validPwd ? "false" : "true"}
                     aria-describedby="pwdnote"
                     onFocus={() => setPwdFocus(true)}
@@ -249,7 +274,7 @@ const Register = () => {
                       className={validMatch || !matchPwd ? "hide" : "invalid"}
                   />
                 </label>
-                <input
+                <TextField
                     style={
                       {
                         fontFamily: 'Nunito, sans-serif',
@@ -260,9 +285,11 @@ const Register = () => {
                     }
                     type="password"
                     id="confirm_pwd"
+                    variant="standard"
                     onChange={(e) => setMatchPwd(e.target.value)}
                     value={matchPwd}
                     required
+                    error={!validMatch}
                     aria-invalid={validMatch ? "false" : "true"}
                     aria-describedby="confirmnote"
                     onFocus={() => setMatchFocus(true)}
@@ -283,8 +310,16 @@ const Register = () => {
                 }}
                        htmlFor="confirm_pwd">
                   Email:
+                  <FontAwesomeIcon
+                      icon={faCheck}
+                      className={validEmail ? "valid" : "hide"}
+                  />
+                  <FontAwesomeIcon
+                      icon={faTimes}
+                      className={validEmail || !email ? "hide" : "invalid"}
+                  />
                 </label>
-                <input
+                <TextField
                     style={
                       {
                         fontFamily: 'Nunito, sans-serif',
@@ -295,11 +330,30 @@ const Register = () => {
                     }
                     type="email"
                     id="email"
+                    variant="standard"
                     onChange={(e) => setEmail(e.target.value)}
                     value={email}
                     required
+                    error={!validEmail}
+                    aria-invalid={validEmail ? "false" : "true"}
+                    aria-describedby="emailnote"
+                    onFocus={() => setEmailFocus(true)}
+                    onBlur={() => setEmailFocus(false)}
                 />
-                <button
+                <p
+                    id="emailnote"
+                    className={
+                      emailFocus && !validEmail ? "instructions" : "offscreen"
+                    }
+                >
+                  <FontAwesomeIcon icon={faInfoCircle} />
+                  No whitespaces allowed
+                  <br/>
+                  Only one '@' symbol allowed
+                  <br/>
+                  must have a '.' symbol after the '@' symbol, followed by a domain name (.com, .edu.rs, etc.)
+                </p>
+                <Button
                     style={
                       {
                         fontFamily: 'Nunito, sans-serif',
@@ -309,13 +363,15 @@ const Register = () => {
                         padding: '0.5rem'
                       }
                     }
+                    //className={!validName || !validPwd || !validMatch !validEmail ? "" : "validButton"}
+                    variant={!validName || !validPwd || !validMatch || !validEmail ? "outlined" : "contained"}
                     disabled={!validName || !validPwd || !validMatch}
                     onClick={() => {
                       setUserInfoDialogVisible(true)
                     }}
                 >
                   Next
-                </button>
+                </Button>
               </form> :
               <form style={
                 {
@@ -332,7 +388,7 @@ const Register = () => {
                        htmlFor="name">
                   Name:
                 </label>
-                <input
+                <TextField
                     style={
                       {
                         fontFamily: 'Nunito, sans-serif',
@@ -343,6 +399,7 @@ const Register = () => {
                     }
                     type="text"
                     id="name"
+                    variant="standard"
                     autoComplete="on"
                     onChange={(e) => setName(e.target.value)}
                     value={name}
@@ -355,7 +412,7 @@ const Register = () => {
                        htmlFor="name">
                   Surname:
                 </label>
-                <input
+                <TextField
                     style={
                       {
                         fontFamily: 'Nunito, sans-serif',
@@ -366,6 +423,7 @@ const Register = () => {
                     }
                     type="text"
                     id="surname"
+                    variant="standard"
                     autoComplete="on"
                     onChange={(e) => setSurname(e.target.value)}
                     value={surname}
@@ -378,7 +436,7 @@ const Register = () => {
                        htmlFor="name">
                   Country:
                 </label>
-                <input
+                <TextField
                     style={
                       {
                         fontFamily: 'Nunito, sans-serif',
@@ -389,6 +447,7 @@ const Register = () => {
                     }
                     type="text"
                     id="country"
+                    variant="standard"
                     autoComplete="on"
                     onChange={(e) => setCountry(e.target.value)}
                     value={country}
@@ -401,7 +460,7 @@ const Register = () => {
                        htmlFor="name">
                   City:
                 </label>
-                <input
+                <TextField
                     style={
                       {
                         fontFamily: 'Nunito, sans-serif',
@@ -412,6 +471,7 @@ const Register = () => {
                     }
                     type="text"
                     id="city"
+                    variant="standard"
                     autoComplete="on"
                     onChange={(e) => setCity(e.target.value)}
                     value={city}
@@ -424,7 +484,7 @@ const Register = () => {
                        htmlFor="name">
                   Street:
                 </label>
-                <input
+                <TextField
                     style={
                       {
                         fontFamily: 'Nunito, sans-serif',
@@ -435,6 +495,7 @@ const Register = () => {
                     }
                     type="text"
                     id="street"
+                    variant="standard"
                     autoComplete="on"
                     onChange={(e) => setStreet(e.target.value)}
                     value={street}
@@ -447,7 +508,7 @@ const Register = () => {
                        htmlFor="name">
                   Street Number:
                 </label>
-                <input
+                <TextField
                     style={
                       {
                         fontFamily: 'Nunito, sans-serif',
@@ -458,31 +519,39 @@ const Register = () => {
                     }
                     type="text"
                     id="streetNumber"
+                    variant="standard"
                     autoComplete="on"
                     onChange={(e) => setStreetNumber(e.target.value)}
                     value={streetNumber}
                     required
                 />
-                <button
-                    type="submit"
-                    style={ {
+                <Button
+                  type="submit"
+                  style={{
                   marginTop: '6%',
                   fontSize: 'x-large',
                   textAlign: 'center'
                 }}
-                        onClick={handleSubmit}>
+                className={!isSecondFormPartDisabled ? "validButton" : ""}
+                variant={!isSecondFormPartDisabled ? "contained" : "outlined"}
+                color={!isSecondFormPartDisabled ? "success" : "primary"}
+                disabled={isSecondFormPartDisabled}
+                onClick={handleSubmit}
+                >
                   Submit
-                </button>
-               <button style={ {
+                </Button>
+               <Button style={ {
                  marginTop: '6%',
                  fontSize: 'x-large',
                  textAlign: 'center'
                }}
-                   onClick={() => {
-                setUserInfoDialogVisible(false)
-                }}>
+                variant="contained"
+                onClick={() => {
+                  setUserInfoDialogVisible(false)
+                }}
+               >
                  Back
-               </button>
+               </Button>
               </form>
           }
           <p>
@@ -490,7 +559,7 @@ const Register = () => {
             <br />
             <span className="line">
               {/*put router link here*/}
-              <Link to="/">Sign in</Link>
+              <Link to="/" style={{color: 'aquamarine'}}>Sign in</Link>
             </span>
           </p>
         </section>
