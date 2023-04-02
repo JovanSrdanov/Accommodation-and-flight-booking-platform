@@ -125,7 +125,7 @@ const Login = () => {
           <br />
           <span style={{fontSize: 'large'}} className="line">
             {/*put router link here*/}
-            <Link to="/register">Sign up</Link>
+            <Link to="/register" style={{color: 'aquamarine'}}>Sign up</Link>
           </span>
         </p>
       </section>
