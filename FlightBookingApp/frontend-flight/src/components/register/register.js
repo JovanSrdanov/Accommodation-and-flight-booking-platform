@@ -113,6 +113,7 @@ const Register = () => {
                          flexDirection: 'column',
                          justifyContent: 'flex-start',
                          padding: '1rem',
+                         margin: 'auto',
                          backgroundColor: 'rgba(0,0,0,0.4)'}}>
           <p
             ref={errRef}
@@ -128,7 +129,7 @@ const Register = () => {
                   flexDirection: 'column',
                   justifyContent: 'space-evenly',
                   flexGrow: '1',
-                  paddingBottom: '1rem',
+                  paddingBottom: '1rem'
                 }
               }>
                 <label style={{

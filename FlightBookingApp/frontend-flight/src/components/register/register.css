@@ -34,5 +34,6 @@
 }
 
 .register {
-    all: unset
+    width: 40%;
+    margin: auto;
 }

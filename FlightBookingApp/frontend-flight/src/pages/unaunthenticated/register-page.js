@@ -5,12 +5,10 @@ import "./register-page.css"
 
 const RegisterPage = () => {
   return (
-    <div>
-      <h1 style={{marginTop: '65%', marginBottom: '-45%'}}>Register</h1>
-      <div className="App">
+      <div className="page">
+          <h1 style={{marginTop: '3%', marginBottom: '4%'}}>Register</h1>
           <Register/>
       </div>
-    </div>
   )
 }
 
