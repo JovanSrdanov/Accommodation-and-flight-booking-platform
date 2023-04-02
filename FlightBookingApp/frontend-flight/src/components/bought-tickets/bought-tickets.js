@@ -51,6 +51,7 @@ function BoughtTickets() {
                         <StyledTableCell align="center" style={{width: "25%"}}>Destination</StyledTableCell>
                         <StyledTableCell align="center" style={{width: "10%"}}>Seats</StyledTableCell>
                         <StyledTableCell align="center" style={{width: "10%"}}>Price</StyledTableCell>
+                        <StyledTableCell align="center" style={{width: "10%"}}>Flight Status</StyledTableCell>
                     </TableRow>
                 </TableHead>
                 {
@@ -82,7 +83,7 @@ function BoughtTickets() {
                                 </StyledTableCell>
 
                                 <StyledTableCell align="center">{item.flightInfo.price}</StyledTableCell>
-
+                                <StyledTableCell align="center">{item.flightInfo.canceled ? "Canceled" : "Active"}</StyledTableCell>
 
                             </StyledTableRow>))}
                     </TableBody>
