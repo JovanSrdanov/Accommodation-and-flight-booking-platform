@@ -122,9 +122,7 @@ const Register = () => {
         <section>
           <h1>Success!</h1>
           <p>
-            <a href="#" onClick={() => {
-              navigate("/")
-            }}>Sign In</a>
+            <Link to="/" style={{color: 'aquamarine'}}>Sign in</Link>
           </p>
         </section>
       ) : (

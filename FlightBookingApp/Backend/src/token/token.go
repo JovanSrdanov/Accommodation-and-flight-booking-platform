@@ -80,8 +80,6 @@ func VerifyToken(tokenString string) (error, *JWT.AccessJwtClaims) {
 	claims := &JWT.AccessJwtClaims{}
 	token, err := getTokenFromString(tokenString, claims)
 
-	fmt.Println("get token from string: ", token)
-
 	if err != nil {
 		return err, claims
 	}
