@@ -9,6 +9,8 @@ import TextField from "@mui/material/TextField";
 import "./login.css"
 
 import axios from "../../api/axios";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faCheck, faTimes} from "@fortawesome/free-solid-svg-icons";
 
 const LOGIN_URL = "/api/account/login";
 
@@ -79,7 +81,16 @@ const Login = () => {
     };
 
     return (
-      <section>
+      <section style={{
+          width: '100%',
+          maxWidth: '420px',
+          minHeight: '400px',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'flex-start',
+          padding: '1rem',
+          margin: 'auto',
+          backgroundColor: '#282e3b'}}>
         <p
           ref={errRef}
           className={errMsg ? "errmsg" : "offscreen"}
@@ -88,48 +99,75 @@ const Login = () => {
           {errMsg}
         </p>
 
-        <form>
+        <form
+            style={
+                {
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-evenly',
+                    flexGrow: '1',
+                    paddingBottom: '1rem'
+                }}>
+            <label style={{
+                marginTop: '1rem',
+                marginBottom: '1rem',
+                fontSize: 'large'
+            }}
+                   htmlFor="username">
+                Username:
+            </label>
           <TextField
-            style={{marginRight: '3%', fontSize: 'x-large'}}
+            style={{marginRight: '3%', fontSize: 'x-large', fontFamily: 'Nunito, sans-serif',
+                padding: '0.25rem',
+                borderRadius: '0.5rem',}}
             type="text"
-            id="filled-basic"
-            label="Username"
-            variant="filled"
-            InputProps={{ style: { backgroundColor: '#313131' } }}
+            id="username"
+            variant="standard"
             inputRef={userRef}
             autoComplete="off"
             {...userAttributes}
             required
           />
+            <label style={{
+                marginTop: '1rem',
+                marginBottom: '1rem',
+                fontSize: 'large'
+            }}
+                   htmlFor="password">
+                Password:
+            </label>
           <TextField
-            style={{fontSize: 'x-large'}}
+              style={{marginRight: '3%', fontSize: 'x-large', fontFamily: 'Nunito, sans-serif',
+                  padding: '0.25rem',
+                  borderRadius: '0.5rem',}}
             type="password"
-            id="filled-basic"
-            label="Password"
-            variant="filled"
-            InputProps={{ style: { backgroundColor: '#313131' } }}
+            variant="standard"
             onChange={(e) => setPwd(e.target.value)}
             value={pwd}
             required
           />
+          <div className="persistCheck">
+              <input
+                  style={{marginTop:'2%'}}
+                  className="persistCheckbox"
+                  type="checkbox"
+                  id="persist"
+                  onChange={toggleCheck}
+                  checked={check}
+              />
+              <label style={{fontSize: 'large'}} htmlFor="persist">Trust This Device</label>
+          </div>
           <Button
-              style={{fontSize: 'x-large', marginLeft: '2%'}}
+              style={{fontSize: 'x-large', marginLeft: '2%', fontFamily: 'Nunito, sans-serif',
+                  borderRadius: '0.5rem',
+                  marginTop: '1rem',
+                  padding: '0.5rem'}}
               variant={user === "" || pwd === "" ? "outlined" : "contained" }
+              disabled={user === "" || pwd === ""}
               onClick={handleSubmit}
           >
               Sign In
           </Button>
-          <div className="persistCheck">
-            <input
-              style={{marginTop:'2%'}}
-              className="persistCheckbox"
-              type="checkbox"
-              id="persist"
-              onChange={toggleCheck}
-              checked={check}
-            />
-            <label style={{fontSize: 'x-large'}} htmlFor="persist">Trust This Device</label>
-          </div>
         </form>
         <p style={{fontSize: 'large'}}>
           Need an Account?

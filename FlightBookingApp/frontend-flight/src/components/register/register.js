@@ -120,7 +120,7 @@ const Register = () => {
     <>
       {success ? (
         <section>
-          <h1>Success!</h1>
+          <h1>An activation link has been sent to {email}</h1>
           <p>
             <Link to="/" style={{color: 'aquamarine'}}>Sign in</Link>
           </p>
@@ -185,7 +185,6 @@ const Register = () => {
                     onChange={(e) => setUser(e.target.value)}
                     value={user}
                     required
-                    error={!validName}
                     aria-invalid={validName ? "false" : "true"}
                     aria-describedby="uidnote"
                     onFocus={() => setUserFocus(true)}
@@ -235,7 +234,6 @@ const Register = () => {
                     onChange={(e) => setPwd(e.target.value)}
                     value={pwd}
                     required
-                    error={!validPwd}
                     aria-invalid={validPwd ? "false" : "true"}
                     aria-describedby="pwdnote"
                     onFocus={() => setPwdFocus(true)}
@@ -289,7 +287,6 @@ const Register = () => {
                     onChange={(e) => setMatchPwd(e.target.value)}
                     value={matchPwd}
                     required
-                    error={!validMatch}
                     aria-invalid={validMatch ? "false" : "true"}
                     aria-describedby="confirmnote"
                     onFocus={() => setMatchFocus(true)}
@@ -334,7 +331,6 @@ const Register = () => {
                     onChange={(e) => setEmail(e.target.value)}
                     value={email}
                     required
-                    error={!validEmail}
                     aria-invalid={validEmail ? "false" : "true"}
                     aria-describedby="emailnote"
                     onFocus={() => setEmailFocus(true)}
@@ -365,8 +361,9 @@ const Register = () => {
                     }
                     //className={!validName || !validPwd || !validMatch !validEmail ? "" : "validButton"}
                     variant={!validName || !validPwd || !validMatch || !validEmail ? "outlined" : "contained"}
-                    disabled={!validName || !validPwd || !validMatch}
-                    onClick={() => {
+                    disabled={!validName || !validPwd || !validMatch || !validEmail}
+                    onClick={(e) => {
+                      e.preventDefault();
                       setUserInfoDialogVisible(true)
                     }}
                 >
@@ -380,7 +377,7 @@ const Register = () => {
                   justifyContent: 'space-evenly',
                   flexGrow: '1',
                   paddingBottom: '1rem',
-                }} onSubmit={handleSubmit}>
+                }}>
                 <label style={{
                   marginTop: '1rem',
                   marginBottom: '1rem'
@@ -546,7 +543,8 @@ const Register = () => {
                  textAlign: 'center'
                }}
                 variant="contained"
-                onClick={() => {
+                onClick={(e) => {
+                  e.preventDefault();
                   setUserInfoDialogVisible(false)
                 }}
                >
