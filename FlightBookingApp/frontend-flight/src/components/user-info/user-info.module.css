@@ -2,6 +2,8 @@
     background-color: #1e1e1e;
     padding: 30px;
     border-radius: 10px;
+    width: 30%;
+    margin:  50px auto;
 }
 h1 {
     font-size: 250%;

@@ -1,4 +1,4 @@
-import UserInfo from "../../components/account-info/user-info"
+import UserInfo from "../../components/user-info/user-info";
 
 const CustomerInfoPage = () => {
     return (
