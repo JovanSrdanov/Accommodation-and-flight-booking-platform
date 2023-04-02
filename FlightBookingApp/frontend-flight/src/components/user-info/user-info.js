@@ -38,6 +38,7 @@ function UserInfo(props){
     const { GetLoggedUserInfo } = useUserApi();
 
     useEffect( () => {
+        console.log("USO")
         GetAccountInfo()
         .then(data => {
             setAccountInfo(data)
@@ -55,7 +56,7 @@ function UserInfo(props){
                 alert(error)
             })
 
-    })
+    }, [])
 
 
 
