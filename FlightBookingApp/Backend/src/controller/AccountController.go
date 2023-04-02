@@ -308,3 +308,32 @@ func (controller *AccountController) Delete(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, dto.NewSimpleResponse("Entity deleted"))
 }
+
+// GetLoggedInfo godoc
+// @Security bearerAuth
+// @Tags Account
+// @Produce application/json
+// @Success 200 {object} dto.AccountInfo
+// @Failure 400 {object} dto.SimpleResponse
+// @Failure 404 {object} dto.SimpleResponse
+// @Router /account/logged/info [get]
+func (controller *AccountController) GetLoggedInfo(ctx *gin.Context) {
+	userAccountID := ctx.Keys["ID"]
+	if userAccountID == nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, dto.NewSimpleResponse("Account id not provided"))
+		return
+	}
+
+	account, err := controller.accountService.GetById(userAccountID.(primitive.ObjectID))
+
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusNotFound, err.Error())
+		return
+	}
+
+	accountInfo := dto.AccountInfo{
+		Username: account.Username,
+		Email:    account.Email,
+	}
+	ctx.JSON(http.StatusOK, accountInfo)
+}

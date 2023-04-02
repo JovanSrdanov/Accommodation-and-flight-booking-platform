@@ -163,7 +163,7 @@ func (controller *FlightController) Cancel(ctx *gin.Context) {
 // @Param resultsPerPage query int true "Results per page"
 // @Param sortDirection query string true "Sort direction (asc, dsc, no_sort)"
 // @Param sortType query string true "Sort type, it can be departureDateTime or price"
-// @Router /search-flights[get]
+// @Router /search-flights [get]
 func (controller *FlightController) Search(ctx *gin.Context) {
 	flightSearchParameters, err := dto.NewFlightSearchParameters(
 		ctx.Query("departureDate"),

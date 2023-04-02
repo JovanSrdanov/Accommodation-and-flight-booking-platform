@@ -39,9 +39,13 @@ func DefineAccountEndpoints(upperRouterGroup *gin.RouterGroup, client *mongo.Cli
 		authenticatedAccounts.GET(":id",
 			middleware.Authorization([]model.Role{model.REGULAR_USER, model.ADMIN}),
 			accContr.GetById)
+		authenticatedAccounts.GET("logged/info",
+			middleware.Authorization([]model.Role{model.REGULAR_USER, model.ADMIN}),
+			accContr.GetLoggedInfo)
 		authenticatedAccounts.DELETE(":id",
 			middleware.Authorization([]model.Role{model.ADMIN}),
 			accContr.Delete)
+
 	}
 
 	// anyone can use these
