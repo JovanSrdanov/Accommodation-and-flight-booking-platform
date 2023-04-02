@@ -4,6 +4,8 @@ import {Link, useLocation, useNavigate} from "react-router-dom";
 import jwt_decode from "jwt-decode";
 import useToggle from "../../hooks/useToggle";
 import useInput from "../../hooks/useInput";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
 import "./login.css"
 
 import axios from "../../api/axios";
@@ -68,7 +70,7 @@ const Login = () => {
             } else if (err.response?.status === 400) {
                 setErrMsg("Missing Username or Password");
             } else if (err.response?.status === 401) {
-                setErrMsg("Unauthorized");
+                setErrMsg("Invalid username/password, or account not activated");
             } else {
                 setErrMsg("Login Failed");
             }
@@ -86,28 +88,37 @@ const Login = () => {
           {errMsg}
         </p>
 
-        <form onSubmit={handleSubmit}>
-          <label style={{fontSize: 'x-large'}} htmlFor="username">Username:</label>
-          <input
+        <form>
+          <TextField
             style={{marginRight: '3%', fontSize: 'x-large'}}
             type="text"
-            id="username"
-            ref={userRef}
+            id="filled-basic"
+            label="Username"
+            variant="filled"
+            InputProps={{ style: { backgroundColor: '#313131' } }}
+            inputRef={userRef}
             autoComplete="off"
             {...userAttributes}
             required
           />
-
-          <label style={{fontSize: 'x-large'}} htmlFor="password">Password:</label>
-          <input
+          <TextField
             style={{fontSize: 'x-large'}}
             type="password"
-            id="password"
+            id="filled-basic"
+            label="Password"
+            variant="filled"
+            InputProps={{ style: { backgroundColor: '#313131' } }}
             onChange={(e) => setPwd(e.target.value)}
             value={pwd}
             required
           />
-          <button style={{fontSize: 'x-large'}}>Sign In</button>
+          <Button
+              style={{fontSize: 'x-large', marginLeft: '2%'}}
+              variant={user === "" || pwd === "" ? "outlined" : "contained" }
+              onClick={handleSubmit}
+          >
+              Sign In
+          </Button>
           <div className="persistCheck">
             <input
               style={{marginTop:'2%'}}

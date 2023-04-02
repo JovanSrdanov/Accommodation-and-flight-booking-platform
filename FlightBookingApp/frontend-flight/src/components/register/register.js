@@ -6,6 +6,7 @@ import {
   faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "../../api/axios"
 import "./register.css";
@@ -135,7 +136,7 @@ const Register = () => {
                          justifyContent: 'flex-start',
                          padding: '1rem',
                          margin: 'auto',
-                         backgroundColor: 'rgba(0,0,0,0.4)'}}>
+                         backgroundColor: '#282e3b'}}>
           <p
             ref={errRef}
             className={errMsg ? "errmsg" : "offscreen"}
@@ -169,7 +170,7 @@ const Register = () => {
                       className={validName || !user ? "hide" : "invalid"}
                   />
                 </label>
-                <input
+                <TextField
                     style={
                       {
                         fontFamily: 'Nunito, sans-serif',
@@ -180,11 +181,13 @@ const Register = () => {
                     }
                     type="text"
                     id="username"
-                    ref={userRef}
+                    variant="standard"
+                    inputRef={userRef}
                     autoComplete="off"
                     onChange={(e) => setUser(e.target.value)}
                     value={user}
                     required
+                    error={!validName}
                     aria-invalid={validName ? "false" : "true"}
                     aria-describedby="uidnote"
                     onFocus={() => setUserFocus(true)}
@@ -219,7 +222,7 @@ const Register = () => {
                       className={validPwd || !pwd ? "hide" : "invalid"}
                   />
                 </label>
-                <input
+                <TextField
                     style={
                       {
                         fontFamily: 'Nunito, sans-serif',
@@ -230,9 +233,11 @@ const Register = () => {
                     }
                     type="password"
                     id="password"
+                    variant="standard"
                     onChange={(e) => setPwd(e.target.value)}
                     value={pwd}
                     required
+                    error={!validPwd}
                     aria-invalid={validPwd ? "false" : "true"}
                     aria-describedby="pwdnote"
                     onFocus={() => setPwdFocus(true)}
@@ -271,7 +276,7 @@ const Register = () => {
                       className={validMatch || !matchPwd ? "hide" : "invalid"}
                   />
                 </label>
-                <input
+                <TextField
                     style={
                       {
                         fontFamily: 'Nunito, sans-serif',
@@ -282,9 +287,11 @@ const Register = () => {
                     }
                     type="password"
                     id="confirm_pwd"
+                    variant="standard"
                     onChange={(e) => setMatchPwd(e.target.value)}
                     value={matchPwd}
                     required
+                    error={!validMatch}
                     aria-invalid={validMatch ? "false" : "true"}
                     aria-describedby="confirmnote"
                     onFocus={() => setMatchFocus(true)}
@@ -314,7 +321,7 @@ const Register = () => {
                       className={validEmail || !email ? "hide" : "invalid"}
                   />
                 </label>
-                <input
+                <TextField
                     style={
                       {
                         fontFamily: 'Nunito, sans-serif',
@@ -325,9 +332,11 @@ const Register = () => {
                     }
                     type="email"
                     id="email"
+                    variant="standard"
                     onChange={(e) => setEmail(e.target.value)}
                     value={email}
                     required
+                    error={!validEmail}
                     aria-invalid={validEmail ? "false" : "true"}
                     aria-describedby="emailnote"
                     onFocus={() => setEmailFocus(true)}
@@ -381,7 +390,7 @@ const Register = () => {
                        htmlFor="name">
                   Name:
                 </label>
-                <input
+                <TextField
                     style={
                       {
                         fontFamily: 'Nunito, sans-serif',
@@ -392,6 +401,7 @@ const Register = () => {
                     }
                     type="text"
                     id="name"
+                    variant="standard"
                     autoComplete="on"
                     onChange={(e) => setName(e.target.value)}
                     value={name}
@@ -404,7 +414,7 @@ const Register = () => {
                        htmlFor="name">
                   Surname:
                 </label>
-                <input
+                <TextField
                     style={
                       {
                         fontFamily: 'Nunito, sans-serif',
@@ -415,6 +425,7 @@ const Register = () => {
                     }
                     type="text"
                     id="surname"
+                    variant="standard"
                     autoComplete="on"
                     onChange={(e) => setSurname(e.target.value)}
                     value={surname}
@@ -427,7 +438,7 @@ const Register = () => {
                        htmlFor="name">
                   Country:
                 </label>
-                <input
+                <TextField
                     style={
                       {
                         fontFamily: 'Nunito, sans-serif',
@@ -438,6 +449,7 @@ const Register = () => {
                     }
                     type="text"
                     id="country"
+                    variant="standard"
                     autoComplete="on"
                     onChange={(e) => setCountry(e.target.value)}
                     value={country}
@@ -450,7 +462,7 @@ const Register = () => {
                        htmlFor="name">
                   City:
                 </label>
-                <input
+                <TextField
                     style={
                       {
                         fontFamily: 'Nunito, sans-serif',
@@ -461,6 +473,7 @@ const Register = () => {
                     }
                     type="text"
                     id="city"
+                    variant="standard"
                     autoComplete="on"
                     onChange={(e) => setCity(e.target.value)}
                     value={city}
@@ -473,7 +486,7 @@ const Register = () => {
                        htmlFor="name">
                   Street:
                 </label>
-                <input
+                <TextField
                     style={
                       {
                         fontFamily: 'Nunito, sans-serif',
@@ -484,6 +497,7 @@ const Register = () => {
                     }
                     type="text"
                     id="street"
+                    variant="standard"
                     autoComplete="on"
                     onChange={(e) => setStreet(e.target.value)}
                     value={street}
@@ -496,7 +510,7 @@ const Register = () => {
                        htmlFor="name">
                   Street Number:
                 </label>
-                <input
+                <TextField
                     style={
                       {
                         fontFamily: 'Nunito, sans-serif',
@@ -507,6 +521,7 @@ const Register = () => {
                     }
                     type="text"
                     id="streetNumber"
+                    variant="standard"
                     autoComplete="on"
                     onChange={(e) => setStreetNumber(e.target.value)}
                     value={streetNumber}
