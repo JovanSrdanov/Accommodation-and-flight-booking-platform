@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from "react";
 import useAuth from "../../hooks/useAuth";
-import {Link, useLocation, useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import jwt_decode from "jwt-decode";
 import useToggle from "../../hooks/useToggle";
 import useInput from "../../hooks/useInput";
@@ -9,15 +9,11 @@ import TextField from "@mui/material/TextField";
 import "./login.css"
 
 import axios from "../../api/axios";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faCheck, faTimes} from "@fortawesome/free-solid-svg-icons";
 
 const LOGIN_URL = "/api/account/login";
 
 const Login = () => {
     const navigate = useNavigate();
-    const location = useLocation();
-    const from = location.state?.from?.pathname || "/"
 
     const { setAuth } = useAuth();
     const userRef = useRef();

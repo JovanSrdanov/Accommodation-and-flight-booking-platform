@@ -18,6 +18,7 @@ import Planes from "./components/planes/planes";
 import HackerHeaders from "./components/hackerHeaders/hackerHeaders";
 import BoughtTicketsPage from "./pages/customer/bought-tickets-page";
 import CustomerInfoPage from "./pages/customer/customer-info-page"
+import RequireUnAuth from "./components/Authentication/RequireUnAuth";
 
 
 const darkTheme = createTheme({
@@ -41,8 +42,12 @@ function App() {
             <Routes>
               <Route path="/" element={<Layout/>}>
                                     {/* public rotues*/}
-                <Route path="/" element={<HomePage/>}/>
-                <Route path="register" element={<RegisterPage/>}/>
+                  <Route element={<PersistLogin/>}>
+                      <Route element={<RequireUnAuth/>}>
+                          <Route path="/" element={<HomePage/>}/>
+                          <Route path="register" element={<RegisterPage/>}/>
+                      </Route>
+                  </Route>
                 <Route path="unauthorized" element={<Unauthorized/>}/>
                                     {/* protected routes*/}
                 {/* Ovako se stite rute - stavis rutu sa required auth i prosledis role koje su

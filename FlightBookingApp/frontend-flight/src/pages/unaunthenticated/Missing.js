@@ -7,7 +7,7 @@ const Missing = () => {
       <h1>Oops!</h1>
       <p>Page Not Found</p>
       <div className="flexGrow">
-        <Link to="/">Visit Our Homepage</Link>
+        <Link to="/">Go Back</Link> {/*TODO Stavi da vraca na profil korisnika*/}
       </div>
     </article>
   );
