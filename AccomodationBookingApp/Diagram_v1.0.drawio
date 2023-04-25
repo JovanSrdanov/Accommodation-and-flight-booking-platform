@@ -1,0 +1,70 @@
+<mxfile host="app.diagrams.net" modified="2023-04-23T22:15:44.176Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36" etag="Zul79-bTvVL7h4u6UoIo" version="21.2.1" type="device">
+  <diagram name="Page-1" id="KrapBtToZwIU081OCzqL">
+    <mxGraphModel dx="4817" dy="2420" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="els4zqD9-Fk3xTTJUvE1-4" value="Frontend&lt;br&gt;" style="shape=image;html=1;verticalAlign=top;verticalLabelPosition=bottom;labelBackgroundColor=none;imageAspect=0;aspect=fixed;image=https://cdn1.iconfinder.com/data/icons/unicons-line-vol-5/24/react-128.png" vertex="1" parent="1">
+          <mxGeometry x="496" y="-421" width="314" height="314" as="geometry" />
+        </mxCell>
+        <mxCell id="els4zqD9-Fk3xTTJUvE1-5" value="Api gateway&lt;br&gt;" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.api_gateway;fillColor=#D9A741;gradientColor=none;" vertex="1" parent="1">
+          <mxGeometry x="571" y="272" width="76.5" height="93" as="geometry" />
+        </mxCell>
+        <mxCell id="els4zqD9-Fk3xTTJUvE1-11" value="Notification service" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.redshift;fillColor=#2E73B8;gradientColor=none;" vertex="1" parent="1">
+          <mxGeometry x="1143" y="760" width="130" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="els4zqD9-Fk3xTTJUvE1-22" value="" style="image;sketch=0;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/mscae/Docker.svg;" vertex="1" parent="1">
+          <mxGeometry x="-703" y="396" width="3080.55" height="2526" as="geometry" />
+        </mxCell>
+        <mxCell id="els4zqD9-Fk3xTTJUvE1-23" value="" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#B0084D;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.mq_broker;" vertex="1" parent="1">
+          <mxGeometry x="1134" y="477" width="135" height="135" as="geometry" />
+        </mxCell>
+        <mxCell id="els4zqD9-Fk3xTTJUvE1-26" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="-15" y="740" width="189.2" height="131.00000000000003" as="geometry" />
+        </mxCell>
+        <mxCell id="els4zqD9-Fk3xTTJUvE1-2" value="Authorzation service" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.redshift;fillColor=#2E73B8;gradientColor=none;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" vertex="1" parent="els4zqD9-Fk3xTTJUvE1-26">
+          <mxGeometry y="26.00000000000003" width="130" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="els4zqD9-Fk3xTTJUvE1-18" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://download.logo.wine/logo/PostgreSQL/PostgreSQL-Logo.wine.png;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" vertex="1" parent="els4zqD9-Fk3xTTJUvE1-26">
+          <mxGeometry x="49.06999999999999" width="140.13" height="93.42" as="geometry" />
+        </mxCell>
+        <mxCell id="els4zqD9-Fk3xTTJUvE1-32" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="947" y="223.99999999999997" width="189.2" height="131.00000000000003" as="geometry" />
+        </mxCell>
+        <mxCell id="els4zqD9-Fk3xTTJUvE1-33" value="UserProfile service&lt;br&gt;" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.redshift;fillColor=#2E73B8;gradientColor=none;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" vertex="1" parent="els4zqD9-Fk3xTTJUvE1-32">
+          <mxGeometry y="26.00000000000003" width="130" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="els4zqD9-Fk3xTTJUvE1-34" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://download.logo.wine/logo/PostgreSQL/PostgreSQL-Logo.wine.png;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" vertex="1" parent="els4zqD9-Fk3xTTJUvE1-32">
+          <mxGeometry x="49.06999999999999" width="140.13" height="93.42" as="geometry" />
+        </mxCell>
+        <mxCell id="els4zqD9-Fk3xTTJUvE1-40" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="763" y="207" width="153.82999999999998" height="131" as="geometry" />
+        </mxCell>
+        <mxCell id="els4zqD9-Fk3xTTJUvE1-13" value="AccommodationQuality service" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.redshift;fillColor=#2E73B8;gradientColor=none;" vertex="1" parent="els4zqD9-Fk3xTTJUvE1-40">
+          <mxGeometry y="26" width="130" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="els4zqD9-Fk3xTTJUvE1-39" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://cdn.freebiesupply.com/logos/large/2x/neo4j-logo-png-transparent.png;" vertex="1" parent="els4zqD9-Fk3xTTJUvE1-40">
+          <mxGeometry x="85" width="68.83" height="78" as="geometry" />
+        </mxCell>
+        <mxCell id="els4zqD9-Fk3xTTJUvE1-42" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="547" y="481" width="152" height="126.99999999999994" as="geometry" />
+        </mxCell>
+        <mxCell id="els4zqD9-Fk3xTTJUvE1-10" value="Accomodation service" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.redshift;fillColor=#2E73B8;gradientColor=none;" vertex="1" parent="els4zqD9-Fk3xTTJUvE1-42">
+          <mxGeometry y="21.999999999999943" width="130" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="els4zqD9-Fk3xTTJUvE1-38" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://cdn.discordapp.com/attachments/1085251565209800749/1099818729195458651/pngwing.com.png;" vertex="1" parent="els4zqD9-Fk3xTTJUvE1-42">
+          <mxGeometry x="75" width="77" height="77" as="geometry" />
+        </mxCell>
+        <mxCell id="els4zqD9-Fk3xTTJUvE1-43" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="287" y="491" width="152" height="126.99999999999994" as="geometry" />
+        </mxCell>
+        <mxCell id="els4zqD9-Fk3xTTJUvE1-44" value="Availability service" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.redshift;fillColor=#2E73B8;gradientColor=none;" vertex="1" parent="els4zqD9-Fk3xTTJUvE1-43">
+          <mxGeometry y="21.999999999999943" width="130" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="els4zqD9-Fk3xTTJUvE1-45" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://cdn.discordapp.com/attachments/1085251565209800749/1099818729195458651/pngwing.com.png;" vertex="1" parent="els4zqD9-Fk3xTTJUvE1-43">
+          <mxGeometry x="75" width="77" height="77" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
