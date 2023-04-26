@@ -20,7 +20,7 @@ func NewAccountCredentialsRepositoryPG(dbClient *gorm.DB) (*AccountCredentialsRe
 	return &AccountCredentialsRepositoryPG{dbClient: dbClient}, nil
 }
 
-func (repo AccountCredentialsRepositoryPG) Create(accCred model.AccountCredentials) (uuid.UUID, error) {
+func (repo AccountCredentialsRepositoryPG) Create(accCred *model.AccountCredentials) (uuid.UUID, error) {
 	//TODO : probaj da obrises da vidis oce li ti sam postgres izgenerisati ID
 	accCred.ID, _ = uuid.NewUUID()
 

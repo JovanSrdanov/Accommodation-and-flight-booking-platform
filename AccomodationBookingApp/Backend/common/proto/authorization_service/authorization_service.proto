@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+option go_package = "common/authorization";
+
+package authorization;
+
+import "google/api/annotations.proto";
+
+service AuthorizationService{
+  rpc Create(CreateRequest) returns(CreateResponse) {
+    option (google.api.http) = {
+      post: "/account-credentials"
+    };
+  }
+
+  rpc GetByEmail(GetByEmailRequest) returns(GetByEmailResponse) {
+    option (google.api.http) = {
+      get: "/account-credentials"
+    };
+  }
+}
+
+message CreateRequest {
+  CreateAccountCredentials accountCredentials = 1;
+}
+
+message CreateResponse {
+   string id = 1;
+}
+
+message GetByEmailRequest{
+ string email = 1;
+}
+
+message GetByEmailResponse{
+  AccountCredentials accountCredentials = 1;
+}
+
+enum Role {
+  Host = 0;
+  Guest = 1;
+}
+
+message CreateAccountCredentials {
+  string email = 1;
+  string password = 2;
+  Role role = 3;
+}
+message AccountCredentials {
+  string id = 1;
+  string email = 2;
+  string password = 3;
+  string salt = 4;
+  Role role = 5;
+}

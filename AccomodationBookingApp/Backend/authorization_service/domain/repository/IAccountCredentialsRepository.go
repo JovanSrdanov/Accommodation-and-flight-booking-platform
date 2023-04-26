@@ -6,6 +6,6 @@ import (
 )
 
 type IAccountCredentialsRepository interface {
-	Create(accCred model.AccountCredentials) (uuid.UUID, error)
+	Create(accCred *model.AccountCredentials) (uuid.UUID, error)
 	GetByEmail(email string) (*model.AccountCredentials, error)
 }
