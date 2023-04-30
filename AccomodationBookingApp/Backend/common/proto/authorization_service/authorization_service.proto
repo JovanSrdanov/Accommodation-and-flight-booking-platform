@@ -9,13 +9,15 @@ import "google/api/annotations.proto";
 service AuthorizationService{
   rpc Create(CreateRequest) returns(CreateResponse) {
     option (google.api.http) = {
-      post: "/account-credentials"
+      post: "/account-credentials",
+      //body:"*" works if JSON body has one top level object, otherwise you need to list all individual fields by hand
+      body: "*"
     };
   }
 
   rpc GetByEmail(GetByEmailRequest) returns(GetByEmailResponse) {
     option (google.api.http) = {
-      get: "/account-credentials"
+      get: "/account-credentials/{email}"
     };
   }
 }
