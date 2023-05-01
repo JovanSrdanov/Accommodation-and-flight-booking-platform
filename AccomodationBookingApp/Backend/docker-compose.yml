@@ -1,0 +1,55 @@
+version: "3.8"
+
+services:
+
+
+  authorization_service:
+    image: authorization_service
+    container_name: authorization_service
+    build:
+      context: .
+      dockerfile: ./authorization_service/Dockerfile
+    restart: on-failure
+    environment:
+      AUTHORIZATION_DB_HOST: ${AUTHORIZATION_DB_HOST}
+      AUTHORIZATION_DB_PORT: ${AUTHORIZATION_DB_PORT}
+      AUTHORIZATION_DB_USER: ${AUTHORIZATION_DB_USER}
+      AUTHORIZATION_DB_PASS: ${AUTHORIZATION_DB_PASS}
+      AUTHORIZATION_DB_NAME: ${AUTHORIZATION_DB_NAME}
+      AUTHORIZATION_SERVICE_PORT: ${AUTHORIZATION_SERVICE_PORT}
+    depends_on:
+      - authorization_db
+    networks:
+      - network
+
+  api_gateway:
+    image: api_gateway
+    container_name: api_gateway
+    build:
+      context: .
+      dockerfile: ./api_gateway/Dockerfile
+    restart: on-failure
+    ports:
+      - ${GATEWAY_PORT}:${GATEWAY_PORT}
+    environment:
+      GATEWAY_PORT: ${GATEWAY_PORT}
+      AUTHORIZATION_SERVICE_PORT: ${AUTHORIZATION_SERVICE_PORT}
+      AUTHORIZATION_SERVICE_HOST: ${AUTHORIZATION_SERVICE_HOST}
+    networks:
+      - network
+
+  authorization_db:
+    image: postgres
+    container_name: authorization_db
+    restart: on-failure
+    environment:
+      POSTGRES_USER: ${AUTHORIZATION_DB_USER}
+      POSTGRES_PASSWORD: ${AUTHORIZATION_DB_PASS}
+      POSTGRES_DB: ${AUTHORIZATION_DB_NAME}
+    networks:
+      - network
+
+
+networks:
+  network:
+    driver: bridge
