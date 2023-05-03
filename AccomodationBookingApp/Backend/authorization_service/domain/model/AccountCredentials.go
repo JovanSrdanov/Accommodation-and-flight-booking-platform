@@ -13,10 +13,10 @@ const (
 )
 
 type AccountCredentials struct {
-	ID       uuid.UUID `json:"id, omitempty" gorm:"primaryKey"`
+	ID       uuid.UUID `json:"id,omitempty" gorm:"primaryKey"`
 	Email    string    `json:"email" gorm:"unique" `
 	Password string    `json:"password"`
-	Salt     string    `json:"salt, omitempty"`
+	Salt     string    `json:"salt,omitempty"`
 	Role     Role      `json:"role"`
 }
 
