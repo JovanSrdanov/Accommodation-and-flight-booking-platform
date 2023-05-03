@@ -25,8 +25,8 @@ func (service AccountCredentialsService) Create(accCred *model.AccountCredential
 	return id, nil
 }
 
-func (service AccountCredentialsService) GetByEmail(email string) (*model.AccountCredentials, error) {
-	accountCredentials, err := service.accCredRepo.GetByEmail(email)
+func (service AccountCredentialsService) GetByUsername(username string) (*model.AccountCredentials, error) {
+	accountCredentials, err := service.accCredRepo.GetByUsername(username)
 
 	if err != nil {
 		return &model.AccountCredentials{}, err

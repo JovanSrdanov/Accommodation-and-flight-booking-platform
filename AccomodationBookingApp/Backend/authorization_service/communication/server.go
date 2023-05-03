@@ -5,7 +5,8 @@ import (
 	"authorization_service/configuration"
 	"authorization_service/domain/service"
 	"authorization_service/persistence/repository"
-	authorization "common/proto/authorization_service/generated"
+	//authorization "common/proto/authorization_service/generated"
+	"context"
 	"fmt"
 	"google.golang.org/grpc"
 	"gorm.io/gorm"
@@ -50,13 +51,37 @@ func (server Server) initAccountCredentialsRepo(postgresClient *gorm.DB) *reposi
 	return repo
 }
 
+func unaryInterceptor(
+	ctx context.Context,
+	req interface{},
+	info *grpc.UnaryServerInfo,
+	unaryHandler grpc.UnaryHandler,
+) (interface{}, error) {
+	log.Println("--> unary interceptor: ", info.FullMethod)
+	return unaryHandler(ctx, req)
+}
+
+func streamInterceptor(
+	srv interface{},
+	stream grpc.ServerStream,
+	info *grpc.StreamServerInfo,
+	streamHandler grpc.StreamHandler,
+) error {
+	log.Println("--> stream interceptor: ", info.FullMethod)
+	return streamHandler(srv, stream)
+}
+
 func (server *Server) startGrpcServer(accountCredentialsHandler *handler.AccountCredentialsHandler) {
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%s", server.config.Port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
-	grpcServer := grpc.NewServer()
-	authorization.RegisterAuthorizationServiceServer(grpcServer, accountCredentialsHandler)
+	// interceptor initialization for auth
+	grpcServer := grpc.NewServer(
+		grpc.UnaryInterceptor(unaryInterceptor),
+		grpc.StreamInterceptor(streamInterceptor),
+	)
+	//authorization.RegisterAuthorizationServiceServer(grpcServer, accountCredentialsHandler)
 	if err := grpcServer.Serve(listener); err != nil {
 		log.Fatalf("failed to serve: %s", err)
 	}

@@ -28,7 +28,7 @@ func (handler AccountCredentialsHandler) Create(ctx context.Context, request *au
 	}, nil
 }
 func (handler AccountCredentialsHandler) GetByEmail(ctx context.Context, request *authorizationProto.GetByEmailRequest) (*authorizationProto.GetByEmailResponse, error) {
-	result, err := handler.accCredService.GetByEmail(request.Email)
+	result, err := handler.accCredService.GetByUsername(request.Email)
 	if err != nil {
 		return nil, err
 	}
