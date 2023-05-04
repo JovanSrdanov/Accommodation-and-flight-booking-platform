@@ -3,6 +3,7 @@ package communication
 import (
 	"api_gateway/configuration"
 	authorization "common/proto/authorization_service/generated"
+	user_profile "common/proto/user_profile_service/generated"
 	"context"
 	"fmt"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -34,6 +35,12 @@ func (server *Server) initHandlers() {
 		panic(err)
 	}
 
+	opts = []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
+	userProfileEndpoint := fmt.Sprintf("%s:%s", server.config.UserProfileHost, server.config.AuthorizationPort)
+	err = user_profile.RegisterUserProfileServiceHandlerFromEndpoint(context.TODO(), server.mux, userProfileEndpoint, opts)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func (server *Server) Start() {
