@@ -4,8 +4,12 @@ import (
 	"authorization_service/domain/service"
 	authorizationProto "common/proto/authorization_service/generated"
 	"context"
+	"fmt"
+	"github.com/o1egl/paseto"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"log"
 )
 
 type AccountCredentialsHandler struct {
@@ -32,6 +36,20 @@ func (handler AccountCredentialsHandler) Create(ctx context.Context, request *au
 	}, nil
 }
 func (handler AccountCredentialsHandler) GetByUsername(ctx context.Context, request *authorizationProto.GetByUsernameRequest) (*authorizationProto.GetByUsernameResponse, error) {
+	// TODO Stefan: only for testing purposes, remove later
+	metaData, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return nil, fmt.Errorf("no metadata provided")
+	}
+	token := metaData["authorization"][0]
+	var footerData map[string]interface{}
+	if err := paseto.ParseFooter(token, &footerData); err != nil {
+		return nil, fmt.Errorf("failed to parse token footer")
+	}
+
+	log.Println("Logged in user id: ", footerData["ID"])
+	///////////////
+
 	result, err := handler.accCredService.GetByUsername(request.Username)
 	if err != nil {
 		return nil, err
@@ -53,6 +71,9 @@ func (handler AccountCredentialsHandler) Login(ctx context.Context, req *authori
 	}
 
 	res := &authorizationProto.LoginResponse{AccessToken: accessToken}
+
+	// TODO Stefan not sure if this is a good solution
+	metadata.AppendToOutgoingContext(ctx, "authorization", accessToken)
 
 	return res, nil
 }

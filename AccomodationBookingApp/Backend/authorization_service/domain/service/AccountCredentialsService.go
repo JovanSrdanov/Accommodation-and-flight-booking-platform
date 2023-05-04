@@ -3,7 +3,7 @@ package service
 import (
 	"authorization_service/domain/model"
 	"authorization_service/domain/repository"
-	"authorization_service/token"
+	"authorization_service/domain/token"
 	"github.com/google/uuid"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

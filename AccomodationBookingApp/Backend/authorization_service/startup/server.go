@@ -1,13 +1,13 @@
-package communication
+package startup
 
 import (
 	"authorization_service/communication/handler"
-	"authorization_service/configuration"
 	"authorization_service/domain/model"
 	"authorization_service/domain/service"
+	"authorization_service/domain/token"
 	"authorization_service/interceptor"
 	"authorization_service/persistence/repository"
-	"authorization_service/token"
+	"authorization_service/startup/configuration"
 	authorization "common/proto/authorization_service/generated"
 	"fmt"
 	"google.golang.org/grpc"
@@ -61,7 +61,8 @@ func (server Server) initAccountCredentialsRepo(postgresClient *gorm.DB) *reposi
 
 func (server *Server) startGrpcServer(
 	accountCredentialsHandler *handler.AccountCredentialsHandler,
-	maker token.Maker) {
+	maker token.Maker,
+) {
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%s", server.config.Port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)

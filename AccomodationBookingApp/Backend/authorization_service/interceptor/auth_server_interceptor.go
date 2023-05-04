@@ -2,8 +2,9 @@ package interceptor
 
 import (
 	"authorization_service/domain/model"
-	"authorization_service/token"
+	"authorization_service/domain/token"
 	"context"
+	"github.com/o1egl/paseto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -75,13 +76,18 @@ func (interceptor *AuthServerInterceptor) authorize(ctx context.Context, method 
 	}
 
 	accessToken := values[0]
-	tokenPayload, err := interceptor.tokenMaker.VerifyToken(accessToken)
+	_, err := interceptor.tokenMaker.VerifyToken(accessToken)
 	if err != nil {
-		return status.Errorf(codes.Unauthenticated, "access token is invalid: %v", err)
+		return status.Errorf(codes.Unauthenticated, "access token is invalid: ", err)
+	}
+
+	var footerData map[string]interface{}
+	if err := paseto.ParseFooter(accessToken, &footerData); err != nil {
+		return status.Errorf(codes.Internal, "failed to parse token footer: ", err)
 	}
 
 	for _, role := range accessibleRoles {
-		if role == tokenPayload.Role {
+		if role == footerData["Role"] {
 			return nil
 		}
 	}

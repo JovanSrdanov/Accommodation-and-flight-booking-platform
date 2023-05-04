@@ -3,7 +3,6 @@ package token
 import (
 	"authorization_service/domain/model"
 	"errors"
-	"github.com/google/uuid"
 	"time"
 )
 
@@ -15,24 +14,24 @@ var (
 // Payload contains the payload of the token
 type Payload struct {
 	// token ID
-	ID        uuid.UUID  `json:"id"`
-	Username  string     `json:"username"`
-	Role      model.Role `json:"role"`
-	IssuedAt  time.Time  `json:"issued_at"`
-	ExpiredAt time.Time  `json:"expired_at"`
+	//ID        uuid.UUID  `json:"id"`
+	Username string `json:"username"`
+	//Role      model.Role `json:"role"`
+	IssuedAt  time.Time `json:"issued_at"`
+	ExpiredAt time.Time `json:"expired_at"`
 }
 
 // NewPayload creates a new token payload with a specific username and duration
 func NewPayload(username string, duration time.Duration, role model.Role) (*Payload, error) {
-	tokenID, err := uuid.NewRandom()
-	if err != nil {
-		return nil, err
-	}
+	//tokenID, err := uuid.NewRandom()
+	//if err != nil {
+	//	return nil, err
+	//}
 
 	payload := &Payload{
-		ID:        tokenID,
-		Username:  username,
-		Role:      role,
+		//ID:        tokenID,
+		Username: username,
+		//Role:      role,
 		IssuedAt:  time.Now(),
 		ExpiredAt: time.Now().Add(duration),
 	}

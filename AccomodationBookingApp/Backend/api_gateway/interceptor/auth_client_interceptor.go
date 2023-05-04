@@ -1,6 +1,7 @@
 package interceptor
 
 import (
+	"api_gateway/communication/client"
 	"context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -9,18 +10,18 @@ import (
 )
 
 type AuthClientInterceptor struct {
-	//authClient *AuthClient
+	authClient  *client.AuthClient
 	authMethods map[string]bool
 	accessToken string
 }
 
 func NewAuthInterceptor(
-	//authClient *AuthClient,
+	authClient *client.AuthClient,
 	authMethods map[string]bool,
 	refreshDuration time.Duration,
 ) (*AuthClientInterceptor, error) {
 	interceptor := &AuthClientInterceptor{
-		//authClient: authClient,
+		authClient:  authClient,
 		authMethods: authMethods,
 	}
 
@@ -98,14 +99,13 @@ func (interceptor *AuthClientInterceptor) scheduleRefreshToken(refreshDuration t
 }
 
 func (interceptor *AuthClientInterceptor) refreshToken() error {
-	//accessToken, err := interceptor.authClient.Login()
-	//if err != nil {
-	//	return err
-	//}
-	//
-	//interceptor.accessToken = accessToken
-	//log.Println("token refreshed: %v", accessToken)
-	//
-	//return nil
-	panic("not implemented")
+	accessToken, err := interceptor.authClient.Login()
+	if err != nil {
+		return err
+	}
+
+	interceptor.accessToken = accessToken
+	log.Printf("token refreshed: %v\n", accessToken)
+
+	return nil
 }

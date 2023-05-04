@@ -4,6 +4,7 @@ import (
 	"authorization_service/domain/model"
 	"fmt"
 	"github.com/aead/chacha20poly1305"
+	"github.com/google/uuid"
 	"github.com/o1egl/paseto"
 	"time"
 )
@@ -31,7 +32,18 @@ func (maker *PasetoMaker) CreateToken(username string, duration time.Duration, r
 		return "", err
 	}
 
-	return maker.paseto.Encrypt(maker.symmetricKey, payload, nil)
+	// user info is stored in the footer, may change later
+	tokenID, err := uuid.NewRandom()
+	if err != nil {
+		return "", err
+	}
+
+	footer := map[string]interface{}{
+		"ID":   tokenID.String(),
+		"Role": role,
+	}
+
+	return maker.paseto.Encrypt(maker.symmetricKey, payload, footer)
 }
 
 func (maker *PasetoMaker) VerifyToken(token string) (*Payload, error) {

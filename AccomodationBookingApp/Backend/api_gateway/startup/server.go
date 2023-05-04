@@ -1,7 +1,7 @@
-package communication
+package startup
 
 import (
-	"api_gateway/configuration"
+	"api_gateway/startup/configuration"
 	authorization "common/proto/authorization_service/generated"
 	"context"
 	"fmt"
@@ -33,7 +33,6 @@ func (server *Server) initHandlers() {
 	if err != nil {
 		panic(err)
 	}
-
 }
 
 func (server *Server) Start() {
