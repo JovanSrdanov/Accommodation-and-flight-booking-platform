@@ -19,9 +19,12 @@ services:
       - network
 
   authorization_db:
-    image: postgres
+    image: authorization_db
     container_name: authorization_db
     restart: on-failure
+    build:
+      context: ../Database/Authorization
+      dockerfile: Dockerfile
     environment:
       POSTGRES_DB: ${AUTHORIZATION_DB_NAME}
       POSTGRES_USER: ${AUTHORIZATION_DB_USER}
@@ -30,7 +33,6 @@ services:
       - network
     ports:
       - 5000:5432
-
 
 networks:
   network:
