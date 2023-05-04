@@ -3,15 +3,18 @@ package communication
 import (
 	"authorization_service/communication/handler"
 	"authorization_service/configuration"
+	"authorization_service/domain/model"
 	"authorization_service/domain/service"
+	"authorization_service/interceptor"
 	"authorization_service/persistence/repository"
-	//authorization "common/proto/authorization_service/generated"
-	"context"
+	"authorization_service/token"
+	authorization "common/proto/authorization_service/generated"
 	"fmt"
 	"google.golang.org/grpc"
 	"gorm.io/gorm"
 	"log"
 	"net"
+	"os"
 )
 
 type Server struct {
@@ -19,17 +22,22 @@ type Server struct {
 }
 
 func NewServer(config *configuration.Configuration) *Server {
-	return &Server{
-		config: config,
-	}
+	return &Server{config: config}
 }
 
 func (server Server) Start() {
 	postgresClient := server.initPostgresClient()
 	accountCredentialsRepo := server.initAccountCredentialsRepo(postgresClient)
-	accountCredentialsService := service.NewAccountCredentialsService(accountCredentialsRepo)
+
+	tokenMaker, err := token.NewPasetoMaker(os.Getenv("TOKEN_SYMMETRIC_KEY"))
+	if err != nil {
+		log.Fatalf("cannot create token maker: %v", err)
+	}
+
+	accountCredentialsService := service.NewAccountCredentialsService(accountCredentialsRepo, tokenMaker)
 	accountCredentialsHandler := handler.NewAccountCredentialsHandler(accountCredentialsService)
-	server.startGrpcServer(accountCredentialsHandler)
+
+	server.startGrpcServer(accountCredentialsHandler, tokenMaker)
 }
 
 func (server Server) initPostgresClient() *gorm.DB {
@@ -51,37 +59,23 @@ func (server Server) initAccountCredentialsRepo(postgresClient *gorm.DB) *reposi
 	return repo
 }
 
-func unaryInterceptor(
-	ctx context.Context,
-	req interface{},
-	info *grpc.UnaryServerInfo,
-	unaryHandler grpc.UnaryHandler,
-) (interface{}, error) {
-	log.Println("--> unary interceptor: ", info.FullMethod)
-	return unaryHandler(ctx, req)
-}
-
-func streamInterceptor(
-	srv interface{},
-	stream grpc.ServerStream,
-	info *grpc.StreamServerInfo,
-	streamHandler grpc.StreamHandler,
-) error {
-	log.Println("--> stream interceptor: ", info.FullMethod)
-	return streamHandler(srv, stream)
-}
-
-func (server *Server) startGrpcServer(accountCredentialsHandler *handler.AccountCredentialsHandler) {
+func (server *Server) startGrpcServer(
+	accountCredentialsHandler *handler.AccountCredentialsHandler,
+	maker token.Maker) {
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%s", server.config.Port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 	// interceptor initialization for auth
+	// TODO Stefan add real method map
+	tempRoles := make(map[string][]model.Role)
+	authInterceptor := interceptor.NewAuthServerInterceptor(maker, tempRoles)
+
 	grpcServer := grpc.NewServer(
-		grpc.UnaryInterceptor(unaryInterceptor),
-		grpc.StreamInterceptor(streamInterceptor),
+		grpc.UnaryInterceptor(authInterceptor.Unary()),
+		grpc.StreamInterceptor(authInterceptor.Stream()),
 	)
-	//authorization.RegisterAuthorizationServiceServer(grpcServer, accountCredentialsHandler)
+	authorization.RegisterAuthorizationServiceServer(grpcServer, accountCredentialsHandler)
 	if err := grpcServer.Serve(listener); err != nil {
 		log.Fatalf("failed to serve: %s", err)
 	}

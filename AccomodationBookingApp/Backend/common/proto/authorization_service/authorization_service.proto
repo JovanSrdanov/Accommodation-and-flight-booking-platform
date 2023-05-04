@@ -20,6 +20,13 @@ service AuthorizationService{
       get: "/account-credentials/{username}"
     };
   }
+
+  rpc Login(LoginRequest) returns (LoginResponse) {
+    option (google.api.http) = {
+      post: "/account-credentials/login",
+      body: "*"
+    };
+  }
 }
 
 message CreateRequest {
@@ -54,4 +61,13 @@ message AccountCredentials {
   string password = 3;
   string salt = 4;
   Role role = 5;
+}
+
+message LoginRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  string access_token = 1;
 }

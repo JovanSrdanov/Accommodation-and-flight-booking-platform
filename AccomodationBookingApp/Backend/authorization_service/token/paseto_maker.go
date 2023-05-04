@@ -1,6 +1,7 @@
 package token
 
 import (
+	"authorization_service/domain/model"
 	"fmt"
 	"github.com/aead/chacha20poly1305"
 	"github.com/o1egl/paseto"
@@ -24,8 +25,8 @@ func NewPasetoMaker(symmetricKey string) (Maker, error) {
 	return maker, nil
 }
 
-func (maker *PasetoMaker) CreateToken(username string, duration time.Duration) (string, error) {
-	payload, err := NewPayload(username, duration)
+func (maker *PasetoMaker) CreateToken(username string, duration time.Duration, role model.Role) (string, error) {
+	payload, err := NewPayload(username, duration, role)
 	if err != nil {
 		return "", err
 	}

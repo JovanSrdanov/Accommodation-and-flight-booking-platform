@@ -8,4 +8,5 @@ import (
 type IAccountCredentialsService interface {
 	Create(accCred *model.AccountCredentials) (uuid.UUID, error)
 	GetByUsername(username string) (*model.AccountCredentials, error)
+	Login(accCred *model.AccountCredentials) (string, error)
 }

@@ -1,9 +1,12 @@
 package token
 
-import "time"
+import (
+	"authorization_service/domain/model"
+	"time"
+)
 
 // Maker is an interface for managing tokens
 type Maker interface {
-	CreateToken(username string, duration time.Duration) (string, error)
+	CreateToken(username string, duration time.Duration, role model.Role) (string, error)
 	VerifyToken(token string) (*Payload, error)
 }
