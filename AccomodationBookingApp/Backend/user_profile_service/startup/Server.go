@@ -1,4 +1,4 @@
-package communication
+package startup
 
 import (
 	user_profile "common/proto/user_profile_service/generated"
@@ -8,16 +8,15 @@ import (
 	"log"
 	"net"
 	"user_profile_service/communication/handler"
-	"user_profile_service/configuration"
 	"user_profile_service/domain/service"
 	"user_profile_service/persistence/repository"
 )
 
 type Server struct {
-	config *configuration.Configuration
+	config *Configuration
 }
 
-func NewServer(config *configuration.Configuration) *Server {
+func NewServer(config *Configuration) *Server {
 	return &Server{config: config}
 }
 

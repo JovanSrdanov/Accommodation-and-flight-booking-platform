@@ -1,12 +1,11 @@
 package main
 
 import (
-	"user_profile_service/communication"
-	"user_profile_service/configuration"
+	"user_profile_service/startup"
 )
 
 func main() {
-	config := configuration.NewConfiguration()
-	server := communication.NewServer(config)
+	config := startup.NewConfiguration()
+	server := startup.NewServer(config)
 	server.Start()
 }

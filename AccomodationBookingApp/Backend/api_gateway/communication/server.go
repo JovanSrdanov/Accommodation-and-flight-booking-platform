@@ -35,8 +35,7 @@ func (server *Server) initHandlers() {
 		panic(err)
 	}
 
-	opts = []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
-	userProfileEndpoint := fmt.Sprintf("%s:%s", server.config.UserProfileHost, server.config.AuthorizationPort)
+	userProfileEndpoint := fmt.Sprintf("%s:%s", server.config.UserProfileHost, server.config.UserProfilePort)
 	err = user_profile.RegisterUserProfileServiceHandlerFromEndpoint(context.TODO(), server.mux, userProfileEndpoint, opts)
 	if err != nil {
 		panic(err)
