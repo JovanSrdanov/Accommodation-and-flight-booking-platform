@@ -15,9 +15,16 @@ service AuthorizationService{
     };
   }
 
-  rpc GetByEmail(GetByEmailRequest) returns(GetByEmailResponse) {
+  rpc GetByUsername(GetByUsernameRequest) returns(GetByUsernameResponse) {
     option (google.api.http) = {
-      get: "/account-credentials/{email}"
+      get: "/account-credentials/{username}"
+    };
+  }
+
+  rpc Login(LoginRequest) returns (LoginResponse) {
+    option (google.api.http) = {
+      post: "/account-credentials/login",
+      body: "*"
     };
   }
 }
@@ -30,11 +37,11 @@ message CreateResponse {
    string id = 1;
 }
 
-message GetByEmailRequest{
- string email = 1;
+message GetByUsernameRequest{
+ string username = 1;
 }
 
-message GetByEmailResponse{
+message GetByUsernameResponse{
   AccountCredentials accountCredentials = 1;
 }
 
@@ -44,14 +51,25 @@ enum Role {
 }
 
 message CreateAccountCredentials {
-  string email = 1;
+  string username = 1;
   string password = 2;
   Role role = 3;
+  string userProfileId = 4;
 }
 message AccountCredentials {
   string id = 1;
-  string email = 2;
+  string username = 2;
   string password = 3;
   string salt = 4;
   Role role = 5;
+  string userProfileId = 6;
+}
+
+message LoginRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  string access_token = 1;
 }

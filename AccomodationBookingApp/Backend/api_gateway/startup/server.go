@@ -1,7 +1,7 @@
-package communication
+package startup
 
 import (
-	"api_gateway/configuration"
+	"api_gateway/startup/configuration"
 	authorization "common/proto/authorization_service/generated"
 	user_profile "common/proto/user_profile_service/generated"
 	"context"
@@ -14,8 +14,9 @@ import (
 )
 
 type Server struct {
-	config *configuration.Configuration
-	mux    *runtime.ServeMux
+	config  *configuration.Configuration
+	mux     *runtime.ServeMux
+	handler *http.Handler
 }
 
 func NewServer(config *configuration.Configuration) *Server {
@@ -24,7 +25,28 @@ func NewServer(config *configuration.Configuration) *Server {
 		mux:    runtime.NewServeMux(),
 	}
 	server.initHandlers()
+
+	//When it initializes all handlers on basic mux, we wrap it in middleware(handler)
+
+	// custom handlers with auth
+	//TODO better name
+	authHandler := createAuthTokenMiddleware(server.mux)
+	server.handler = &authHandler
 	return server
+}
+
+func createAuthTokenMiddleware(handler http.Handler) http.Handler {
+	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		authHeader := request.Header.Get("Authorization")
+		ctx := request.Context()
+		if authHeader != "" {
+			accessToken := authHeader[len("Bearer "):]
+			ctx := context.WithValue(ctx, "access_token", accessToken)
+			handler.ServeHTTP(writer, request.WithContext(ctx))
+			return
+		}
+		handler.ServeHTTP(writer, request.WithContext(ctx))
+	})
 }
 
 func (server *Server) initHandlers() {
@@ -43,5 +65,5 @@ func (server *Server) initHandlers() {
 }
 
 func (server *Server) Start() {
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", server.config.Port), server.mux))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", server.config.Port), *server.handler))
 }
