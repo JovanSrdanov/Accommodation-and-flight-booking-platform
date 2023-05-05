@@ -1,7 +1,7 @@
-package communication
+package startup
 
 import (
-	"api_gateway/configuration"
+	"api_gateway/communication/handler"
 	authorization "common/proto/authorization_service/generated"
 	user_profile "common/proto/user_profile_service/generated"
 	"context"
@@ -14,16 +14,17 @@ import (
 )
 
 type Server struct {
-	config *configuration.Configuration
+	config *Configuration
 	mux    *runtime.ServeMux
 }
 
-func NewServer(config *configuration.Configuration) *Server {
+func NewServer(config *Configuration) *Server {
 	server := &Server{
 		config: config,
 		mux:    runtime.NewServeMux(),
 	}
 	server.initHandlers()
+	server.initCustomHandlers()
 	return server
 }
 
@@ -40,6 +41,14 @@ func (server *Server) initHandlers() {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func (server *Server) initCustomHandlers() {
+	authorizationEndpoint := fmt.Sprintf("%s:%s", server.config.AuthorizationHost, server.config.AuthorizationPort)
+	userProfileEndpoint := fmt.Sprintf("%s:%s", server.config.UserProfileHost, server.config.UserProfilePort)
+
+	userInfoHandler := handler.NewUserInfoHandler(authorizationEndpoint, userProfileEndpoint)
+	userInfoHandler.Init(server.mux)
 }
 
 func (server *Server) Start() {

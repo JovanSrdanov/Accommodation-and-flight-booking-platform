@@ -6,6 +6,7 @@ replace common => ../common
 
 require (
 	common v0.0.0-00010101000000-000000000000
+	github.com/google/uuid v1.3.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.15.2
 	google.golang.org/grpc v1.54.0
 )
