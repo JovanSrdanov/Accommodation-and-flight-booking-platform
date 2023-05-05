@@ -59,6 +59,7 @@ func (interceptor *AuthServerInterceptor) Stream() grpc.StreamServerInterceptor 
 }
 
 func (interceptor *AuthServerInterceptor) authorize(ctx context.Context, method string) error {
+	log.Println("KUUUUUURAAAACCCCCCCCc")
 	accessibleRoles, ok := interceptor.accessibleRoles[method]
 	if !ok {
 		// if a provided method is not in the accessible roles map, it means that everyone can use it

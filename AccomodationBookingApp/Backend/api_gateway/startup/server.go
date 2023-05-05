@@ -14,40 +14,44 @@ import (
 
 type Server struct {
 	config  *configuration.Configuration
+	mux     *runtime.ServeMux
 	handler *http.Handler
 }
 
 func NewServer(config *configuration.Configuration) *Server {
-	mux := runtime.NewServeMux()
-	handler := createAuthTokenMiddleware(mux)
-
 	server := &Server{
-		config:  config,
-		handler: &handler,
+		config: config,
+		mux:    runtime.NewServeMux(),
 	}
 	server.initHandlers()
-	// custom handlers with auth
 
+	//When it initializes all handlers on basic mux, we wrap it in middleware(handler)
+
+	// custom handlers with auth
+	//TODO better name
+	authHandler := createAuthTokenMiddleware(server.mux)
+	server.handler = &authHandler
 	return server
 }
 
-func createAuthTokenMiddleware(h http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		authHeader := r.Header.Get("Authorization")
-		if authHeader == "" {
-			http.Error(w, "Authorization header missing", http.StatusUnauthorized)
+func createAuthTokenMiddleware(handler http.Handler) http.Handler {
+	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		authHeader := request.Header.Get("Authorization")
+		ctx := request.Context()
+		if authHeader != "" {
+			accessToken := authHeader[len("Bearer "):]
+			ctx := context.WithValue(ctx, "access_token", accessToken)
+			handler.ServeHTTP(writer, request.WithContext(ctx))
 			return
 		}
-		accessToken := authHeader[len("Bearer "):]
-		ctx := context.WithValue(r.Context(), "access_token", accessToken)
-		h.ServeHTTP(w, r.WithContext(ctx))
+		handler.ServeHTTP(writer, request.WithContext(ctx))
 	})
 }
 
 func (server *Server) initHandlers() {
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
 	authorizationEndpoint := fmt.Sprintf("%s:%s", server.config.AuthorizationHost, server.config.AuthorizationPort)
-	err := authorization.RegisterAuthorizationServiceHandlerFromEndpoint(context.TODO(), server.handler, authorizationEndpoint, opts)
+	err := authorization.RegisterAuthorizationServiceHandlerFromEndpoint(context.TODO(), server.mux, authorizationEndpoint, opts)
 	if err != nil {
 		panic(err)
 	}
