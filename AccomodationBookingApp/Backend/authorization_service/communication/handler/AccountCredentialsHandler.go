@@ -6,6 +6,7 @@ import (
 	authorizationProto "common/proto/authorization_service/generated"
 	"context"
 	"fmt"
+	"github.com/google/uuid"
 	"google.golang.org/grpc/metadata"
 	"log"
 )
@@ -24,8 +25,13 @@ func NewAccountCredentialsHandler(accCredService service.IAccountCredentialsServ
 func (handler AccountCredentialsHandler) Create(ctx context.Context, request *authorizationProto.CreateRequest) (*authorizationProto.CreateResponse, error) {
 	//mapper := NewAccountCredentialsMapper()
 	//accCred := mapper.mapFromCreateRequest(request)
+	userProfileId, err := uuid.Parse(request.GetAccountCredentials().GetUserProfileId())
+	if err != nil {
+		return nil, err
+	}
+
 	accCred, err := model.NewAccountCredentials(request.GetAccountCredentials().Username,
-		request.GetAccountCredentials().Password, "", model.Role(request.GetAccountCredentials().Role))
+		request.GetAccountCredentials().Password, "", model.Role(request.GetAccountCredentials().Role), userProfileId)
 	if err != nil {
 		return nil, err
 	}

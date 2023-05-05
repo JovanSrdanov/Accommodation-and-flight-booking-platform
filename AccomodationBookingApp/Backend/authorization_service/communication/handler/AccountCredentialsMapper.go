@@ -15,24 +15,29 @@ func NewAccountCredentialsMapper() *AccountCredentialsMapper {
 type IAccountCredentialsMapper interface {
 	mapFromCreateRequest(request *authorization.CreateRequest) *model.AccountCredentials
 	mapToGetByUsernameResponse(accCred *model.AccountCredentials) *authorization.GetByUsernameResponse
+	mapToModelAccountCredentials(accCred *authorization.AccountCredentials) (*model.AccountCredentials, error)
 }
 
 func (a AccountCredentialsMapper) mapFromCreateRequest(request *authorization.CreateRequest) *model.AccountCredentials {
+	//TODO handle error
+	userProfileID, _ := uuid.Parse(request.GetAccountCredentials().UserProfileId)
 	return &model.AccountCredentials{
-		Username: request.GetAccountCredentials().Username,
-		Password: request.GetAccountCredentials().Password,
-		Role:     model.Role(request.GetAccountCredentials().Role),
+		Username:      request.GetAccountCredentials().Username,
+		Password:      request.GetAccountCredentials().Password,
+		Role:          model.Role(request.GetAccountCredentials().Role),
+		UserProfileID: userProfileID,
 	}
 }
 
 func (a AccountCredentialsMapper) mapToGetByUsernameResponse(accCred *model.AccountCredentials) *authorization.GetByUsernameResponse {
 	return &authorization.GetByUsernameResponse{
 		AccountCredentials: &authorization.AccountCredentials{
-			Id:       accCred.ID.String(),
-			Username: accCred.Username,
-			Password: accCred.Password,
-			Salt:     accCred.Salt,
-			Role:     authorization.Role(accCred.Role),
+			Id:            accCred.ID.String(),
+			Username:      accCred.Username,
+			Password:      accCred.Password,
+			Salt:          accCred.Salt,
+			Role:          authorization.Role(accCred.Role),
+			UserProfileId: accCred.UserProfileID.String(),
 		},
 	}
 }
@@ -42,11 +47,18 @@ func (a AccountCredentialsMapper) mapToModelAccountCredentials(accCred *authoriz
 	if err != nil {
 		return nil, err
 	}
+
+	userProfileId, err := uuid.Parse(accCred.GetUserProfileId())
+	if err != nil {
+		return nil, err
+	}
+
 	return &model.AccountCredentials{
-		ID:       accID,
-		Username: accCred.GetUsername(),
-		Password: accCred.GetPassword(),
-		Salt:     accCred.GetSalt(),
-		Role:     model.Role(accCred.GetRole()),
+		ID:            accID,
+		Username:      accCred.GetUsername(),
+		Password:      accCred.GetPassword(),
+		Salt:          accCred.GetSalt(),
+		Role:          model.Role(accCred.GetRole()),
+		UserProfileID: userProfileId,
 	}, nil
 }

@@ -5,10 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3aa9defa-c9f7-4ca4-8e89-0f1f4d46dee2" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/Backend/api_gateway/startup/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/api_gateway/startup/server.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/authorization_service/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/authorization_service/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/authorization_service/interceptor/auth_server_interceptor.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/authorization_service/interceptor/auth_server_interceptor.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Database/Authorization/init.sql" beforeDir="false" afterPath="$PROJECT_DIR$/Database/Authorization/init.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/authorization_service/communication/handler/AccountCredentialsHandler.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/authorization_service/communication/handler/AccountCredentialsHandler.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/authorization_service/communication/handler/AccountCredentialsMapper.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/authorization_service/communication/handler/AccountCredentialsMapper.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/authorization_service/domain/model/AccountCredentials.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/authorization_service/domain/model/AccountCredentials.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/common/proto/authorization_service/authorization_service.proto" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/common/proto/authorization_service/authorization_service.proto" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/common/proto/authorization_service/generated/authorization_service.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/common/proto/authorization_service/generated/authorization_service.pb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/common/proto/authorization_service/generated/authorization_service_grpc.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/common/proto/authorization_service/generated/authorization_service_grpc.pb.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
