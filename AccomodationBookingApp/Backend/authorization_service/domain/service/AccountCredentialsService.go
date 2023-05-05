@@ -43,16 +43,20 @@ func (service AccountCredentialsService) GetByUsername(username string) (*model.
 	return accountCredentials, nil
 }
 
-func (service AccountCredentialsService) Login(accCred *model.AccountCredentials) (string, error) {
-	accountCredentials, err := service.GetByUsername(accCred.Username)
-	if err != nil || !accountCredentials.IsPasswordCorrect(accCred.Password) {
-		return "", status.Errorf(codes.NotFound, "incorrect username/password")
+func (service AccountCredentialsService) Login(username, password string) (string, error) {
+	accountCredentials, err := service.GetByUsername(username)
+	if err != nil {
+		return "", status.Errorf(codes.NotFound, "incorrect username")
+	}
+
+	if !accountCredentials.IsPasswordCorrect(password) {
+		return "", status.Errorf(codes.NotFound, "incorrect password")
 	}
 
 	accessToken, err := service.tokenMaker.CreateToken(
-		accCred.Username,
-		time.Duration(15*time.Minute),
-		accCred.Role,
+		accountCredentials.Username,
+		15*time.Minute,
+		accountCredentials.Role,
 	)
 	if err != nil {
 		return "", status.Errorf(codes.Internal, "Cannot generate access token")

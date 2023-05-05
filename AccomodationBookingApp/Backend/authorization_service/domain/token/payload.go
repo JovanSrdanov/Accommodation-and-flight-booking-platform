@@ -1,7 +1,6 @@
 package token
 
 import (
-	"authorization_service/domain/model"
 	"errors"
 	"time"
 )
@@ -22,16 +21,9 @@ type Payload struct {
 }
 
 // NewPayload creates a new token payload with a specific username and duration
-func NewPayload(username string, duration time.Duration, role model.Role) (*Payload, error) {
-	//tokenID, err := uuid.NewRandom()
-	//if err != nil {
-	//	return nil, err
-	//}
-
+func NewPayload(username string, duration time.Duration) (*Payload, error) {
 	payload := &Payload{
-		//ID:        tokenID,
-		Username: username,
-		//Role:      role,
+		Username:  username,
 		IssuedAt:  time.Now(),
 		ExpiredAt: time.Now().Add(duration),
 	}

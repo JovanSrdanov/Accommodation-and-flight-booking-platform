@@ -14,7 +14,6 @@ import (
 	"gorm.io/gorm"
 	"log"
 	"net"
-	"os"
 )
 
 type Server struct {
@@ -29,7 +28,8 @@ func (server Server) Start() {
 	postgresClient := server.initPostgresClient()
 	accountCredentialsRepo := server.initAccountCredentialsRepo(postgresClient)
 
-	tokenMaker, err := token.NewPasetoMaker(os.Getenv("TOKEN_SYMMETRIC_KEY"))
+	// TODO Stefan: currently not working with .env file
+	tokenMaker, err := token.NewPasetoMaker("12345678901234567890123456789012")
 	if err != nil {
 		log.Fatalf("cannot create token maker: %v", err)
 	}
