@@ -6,7 +6,7 @@ cd ../$serviceName
 #Generating directories
 mkdir domain
 cd domain
-mkdir domain service repository error
+mkdir model service repository error
 touch domain/destroyMe service/destroyMe repository/destroyMe error/destroyMe
 cd ..
 mkdir persistence

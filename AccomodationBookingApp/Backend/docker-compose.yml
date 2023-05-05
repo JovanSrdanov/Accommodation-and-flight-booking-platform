@@ -2,6 +2,23 @@ version: "3.8"
 
 services:
 
+  api_gateway:
+    image: api_gateway
+    container_name: api_gateway
+    build:
+      context: .
+      dockerfile: ./api_gateway/Dockerfile
+    restart: on-failure
+    ports:
+      - ${GATEWAY_PORT}:${GATEWAY_PORT}
+    environment:
+      GATEWAY_PORT: ${GATEWAY_PORT}
+      AUTHORIZATION_SERVICE_PORT: ${AUTHORIZATION_SERVICE_PORT}
+      AUTHORIZATION_SERVICE_HOST: ${AUTHORIZATION_SERVICE_HOST}
+      USER_PROFILE_SERVICE_HOST: ${USER_PROFILE_SERVICE_HOST}
+      USER_PROFILE_SERVICE_PORT: ${USER_PROFILE_SERVICE_PORT}
+    networks:
+      - network
 
   authorization_service:
     image: authorization_service
@@ -22,21 +39,6 @@ services:
     networks:
       - network
 
-  api_gateway:
-    image: api_gateway
-    container_name: api_gateway
-    build:
-      context: .
-      dockerfile: ./api_gateway/Dockerfile
-    restart: on-failure
-    ports:
-      - ${GATEWAY_PORT}:${GATEWAY_PORT}
-    environment:
-      GATEWAY_PORT: ${GATEWAY_PORT}
-      AUTHORIZATION_SERVICE_PORT: ${AUTHORIZATION_SERVICE_PORT}
-      AUTHORIZATION_SERVICE_HOST: ${AUTHORIZATION_SERVICE_HOST}
-    networks:
-      - network
 
   authorization_db:
     image: authorization_db
@@ -52,6 +54,39 @@ services:
     networks:
       - network
 
+  user_profile_service:
+    image: user_profile_service
+    container_name: user_profile_service
+    build:
+      context: .
+      dockerfile: ./user_profile_service/Dockerfile
+    restart: on-failure
+    environment:
+      USER_PROFILE_DB_HOST: ${USER_PROFILE_DB_HOST}
+      USER_PROFILE_DB_PORT: ${USER_PROFILE_DB_PORT}
+      USER_PROFILE_DB_NAME: ${USER_PROFILE_DB_NAME}
+      USER_PROFILE_DB_USER: ${USER_PROFILE_DB_USER}
+      USER_PROFILE_DB_PASS: ${USER_PROFILE_DB_PASS}
+      USER_PROFILE_SERVICE_PORT: ${USER_PROFILE_SERVICE_PORT}
+    depends_on:
+      - user_profile_db
+    networks:
+      - network
+
+
+  user_profile_db:
+    image: user_profile_db
+    container_name: user_profile_db
+    restart: on-failure
+    build:
+      context: ../Database/UserProfile
+      dockerfile: Dockerfile
+    environment:
+      POSTGRES_USER: ${USER_PROFILE_DB_USER}
+      POSTGRES_PASSWORD: ${USER_PROFILE_DB_PASS}
+      POSTGRES_DB: ${USER_PROFILE_DB_NAME}
+    networks:
+      - network
 
 networks:
   network:
