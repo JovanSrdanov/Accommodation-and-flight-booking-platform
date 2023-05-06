@@ -48,3 +48,22 @@ func (repo AccountCredentialsRepositoryPG) GetByUsername(username string) (*mode
 
 	return &accCred, nil
 }
+
+func (repo AccountCredentialsRepositoryPG) GetById(id uuid.UUID) (*model.AccountCredentials, error) {
+	var accCred model.AccountCredentials
+
+	result := repo.dbClient.Where("id = ?", id).First(&accCred)
+	if result.Error != nil {
+		return &model.AccountCredentials{}, result.Error
+	}
+
+	return &accCred, nil
+}
+
+func (repo AccountCredentialsRepositoryPG) Update(accCred *model.AccountCredentials) error {
+	if err := repo.dbClient.Save(&accCred).Error; err != nil {
+		return err
+	}
+
+	return nil
+}

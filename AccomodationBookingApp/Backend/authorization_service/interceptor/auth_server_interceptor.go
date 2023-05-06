@@ -78,8 +78,6 @@ func (interceptor *AuthServerInterceptor) authorize(ctx context.Context, method 
 	}
 
 	accessToken := strings.TrimPrefix(values[0], "Bearer ")
-	log.Println("access token from metadata: ", accessToken)
-
 	_, err := interceptor.tokenMaker.VerifyToken(accessToken)
 	if err != nil {
 		return status.Errorf(codes.Unauthenticated, "access token is invalid: ", err)
@@ -90,13 +88,8 @@ func (interceptor *AuthServerInterceptor) authorize(ctx context.Context, method 
 		return status.Errorf(codes.Internal, "failed to parse token footer: ", err)
 	}
 
-	log.Println("allowed roles: ", allowedRoles)
 	providedRole := int8(footerData["Role"].(float64))
-
 	for _, role := range allowedRoles {
-		log.Printf("current role in allowed roles: %v, of type %T\n", role, role)
-		log.Printf("provided role: %v, of type %T\n", footerData["Role"], footerData["Role"])
-		log.Println(int8(role) == providedRole)
 		if int8(role) == providedRole {
 			return nil
 		}
