@@ -7,6 +7,7 @@ import (
 	authorizationProto "common/proto/authorization_service/generated"
 	"context"
 	"github.com/google/uuid"
+	"google.golang.org/protobuf/types/known/emptypb"
 	"log"
 )
 
@@ -44,19 +45,31 @@ func (handler AccountCredentialsHandler) Create(ctx context.Context, request *au
 }
 func (handler AccountCredentialsHandler) GetByUsername(ctx context.Context, request *authorizationProto.GetByUsernameRequest) (*authorizationProto.GetByUsernameResponse, error) {
 	// TODO Stefan: only for testing purposes, remove later
-	loggedInUserUsername, err := token.ExtractTokenInfoFromContext(ctx, "Username")
+	loggedInUserId, err := token.ExtractTokenInfoFromContext(ctx, "Id")
 	loggedInUserRole, err := token.ExtractTokenInfoFromContext(ctx, "Role")
 	if err != nil {
 		return nil, err
 	}
 
-	log.Printf("Logged in user username: %s, role: %s", loggedInUserUsername, loggedInUserRole)
+	log.Printf("Logged in user username: %s, role: %s", loggedInUserId, loggedInUserRole)
 	/////////////
 
 	result, err := handler.accCredService.GetByUsername(request.Username)
 	if err != nil {
 		return nil, err
 	}
+	mapper := NewAccountCredentialsMapper()
+	return mapper.mapToGetByUsernameResponse(result), nil
+}
+
+func (handler AccountCredentialsHandler) GetById(ctx context.Context, req *authorizationProto.GetByIdRequest) (*authorizationProto.GetByUsernameResponse, error) {
+	accId, err := uuid.Parse(req.GetId())
+
+	result, err := handler.accCredService.GetById(accId)
+	if err != nil {
+		return nil, err
+	}
+
 	mapper := NewAccountCredentialsMapper()
 	return mapper.mapToGetByUsernameResponse(result), nil
 }
@@ -70,4 +83,23 @@ func (handler AccountCredentialsHandler) Login(ctx context.Context, req *authori
 
 	res := &authorizationProto.LoginResponse{AccessToken: accessToken}
 	return res, nil
+}
+
+func (handler AccountCredentialsHandler) Update(ctx context.Context, req *authorizationProto.UpdateRequest) (*emptypb.Empty, error) {
+	loggedInIdInfo, err := token.ExtractTokenInfoFromContext(ctx, "Id")
+	if err != nil {
+		return &emptypb.Empty{}, err
+	}
+	loggedInIdInfoAsString := loggedInIdInfo.(string)
+	loggedInId, err := uuid.Parse(loggedInIdInfoAsString)
+	if err != nil {
+		return &emptypb.Empty{}, err
+	}
+
+	err = handler.accCredService.Update(loggedInId, req.GetUsername(), req.GetPassword())
+	if err != nil {
+		return &emptypb.Empty{}, err
+	}
+
+	return &emptypb.Empty{}, nil
 }

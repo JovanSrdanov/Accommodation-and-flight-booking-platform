@@ -5,6 +5,7 @@ option go_package = "common/authorization";
 package authorization;
 
 import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
 
 service AuthorizationService{
   rpc Create(CreateRequest) returns(CreateResponse) {
@@ -21,9 +22,22 @@ service AuthorizationService{
     };
   }
 
+  rpc GetById(GetByIdRequest) returns(GetByUsernameResponse) {
+    option (google.api.http) = {
+      get: "/api-1/account-credentials/{id}"
+    };
+  }
+
   rpc Login(LoginRequest) returns (LoginResponse) {
     option (google.api.http) = {
       post: "/api-1/account-credentials/login",
+      body: "*"
+    };
+  }
+
+  rpc Update(UpdateRequest) returns(google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/api-1/account-credentials",
       body: "*"
     };
   }
@@ -43,6 +57,10 @@ message GetByUsernameRequest{
 
 message GetByUsernameResponse{
   AccountCredentials accountCredentials = 1;
+}
+
+message GetByIdRequest{
+  string id = 1;
 }
 
 enum Role {
@@ -71,4 +89,9 @@ message LoginRequest {
 
 message LoginResponse {
   string access_token = 1;
+}
+
+message UpdateRequest {
+  string username = 1;
+  string password = 2;
 }

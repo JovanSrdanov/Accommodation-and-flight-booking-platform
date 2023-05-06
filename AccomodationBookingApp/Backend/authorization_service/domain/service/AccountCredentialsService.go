@@ -5,6 +5,7 @@ import (
 	"authorization_service/domain/repository"
 	"authorization_service/domain/token"
 	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"time"
@@ -41,6 +42,15 @@ func (service AccountCredentialsService) GetByUsername(username string) (*model.
 	return accountCredentials, nil
 }
 
+func (service AccountCredentialsService) GetById(id uuid.UUID) (*model.AccountCredentials, error) {
+	accountCredentials, err := service.accCredRepo.GetById(id)
+	if err != nil {
+		return &model.AccountCredentials{}, err
+	}
+
+	return accountCredentials, nil
+}
+
 func (service AccountCredentialsService) Login(username, password string) (string, error) {
 	accountCredentials, err := service.GetByUsername(username)
 	if err != nil {
@@ -52,7 +62,7 @@ func (service AccountCredentialsService) Login(username, password string) (strin
 	}
 
 	accessToken, err := service.tokenMaker.CreateToken(
-		accountCredentials.Username,
+		accountCredentials.ID,
 		15*time.Minute,
 		accountCredentials.Role,
 	)
@@ -61,4 +71,23 @@ func (service AccountCredentialsService) Login(username, password string) (strin
 	}
 
 	return accessToken, nil
+}
+
+func (service AccountCredentialsService) Update(id uuid.UUID, newUsername, newPassword string) error {
+	accCred, err := service.GetById(id)
+	if err != nil {
+		return err
+	}
+
+	accCred.Username = newUsername
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
+	accCred.Password = string(hashedPassword)
+
+	err = service.accCredRepo.Update(accCred)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
