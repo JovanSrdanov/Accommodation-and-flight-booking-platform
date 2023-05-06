@@ -3,11 +3,13 @@ package handler
 import (
 	"api_gateway/communication"
 	"api_gateway/domain/model"
+	authorization "common/proto/authorization_service/generated"
 	user_profile "common/proto/user_profile_service/generated"
 	"context"
 	"encoding/json"
 	"github.com/google/uuid"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"log"
 	"net/http"
 )
 
@@ -51,26 +53,24 @@ func (handler UserInfoHandler) GetUserInfo(w http.ResponseWriter, r *http.Reques
 }
 
 func (handler UserInfoHandler) addAccountCredentialsInfo(userInfo *model.UserInfo, username string) error {
-	//authorizationClient := communication.NewAuthorizationClient(handler.userProfileServiceAddress)
+	authorizationClient := communication.NewAuthorizationClient(handler.authorizationServiceAddress)
+	accountCredentialsInfo, err := authorizationClient.GetByUsername(context.TODO(), &authorization.GetByUsernameRequest{Username: username})
+	log.Println(accountCredentialsInfo)
 
-	//accountCredentialsInfo, err := authorizationClient.GetByUsername(context.TODO(), &user_profile.GetByIdRequest{Username: username})
+	if err != nil {
+		return err
+	}
 
-	//if err != nil {
-	//	return err
-	//}
-
-	//TODO namapiraj vrednosti
-	//*** TEMP ***
-	userInfo.UserID, _ = uuid.Parse("017182a4-ea79-11ed-b73d-040e3c52dc2b")
-	userInfo.Username = username + "_temp"
-	//*** TEMP ***
+	userProfId, _ := uuid.Parse(accountCredentialsInfo.GetAccountCredentials().GetUserProfileId())
+	userInfo.UserProfileID = userProfId
+	userInfo.Username = accountCredentialsInfo.GetAccountCredentials().GetUsername()
 	return nil
 }
 
 func (handler UserInfoHandler) addUserProfileInfo(userInfo *model.UserInfo) error {
 	userProfileClient := communication.NewUserProfileClient(handler.userProfileServiceAddress)
 
-	userProfileInfo, err := userProfileClient.GetById(context.TODO(), &user_profile.GetByIdRequest{Id: userInfo.UserID.String()})
+	userProfileInfo, err := userProfileClient.GetById(context.TODO(), &user_profile.GetByIdRequest{Id: userInfo.UserProfileID.String()})
 
 	if err != nil {
 		return err
