@@ -27,7 +27,7 @@ func NewServer(config *Configuration) *Server {
 	server.initHandlers()
 	server.initCustomHandlers()
 
-	//When it initializes all handlers on basic mux, we wrap it in middleware(handler)
+	//When it initializes all handlers on basic mux, we wrap it in a middleware(handler)
 
 	// custom handlers with auth
 	//TODO better name
@@ -40,9 +40,12 @@ func createAuthTokenMiddleware(handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		authHeader := request.Header.Get("Authorization")
 		ctx := request.Context()
+		// if authorization header is provided, embeds the token to the context which is being sent to a grpc server,
+		// else just sends the default context
 		if authHeader != "" {
 			accessToken := authHeader[len("Bearer "):]
-			ctx := context.WithValue(ctx, "access_token", accessToken)
+			ctx := context.WithValue(ctx, "Authorization", accessToken)
+			//ctx := metadata.AppendToOutgoingContext(ctx, "Authorization", accessToken)
 			handler.ServeHTTP(writer, request.WithContext(ctx))
 			return
 		}
