@@ -13,24 +13,29 @@ import (
 	"net/http"
 )
 
-type UserInfoHandler struct {
+type UserHandler struct {
 	authorizationServiceAddress string
 	userProfileServiceAddress   string
 }
 
-func NewUserInfoHandler(authorizationServiceAddress string, userProfileServiceAddress string) *UserInfoHandler {
-	return &UserInfoHandler{authorizationServiceAddress: authorizationServiceAddress,
+func NewUserHandler(authorizationServiceAddress string, userProfileServiceAddress string) *UserHandler {
+	return &UserHandler{authorizationServiceAddress: authorizationServiceAddress,
 		userProfileServiceAddress: userProfileServiceAddress}
 }
 
-func (handler UserInfoHandler) Init(mux *runtime.ServeMux) {
+func (handler UserHandler) Init(mux *runtime.ServeMux) {
 	err := mux.HandlePath("GET", "/user/{username}/info", handler.GetUserInfo)
+	if err != nil {
+		panic(err)
+	}
+
+	err = mux.HandlePath("POST", "/user", handler.CreateUser)
 	if err != nil {
 		panic(err)
 	}
 }
 
-func (handler UserInfoHandler) GetUserInfo(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+func (handler UserHandler) GetUserInfo(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 	username := pathParams["username"]
 
 	var userInfo model.UserInfo
@@ -52,7 +57,7 @@ func (handler UserInfoHandler) GetUserInfo(w http.ResponseWriter, r *http.Reques
 	w.Write(response)
 }
 
-func (handler UserInfoHandler) addAccountCredentialsInfo(userInfo *model.UserInfo, username string) error {
+func (handler UserHandler) addAccountCredentialsInfo(userInfo *model.UserInfo, username string) error {
 	authorizationClient := communication.NewAuthorizationClient(handler.authorizationServiceAddress)
 	accountCredentialsInfo, err := authorizationClient.GetByUsername(context.TODO(), &authorization.GetByUsernameRequest{Username: username})
 	log.Println(accountCredentialsInfo)
@@ -67,7 +72,7 @@ func (handler UserInfoHandler) addAccountCredentialsInfo(userInfo *model.UserInf
 	return nil
 }
 
-func (handler UserInfoHandler) addUserProfileInfo(userInfo *model.UserInfo) error {
+func (handler UserHandler) addUserProfileInfo(userInfo *model.UserInfo) error {
 	userProfileClient := communication.NewUserProfileClient(handler.userProfileServiceAddress)
 
 	userProfileInfo, err := userProfileClient.GetById(context.TODO(), &user_profile.GetByIdRequest{Id: userInfo.UserProfileID.String()})
@@ -86,4 +91,8 @@ func (handler UserInfoHandler) addUserProfileInfo(userInfo *model.UserInfo) erro
 	userInfo.Address.StreetNumber = userProfileInfo.UserProfile.Address.StreetNumber
 
 	return nil
+}
+
+func (handler UserHandler) CreateUser(writer http.ResponseWriter, reader *http.Request, params map[string]string) {
+
 }

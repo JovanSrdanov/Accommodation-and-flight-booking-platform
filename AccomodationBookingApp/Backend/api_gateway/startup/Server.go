@@ -72,7 +72,7 @@ func (server *Server) initCustomHandlers() {
 	authorizationEndpoint := fmt.Sprintf("%s:%s", server.config.AuthorizationHost, server.config.AuthorizationPort)
 	userProfileEndpoint := fmt.Sprintf("%s:%s", server.config.UserProfileHost, server.config.UserProfilePort)
 
-	userInfoHandler := handler.NewUserInfoHandler(authorizationEndpoint, userProfileEndpoint)
+	userInfoHandler := handler.NewUserHandler(authorizationEndpoint, userProfileEndpoint)
 	userInfoHandler.Init(server.mux)
 }
 
