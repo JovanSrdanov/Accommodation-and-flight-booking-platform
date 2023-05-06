@@ -6,32 +6,33 @@ import (
 	authorization "common/proto/authorization_service/generated"
 	user_profile "common/proto/user_profile_service/generated"
 	"context"
-	"encoding/json"
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	"log"
 	"net/http"
 )
 
-type UserInfoHandler struct {
+type UserHandler struct {
 	authorizationServiceAddress string
 	userProfileServiceAddress   string
 }
 
-func NewUserInfoHandler(authorizationServiceAddress string, userProfileServiceAddress string) *UserInfoHandler {
-	return &UserInfoHandler{authorizationServiceAddress: authorizationServiceAddress,
+func NewUserHandler(authorizationServiceAddress string, userProfileServiceAddress string) *UserHandler {
+	return &UserHandler{authorizationServiceAddress: authorizationServiceAddress,
 		userProfileServiceAddress: userProfileServiceAddress}
 }
 
-func (handler UserInfoHandler) Init(mux *runtime.ServeMux) {
-	err := mux.HandlePath("GET", "/user/{username}/info", handler.GetUserInfo)
-	if err != nil {
-		panic(err)
-	}
+func (handler UserHandler) Init(router *gin.RouterGroup) {
+	userGroup := router.Group("/user")
+	userGroup.GET("/:username/info", handler.GetUserInfo)
 }
 
-func (handler UserInfoHandler) GetUserInfo(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	username := pathParams["username"]
+func (handler UserHandler) GetUserInfo(ctx *gin.Context) {
+	username := ctx.Param("username")
+
+	if username == "" {
+		ctx.JSON(http.StatusBadRequest, "Username not provided")
+		return
+	}
 
 	var userInfo model.UserInfo
 
@@ -39,23 +40,12 @@ func (handler UserInfoHandler) GetUserInfo(w http.ResponseWriter, r *http.Reques
 	handler.addAccountCredentialsInfo(&userInfo, username)
 	handler.addUserProfileInfo(&userInfo)
 
-	response, err := json.Marshal(userInfo)
-
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		response, _ = json.Marshal(err.Error())
-		w.Write(response)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	w.Write(response)
+	ctx.JSON(http.StatusOK, userInfo)
 }
 
-func (handler UserInfoHandler) addAccountCredentialsInfo(userInfo *model.UserInfo, username string) error {
+func (handler UserHandler) addAccountCredentialsInfo(userInfo *model.UserInfo, username string) error {
 	authorizationClient := communication.NewAuthorizationClient(handler.authorizationServiceAddress)
 	accountCredentialsInfo, err := authorizationClient.GetByUsername(context.TODO(), &authorization.GetByUsernameRequest{Username: username})
-	log.Println(accountCredentialsInfo)
 
 	if err != nil {
 		return err
@@ -67,7 +57,7 @@ func (handler UserInfoHandler) addAccountCredentialsInfo(userInfo *model.UserInf
 	return nil
 }
 
-func (handler UserInfoHandler) addUserProfileInfo(userInfo *model.UserInfo) error {
+func (handler UserHandler) addUserProfileInfo(userInfo *model.UserInfo) error {
 	userProfileClient := communication.NewUserProfileClient(handler.userProfileServiceAddress)
 
 	userProfileInfo, err := userProfileClient.GetById(context.TODO(), &user_profile.GetByIdRequest{Id: userInfo.UserProfileID.String()})

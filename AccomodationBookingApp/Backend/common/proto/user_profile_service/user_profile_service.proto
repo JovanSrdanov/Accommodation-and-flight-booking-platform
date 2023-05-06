@@ -11,7 +11,7 @@ import "google/api/annotations.proto";
 service UserProfileService{
   rpc Create(CreateRequest) returns(CreateResponse) {
     option (google.api.http) = {
-      post: "/user-profile",
+      post: "/api-1/user-profile",
       //body:"*" works if JSON body has one top level object, otherwise you need to list all individual fields by hand
       body: "*"
     };
@@ -19,7 +19,7 @@ service UserProfileService{
 
   rpc GetById(GetByIdRequest) returns(GetByIdResponse) {
     option (google.api.http) = {
-      get: "/user-profile/{id}"
+      get: "/api-1/user-profile/{id}"
     };
   }
 }

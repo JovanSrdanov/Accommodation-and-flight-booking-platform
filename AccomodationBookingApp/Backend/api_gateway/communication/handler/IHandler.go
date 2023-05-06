@@ -1,7 +1,9 @@
 package handler
 
-import "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+import (
+	"github.com/gin-gonic/gin"
+)
 
 type IHandler interface {
-	Init(mux *runtime.ServeMux)
+	Init(router *gin.RouterGroup)
 }
