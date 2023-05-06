@@ -7,7 +7,6 @@ import (
 	"authorization_service/domain/token"
 	"authorization_service/interceptor"
 	"authorization_service/persistence/repository"
-	"authorization_service/startup/configuration"
 	authorization "common/proto/authorization_service/generated"
 	"fmt"
 	"google.golang.org/grpc"
@@ -17,10 +16,10 @@ import (
 )
 
 type Server struct {
-	config *configuration.Configuration
+	config *Configuration
 }
 
-func NewServer(config *configuration.Configuration) *Server {
+func NewServer(config *Configuration) *Server {
 	return &Server{config: config}
 }
 

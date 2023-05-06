@@ -5,51 +5,41 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3aa9defa-c9f7-4ca4-8e89-0f1f4d46dee2" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backend/Makefile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backend/common/proto/user_profile_service/generated/user_profile_service.pb.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backend/common/proto/user_profile_service/generated/user_profile_service.pb.gw.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backend/common/proto/user_profile_service/generated/user_profile_service_grpc.pb.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backend/common/proto/user_profile_service/user_profile_service.proto" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backend/user_profile_service/Dockerfile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backend/user_profile_service/communication/handler/AddressMapper.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backend/user_profile_service/communication/handler/UserProfileHandler.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backend/user_profile_service/communication/handler/UserProfileMapper.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backend/user_profile_service/domain/model/Address.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backend/user_profile_service/domain/model/UserProfile.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backend/user_profile_service/domain/repository/IUserProfileRepository.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backend/user_profile_service/domain/service/IUserProfileService.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backend/user_profile_service/domain/service/UserProfileService.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backend/user_profile_service/go.mod" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backend/user_profile_service/go.sum" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backend/user_profile_service/main.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backend/user_profile_service/persistence/repository/Client.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backend/user_profile_service/persistence/repository/UserProfileRepositoryPG.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backend/user_profile_service/startup/Configuration.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backend/user_profile_service/startup/Server.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Database/UserProfile/Dockerfile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Database/UserProfile/init.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Backend/api_gateway/communication/client/auth_client.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Backend/api_gateway/interceptor/auth_client_interceptor.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Backend/authorization_service/domain/token/maker.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Backend/authorization_service/domain/token/paseto_maker.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Backend/authorization_service/domain/token/payload.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Backend/authorization_service/interceptor/auth_server_interceptor.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Backend/authorization_service/startup/configuration.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/../.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/AccomodationBookingApp.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/AccomodationBookingApp.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Backend/.env" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/.env" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Backend/.env.local" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/.env.local" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/api_gateway/startup/configuration/configuration.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/api_gateway/startup/configuration/configuration.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/api_gateway/startup/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/api_gateway/startup/server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/.idea/protoeditor.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/.idea/protoeditor.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/api_gateway/communication/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/api_gateway/communication/server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/api_gateway/configuration/configuration.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/api_gateway/configuration/configuration.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/api_gateway/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/api_gateway/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/api_gateway/startup/Configuration.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/api_gateway/startup/Configuration.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/api_gateway/startup/Server.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/api_gateway/startup/Server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/authorization_service/communication/handler/AccountCredentialsHandler.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/authorization_service/communication/handler/AccountCredentialsHandler.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/authorization_service/communication/handler/AccountCredentialsMapper.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/authorization_service/communication/handler/AccountCredentialsMapper.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/authorization_service/communication/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/authorization_service/startup/server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/authorization_service/configuration/configuration.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/authorization_service/domain/model/AccountCredentials.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/authorization_service/domain/model/AccountCredentials.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/authorization_service/domain/repository/IAccountCredentialsRepository.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/authorization_service/domain/repository/IAccountCredentialsRepository.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/authorization_service/domain/service/AccountCredentialsService.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/authorization_service/domain/service/AccountCredentialsService.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/authorization_service/domain/service/IAccountCredentialsService.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/authorization_service/domain/service/IAccountCredentialsService.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/authorization_service/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/authorization_service/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/authorization_service/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/authorization_service/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/authorization_service/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/authorization_service/main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Backend/authorization_service/persistence/repository/AccountCredentialsRepositoryPG.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/authorization_service/persistence/repository/AccountCredentialsRepositoryPG.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/docker-compose.local.yml" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/docker-compose.local.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/docker-compose.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/test_service/Dockerfile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/test_service/communication/handler/destroyMe" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/user_profile_service/domain/error/destroyMe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/test_service/configuration/destroyMe" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/user_profile_service/persistence/error/destroyMe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/test_service/domain/domain/destroyMe" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/test_service/domain/error/destroyMe" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/test_service/domain/repository/destroyMe" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/test_service/domain/service/destroyMe" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/test_service/go.mod" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/test_service/persistence/error/destroyMe" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/test_service/persistence/repository/destroyMe" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/utils/newServiceStartup.sh" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/utils/newServiceStartup.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/common/proto/authorization_service/authorization_service.proto" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/common/proto/authorization_service/authorization_service.proto" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/common/proto/authorization_service/generated/authorization_service.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/common/proto/authorization_service/generated/authorization_service.pb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/common/proto/authorization_service/generated/authorization_service.pb.gw.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/common/proto/authorization_service/generated/authorization_service.pb.gw.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/common/proto/authorization_service/generated/authorization_service_grpc.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/common/proto/authorization_service/generated/authorization_service_grpc.pb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Database/Authorization/init.sql" beforeDir="false" afterPath="$PROJECT_DIR$/Database/Authorization/init.sql" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -93,6 +83,7 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/Backend/authorization_service/startup" />
       <recent name="$PROJECT_DIR$/Backend/api_gateway/startup" />
       <recent name="$PROJECT_DIR$/Backend/api_gateway/domain/model" />
       <recent name="$PROJECT_DIR$/Backend/user_profile_service/startup" />
