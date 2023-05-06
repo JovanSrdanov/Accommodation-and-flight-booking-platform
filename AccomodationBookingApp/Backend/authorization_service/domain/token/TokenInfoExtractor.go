@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func ExtractInfoFromToken(ctx context.Context, infoType string) (interface{}, error) {
+func ExtractTokenInfoFromContext(ctx context.Context, infoType string) (interface{}, error) {
 	metaData, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return nil, fmt.Errorf("no metadata provided")

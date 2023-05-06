@@ -44,12 +44,13 @@ func (handler AccountCredentialsHandler) Create(ctx context.Context, request *au
 }
 func (handler AccountCredentialsHandler) GetByUsername(ctx context.Context, request *authorizationProto.GetByUsernameRequest) (*authorizationProto.GetByUsernameResponse, error) {
 	// TODO Stefan: only for testing purposes, remove later
-	loggedInUserUsername, err := token.ExtractInfoFromToken(ctx, "Username")
+	loggedInUserUsername, err := token.ExtractTokenInfoFromContext(ctx, "Username")
+	loggedInUserRole, err := token.ExtractTokenInfoFromContext(ctx, "Role")
 	if err != nil {
 		return nil, err
 	}
 
-	log.Println("Logged in user username: ", loggedInUserUsername)
+	log.Printf("Logged in user username: %s, role: %s", loggedInUserUsername, loggedInUserRole)
 	/////////////
 
 	result, err := handler.accCredService.GetByUsername(request.Username)
