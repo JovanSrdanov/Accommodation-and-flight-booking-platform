@@ -3,14 +3,11 @@ package handler
 import (
 	"authorization_service/domain/model"
 	"authorization_service/domain/service"
+	"authorization_service/domain/token"
 	authorizationProto "common/proto/authorization_service/generated"
 	"context"
-	"fmt"
 	"github.com/google/uuid"
-	"github.com/o1egl/paseto"
-	"google.golang.org/grpc/metadata"
 	"log"
-	"strings"
 )
 
 type AccountCredentialsHandler struct {
@@ -47,19 +44,12 @@ func (handler AccountCredentialsHandler) Create(ctx context.Context, request *au
 }
 func (handler AccountCredentialsHandler) GetByUsername(ctx context.Context, request *authorizationProto.GetByUsernameRequest) (*authorizationProto.GetByUsernameResponse, error) {
 	// TODO Stefan: only for testing purposes, remove later
-	metaData, ok := metadata.FromIncomingContext(ctx)
-	if !ok {
-		return nil, fmt.Errorf("no metadata provided")
-	}
-	log.Println("METADATAAAAAAAA: ", metaData)
-	values := metaData["authorization"]
-	token := strings.TrimPrefix(values[0], "Bearer ")
-	var footerData map[string]interface{}
-	if err := paseto.ParseFooter(token, &footerData); err != nil {
-		return nil, fmt.Errorf("failed to parse token footer")
+	loggedInUserUsername, err := token.ExtractInfoFromToken(ctx, "Username")
+	if err != nil {
+		return nil, err
 	}
 
-	log.Println("Logged in user username: ", footerData["Username"])
+	log.Println("Logged in user username: ", loggedInUserUsername)
 	/////////////
 
 	result, err := handler.accCredService.GetByUsername(request.Username)
