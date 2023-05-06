@@ -8,7 +8,6 @@ import (
 	"context"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"log"
 	"net/http"
 )
 
@@ -47,7 +46,6 @@ func (handler UserHandler) GetUserInfo(ctx *gin.Context) {
 func (handler UserHandler) addAccountCredentialsInfo(userInfo *model.UserInfo, username string) error {
 	authorizationClient := communication.NewAuthorizationClient(handler.authorizationServiceAddress)
 	accountCredentialsInfo, err := authorizationClient.GetByUsername(context.TODO(), &authorization.GetByUsernameRequest{Username: username})
-	log.Println(accountCredentialsInfo)
 
 	if err != nil {
 		return err

@@ -2,6 +2,7 @@ package startup
 
 import (
 	"api_gateway/communication/handler"
+	"api_gateway/communication/middleware"
 	authorization "common/proto/authorization_service/generated"
 	user_profile "common/proto/user_profile_service/generated"
 	"context"
@@ -11,7 +12,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"log"
-	"net/http"
 )
 
 type Server struct {
@@ -25,6 +25,8 @@ func NewServer(config *Configuration) *Server {
 		server: gin.Default(),
 	}
 
+	server.server.Use(middleware.AuthTokenParser())
+
 	server.server.NoRoute(func(c *gin.Context) {
 		c.JSON(404, gin.H{"message": "Endpoint doesn't exist"})
 	})
@@ -36,32 +38,7 @@ func NewServer(config *Configuration) *Server {
 
 	server.initCustomHandlers(server.server.Group("/api-2"))
 
-	//When it initializes all handlers on basic mux, we wrap it in a middleware(handler)
-
-	// custom handlers with auth
-	//TODO better name
-	//TODO GIN MIDLEWARE
-	//authHandler := createAuthTokenMiddleware(server.mux)
-	//server.handler = &authHandler
-
 	return server
-}
-
-func createAuthTokenMiddleware(handler http.Handler) http.Handler {
-	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		authHeader := request.Header.Get("Authorization")
-		ctx := request.Context()
-		// if authorization header is provided, embeds the token to the context which is being sent to a grpc server,
-		// else just sends the default context
-		if authHeader != "" {
-			accessToken := authHeader[len("Bearer "):]
-			ctx := context.WithValue(ctx, "Authorization", accessToken)
-			//ctx := metadata.AppendToOutgoingContext(ctx, "Authorization", accessToken)
-			handler.ServeHTTP(writer, request.WithContext(ctx))
-			return
-		}
-		handler.ServeHTTP(writer, request.WithContext(ctx))
-	})
 }
 
 func (server *Server) initGrpcHandlers(mux *runtime.ServeMux) {
