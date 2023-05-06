@@ -24,8 +24,6 @@ func NewAccountCredentialsService(accCredRepo repository.IAccountCredentialsRepo
 }
 
 func (service AccountCredentialsService) Create(accCred *model.AccountCredentials) (uuid.UUID, error) {
-	//TODO ukloniti ovu inicijalizaciju kad se bude pisala prava logika
-	accCred.Salt = "salt"
 	id, err := service.accCredRepo.Create(accCred)
 
 	if err != nil {

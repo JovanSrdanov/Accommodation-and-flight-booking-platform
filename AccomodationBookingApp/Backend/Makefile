@@ -14,8 +14,4 @@ proto-user-profile:
 	--swagger_out=logtostderr=true,allow_merge=true:./common/swagger/ \
 	./common/proto/user_profile_service/user_profile_service.proto
 
-swagger-merge:
-	swagger-codegen generate -i ./common/swagger/generated/*  -o ./common/swagger/apiDocumentation.json
-
-
 proto-all: proto-authorization proto-user-profile

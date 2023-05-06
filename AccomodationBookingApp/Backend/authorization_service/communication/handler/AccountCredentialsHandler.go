@@ -31,7 +31,7 @@ func (handler AccountCredentialsHandler) Create(ctx context.Context, request *au
 	}
 
 	accCred, err := model.NewAccountCredentials(request.GetAccountCredentials().Username,
-		request.GetAccountCredentials().Password, "", model.Role(request.GetAccountCredentials().Role), userProfileId)
+		request.GetAccountCredentials().Password, model.Role(request.GetAccountCredentials().Role), userProfileId)
 	if err != nil {
 		return nil, err
 	}

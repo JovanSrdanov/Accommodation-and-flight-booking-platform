@@ -6,9 +6,8 @@ import (
 	authorization "common/proto/authorization_service/generated"
 	user_profile "common/proto/user_profile_service/generated"
 	"context"
-	"encoding/json"
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"log"
 	"net/http"
 )
@@ -23,20 +22,18 @@ func NewUserHandler(authorizationServiceAddress string, userProfileServiceAddres
 		userProfileServiceAddress: userProfileServiceAddress}
 }
 
-func (handler UserHandler) Init(mux *runtime.ServeMux) {
-	err := mux.HandlePath("GET", "/user/{username}/info", handler.GetUserInfo)
-	if err != nil {
-		panic(err)
-	}
-
-	err = mux.HandlePath("POST", "/user", handler.CreateUser)
-	if err != nil {
-		panic(err)
-	}
+func (handler UserHandler) Init(router *gin.RouterGroup) {
+	userGroup := router.Group("/user")
+	userGroup.GET("/:username/info", handler.GetUserInfo)
 }
 
-func (handler UserHandler) GetUserInfo(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-	username := pathParams["username"]
+func (handler UserHandler) GetUserInfo(ctx *gin.Context) {
+	username := ctx.Param("username")
+
+	if username == "" {
+		ctx.JSON(http.StatusBadRequest, "Username not provided")
+		return
+	}
 
 	var userInfo model.UserInfo
 
@@ -44,17 +41,7 @@ func (handler UserHandler) GetUserInfo(w http.ResponseWriter, r *http.Request, p
 	handler.addAccountCredentialsInfo(&userInfo, username)
 	handler.addUserProfileInfo(&userInfo)
 
-	response, err := json.Marshal(userInfo)
-
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		response, _ = json.Marshal(err.Error())
-		w.Write(response)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	w.Write(response)
+	ctx.JSON(http.StatusOK, userInfo)
 }
 
 func (handler UserHandler) addAccountCredentialsInfo(userInfo *model.UserInfo, username string) error {
@@ -91,8 +78,4 @@ func (handler UserHandler) addUserProfileInfo(userInfo *model.UserInfo) error {
 	userInfo.Address.StreetNumber = userProfileInfo.UserProfile.Address.StreetNumber
 
 	return nil
-}
-
-func (handler UserHandler) CreateUser(writer http.ResponseWriter, reader *http.Request, params map[string]string) {
-
 }

@@ -35,7 +35,6 @@ func (a AccountCredentialsMapper) mapToGetByUsernameResponse(accCred *model.Acco
 			Id:            accCred.ID.String(),
 			Username:      accCred.Username,
 			Password:      accCred.Password,
-			Salt:          accCred.Salt,
 			Role:          authorization.Role(accCred.Role),
 			UserProfileId: accCred.UserProfileID.String(),
 		},
@@ -57,7 +56,6 @@ func (a AccountCredentialsMapper) mapToModelAccountCredentials(accCred *authoriz
 		ID:            accID,
 		Username:      accCred.GetUsername(),
 		Password:      accCred.GetPassword(),
-		Salt:          accCred.GetSalt(),
 		Role:          model.Role(accCred.GetRole()),
 		UserProfileID: userProfileId,
 	}, nil

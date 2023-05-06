@@ -9,7 +9,7 @@ import "google/api/annotations.proto";
 service AuthorizationService{
   rpc Create(CreateRequest) returns(CreateResponse) {
     option (google.api.http) = {
-      post: "/account-credentials",
+      post: "/api-1/account-credentials",
       //body:"*" works if JSON body has one top level object, otherwise you need to list all individual fields by hand
       body: "*"
     };
@@ -17,13 +17,13 @@ service AuthorizationService{
 
   rpc GetByUsername(GetByUsernameRequest) returns(GetByUsernameResponse) {
     option (google.api.http) = {
-      get: "/account-credentials/{username}"
+      get: "/api-1/account-credentials/{username}"
     };
   }
 
   rpc Login(LoginRequest) returns (LoginResponse) {
     option (google.api.http) = {
-      post: "/account-credentials/login",
+      post: "/api-1/account-credentials/login",
       body: "*"
     };
   }
@@ -60,7 +60,6 @@ message AccountCredentials {
   string id = 1;
   string username = 2;
   string password = 3;
-  string salt = 4;
   Role role = 5;
   string userProfileId = 6;
 }

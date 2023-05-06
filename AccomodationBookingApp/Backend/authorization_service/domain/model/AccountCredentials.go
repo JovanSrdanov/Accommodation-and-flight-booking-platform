@@ -18,12 +18,11 @@ type AccountCredentials struct {
 	ID            uuid.UUID `json:"id,omitempty" gorm:"primaryKey"`
 	Username      string    `json:"username" gorm:"unique" `
 	Password      string    `json:"password"`
-	Salt          string    `json:"salt,omitempty"`
 	Role          Role      `json:"role"`
 	UserProfileID uuid.UUID `json:"userProfileID"`
 }
 
-func NewAccountCredentials(username string, password string, salt string, role Role, userProfileId uuid.UUID) (*AccountCredentials, error) {
+func NewAccountCredentials(username string, password string, role Role, userProfileId uuid.UUID) (*AccountCredentials, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, fmt.Errorf("cannot hash password: %w", err)
@@ -32,7 +31,6 @@ func NewAccountCredentials(username string, password string, salt string, role R
 	accountCredentials := &AccountCredentials{
 		Username:      username,
 		Password:      string(hashedPassword),
-		Salt:          salt,
 		Role:          role,
 		UserProfileID: userProfileId,
 	}

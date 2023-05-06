@@ -11,7 +11,7 @@
     "application/json"
   ],
   "paths": {
-    "/user-profile": {
+    "/api-1/user-profile": {
       "post": {
         "operationId": "UserProfileService_Create",
         "responses": {
@@ -43,7 +43,7 @@
         ]
       }
     },
-    "/user-profile/{id}": {
+    "/api-1/user-profile/{id}": {
       "get": {
         "operationId": "UserProfileService_GetById",
         "responses": {
