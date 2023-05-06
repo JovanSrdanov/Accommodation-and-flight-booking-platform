@@ -67,9 +67,8 @@ func (server *Server) startGrpcServer(
 		log.Fatalf("failed to listen: %v", err)
 	}
 	// interceptor initialization for auth
-	// TODO Stefan add real method map
-	tempRoles := make(map[string][]model.Role)
-	authInterceptor := interceptor.NewAuthServerInterceptor(maker, tempRoles)
+	protectedMethodsWithAllowedRoles := getProtectedMethodsWithAllowedRoles()
+	authInterceptor := interceptor.NewAuthServerInterceptor(maker, protectedMethodsWithAllowedRoles)
 
 	grpcServer := grpc.NewServer(
 		grpc.UnaryInterceptor(authInterceptor.Unary()),
@@ -78,5 +77,14 @@ func (server *Server) startGrpcServer(
 	authorization.RegisterAuthorizationServiceServer(grpcServer, accountCredentialsHandler)
 	if err := grpcServer.Serve(listener); err != nil {
 		log.Fatalf("failed to serve: %s", err)
+	}
+}
+
+// returns a map which consists of a list of grpc methods and allowed roles for each of them
+func getProtectedMethodsWithAllowedRoles() map[string][]model.Role {
+	const authServicePath = "/authorization.AuthorizationService/"
+
+	return map[string][]model.Role{
+		authServicePath + "GetByUsername": {model.Guest},
 	}
 }

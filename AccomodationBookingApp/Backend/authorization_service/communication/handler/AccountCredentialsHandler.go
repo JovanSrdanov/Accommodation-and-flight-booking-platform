@@ -7,8 +7,10 @@ import (
 	"context"
 	"fmt"
 	"github.com/google/uuid"
+	"github.com/o1egl/paseto"
 	"google.golang.org/grpc/metadata"
 	"log"
+	"strings"
 )
 
 type AccountCredentialsHandler struct {
@@ -23,8 +25,6 @@ func NewAccountCredentialsHandler(accCredService service.IAccountCredentialsServ
 }
 
 func (handler AccountCredentialsHandler) Create(ctx context.Context, request *authorizationProto.CreateRequest) (*authorizationProto.CreateResponse, error) {
-	//mapper := NewAccountCredentialsMapper()
-	//accCred := mapper.mapFromCreateRequest(request)
 	userProfileId, err := uuid.Parse(request.GetAccountCredentials().GetUserProfileId())
 	if err != nil {
 		return nil, err
@@ -52,14 +52,15 @@ func (handler AccountCredentialsHandler) GetByUsername(ctx context.Context, requ
 		return nil, fmt.Errorf("no metadata provided")
 	}
 	log.Println("METADATAAAAAAAA: ", metaData)
-	//token := metaData["authorization"][0]
-	//var footerData map[string]interface{}
-	//if err := paseto.ParseFooter(token, &footerData); err != nil {
-	//return nil, fmt.Errorf("failed to parse token footer")
-	//}
+	values := metaData["authorization"]
+	token := strings.TrimPrefix(values[0], "Bearer ")
+	var footerData map[string]interface{}
+	if err := paseto.ParseFooter(token, &footerData); err != nil {
+		return nil, fmt.Errorf("failed to parse token footer")
+	}
 
-	//log.Println("Logged in user id: ", footerData["ID"])
-	///////////////
+	log.Println("Logged in user username: ", footerData["Username"])
+	/////////////
 
 	result, err := handler.accCredService.GetByUsername(request.Username)
 	if err != nil {
