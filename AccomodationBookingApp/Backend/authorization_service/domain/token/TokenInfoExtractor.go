@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func ExtractTokenInfoFromContext(ctx context.Context, infoType string) (interface{}, error) {
+func ExtractTokenInfoFromContext(ctx context.Context) (interface{}, error) {
 	metaData, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return nil, fmt.Errorf("no metadata provided")
@@ -21,5 +21,5 @@ func ExtractTokenInfoFromContext(ctx context.Context, infoType string) (interfac
 		return nil, fmt.Errorf("failed to parse token footer")
 	}
 
-	return footerData[infoType], nil
+	return footerData["Role"], nil
 }

@@ -6,6 +6,7 @@ import (
 	"authorization_service/domain/token"
 	authorizationProto "common/proto/authorization_service/generated"
 	"context"
+	"fmt"
 	"github.com/google/uuid"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"log"
@@ -45,8 +46,12 @@ func (handler AccountCredentialsHandler) Create(ctx context.Context, request *au
 }
 func (handler AccountCredentialsHandler) GetByUsername(ctx context.Context, request *authorizationProto.GetByUsernameRequest) (*authorizationProto.GetByUsernameResponse, error) {
 	// TODO Stefan: only for testing purposes, remove later
-	loggedInUserId, err := token.ExtractTokenInfoFromContext(ctx, "Id")
-	loggedInUserRole, err := token.ExtractTokenInfoFromContext(ctx, "Role")
+	loggedInUserId, ok := ctx.Value("id").(uuid.UUID)
+	if !ok {
+		return nil, fmt.Errorf("failed to extract id and cast to UUID")
+	}
+
+	loggedInUserRole, err := token.ExtractTokenInfoFromContext(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -86,17 +91,18 @@ func (handler AccountCredentialsHandler) Login(ctx context.Context, req *authori
 }
 
 func (handler AccountCredentialsHandler) Update(ctx context.Context, req *authorizationProto.UpdateRequest) (*emptypb.Empty, error) {
-	loggedInIdInfo, err := token.ExtractTokenInfoFromContext(ctx, "Id")
-	if err != nil {
-		return &emptypb.Empty{}, err
-	}
-	loggedInIdInfoAsString := loggedInIdInfo.(string)
-	loggedInId, err := uuid.Parse(loggedInIdInfoAsString)
-	if err != nil {
-		return &emptypb.Empty{}, err
+	loggedInIdInfo, ok := ctx.Value("id").(uuid.UUID)
+	if !ok {
+		return &emptypb.Empty{}, fmt.Errorf("failed to extract id and cast to UUID")
 	}
 
-	err = handler.accCredService.Update(loggedInId, req.GetUsername(), req.GetPassword())
+	//loggedInIdInfoAsString := loggedInIdInfo.(string)
+	//loggedInId, err := uuid.Parse(loggedInIdInfoAsString)
+	//if err != nil {
+	//	return &emptypb.Empty{}, err
+	//}
+
+	err := handler.accCredService.Update(loggedInIdInfo, req.GetUsername(), req.GetPassword())
 	if err != nil {
 		return &emptypb.Empty{}, err
 	}

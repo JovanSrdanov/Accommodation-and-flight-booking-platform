@@ -18,7 +18,7 @@ service AuthorizationService{
 
   rpc GetByUsername(GetByUsernameRequest) returns(GetByUsernameResponse) {
     option (google.api.http) = {
-      get: "/api-1/account-credentials/{username}"
+      get: "/api-1/account-credentials/username/{username}"
     };
   }
 

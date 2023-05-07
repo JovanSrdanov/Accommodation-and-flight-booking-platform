@@ -28,14 +28,13 @@ func NewPasetoMaker(symmetricKey string) (Maker, error) {
 }
 
 func (maker *PasetoMaker) CreateToken(id uuid.UUID, duration time.Duration, role model.Role) (string, error) {
-	payload, err := NewPayload(duration)
+	payload, err := NewPayload(id, duration)
 	if err != nil {
 		return "", err
 	}
 
 	// user info is stored in the footer, may change later
 	footer := map[string]interface{}{
-		"Id":   id,
 		"Role": role,
 	}
 

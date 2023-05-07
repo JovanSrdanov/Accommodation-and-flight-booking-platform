@@ -50,6 +50,7 @@ func (server Server) startGrpcServer(userProfileHandler *handler.UserProfileHand
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
+
 	grpcServer := grpc.NewServer()
 	user_profile.RegisterUserProfileServiceServer(grpcServer, userProfileHandler)
 	if err := grpcServer.Serve(listener); err != nil {
