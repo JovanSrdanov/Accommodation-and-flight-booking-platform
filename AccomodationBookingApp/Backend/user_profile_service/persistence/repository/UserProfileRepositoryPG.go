@@ -43,3 +43,11 @@ func (repo UserProfileRepositoryPG) GetById(id uuid.UUID) (*model.UserProfile, e
 
 	return &userProf, nil
 }
+
+func (repo UserProfileRepositoryPG) Update(userProf *model.UserProfile) (*model.UserProfile, error) {
+	if err := repo.dbClient.Save(&userProf).Error; err != nil {
+		return &model.UserProfile{}, err
+	}
+
+	return userProf, nil
+}

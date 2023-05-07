@@ -3,6 +3,7 @@ module user_profile_service
 go 1.20
 
 require (
+	authorization_service v0.0.0-00010101000000-000000000000
 	common v0.0.0-00010101000000-000000000000
 	github.com/google/uuid v1.3.0
 	google.golang.org/grpc v1.54.0
@@ -33,3 +34,4 @@ require (
 
 replace common => ../common
 
+replace authorization_service => ../authorization_service

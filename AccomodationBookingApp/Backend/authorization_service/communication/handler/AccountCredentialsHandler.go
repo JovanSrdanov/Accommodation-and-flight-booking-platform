@@ -91,18 +91,18 @@ func (handler AccountCredentialsHandler) Login(ctx context.Context, req *authori
 }
 
 func (handler AccountCredentialsHandler) Update(ctx context.Context, req *authorizationProto.UpdateRequest) (*emptypb.Empty, error) {
-	loggedInIdInfo, ok := ctx.Value("id").(uuid.UUID)
+	loggedInId, ok := ctx.Value("id").(uuid.UUID)
 	if !ok {
 		return &emptypb.Empty{}, fmt.Errorf("failed to extract id and cast to UUID")
 	}
 
-	//loggedInIdInfoAsString := loggedInIdInfo.(string)
+	//loggedInIdInfoAsString := loggedInId.(string)
 	//loggedInId, err := uuid.Parse(loggedInIdInfoAsString)
 	//if err != nil {
 	//	return &emptypb.Empty{}, err
 	//}
 
-	err := handler.accCredService.Update(loggedInIdInfo, req.GetUsername(), req.GetPassword())
+	err := handler.accCredService.Update(loggedInId, req.GetUsername(), req.GetPassword())
 	if err != nil {
 		return &emptypb.Empty{}, err
 	}
