@@ -71,6 +71,34 @@
         "tags": [
           "UserProfileService"
         ]
+      },
+      "delete": {
+        "operationId": "UserProfileService_Delete",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/user_profileDeleteResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "UserProfileService"
+        ]
       }
     }
   },
@@ -143,6 +171,9 @@
           "type": "string"
         }
       }
+    },
+    "user_profileDeleteResponse": {
+      "type": "object"
     },
     "user_profileGetByIdResponse": {
       "type": "object",

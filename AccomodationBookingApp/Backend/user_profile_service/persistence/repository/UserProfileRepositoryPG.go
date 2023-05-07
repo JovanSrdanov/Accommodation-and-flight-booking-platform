@@ -43,3 +43,26 @@ func (repo UserProfileRepositoryPG) GetById(id uuid.UUID) (*model.UserProfile, e
 
 	return &userProf, nil
 }
+
+func (repo UserProfileRepositoryPG) Delete(id uuid.UUID) error {
+
+	var userProfile model.UserProfile
+	//Because of cascade deletion
+	result := repo.dbClient.First(&userProfile, id)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	// Delete the user profile and its associated address
+	result = repo.dbClient.Delete(&userProfile)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	result = repo.dbClient.Delete(&model.Address{ID: userProfile.AddressID})
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}
