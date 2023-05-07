@@ -29,6 +29,13 @@ service UserProfileService{
       get: "/api-1/user-profile/{id}"
     };
   }
+
+ rpc Delete(DeleteRequest) returns(DeleteResponse){
+   option (google.api.http) = {
+     delete: "/api-1/user-profile/{id}"
+   };
+ }
+
 }
 
 
@@ -54,6 +61,13 @@ message GetByIdResponse{
 message GetByIdRequest{
   string id = 1;
 }
+
+message DeleteRequest{
+  string id = 1;
+}
+
+message DeleteResponse{ }
+
 message  UserProfile{
   string id = 1;
   string name = 2;

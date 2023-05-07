@@ -45,3 +45,6 @@ func (service UserProfileService) Update(id uuid.UUID, dto *model.UpdateProfileD
 		Address: userInfo.Address,
 	}, nil
 }
+func (service UserProfileService) Delete(id uuid.UUID) error {
+	return service.userProfRepo.Delete(id)
+}

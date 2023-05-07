@@ -71,3 +71,13 @@ func (handler UserProfileHandler) GetById(ctx context.Context, in *user_profile.
 
 	return mapper.mapToGetByIdResponse(userProfile), nil
 }
+
+func (handler UserProfileHandler) Delete(ctx context.Context, in *user_profile.DeleteRequest) (*user_profile.DeleteResponse, error) {
+	id, err := uuid.Parse(in.Id)
+	if err != nil {
+		return nil, err
+	}
+	err = handler.userProfileService.Delete(id)
+
+	return &user_profile.DeleteResponse{}, err
+}

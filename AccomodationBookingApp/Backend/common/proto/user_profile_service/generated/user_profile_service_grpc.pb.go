@@ -22,6 +22,7 @@ const (
 	UserProfileService_Create_FullMethodName  = "/user_profile.UserProfileService/Create"
 	UserProfileService_Update_FullMethodName  = "/user_profile.UserProfileService/Update"
 	UserProfileService_GetById_FullMethodName = "/user_profile.UserProfileService/GetById"
+	UserProfileService_Delete_FullMethodName  = "/user_profile.UserProfileService/Delete"
 )
 
 // UserProfileServiceClient is the client API for UserProfileService service.
@@ -31,6 +32,7 @@ type UserProfileServiceClient interface {
 	Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error)
 	Update(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateRequest, error)
 	GetById(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*GetByIdResponse, error)
+	Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error)
 }
 
 type userProfileServiceClient struct {
@@ -68,6 +70,15 @@ func (c *userProfileServiceClient) GetById(ctx context.Context, in *GetByIdReque
 	return out, nil
 }
 
+func (c *userProfileServiceClient) Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error) {
+	out := new(DeleteResponse)
+	err := c.cc.Invoke(ctx, UserProfileService_Delete_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserProfileServiceServer is the server API for UserProfileService service.
 // All implementations must embed UnimplementedUserProfileServiceServer
 // for forward compatibility
@@ -75,6 +86,7 @@ type UserProfileServiceServer interface {
 	Create(context.Context, *CreateRequest) (*CreateResponse, error)
 	Update(context.Context, *UpdateRequest) (*UpdateRequest, error)
 	GetById(context.Context, *GetByIdRequest) (*GetByIdResponse, error)
+	Delete(context.Context, *DeleteRequest) (*DeleteResponse, error)
 	mustEmbedUnimplementedUserProfileServiceServer()
 }
 
@@ -90,6 +102,9 @@ func (UnimplementedUserProfileServiceServer) Update(context.Context, *UpdateRequ
 }
 func (UnimplementedUserProfileServiceServer) GetById(context.Context, *GetByIdRequest) (*GetByIdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetById not implemented")
+}
+func (UnimplementedUserProfileServiceServer) Delete(context.Context, *DeleteRequest) (*DeleteResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
 }
 func (UnimplementedUserProfileServiceServer) mustEmbedUnimplementedUserProfileServiceServer() {}
 
@@ -158,6 +173,24 @@ func _UserProfileService_GetById_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserProfileService_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserProfileServiceServer).Delete(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserProfileService_Delete_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserProfileServiceServer).Delete(ctx, req.(*DeleteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserProfileService_ServiceDesc is the grpc.ServiceDesc for UserProfileService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -176,6 +209,10 @@ var UserProfileService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetById",
 			Handler:    _UserProfileService_GetById_Handler,
+		},
+		{
+			MethodName: "Delete",
+			Handler:    _UserProfileService_Delete_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
