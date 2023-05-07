@@ -28,6 +28,10 @@ func (handler UserProfileHandler) Create(ctx context.Context, in *user_profile.C
 	}, nil
 }
 
+func (handler UserProfileHandler) Update(ctx context.Context, req *user_profile.UpdateRequest) (*user_profile.UpdateRequest, error) {
+	panic("not implemented")
+}
+
 func (handler UserProfileHandler) GetById(ctx context.Context, in *user_profile.GetByIdRequest) (*user_profile.GetByIdResponse, error) {
 	id, err := uuid.Parse(in.Id)
 	if err != nil {

@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 
 const (
 	UserProfileService_Create_FullMethodName  = "/user_profile.UserProfileService/Create"
+	UserProfileService_Update_FullMethodName  = "/user_profile.UserProfileService/Update"
 	UserProfileService_GetById_FullMethodName = "/user_profile.UserProfileService/GetById"
 )
 
@@ -28,6 +29,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserProfileServiceClient interface {
 	Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error)
+	Update(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateRequest, error)
 	GetById(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*GetByIdResponse, error)
 }
 
@@ -48,6 +50,15 @@ func (c *userProfileServiceClient) Create(ctx context.Context, in *CreateRequest
 	return out, nil
 }
 
+func (c *userProfileServiceClient) Update(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateRequest, error) {
+	out := new(UpdateRequest)
+	err := c.cc.Invoke(ctx, UserProfileService_Update_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userProfileServiceClient) GetById(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*GetByIdResponse, error) {
 	out := new(GetByIdResponse)
 	err := c.cc.Invoke(ctx, UserProfileService_GetById_FullMethodName, in, out, opts...)
@@ -62,6 +73,7 @@ func (c *userProfileServiceClient) GetById(ctx context.Context, in *GetByIdReque
 // for forward compatibility
 type UserProfileServiceServer interface {
 	Create(context.Context, *CreateRequest) (*CreateResponse, error)
+	Update(context.Context, *UpdateRequest) (*UpdateRequest, error)
 	GetById(context.Context, *GetByIdRequest) (*GetByIdResponse, error)
 	mustEmbedUnimplementedUserProfileServiceServer()
 }
@@ -72,6 +84,9 @@ type UnimplementedUserProfileServiceServer struct {
 
 func (UnimplementedUserProfileServiceServer) Create(context.Context, *CreateRequest) (*CreateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
+}
+func (UnimplementedUserProfileServiceServer) Update(context.Context, *UpdateRequest) (*UpdateRequest, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
 }
 func (UnimplementedUserProfileServiceServer) GetById(context.Context, *GetByIdRequest) (*GetByIdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetById not implemented")
@@ -107,6 +122,24 @@ func _UserProfileService_Create_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserProfileService_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserProfileServiceServer).Update(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserProfileService_Update_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserProfileServiceServer).Update(ctx, req.(*UpdateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _UserProfileService_GetById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetByIdRequest)
 	if err := dec(in); err != nil {
@@ -135,6 +168,10 @@ var UserProfileService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Create",
 			Handler:    _UserProfileService_Create_Handler,
+		},
+		{
+			MethodName: "Update",
+			Handler:    _UserProfileService_Update_Handler,
 		},
 		{
 			MethodName: "GetById",
