@@ -21,3 +21,7 @@ func (service UserProfileService) Create(userProf *model.UserProfile) (uuid.UUID
 func (service UserProfileService) GetById(id uuid.UUID) (*model.UserProfile, error) {
 	return service.userProfRepo.GetById(id)
 }
+
+func (service UserProfileService) Delete(id uuid.UUID) error {
+	return service.userProfRepo.Delete(id)
+}

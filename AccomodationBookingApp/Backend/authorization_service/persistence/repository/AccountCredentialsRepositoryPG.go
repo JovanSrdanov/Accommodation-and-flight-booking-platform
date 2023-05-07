@@ -22,7 +22,6 @@ func NewAccountCredentialsRepositoryPG(dbClient *gorm.DB) (*AccountCredentialsRe
 }
 
 func (repo AccountCredentialsRepositoryPG) Create(accCred *model.AccountCredentials) (uuid.UUID, error) {
-	//TODO : probaj da obrises da vidis oce li ti sam postgres izgenerisati ID
 	_, err := repo.GetByUsername(accCred.Username)
 	if err == nil {
 		return uuid.Nil, fmt.Errorf("username taken")
