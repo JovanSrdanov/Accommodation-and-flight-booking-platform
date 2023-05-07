@@ -27,10 +27,10 @@ func NewPasetoMaker(symmetricKey string) (Maker, error) {
 	return maker, nil
 }
 
-func (maker *PasetoMaker) CreateToken(id uuid.UUID, duration time.Duration, role model.Role) (string, error) {
+func (maker *PasetoMaker) CreateToken(id uuid.UUID, duration time.Duration, role model.Role) (string, model.Role, error) {
 	payload, err := NewPayload(id, duration)
 	if err != nil {
-		return "", err
+		return "", -1, nil
 	}
 
 	// user info is stored in the footer, may change later
@@ -38,7 +38,8 @@ func (maker *PasetoMaker) CreateToken(id uuid.UUID, duration time.Duration, role
 		"Role": role,
 	}
 
-	return maker.paseto.Encrypt(maker.symmetricKey, payload, footer)
+	token, err := maker.paseto.Encrypt(maker.symmetricKey, payload, footer)
+	return token, role, err
 }
 
 func (maker *PasetoMaker) VerifyToken(token string) (*Payload, error) {

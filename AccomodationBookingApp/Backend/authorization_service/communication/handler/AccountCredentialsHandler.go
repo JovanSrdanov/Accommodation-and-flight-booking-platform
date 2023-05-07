@@ -81,12 +81,12 @@ func (handler AccountCredentialsHandler) GetById(ctx context.Context, req *autho
 
 // Login is an unary rpc
 func (handler AccountCredentialsHandler) Login(ctx context.Context, req *authorizationProto.LoginRequest) (*authorizationProto.LoginResponse, error) {
-	accessToken, err := handler.accCredService.Login(req.GetUsername(), req.GetPassword())
+	accessToken, role, err := handler.accCredService.Login(req.GetUsername(), req.GetPassword())
 	if err != nil {
 		return nil, err
 	}
 
-	res := &authorizationProto.LoginResponse{AccessToken: accessToken}
+	res := &authorizationProto.LoginResponse{AccessToken: accessToken, Role: authorizationProto.Role(role)}
 	return res, nil
 }
 

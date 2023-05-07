@@ -89,6 +89,7 @@ message LoginRequest {
 
 message LoginResponse {
   string access_token = 1;
+  Role role = 3;
 }
 
 message UpdateRequest {

@@ -2,7 +2,10 @@ package handler
 
 import (
 	"api_gateway/communication"
+	"api_gateway/communication/middleware"
 	"api_gateway/dto"
+	"authorization_service/domain/model"
+	"authorization_service/domain/token"
 	authorization "common/proto/authorization_service/generated"
 	user_profile "common/proto/user_profile_service/generated"
 	"context"
@@ -14,16 +17,23 @@ import (
 type UserHandler struct {
 	authorizationServiceAddress string
 	userProfileServiceAddress   string
+	tokenMaker                  token.Maker
 }
 
-func NewUserHandler(authorizationServiceAddress string, userProfileServiceAddress string) *UserHandler {
+func NewUserHandler(authorizationServiceAddress string, userProfileServiceAddress string,
+	tokenMaker token.Maker) *UserHandler {
 	return &UserHandler{authorizationServiceAddress: authorizationServiceAddress,
-		userProfileServiceAddress: userProfileServiceAddress}
+		userProfileServiceAddress: userProfileServiceAddress,
+		tokenMaker:                tokenMaker,
+	}
 }
 
 func (handler UserHandler) Init(router *gin.RouterGroup) {
 	userGroup := router.Group("/user")
-	userGroup.GET("/:username/info", handler.GetUserInfo)
+	userGroup.GET("/:username/info",
+		middleware.ValidateToken(handler.tokenMaker),
+		middleware.Authorization([]model.Role{model.Guest}),
+		handler.GetUserInfo)
 	userGroup.POST("", handler.CreateUser)
 }
 
