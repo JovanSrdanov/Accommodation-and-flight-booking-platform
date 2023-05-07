@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+option go_package = "common/user_profile";
+
+package user_profile;
+
+import "google/api/annotations.proto";
+
+
+
+service UserProfileService{
+  rpc Create(CreateRequest) returns(CreateResponse) {
+    option (google.api.http) = {
+      post: "/api-1/user-profile",
+      //body:"*" works if JSON body has one top level object, otherwise you need to list all individual fields by hand
+      body: "*"
+    };
+  }
+
+  rpc GetById(GetByIdRequest) returns(GetByIdResponse) {
+    option (google.api.http) = {
+      get: "/api-1/user-profile/{id}"
+    };
+  }
+
+ rpc Delete(DeleteRequest) returns(DeleteResponse){
+   option (google.api.http) = {
+     delete: "/api-1/user-profile/{id}"
+   };
+ }
+
+}
+
+
+message CreateRequest {
+  UserProfile userProfile = 1;
+}
+
+message CreateResponse{
+  string id = 1;
+}
+
+message GetByIdResponse{
+  UserProfile userProfile = 1;
+}
+
+message GetByIdRequest{
+  string id = 1;
+}
+
+message DeleteRequest{
+  string id = 1;
+}
+
+message DeleteResponse{ }
+
+message  UserProfile{
+  string id = 1;
+  string name = 2;
+  string surname = 3;
+  string email = 4;
+  Address address = 5;
+}
+message Address {
+  string id = 1;
+  string country = 2;
+  string city = 3;
+  string street = 4;
+  string streetNumber= 5;
+}

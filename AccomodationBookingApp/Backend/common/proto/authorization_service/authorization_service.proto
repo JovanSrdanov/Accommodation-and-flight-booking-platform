@@ -5,19 +5,40 @@ option go_package = "common/authorization";
 package authorization;
 
 import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
 
 service AuthorizationService{
   rpc Create(CreateRequest) returns(CreateResponse) {
     option (google.api.http) = {
-      post: "/account-credentials",
+      post: "/api-1/account-credentials",
       //body:"*" works if JSON body has one top level object, otherwise you need to list all individual fields by hand
       body: "*"
     };
   }
 
-  rpc GetByEmail(GetByEmailRequest) returns(GetByEmailResponse) {
+  rpc GetByUsername(GetByUsernameRequest) returns(GetByUsernameResponse) {
     option (google.api.http) = {
-      get: "/account-credentials/{email}"
+      get: "/api-1/account-credentials/{username}"
+    };
+  }
+
+  rpc GetById(GetByIdRequest) returns(GetByUsernameResponse) {
+    option (google.api.http) = {
+      get: "/api-1/account-credentials/{id}"
+    };
+  }
+
+  rpc Login(LoginRequest) returns (LoginResponse) {
+    option (google.api.http) = {
+      post: "/api-1/account-credentials/login",
+      body: "*"
+    };
+  }
+
+  rpc Update(UpdateRequest) returns(google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/api-1/account-credentials",
+      body: "*"
     };
   }
 }
@@ -30,12 +51,16 @@ message CreateResponse {
    string id = 1;
 }
 
-message GetByEmailRequest{
- string email = 1;
+message GetByUsernameRequest{
+ string username = 1;
 }
 
-message GetByEmailResponse{
+message GetByUsernameResponse{
   AccountCredentials accountCredentials = 1;
+}
+
+message GetByIdRequest{
+  string id = 1;
 }
 
 enum Role {
@@ -44,14 +69,29 @@ enum Role {
 }
 
 message CreateAccountCredentials {
-  string email = 1;
+  string username = 1;
   string password = 2;
   Role role = 3;
+  string userProfileId = 4;
 }
 message AccountCredentials {
   string id = 1;
-  string email = 2;
+  string username = 2;
   string password = 3;
-  string salt = 4;
   Role role = 5;
+  string userProfileId = 6;
+}
+
+message LoginRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  string access_token = 1;
+}
+
+message UpdateRequest {
+  string username = 1;
+  string password = 2;
 }

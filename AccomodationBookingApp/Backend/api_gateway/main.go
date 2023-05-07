@@ -1,12 +1,11 @@
 package main
 
 import (
-	"api_gateway/communication"
-	"api_gateway/configuration"
+	"api_gateway/startup"
 )
 
 func main() {
-	config := configuration.NewConfig()
-	server := communication.NewServer(config)
+	config := startup.NewConfig()
+	server := startup.NewServer(config)
 	server.Start()
 }

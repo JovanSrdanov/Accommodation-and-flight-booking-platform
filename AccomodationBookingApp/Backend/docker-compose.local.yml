@@ -2,21 +2,27 @@ version: "3.8"
 
 services:
 
-  api_gateway:
-    image: api_gateway
-    container_name: api_gateway
+  authorization_service:
+    image: authorization_service
+    container_name: authorization_service
     build:
       context: .
-      dockerfile: ./api_gateway/Dockerfile
+      dockerfile: ./authorization_service/Dockerfile
     restart: on-failure
-    ports:
-      - ${GATEWAY_PORT}:${GATEWAY_PORT}
     environment:
-      GATEWAY_PORT: ${GATEWAY_PORT}
-      AUTHORIZATION_SERVICE_HOST: ${AUTHORIZATION_SERVICE_HOST}
+      AUTHORIZATION_DB_HOST: ${AUTHORIZATION_DB_HOST}
+      AUTHORIZATION_DB_PORT: ${AUTHORIZATION_DB_PORT}
+      AUTHORIZATION_DB_USER: ${AUTHORIZATION_DB_USER}
+      AUTHORIZATION_DB_PASS: ${AUTHORIZATION_DB_PASS}
+      AUTHORIZATION_DB_NAME: ${AUTHORIZATION_DB_NAME}
       AUTHORIZATION_SERVICE_PORT: ${AUTHORIZATION_SERVICE_PORT}
+    depends_on:
+      - authorization_db
     networks:
       - network
+    ports:
+      - 6000:${AUTHORIZATION_SERVICE_PORT}
+
 
   authorization_db:
     image: authorization_db
@@ -26,13 +32,51 @@ services:
       context: ../Database/Authorization
       dockerfile: Dockerfile
     environment:
-      POSTGRES_DB: ${AUTHORIZATION_DB_NAME}
       POSTGRES_USER: ${AUTHORIZATION_DB_USER}
       POSTGRES_PASSWORD: ${AUTHORIZATION_DB_PASS}
+      POSTGRES_DB: ${AUTHORIZATION_DB_NAME}
     networks:
       - network
     ports:
-      - 5000:5432
+      - 5001:${AUTHORIZATION_DB_PORT}
+
+  user_profile_service:
+    image: user_profile_service
+    container_name: user_profile_service
+    build:
+      context: .
+      dockerfile: ./user_profile_service/Dockerfile
+    restart: on-failure
+    environment:
+      USER_PROFILE_DB_HOST: ${USER_PROFILE_DB_HOST}
+      USER_PROFILE_DB_PORT: ${USER_PROFILE_DB_PORT}
+      USER_PROFILE_DB_NAME: ${USER_PROFILE_DB_NAME}
+      USER_PROFILE_DB_USER: ${USER_PROFILE_DB_USER}
+      USER_PROFILE_DB_PASS: ${USER_PROFILE_DB_PASS}
+      USER_PROFILE_SERVICE_PORT: ${USER_PROFILE_SERVICE_PORT}
+    depends_on:
+      - user_profile_db
+    networks:
+      - network
+    ports:
+      - 7000:${USER_PROFILE_SERVICE_PORT}
+
+
+  user_profile_db:
+    image: user_profile_db
+    container_name: user_profile_db
+    restart: on-failure
+    build:
+      context: ../Database/UserProfile
+      dockerfile: Dockerfile
+    environment:
+      POSTGRES_USER: ${USER_PROFILE_DB_USER}
+      POSTGRES_PASSWORD: ${USER_PROFILE_DB_PASS}
+      POSTGRES_DB: ${USER_PROFILE_DB_NAME}
+    networks:
+      - network
+    ports:
+      - 5000:${USER_PROFILE_DB_PORT}
 
 networks:
   network:

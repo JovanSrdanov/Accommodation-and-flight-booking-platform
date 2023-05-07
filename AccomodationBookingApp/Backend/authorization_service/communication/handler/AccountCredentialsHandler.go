@@ -1,9 +1,14 @@
 package handler
 
 import (
+	"authorization_service/domain/model"
 	"authorization_service/domain/service"
+	"authorization_service/domain/token"
 	authorizationProto "common/proto/authorization_service/generated"
 	"context"
+	"github.com/google/uuid"
+	"google.golang.org/protobuf/types/known/emptypb"
+	"log"
 )
 
 type AccountCredentialsHandler struct {
@@ -12,12 +17,23 @@ type AccountCredentialsHandler struct {
 }
 
 func NewAccountCredentialsHandler(accCredService service.IAccountCredentialsService) *AccountCredentialsHandler {
-	return &AccountCredentialsHandler{accCredService: accCredService}
+	return &AccountCredentialsHandler{
+		accCredService: accCredService,
+	}
 }
 
 func (handler AccountCredentialsHandler) Create(ctx context.Context, request *authorizationProto.CreateRequest) (*authorizationProto.CreateResponse, error) {
-	mapper := NewAccountCredentialsMapper()
-	accCred := mapper.mapFromCreateRequest(request)
+	userProfileId, err := uuid.Parse(request.GetAccountCredentials().GetUserProfileId())
+	if err != nil {
+		return nil, err
+	}
+
+	accCred, err := model.NewAccountCredentials(request.GetAccountCredentials().Username,
+		request.GetAccountCredentials().Password, model.Role(request.GetAccountCredentials().Role), userProfileId)
+	if err != nil {
+		return nil, err
+	}
+
 	result, err := handler.accCredService.Create(accCred)
 	if err != nil {
 		return nil, err
@@ -27,11 +43,63 @@ func (handler AccountCredentialsHandler) Create(ctx context.Context, request *au
 		Id: result.String(),
 	}, nil
 }
-func (handler AccountCredentialsHandler) GetByEmail(ctx context.Context, request *authorizationProto.GetByEmailRequest) (*authorizationProto.GetByEmailResponse, error) {
-	result, err := handler.accCredService.GetByEmail(request.Email)
+func (handler AccountCredentialsHandler) GetByUsername(ctx context.Context, request *authorizationProto.GetByUsernameRequest) (*authorizationProto.GetByUsernameResponse, error) {
+	// TODO Stefan: only for testing purposes, remove later
+	loggedInUserId, err := token.ExtractTokenInfoFromContext(ctx, "Id")
+	loggedInUserRole, err := token.ExtractTokenInfoFromContext(ctx, "Role")
+	if err != nil {
+		return nil, err
+	}
+
+	log.Printf("Logged in user username: %s, role: %s", loggedInUserId, loggedInUserRole)
+	/////////////
+
+	result, err := handler.accCredService.GetByUsername(request.Username)
 	if err != nil {
 		return nil, err
 	}
 	mapper := NewAccountCredentialsMapper()
-	return mapper.mapToGetByEmailResponse(result), nil
+	return mapper.mapToGetByUsernameResponse(result), nil
+}
+
+func (handler AccountCredentialsHandler) GetById(ctx context.Context, req *authorizationProto.GetByIdRequest) (*authorizationProto.GetByUsernameResponse, error) {
+	accId, err := uuid.Parse(req.GetId())
+
+	result, err := handler.accCredService.GetById(accId)
+	if err != nil {
+		return nil, err
+	}
+
+	mapper := NewAccountCredentialsMapper()
+	return mapper.mapToGetByUsernameResponse(result), nil
+}
+
+// Login is an unary rpc
+func (handler AccountCredentialsHandler) Login(ctx context.Context, req *authorizationProto.LoginRequest) (*authorizationProto.LoginResponse, error) {
+	accessToken, err := handler.accCredService.Login(req.GetUsername(), req.GetPassword())
+	if err != nil {
+		return nil, err
+	}
+
+	res := &authorizationProto.LoginResponse{AccessToken: accessToken}
+	return res, nil
+}
+
+func (handler AccountCredentialsHandler) Update(ctx context.Context, req *authorizationProto.UpdateRequest) (*emptypb.Empty, error) {
+	loggedInIdInfo, err := token.ExtractTokenInfoFromContext(ctx, "Id")
+	if err != nil {
+		return &emptypb.Empty{}, err
+	}
+	loggedInIdInfoAsString := loggedInIdInfo.(string)
+	loggedInId, err := uuid.Parse(loggedInIdInfoAsString)
+	if err != nil {
+		return &emptypb.Empty{}, err
+	}
+
+	err = handler.accCredService.Update(loggedInId, req.GetUsername(), req.GetPassword())
+	if err != nil {
+		return &emptypb.Empty{}, err
+	}
+
+	return &emptypb.Empty{}, nil
 }

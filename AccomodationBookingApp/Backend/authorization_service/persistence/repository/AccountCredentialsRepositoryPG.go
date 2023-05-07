@@ -2,6 +2,7 @@ package repository
 
 import (
 	"authorization_service/domain/model"
+	"fmt"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -21,7 +22,11 @@ func NewAccountCredentialsRepositoryPG(dbClient *gorm.DB) (*AccountCredentialsRe
 }
 
 func (repo AccountCredentialsRepositoryPG) Create(accCred *model.AccountCredentials) (uuid.UUID, error) {
-	//TODO : probaj da obrises da vidis oce li ti sam postgres izgenerisati ID
+	_, err := repo.GetByUsername(accCred.Username)
+	if err == nil {
+		return uuid.Nil, fmt.Errorf("username taken")
+	}
+
 	accCred.ID, _ = uuid.NewUUID()
 
 	result := repo.dbClient.Create(accCred)
@@ -32,13 +37,32 @@ func (repo AccountCredentialsRepositoryPG) Create(accCred *model.AccountCredenti
 	return accCred.ID, nil
 }
 
-func (repo AccountCredentialsRepositoryPG) GetByEmail(email string) (*model.AccountCredentials, error) {
+func (repo AccountCredentialsRepositoryPG) GetByUsername(username string) (*model.AccountCredentials, error) {
 	var accCred model.AccountCredentials
 
-	result := repo.dbClient.Where("email = ?", email).First(&accCred)
+	result := repo.dbClient.Where("username = ?", username).First(&accCred)
 	if result.Error != nil {
 		return &model.AccountCredentials{}, result.Error
 	}
 
 	return &accCred, nil
+}
+
+func (repo AccountCredentialsRepositoryPG) GetById(id uuid.UUID) (*model.AccountCredentials, error) {
+	var accCred model.AccountCredentials
+
+	result := repo.dbClient.Where("id = ?", id).First(&accCred)
+	if result.Error != nil {
+		return &model.AccountCredentials{}, result.Error
+	}
+
+	return &accCred, nil
+}
+
+func (repo AccountCredentialsRepositoryPG) Update(accCred *model.AccountCredentials) error {
+	if err := repo.dbClient.Save(&accCred).Error; err != nil {
+		return err
+	}
+
+	return nil
 }
