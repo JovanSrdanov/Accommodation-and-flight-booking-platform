@@ -35,7 +35,8 @@ services:
       AUTHORIZATION_DB_NAME: ${AUTHORIZATION_DB_NAME}
       AUTHORIZATION_SERVICE_PORT: ${AUTHORIZATION_SERVICE_PORT}
     depends_on:
-      - authorization_db
+      authorization_db:
+          condition: service_healthy
     networks:
       - network
 
@@ -48,9 +49,14 @@ services:
       context: ../Database/Authorization
       dockerfile: Dockerfile
     environment:
-      POSTGRES_USER: ${AUTHORIZATION_DB_USER}
+      PGUSER: ${AUTHORIZATION_DB_USER}
       POSTGRES_PASSWORD: ${AUTHORIZATION_DB_PASS}
       POSTGRES_DB: ${AUTHORIZATION_DB_NAME}
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - network
 
@@ -69,7 +75,8 @@ services:
       USER_PROFILE_DB_PASS: ${USER_PROFILE_DB_PASS}
       USER_PROFILE_SERVICE_PORT: ${USER_PROFILE_SERVICE_PORT}
     depends_on:
-      - user_profile_db
+      user_profile_db:
+        condition: service_healthy
     networks:
       - network
 
@@ -82,9 +89,14 @@ services:
       context: ../Database/UserProfile
       dockerfile: Dockerfile
     environment:
-      POSTGRES_USER: ${USER_PROFILE_DB_USER}
+      PGUSER: ${USER_PROFILE_DB_USER}
       POSTGRES_PASSWORD: ${USER_PROFILE_DB_PASS}
       POSTGRES_DB: ${USER_PROFILE_DB_NAME}
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - network
 
