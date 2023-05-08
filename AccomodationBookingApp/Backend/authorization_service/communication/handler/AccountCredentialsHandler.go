@@ -3,12 +3,11 @@ package handler
 import (
 	"authorization_service/domain/model"
 	"authorization_service/domain/service"
-	"authorization_service/domain/token"
 	authorizationProto "common/proto/authorization_service/generated"
 	"context"
+	"fmt"
 	"github.com/google/uuid"
 	"google.golang.org/protobuf/types/known/emptypb"
-	"log"
 )
 
 type AccountCredentialsHandler struct {
@@ -45,13 +44,17 @@ func (handler AccountCredentialsHandler) Create(ctx context.Context, request *au
 }
 func (handler AccountCredentialsHandler) GetByUsername(ctx context.Context, request *authorizationProto.GetByUsernameRequest) (*authorizationProto.GetByUsernameResponse, error) {
 	// TODO Stefan: only for testing purposes, remove later
-	loggedInUserId, err := token.ExtractTokenInfoFromContext(ctx, "Id")
-	loggedInUserRole, err := token.ExtractTokenInfoFromContext(ctx, "Role")
-	if err != nil {
-		return nil, err
-	}
-
-	log.Printf("Logged in user username: %s, role: %s", loggedInUserId, loggedInUserRole)
+	//loggedInUserId, ok := ctx.Value("id").(uuid.UUID)
+	//if !ok {
+	//	return nil, fmt.Errorf("failed to extract id and cast to UUID")
+	//}
+	//
+	//loggedInUserRole, err := token.ExtractTokenInfoFromContext(ctx)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//
+	//log.Printf("Logged in user username: %s, role: %s", loggedInUserId, loggedInUserRole)
 	/////////////
 
 	result, err := handler.accCredService.GetByUsername(request.Username)
@@ -76,27 +79,28 @@ func (handler AccountCredentialsHandler) GetById(ctx context.Context, req *autho
 
 // Login is an unary rpc
 func (handler AccountCredentialsHandler) Login(ctx context.Context, req *authorizationProto.LoginRequest) (*authorizationProto.LoginResponse, error) {
-	accessToken, err := handler.accCredService.Login(req.GetUsername(), req.GetPassword())
+	accessToken, role, err := handler.accCredService.Login(req.GetUsername(), req.GetPassword())
 	if err != nil {
 		return nil, err
 	}
 
-	res := &authorizationProto.LoginResponse{AccessToken: accessToken}
+	res := &authorizationProto.LoginResponse{AccessToken: accessToken, Role: authorizationProto.Role(role)}
 	return res, nil
 }
 
 func (handler AccountCredentialsHandler) Update(ctx context.Context, req *authorizationProto.UpdateRequest) (*emptypb.Empty, error) {
-	loggedInIdInfo, err := token.ExtractTokenInfoFromContext(ctx, "Id")
-	if err != nil {
-		return &emptypb.Empty{}, err
-	}
-	loggedInIdInfoAsString := loggedInIdInfo.(string)
-	loggedInId, err := uuid.Parse(loggedInIdInfoAsString)
-	if err != nil {
-		return &emptypb.Empty{}, err
+	loggedInId, ok := ctx.Value("id").(uuid.UUID)
+	if !ok {
+		return &emptypb.Empty{}, fmt.Errorf("failed to extract id and cast to UUID")
 	}
 
-	err = handler.accCredService.Update(loggedInId, req.GetUsername(), req.GetPassword())
+	//loggedInIdInfoAsString := loggedInId.(string)
+	//loggedInId, err := uuid.Parse(loggedInIdInfoAsString)
+	//if err != nil {
+	//	return &emptypb.Empty{}, err
+	//}
+
+	err := handler.accCredService.Update(loggedInId, req.GetUsername(), req.GetPassword())
 	if err != nil {
 		return &emptypb.Empty{}, err
 	}

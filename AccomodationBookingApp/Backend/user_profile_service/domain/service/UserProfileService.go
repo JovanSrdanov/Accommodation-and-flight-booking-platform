@@ -22,6 +22,29 @@ func (service UserProfileService) GetById(id uuid.UUID) (*model.UserProfile, err
 	return service.userProfRepo.GetById(id)
 }
 
+func (service UserProfileService) Update(id uuid.UUID, dto *model.UpdateProfileDto) (*model.UpdateProfileDto, error) {
+	userInfo, err := service.GetById(id)
+	if err != nil {
+		return &model.UpdateProfileDto{}, err
+	}
+
+	userInfo.Name = dto.Name
+	userInfo.Surname = dto.Surname
+	userInfo.Email = dto.Email
+	userInfo.Address = dto.Address
+
+	userInfo, err = service.userProfRepo.Update(userInfo)
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.UpdateProfileDto{
+		Name:    userInfo.Name,
+		Surname: userInfo.Surname,
+		Email:   userInfo.Email,
+		Address: userInfo.Address,
+	}, nil
+}
 func (service UserProfileService) Delete(id uuid.UUID) error {
 	return service.userProfRepo.Delete(id)
 }
