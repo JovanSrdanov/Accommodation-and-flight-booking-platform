@@ -9,6 +9,7 @@ import (
 	"authorization_service/interceptor"
 	accommodation "common/proto/accommodation_service/generated"
 	"fmt"
+	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc"
 	"log"
 	"net"
@@ -23,14 +24,23 @@ func NewServer(config *Configuration) *Server {
 }
 
 func (server Server) Start() {
-	accommodationRepo := initUserProfileRepo()
+	mongoClient := server.initMongoClient()
+	accommodationRepo := initUserProfileRepo(mongoClient)
 	accommodationService := service.NewAccommodationService(*accommodationRepo)
 	accommodationHandler := handler.NewAccommodationHandler(*accommodationService)
 	server.startGrpcServer(accommodationHandler)
 }
 
-func initUserProfileRepo() *repository.AccommodationRepositoryMongo {
-	repo, err := repository.NewAccommodationRepositoryMongo()
+func (server Server) initMongoClient() *mongo.Client {
+	client, err := repository.GetClient(server.config.DbUser, server.config.DbPass)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return client
+}
+
+func initUserProfileRepo(mongoClient *mongo.Client) *repository.AccommodationRepositoryMongo {
+	repo, err := repository.NewAccommodationRepositoryMongo(mongoClient)
 	if err != nil {
 		log.Fatal(err)
 	}

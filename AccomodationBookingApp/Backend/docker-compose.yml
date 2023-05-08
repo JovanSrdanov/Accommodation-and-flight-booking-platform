@@ -116,8 +116,30 @@ services:
     environment:
       ACCOMMODATION_SERVICE_HOST: ${ACCOMMODATION_SERVICE_HOST}
       ACCOMMODATION_SERVICE_PORT: ${ACCOMMODATION_SERVICE_PORT}
+    depends_on:
+      accommodation_service_db:
+        condition: service_healthy
     networks:
       - network
+
+  accommodation_service_db:
+    image: mongo
+    restart: always
+    container_name: accommodation_service_db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${ACCOMMODATION_SERVICE_DB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${ACCOMMODATION_SERVICE_DB_PASS}
+      MONGO_INITDB_DATABASE: ${ACCOMMODATION_SERVICE_DB_NAME}
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok'
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    volumes:
+      - accommodationDb:/data/db
+
+volumes:
+  accommodationDb:
 
 networks:
   network:

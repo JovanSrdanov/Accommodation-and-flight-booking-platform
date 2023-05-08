@@ -4,13 +4,15 @@ import (
 	"accommodation_service/domain/model"
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type AccommodationRepositoryMongo struct {
+	dbClient *mongo.Client
 }
 
-func NewAccommodationRepositoryMongo() (*AccommodationRepositoryMongo, error) {
-	return &AccommodationRepositoryMongo{}, nil
+func NewAccommodationRepositoryMongo(dbClient *mongo.Client) (*AccommodationRepositoryMongo, error) {
+	return &AccommodationRepositoryMongo{dbClient: dbClient}, nil
 }
 
 func (repo AccommodationRepositoryMongo) Create(accommodation *model.Accommodation) (primitive.ObjectID, error) {
