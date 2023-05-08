@@ -32,12 +32,12 @@ func (interceptor *AuthServerInterceptor) Unary() grpc.UnaryServerInterceptor {
 	) (interface{}, error) {
 		log.Println("--> unary interceptor: ", info.FullMethod)
 
-		err := interceptor.authorize(ctx, info.FullMethod)
+		err, newCtx := interceptor.authorize(ctx, info.FullMethod)
 		if err != nil {
 			return nil, err
 		}
 
-		return unaryHandler(ctx, req)
+		return unaryHandler(newCtx, req)
 	}
 }
 
@@ -50,50 +50,72 @@ func (interceptor *AuthServerInterceptor) Stream() grpc.StreamServerInterceptor 
 	) error {
 		log.Println("--> stream interceptor: ", info.FullMethod)
 
-		err := interceptor.authorize(stream.Context(), info.FullMethod)
+		err, newCtx := interceptor.authorize(stream.Context(), info.FullMethod)
 		if err != nil {
 			return err
 		}
 
-		return streamHandler(srv, stream)
+		wrappedStream := newWrappedServerStream(stream, newCtx)
+
+		return streamHandler(srv, wrappedStream)
 	}
 }
 
-func (interceptor *AuthServerInterceptor) authorize(ctx context.Context, method string) error {
+func (interceptor *AuthServerInterceptor) authorize(ctx context.Context, method string) (error, context.Context) {
 	log.Println("Authorization in progress...")
 	allowedRoles, ok := interceptor.protectedMethodsWithAllowedRoles[method]
 	if !ok {
 		// if a provided method is not in the accessible roles map, it means that everyone can use it
-		return nil
+		return nil, nil
 	}
 
 	metaData, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
-		return status.Errorf(codes.Unauthenticated, "metadata is not provided")
+		return status.Errorf(codes.Unauthenticated, "metadata is not provided"), nil
 	}
+
+	log.Println("metadataaaaaaaaaa: ", metaData)
 
 	values := metaData["authorization"]
 	if len(values) == 0 {
-		return status.Errorf(codes.Unauthenticated, "authorization token not provided")
+		return status.Errorf(codes.Unauthenticated, "authorization token not provided"), nil
 	}
 
 	accessToken := strings.TrimPrefix(values[0], "Bearer ")
-	_, err := interceptor.tokenMaker.VerifyToken(accessToken)
+	tokenPayload, err := interceptor.tokenMaker.VerifyToken(accessToken)
 	if err != nil {
-		return status.Errorf(codes.Unauthenticated, "access token is invalid: ", err)
+		return status.Errorf(codes.Unauthenticated, "access token is invalid: ", err), nil
 	}
+
+	ctx = context.WithValue(ctx, "id", tokenPayload.ID)
 
 	var footerData map[string]interface{}
 	if err := paseto.ParseFooter(accessToken, &footerData); err != nil {
-		return status.Errorf(codes.Internal, "failed to parse token footer: ", err)
+		return status.Errorf(codes.Internal, "failed to parse token footer: ", err), nil
 	}
 
 	providedRole := int8(footerData["Role"].(float64))
 	for _, role := range allowedRoles {
 		if int8(role) == providedRole {
-			return nil
+			return nil, ctx
 		}
 	}
 
-	return status.Error(codes.PermissionDenied, "no permission to access this RPC")
+	return status.Error(codes.PermissionDenied, "no permission to access this RPC"), nil
+}
+
+type wrappedServerStream struct {
+	grpc.ServerStream
+	ctx context.Context
+}
+
+func (w *wrappedServerStream) Context() context.Context {
+	return w.ctx
+}
+
+func newWrappedServerStream(stream grpc.ServerStream, ctx context.Context) grpc.ServerStream {
+	return &wrappedServerStream{
+		ServerStream: stream,
+		ctx:          ctx,
+	}
 }

@@ -10,6 +10,8 @@ type UserProfileMapper struct{}
 type IUserProfileMapper interface {
 	mapFromCreateRequest(request *user_profile.CreateRequest) *model.UserProfile
 	mapToGetByIdResponse(userProfile *model.UserProfile) *model.UserProfile
+	mapUpdateRequestToUpdateDto(request *user_profile.UpdateRequest) *model.UpdateProfileDto
+	mapUpdateDtoToUpdateRequest(updateProfile *model.UpdateProfileDto) *user_profile.UpdateRequest
 }
 
 func NewUserProfileMapper() *UserProfileMapper {
@@ -35,4 +37,25 @@ func (mapper UserProfileMapper) mapToGetByIdResponse(userProfile *model.UserProf
 		Email:   userProfile.Email,
 		Address: addressMapper.mapToProto(&userProfile.Address),
 	}}
+}
+
+func (mapper UserProfileMapper) mapUpdateRequestToUpdateDto(request *user_profile.UpdateRequest) *model.UpdateProfileDto {
+	addressMapper := NewAddressMapper()
+	return &model.UpdateProfileDto{
+		Name:    request.Name,
+		Surname: request.Name,
+		Email:   request.Email,
+		Address: *addressMapper.mapToAddressModel(request.Address),
+	}
+}
+
+func (mapper UserProfileMapper) mapUpdateDtoToUpdateRequest(updateProfile *model.UpdateProfileDto) *user_profile.UpdateRequest {
+	addressMapper := NewAddressMapper()
+
+	return &user_profile.UpdateRequest{
+		Name:    updateProfile.Name,
+		Surname: updateProfile.Surname,
+		Email:   updateProfile.Email,
+		Address: addressMapper.mapToProto(&updateProfile.Address),
+	}
 }
