@@ -2,7 +2,7 @@ import React from 'react';
 import "../../pages/wrapper.css"
 import {Alert, Button, TextField} from "@mui/material";
 import LoginIcon from '@mui/icons-material/Login';
-
+import HowToRegIcon from '@mui/icons-material/HowToReg';
 import {useNavigate} from "react-router-dom";
 import interceptor from "../../interceptor/interceptor";
 
@@ -10,24 +10,25 @@ import interceptor from "../../interceptor/interceptor";
 function Login() {
 
     const navigate = useNavigate();
-    const [email, setEmail] = React.useState("");
+    const [username, setUsername] = React.useState("");
     const [password, setPassword] = React.useState("");
     const [showAlert, setShowAlert] = React.useState(false);
 
     const handleEmailChange = (event) => {
-        setEmail(event.target.value);
+        setUsername(event.target.value);
     };
 
     const handlePasswordChange = (event) => {
         setPassword(event.target.value);
     };
     const handleLogin = async () => {
-        interceptor.post('auth/login', {
-            email: email,
+        interceptor.post('api-1/account-credentials/login', {
+            username: username,
             password: password
         }).then(res => {
-            localStorage.setItem('jwt', res.data.jwt);
-            const decoded = JSON.parse(atob(res.data.jwt.split('.')[1]));
+            console.log(res)
+            localStorage.setItem('pasetp', res.data.NESTOGASGAS);
+            const decoded = JSON.parse(atob(res.data.NESTOGASGAS.split('.')[1]));
             const role = decoded.role;
             if (role === 'ROLE_PKI_ADMIN') {
                 navigate('/all-certificates')
@@ -63,7 +64,7 @@ function Login() {
                     variant="filled"
                     label="E-mail"
                     type={"email"}
-                    value={email}
+                    value={username}
                     onChange={handleEmailChange}
                 />
                 <TextField
@@ -78,6 +79,13 @@ function Login() {
                     variant="contained" color="warning" endIcon={<LoginIcon/>}
                     onClick={handleLogin}
                 >LOGIN
+                </Button>
+                <Button
+                    variant="contained" color="success" endIcon={<HowToRegIcon/>}
+                    onClick={() => {
+                        navigate('/register')
+                    }}
+                >REGISTER
                 </Button>
 
 

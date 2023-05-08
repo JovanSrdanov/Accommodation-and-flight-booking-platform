@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'UZECES IZ ENV KAD SE DOG';
+const API_URL = 'http://localhost:8000/';
 
 const interceptor = axios.create({
     baseURL: API_URL,
@@ -8,9 +8,9 @@ const interceptor = axios.create({
 
 interceptor.interceptors.request.use(
     config => {
-        const jwt = localStorage.getItem('jwt');
-        if (jwt) {
-            config.headers['Authorization'] = `Bearer ${jwt}`;
+        const paseto = localStorage.getItem('paseto');
+        if (paseto) {
+            config.headers['Authorization'] = `Bearer ${paseto}`;
         }
         return config;
     },
@@ -18,5 +18,6 @@ interceptor.interceptors.request.use(
         Promise.reject(error)
     }
 );
+
 
 export default interceptor;

@@ -38,46 +38,48 @@ function App() {
                             </Button>
                         </Tooltip>
 
-                        <Tooltip title="View the places you have booked" arrow>
-                            <Button sx={{color: 'inherit'}} onClick={() => navigate('/booked-places')}>
-                                <CheckIcon sx={{display: {xs: 'none', md: 'flex'}, mr: 1}}/>
-                                Booked places
-                            </Button>
-                        </Tooltip>
+                        {/*<Tooltip title="View the places you have booked" arrow>*/}
+                        {/*    <Button sx={{color: 'inherit'}} onClick={() => navigate('/booked-places')}>*/}
+                        {/*        <CheckIcon sx={{display: {xs: 'none', md: 'flex'}, mr: 1}}/>*/}
+                        {/*        Booked places*/}
+                        {/*    </Button>*/}
+                        {/*</Tooltip>*/}
 
-                        <Tooltip title="View the places you have visited" arrow>
-                            <Button sx={{color: 'inherit'}} onClick={() => navigate('/visiting-history')}>
-                                <HistoryIcon sx={{display: {xs: 'none', md: 'flex'}, mr: 1}}/>
-                                Visiting history
-                            </Button>
-                        </Tooltip>
+                        {/*<Tooltip title="View the places you have visited" arrow>*/}
+                        {/*    <Button sx={{color: 'inherit'}} onClick={() => navigate('/visiting-history')}>*/}
+                        {/*        <HistoryIcon sx={{display: {xs: 'none', md: 'flex'}, mr: 1}}/>*/}
+                        {/*        Visiting history*/}
+                        {/*    </Button>*/}
+                        {/*</Tooltip>*/}
 
-                        <Tooltip title="Our recommendations for you based on your preferences" arrow>
-                            <Button sx={{color: 'inherit'}} onClick={() => navigate('/recommendations-for-you')}>
-                                <RecommendOutlinedIcon sx={{display: {xs: 'none', md: 'flex'}, mr: 1}}/>
-                                Recommendations for you
-                            </Button>
-                        </Tooltip>
+                        {/*<Tooltip title="Our recommendations for you based on your preferences" arrow>*/}
+                        {/*    <Button sx={{color: 'inherit'}} onClick={() => navigate('/recommendations-for-you')}>*/}
+                        {/*        <RecommendOutlinedIcon sx={{display: {xs: 'none', md: 'flex'}, mr: 1}}/>*/}
+                        {/*        Recommendations for you*/}
+                        {/*    </Button>*/}
+                        {/*</Tooltip>*/}
 
-                        <Tooltip title="Places you host" arrow>
-                            <Button sx={{color: 'inherit'}} onClick={() => navigate('/my-places')}>
-                                <OtherHousesOutlinedIcon sx={{display: {xs: 'none', md: 'flex'}, mr: 1}}/>
-                                My places
-                            </Button>
-                        </Tooltip>
-                        <Tooltip title="Host a new place that you want to rent" arrow>
-                            <Button sx={{color: 'inherit'}} onClick={() => navigate('/host-a-place')}>
-                                <AddCircleOutlineOutlinedIcon sx={{display: {xs: 'none', md: 'flex'}, mr: 1}}/>
-                                Host a place
-                            </Button>
-                        </Tooltip>
-                        <Tooltip title="View all reservations and request for reservations" arrow>
-                            <Button sx={{color: 'inherit'}} onClick={() => navigate('/reservations-and-requests')}>
-                                <ChecklistOutlinedIcon sx={{display: {xs: 'none', md: 'flex'}, mr: 1}}/>
-                                Reservations and requests
-                            </Button>
-                        </Tooltip>
-                        <Tooltip title="Your basic informations" arrow>
+                        {/*<Tooltip title="Places you host" arrow>*/}
+                        {/*    <Button sx={{color: 'inherit'}} onClick={() => navigate('/my-places')}>*/}
+                        {/*        <OtherHousesOutlinedIcon sx={{display: {xs: 'none', md: 'flex'}, mr: 1}}/>*/}
+                        {/*        My places*/}
+                        {/*    </Button>*/}
+                        {/*</Tooltip>*/}
+                        {/*<Tooltip title="Host a new place that you want to rent" arrow>*/}
+                        {/*    <Button sx={{color: 'inherit'}} onClick={() => navigate('/host-a-place')}>*/}
+                        {/*        <AddCircleOutlineOutlinedIcon sx={{display: {xs: 'none', md: 'flex'}, mr: 1}}/>*/}
+                        {/*        Host a place*/}
+                        {/*    </Button>*/}
+                        {/*</Tooltip>*/}
+                        {/*<Tooltip title="View all reservations and request for reservations" arrow>*/}
+                        {/*    <Button sx={{color: 'inherit'}} onClick={() => navigate('/reservations-and-requests')}>*/}
+                        {/*        <ChecklistOutlinedIcon sx={{display: {xs: 'none', md: 'flex'}, mr: 1}}/>*/}
+                        {/*        Reservations and requests*/}
+                        {/*    </Button>*/}
+                        {/*</Tooltip>*/}
+
+
+                        <Tooltip title="Your informations" arrow>
                             <Button color="info" sx={{marginLeft: 'auto'}}
                                     onClick={() => navigate('/guest-profile') /*TODO  OVDE DODATI PROVERU ZA KOJI JE TACNO PROFIL*/}>
                                 <PersonOutlineOutlinedIcon sx={{display: {xs: 'none', md: 'flex'}, mr: 1}}/>
