@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/google/uuid"
+	"log"
 	"user_profile_service/domain/model"
 	"user_profile_service/domain/repository"
 )
@@ -31,7 +32,11 @@ func (service UserProfileService) Update(id uuid.UUID, dto *model.UpdateProfileD
 	userInfo.Name = dto.Name
 	userInfo.Surname = dto.Surname
 	userInfo.Email = dto.Email
-	userInfo.Address = dto.Address
+	log.Println("new address: ", dto.Address)
+	userInfo.Address.Street = dto.Address.Street
+	userInfo.Address.City = dto.Address.City
+	userInfo.Address.Country = dto.Address.Country
+	userInfo.Address.StreetNumber = dto.Address.StreetNumber
 
 	userInfo, err = service.userProfRepo.Update(userInfo)
 	if err != nil {

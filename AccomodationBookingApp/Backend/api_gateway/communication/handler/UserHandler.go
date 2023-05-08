@@ -53,6 +53,8 @@ func (handler UserHandler) GetUserInfo(ctx *gin.Context) {
 	var userInfo dto.UserInfo
 
 	//TODO errorMessage handling
+	// it's important to pass the ctx to all handlers that need to call a grpc method with a client,
+	// because it has the auth header embedded in it
 	handler.addAccountCredentialsInfo(&userInfo, username, ctx)
 	handler.addUserProfileInfo(&userInfo, ctx)
 
@@ -61,11 +63,8 @@ func (handler UserHandler) GetUserInfo(ctx *gin.Context) {
 
 func (handler UserHandler) addAccountCredentialsInfo(userInfo *dto.UserInfo, username string, ctx *gin.Context) error {
 	authorizationClient := communication.NewAuthorizationClient(handler.authorizationServiceAddress)
-	// create a context with the auth header that has already been added
-	authHeader := ctx.GetHeader("Authorization")
-	accessToken := authHeader[len("Bearer "):]
-	md := metadata.New(map[string]string{"Authorization": accessToken})
-	ctxGrpc := metadata.NewOutgoingContext(context.TODO(), md)
+	// create a context with the auth header that has already been added to the gin ctx
+	ctxGrpc := createGrpcContextFromGinContext(ctx)
 
 	accountCredentialsInfo, err := authorizationClient.GetByUsername(ctxGrpc, &authorization.GetByUsernameRequest{Username: username})
 	log.Println("accCredInfo from authClient GetByUsername: ", accountCredentialsInfo)
@@ -85,10 +84,7 @@ func (handler UserHandler) addUserProfileInfo(userInfo *dto.UserInfo, ctx *gin.C
 	userProfileClient := communication.NewUserProfileClient(handler.userProfileServiceAddress)
 	log.Println("userInfoId for userProfileInfo: ", userInfo.UserProfileID.String())
 	// create a context with the auth header that has already been added
-	authHeader := ctx.GetHeader("Authorization")
-	accessToken := authHeader[len("Bearer "):]
-	md := metadata.New(map[string]string{"Authorization": accessToken})
-	ctxGrpc := metadata.NewOutgoingContext(context.TODO(), md)
+	ctxGrpc := createGrpcContextFromGinContext(ctx)
 
 	userProfileInfo, err := userProfileClient.GetById(ctxGrpc, &user_profile.GetByIdRequest{Id: userInfo.UserProfileID.String()})
 	log.Println("userProfileInfo from userProfileClient GetById: ", userProfileInfo)
@@ -180,4 +176,12 @@ func (handler UserHandler) CreateAccountCredentials(user *dto.CreateUser, userPr
 	}
 
 	return nil
+}
+
+func createGrpcContextFromGinContext(ctx *gin.Context) context.Context {
+	authHeader := ctx.GetHeader("Authorization")
+	accessToken := authHeader[len("Bearer "):]
+	md := metadata.New(map[string]string{"Authorization": accessToken})
+	ctxGrpc := metadata.NewOutgoingContext(context.TODO(), md)
+	return ctxGrpc
 }
