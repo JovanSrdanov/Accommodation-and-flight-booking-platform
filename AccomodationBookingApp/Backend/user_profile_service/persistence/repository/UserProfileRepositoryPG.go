@@ -48,6 +48,7 @@ func (repo UserProfileRepositoryPG) Update(userProf *model.UserProfile) (*model.
 	if err := repo.dbClient.Save(&userProf).Error; err != nil {
 		return &model.UserProfile{}, err
 	}
+	repo.dbClient.Save(&userProf.Address)
 
 	return userProf, nil
 }
