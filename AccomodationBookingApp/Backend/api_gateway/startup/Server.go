@@ -3,6 +3,7 @@ package startup
 import (
 	"api_gateway/communication/handler"
 	"api_gateway/communication/middleware"
+	"authorization_service/domain/token"
 	authorization "common/proto/authorization_service/generated"
 	user_profile "common/proto/user_profile_service/generated"
 	"context"
@@ -57,10 +58,12 @@ func (server *Server) initGrpcHandlers(mux *runtime.ServeMux) {
 }
 
 func (server *Server) initCustomHandlers(routerGroup *gin.RouterGroup) {
+	tokenMaker, _ := token.NewPasetoMaker("12345678901234567890123456789012")
+
 	authorizationEndpoint := fmt.Sprintf("%s:%s", server.config.AuthorizationHost, server.config.AuthorizationPort)
 	userProfileEndpoint := fmt.Sprintf("%s:%s", server.config.UserProfileHost, server.config.UserProfilePort)
 
-	userInfoHandler := handler.NewUserHandler(authorizationEndpoint, userProfileEndpoint)
+	userInfoHandler := handler.NewUserHandler(authorizationEndpoint, userProfileEndpoint, tokenMaker)
 	userInfoHandler.Init(routerGroup)
 }
 

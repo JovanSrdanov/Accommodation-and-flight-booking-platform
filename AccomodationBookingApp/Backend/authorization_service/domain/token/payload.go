@@ -2,6 +2,7 @@ package token
 
 import (
 	"errors"
+	"github.com/google/uuid"
 	"time"
 )
 
@@ -13,16 +14,16 @@ var (
 // Payload contains the payload of the token
 type Payload struct {
 	// token ID
-	//ID        uuid.UUID  `json:"id"`
-	Username string `json:"username"`
-	//Role      model.Role `json:"role"`
+	ID        uuid.UUID `json:"id"`
+	Username  string    `json:"username"`
 	IssuedAt  time.Time `json:"issued_at"`
 	ExpiredAt time.Time `json:"expired_at"`
 }
 
 // NewPayload creates a new token payload with a specific username and duration
-func NewPayload(duration time.Duration) (*Payload, error) {
+func NewPayload(id uuid.UUID, duration time.Duration) (*Payload, error) {
 	payload := &Payload{
+		ID:        id,
 		IssuedAt:  time.Now(),
 		ExpiredAt: time.Now().Add(duration),
 	}
