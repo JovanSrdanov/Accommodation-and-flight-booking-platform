@@ -15,7 +15,7 @@ COPY /authorization_service ../authorization_service
 RUN go mod download
 
 # Copy everything from the current directory to the Working Directory inside the container
-COPY ./authorization_service/ .
+COPY ./accommodation_service/ .
 
 # Build the Go app
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
@@ -32,6 +32,6 @@ COPY --from=builder /app/main .
 
 # Expose port 8000 to the outside world
 EXPOSE 8000
-
+RUN chmod +x ./main
 # Command to run the executable
 CMD ["./main"]

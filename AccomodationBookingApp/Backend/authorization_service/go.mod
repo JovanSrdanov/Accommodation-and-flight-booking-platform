@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	common v0.0.0-00010101000000-000000000000
-	github.com/aead/chacha20poly1305 v0.0.0-20170617001512-233f39982aeb
+	github.com/aead/chacha20poly1305 v0.0.0-20201124145622-1a5aba2a8b29
 	github.com/google/uuid v1.3.0
 	github.com/o1egl/paseto v1.0.0
 	golang.org/x/crypto v0.6.0

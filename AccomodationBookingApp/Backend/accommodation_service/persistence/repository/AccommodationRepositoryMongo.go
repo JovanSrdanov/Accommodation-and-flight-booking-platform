@@ -15,6 +15,7 @@ func NewAccommodationRepositoryMongo() (*AccommodationRepositoryMongo, error) {
 
 func (repo AccommodationRepositoryMongo) Create(accommodation *model.Accommodation) (primitive.ObjectID, error) {
 	fmt.Println(accommodation.Name + " TEST*********")
+	accommodation.ID = primitive.NewObjectID()
 	return accommodation.ID, nil
 }
 

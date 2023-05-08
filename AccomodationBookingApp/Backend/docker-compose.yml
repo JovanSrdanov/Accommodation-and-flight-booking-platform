@@ -17,6 +17,8 @@ services:
       AUTHORIZATION_SERVICE_HOST: ${AUTHORIZATION_SERVICE_HOST}
       USER_PROFILE_SERVICE_HOST: ${USER_PROFILE_SERVICE_HOST}
       USER_PROFILE_SERVICE_PORT: ${USER_PROFILE_SERVICE_PORT}
+      ACCOMMODATION_SERVICE_HOST: ${ACCOMMODATION_SERVICE_HOST}
+      ACCOMMODATION_SERVICE_PORT: ${ACCOMMODATION_SERVICE_PORT}
     networks:
       - network
 
@@ -101,6 +103,19 @@ services:
       retries: 5
     ports:
       - "54320:5432"
+    networks:
+      - network
+
+  accommodation_service:
+    image: accommodation_service
+    container_name: accommodation_service
+    build:
+      context: .
+      dockerfile: ./accommodation_service/Dockerfile
+    restart: on-failure
+    environment:
+      ACCOMMODATION_SERVICE_HOST: ${ACCOMMODATION_SERVICE_HOST}
+      ACCOMMODATION_SERVICE_PORT: ${ACCOMMODATION_SERVICE_PORT}
     networks:
       - network
 

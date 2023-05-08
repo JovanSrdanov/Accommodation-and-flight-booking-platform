@@ -4,6 +4,7 @@ import (
 	"api_gateway/communication/handler"
 	"api_gateway/communication/middleware"
 	"authorization_service/domain/token"
+	accommodation "common/proto/accommodation_service/generated"
 	authorization "common/proto/authorization_service/generated"
 	user_profile "common/proto/user_profile_service/generated"
 	"context"
@@ -44,6 +45,7 @@ func NewServer(config *Configuration) *Server {
 
 func (server *Server) initGrpcHandlers(mux *runtime.ServeMux) {
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
+
 	authorizationEndpoint := fmt.Sprintf("%s:%s", server.config.AuthorizationHost, server.config.AuthorizationPort)
 	err := authorization.RegisterAuthorizationServiceHandlerFromEndpoint(context.TODO(), mux, authorizationEndpoint, opts)
 	if err != nil {
@@ -52,6 +54,12 @@ func (server *Server) initGrpcHandlers(mux *runtime.ServeMux) {
 
 	userProfileEndpoint := fmt.Sprintf("%s:%s", server.config.UserProfileHost, server.config.UserProfilePort)
 	err = user_profile.RegisterUserProfileServiceHandlerFromEndpoint(context.TODO(), mux, userProfileEndpoint, opts)
+	if err != nil {
+		panic(err)
+	}
+
+	accommodationEndpoint := fmt.Sprintf("%s:%s", server.config.AccommodationHost, server.config.AccommodationPort)
+	err = accommodation.RegisterAccommodationServiceHandlerFromEndpoint(context.TODO(), mux, accommodationEndpoint, opts)
 	if err != nil {
 		panic(err)
 	}
