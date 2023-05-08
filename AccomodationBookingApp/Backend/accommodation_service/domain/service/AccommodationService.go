@@ -10,7 +10,7 @@ type AccommodationService struct {
 	accommodationRepo repository.IAccommodationRepository
 }
 
-func NewUserProfileService(accommodationRepo repository.IAccommodationRepository) *AccommodationService {
+func NewAccommodationService(accommodationRepo repository.IAccommodationRepository) *AccommodationService {
 	return &AccommodationService{accommodationRepo: accommodationRepo}
 }
 
