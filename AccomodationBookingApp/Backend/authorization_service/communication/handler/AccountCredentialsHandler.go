@@ -3,13 +3,11 @@ package handler
 import (
 	"authorization_service/domain/model"
 	"authorization_service/domain/service"
-	"authorization_service/domain/token"
 	authorizationProto "common/proto/authorization_service/generated"
 	"context"
 	"fmt"
 	"github.com/google/uuid"
 	"google.golang.org/protobuf/types/known/emptypb"
-	"log"
 )
 
 type AccountCredentialsHandler struct {
@@ -46,17 +44,17 @@ func (handler AccountCredentialsHandler) Create(ctx context.Context, request *au
 }
 func (handler AccountCredentialsHandler) GetByUsername(ctx context.Context, request *authorizationProto.GetByUsernameRequest) (*authorizationProto.GetByUsernameResponse, error) {
 	// TODO Stefan: only for testing purposes, remove later
-	loggedInUserId, ok := ctx.Value("id").(uuid.UUID)
-	if !ok {
-		return nil, fmt.Errorf("failed to extract id and cast to UUID")
-	}
-
-	loggedInUserRole, err := token.ExtractTokenInfoFromContext(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	log.Printf("Logged in user username: %s, role: %s", loggedInUserId, loggedInUserRole)
+	//loggedInUserId, ok := ctx.Value("id").(uuid.UUID)
+	//if !ok {
+	//	return nil, fmt.Errorf("failed to extract id and cast to UUID")
+	//}
+	//
+	//loggedInUserRole, err := token.ExtractTokenInfoFromContext(ctx)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//
+	//log.Printf("Logged in user username: %s, role: %s", loggedInUserId, loggedInUserRole)
 	/////////////
 
 	result, err := handler.accCredService.GetByUsername(request.Username)

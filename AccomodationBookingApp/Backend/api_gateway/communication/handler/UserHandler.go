@@ -11,6 +11,8 @@ import (
 	"context"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"google.golang.org/grpc/metadata"
+	"log"
 	"net/http"
 )
 
@@ -45,18 +47,29 @@ func (handler UserHandler) GetUserInfo(ctx *gin.Context) {
 		return
 	}
 
+	log.Println("username for get all: ", username)
+	log.Println("GIN KONTEEEEEEEKS: ", ctx.GetHeader("Authorization"))
+
 	var userInfo dto.UserInfo
 
 	//TODO errorMessage handling
-	handler.addAccountCredentialsInfo(&userInfo, username)
-	handler.addUserProfileInfo(&userInfo)
+	handler.addAccountCredentialsInfo(&userInfo, username, ctx)
+	handler.addUserProfileInfo(&userInfo, ctx)
 
 	ctx.JSON(http.StatusOK, userInfo)
 }
 
-func (handler UserHandler) addAccountCredentialsInfo(userInfo *dto.UserInfo, username string) error {
+func (handler UserHandler) addAccountCredentialsInfo(userInfo *dto.UserInfo, username string, ctx *gin.Context) error {
 	authorizationClient := communication.NewAuthorizationClient(handler.authorizationServiceAddress)
-	accountCredentialsInfo, err := authorizationClient.GetByUsername(context.TODO(), &authorization.GetByUsernameRequest{Username: username})
+	// create a context with the auth header that has already been added
+	authHeader := ctx.GetHeader("Authorization")
+	accessToken := authHeader[len("Bearer "):]
+	md := metadata.New(map[string]string{"Authorization": accessToken})
+	ctxGrpc := metadata.NewOutgoingContext(context.TODO(), md)
+
+	accountCredentialsInfo, err := authorizationClient.GetByUsername(ctxGrpc, &authorization.GetByUsernameRequest{Username: username})
+	log.Println("accCredInfo from authClient GetByUsername: ", accountCredentialsInfo)
+	log.Println("ERRRRRRRRRRRRRRROR: ", err)
 
 	if err != nil {
 		return err
@@ -68,10 +81,17 @@ func (handler UserHandler) addAccountCredentialsInfo(userInfo *dto.UserInfo, use
 	return nil
 }
 
-func (handler UserHandler) addUserProfileInfo(userInfo *dto.UserInfo) error {
+func (handler UserHandler) addUserProfileInfo(userInfo *dto.UserInfo, ctx *gin.Context) error {
 	userProfileClient := communication.NewUserProfileClient(handler.userProfileServiceAddress)
+	log.Println("userInfoId for userProfileInfo: ", userInfo.UserProfileID.String())
+	// create a context with the auth header that has already been added
+	authHeader := ctx.GetHeader("Authorization")
+	accessToken := authHeader[len("Bearer "):]
+	md := metadata.New(map[string]string{"Authorization": accessToken})
+	ctxGrpc := metadata.NewOutgoingContext(context.TODO(), md)
 
-	userProfileInfo, err := userProfileClient.GetById(context.TODO(), &user_profile.GetByIdRequest{Id: userInfo.UserProfileID.String()})
+	userProfileInfo, err := userProfileClient.GetById(ctxGrpc, &user_profile.GetByIdRequest{Id: userInfo.UserProfileID.String()})
+	log.Println("userProfileInfo from userProfileClient GetById: ", userProfileInfo)
 
 	if err != nil {
 		return err

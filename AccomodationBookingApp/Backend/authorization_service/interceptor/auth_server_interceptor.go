@@ -74,6 +74,8 @@ func (interceptor *AuthServerInterceptor) authorize(ctx context.Context, method 
 		return status.Errorf(codes.Unauthenticated, "metadata is not provided"), nil
 	}
 
+	log.Println("metadataaaaaaaaaa: ", metaData)
+
 	values := metaData["authorization"]
 	if len(values) == 0 {
 		return status.Errorf(codes.Unauthenticated, "authorization token not provided"), nil
