@@ -12,12 +12,14 @@ const darkTheme = createTheme({
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-    <ThemeProvider theme={darkTheme}>
-        <BrowserRouter>
-            <Routes>
-                <Route path="/*" element={<App/>}/>
-            </Routes>
-        </BrowserRouter>
-    </ThemeProvider>
+    <React.StrictMode>
+        <ThemeProvider theme={darkTheme}>
+            <BrowserRouter>
+                <Routes>
+                    <Route path="/*" element={<App/>}/>
+                </Routes>
+            </BrowserRouter>
+        </ThemeProvider>
+    </React.StrictMode>
 );
 

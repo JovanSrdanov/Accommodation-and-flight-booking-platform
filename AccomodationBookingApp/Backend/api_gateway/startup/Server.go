@@ -8,6 +8,7 @@ import (
 	user_profile "common/proto/user_profile_service/generated"
 	"context"
 	"fmt"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
@@ -27,6 +28,10 @@ func NewServer(config *Configuration) *Server {
 	}
 
 	server.server.Use(middleware.AuthTokenParser())
+	// create a new CORS middleware
+	corsMiddleware := cors.Default()
+	// apply the CORS middleware to all endpoints
+	server.server.Use(corsMiddleware)
 
 	server.server.NoRoute(func(c *gin.Context) {
 		c.JSON(404, gin.H{"message": "Endpoint doesn't exist"})

@@ -39,9 +39,7 @@ function Register() {
     };
 
     useEffect(() => {
-        console.log(user.password.length)
-        console.log(user.password)
-        // Check if all required fields are non-empty and password is at least 8 characters long
+
         const isValid =
             user.username !== "" &&
             user.password.length >= 8 &&
