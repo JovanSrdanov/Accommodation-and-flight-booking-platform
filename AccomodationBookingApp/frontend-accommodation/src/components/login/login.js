@@ -6,7 +6,6 @@ import HowToRegIcon from '@mui/icons-material/HowToReg';
 import {useNavigate} from "react-router-dom";
 import interceptor from "../../interceptor/interceptor";
 
-
 function Login() {
 
     const navigate = useNavigate();
@@ -26,20 +25,18 @@ function Login() {
             username: username,
             password: password
         }).then(res => {
-            console.log(res)
-            localStorage.setItem('pasetp', res.data.NESTOGASGAS);
-            const decoded = JSON.parse(atob(res.data.NESTOGASGAS.split('.')[1]));
-            const role = decoded.role;
-            if (role === 'ROLE_PKI_ADMIN') {
-                navigate('/all-certificates')
+            const paseto = res.data.accessToken;
+            const role = res.data.role;
+            const expirationDate = res.data.expirationDate;
+            localStorage.setItem('paseto', paseto);
+            localStorage.setItem('role', role);
+            localStorage.setItem('expirationDate', expirationDate);
+            if (role === 'Host') {
+                navigate('/host-profile')
                 return
             }
-            if (role === 'ROLE_CERTIFICATE_USER') {
-                navigate('/my-certificates')
-                return
-            }
-            if (role === 'ROLE_CERTIFICATE_USER_CHANGE_PASSWORD') {
-                navigate('/change-password')
+            if (role === 'Guest') {
+                navigate('/guest-profile')
                 return
             }
             navigate('/login')
@@ -92,7 +89,7 @@ function Login() {
             </div>
             {showAlert && (
                 <Alert sx={{width: "fit-content", margin: "10px auto"}} severity="error" onClose={handleAlertClose}>
-                    Invalid email or password, please try again.
+                    Invalid username or password, please try again.
                 </Alert>
             )}
         </div>
