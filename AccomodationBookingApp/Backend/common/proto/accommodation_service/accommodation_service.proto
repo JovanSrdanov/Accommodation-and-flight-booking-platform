@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+option go_package = "common/accommodation";
+
+package accommodation;
+
+import "google/api/annotations.proto";
+
+
+
+service AccommodationService{
+  rpc Create(CreateRequest) returns(CreateResponse) {
+    option (google.api.http) = {
+      post: "/api-1/accommodation",
+      //body:"*" works if JSON body has one top level object, otherwise you need to list all individual fields by hand
+      body: "*"
+    };
+  }
+
+  rpc Update(UpdateRequest) returns(UpdateRequest) {
+    option (google.api.http) = {
+      put: "/api-1/accommodation",
+      body: "*"
+    };
+  }
+
+  rpc GetById(GetByIdRequest) returns(GetByIdResponse) {
+    option (google.api.http) = {
+      get: "/api-1/accommodation/{id}"
+    };
+  }
+
+  rpc Delete(DeleteRequest) returns(DeleteResponse){
+    option (google.api.http) = {
+      delete: "/api-1/accommodation/{id}"
+    };
+  }
+
+}
+
+
+message CreateRequest {
+  Accommodation userProfile = 1;
+}
+
+message CreateResponse{
+  string id = 1;
+}
+
+message UpdateRequest {
+  string name = 1;
+}
+
+message GetByIdResponse{
+  Accommodation accommodation = 1;
+}
+
+message GetByIdRequest{
+  string id = 1;
+}
+
+message DeleteRequest{
+  string id = 1;
+}
+
+message DeleteResponse{ }
+
+message  Accommodation{
+  string Name = 1;
+}
