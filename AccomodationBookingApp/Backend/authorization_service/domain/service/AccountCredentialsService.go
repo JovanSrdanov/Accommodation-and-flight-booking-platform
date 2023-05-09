@@ -113,7 +113,7 @@ func (service AccountCredentialsService) ChangePassword(id uuid.UUID, oldPasswor
 	}
 
 	if !oldAccCred.IsPasswordCorrect(oldPassword) {
-		return fmt.Errorf("provided old password is incorrect")
+		return status.Errorf(codes.Unauthenticated, "provided old password is incorrect")
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
