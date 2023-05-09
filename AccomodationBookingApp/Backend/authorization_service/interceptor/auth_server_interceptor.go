@@ -4,7 +4,6 @@ import (
 	"authorization_service/domain/model"
 	"authorization_service/domain/token"
 	"context"
-	"github.com/o1egl/paseto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -89,14 +88,16 @@ func (interceptor *AuthServerInterceptor) authorize(ctx context.Context, method 
 
 	ctx = context.WithValue(ctx, "id", tokenPayload.ID)
 
-	var footerData map[string]interface{}
-	if err := paseto.ParseFooter(accessToken, &footerData); err != nil {
-		return status.Errorf(codes.Internal, "failed to parse token footer: ", err), nil
-	}
+	//var footerData map[string]interface{}
+	//if err := paseto.ParseFooter(accessToken, &footerData); err != nil {
+	//	return status.Errorf(codes.Internal, "failed to parse token footer: ", err), nil
+	//}
+	//
+	//providedRole := int8(footerData["Role"].(float64))
+	providedRole := tokenPayload.Role
 
-	providedRole := int8(footerData["Role"].(float64))
 	for _, role := range allowedRoles {
-		if int8(role) == providedRole {
+		if role == providedRole {
 			return nil, ctx
 		}
 	}
