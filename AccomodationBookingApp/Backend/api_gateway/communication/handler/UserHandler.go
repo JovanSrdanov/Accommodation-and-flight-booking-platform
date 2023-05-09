@@ -9,6 +9,7 @@ import (
 	authorization "common/proto/authorization_service/generated"
 	user_profile "common/proto/user_profile_service/generated"
 	"context"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"google.golang.org/grpc/metadata"
@@ -36,6 +37,11 @@ func (handler UserHandler) Init(router *gin.RouterGroup) {
 		middleware.ValidateToken(handler.tokenMaker),
 		middleware.Authorization([]model.Role{model.Guest}),
 		handler.GetUserInfo)
+	userGroup.GET("/logged-in-info",
+		middleware.ValidateToken(handler.tokenMaker),
+		middleware.Authorization([]model.Role{model.Guest, model.Host}),
+		handler.GetLoggedInUserInfo,
+	)
 	userGroup.POST("", handler.CreateUser)
 }
 
@@ -49,24 +55,23 @@ func (handler UserHandler) GetUserInfo(ctx *gin.Context) {
 
 	log.Println("username for get all: ", username)
 	log.Println("GIN KONTEEEEEEEKS: ", ctx.GetHeader("Authorization"))
+	ctxGrpc := createGrpcContextFromGinContext(ctx)
 
 	var userInfo dto.UserInfo
 
 	//TODO errorMessage handling
 	// it's important to pass the ctx to all handlers that need to call a grpc method with a client,
 	// because it has the auth header embedded in it
-	handler.addAccountCredentialsInfo(&userInfo, username, ctx)
-	handler.addUserProfileInfo(&userInfo, ctx)
+	handler.addAccountCredentialsInfo(&userInfo, username, ctxGrpc)
+	handler.addUserProfileInfo(&userInfo, ctxGrpc)
 
 	ctx.JSON(http.StatusOK, userInfo)
 }
 
-func (handler UserHandler) addAccountCredentialsInfo(userInfo *dto.UserInfo, username string, ctx *gin.Context) error {
+func (handler UserHandler) addAccountCredentialsInfo(userInfo *dto.UserInfo, username string, ctx context.Context) error {
 	authorizationClient := communication.NewAuthorizationClient(handler.authorizationServiceAddress)
-	// create a context with the auth header that has already been added to the gin ctx
-	ctxGrpc := createGrpcContextFromGinContext(ctx)
 
-	accountCredentialsInfo, err := authorizationClient.GetByUsername(ctxGrpc, &authorization.GetByUsernameRequest{Username: username})
+	accountCredentialsInfo, err := authorizationClient.GetByUsername(ctx, &authorization.GetByUsernameRequest{Username: username})
 	log.Println("accCredInfo from authClient GetByUsername: ", accountCredentialsInfo)
 	log.Println("ERRRRRRRRRRRRRRROR: ", err)
 
@@ -80,13 +85,11 @@ func (handler UserHandler) addAccountCredentialsInfo(userInfo *dto.UserInfo, use
 	return nil
 }
 
-func (handler UserHandler) addUserProfileInfo(userInfo *dto.UserInfo, ctx *gin.Context) error {
+func (handler UserHandler) addUserProfileInfo(userInfo *dto.UserInfo, ctx context.Context) error {
 	userProfileClient := communication.NewUserProfileClient(handler.userProfileServiceAddress)
 	log.Println("userInfoId for userProfileInfo: ", userInfo.UserProfileID.String())
-	// create a context with the auth header that has already been added
-	ctxGrpc := createGrpcContextFromGinContext(ctx)
 
-	userProfileInfo, err := userProfileClient.GetById(ctxGrpc, &user_profile.GetByIdRequest{Id: userInfo.UserProfileID.String()})
+	userProfileInfo, err := userProfileClient.GetById(ctx, &user_profile.GetByIdRequest{Id: userInfo.UserProfileID.String()})
 	log.Println("userProfileInfo from userProfileClient GetById: ", userProfileInfo)
 
 	if err != nil {
@@ -176,6 +179,33 @@ func (handler UserHandler) CreateAccountCredentials(user *dto.CreateUser, userPr
 	}
 
 	return nil
+}
+
+func (handler UserHandler) GetLoggedInUserInfo(ctx *gin.Context) {
+	loggedInAccCredIdFromCtx := ctx.Keys["id"]
+	if loggedInAccCredIdFromCtx == nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "logged-in account credentials not provided"})
+		return
+	}
+	loggedInAccCredId := fmt.Sprintf("%v", loggedInAccCredIdFromCtx)
+
+	grpcCtx := createGrpcContextFromGinContext(ctx)
+
+	authorizationClient := communication.NewAuthorizationClient(handler.authorizationServiceAddress)
+	loggedInAccCred, err := authorizationClient.GetById(grpcCtx, &authorization.GetByIdRequest{
+		Id: loggedInAccCredId,
+	})
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "could not get logged-in account credentials"})
+		return
+	}
+
+	var userInfo dto.UserInfo
+
+	handler.addAccountCredentialsInfo(&userInfo, loggedInAccCred.GetAccountCredentials().GetUsername(), grpcCtx)
+	handler.addUserProfileInfo(&userInfo, grpcCtx)
+
+	ctx.JSON(http.StatusOK, userInfo)
 }
 
 func createGrpcContextFromGinContext(ctx *gin.Context) context.Context {
