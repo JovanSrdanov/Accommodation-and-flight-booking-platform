@@ -40,7 +40,7 @@ service AccommodationService{
 
 
 message CreateRequest {
-  Accommodation userProfile = 1;
+  Accommodation accommodation = 1;
 }
 
 message CreateResponse{
@@ -67,4 +67,8 @@ message DeleteResponse{ }
 
 message  Accommodation{
   string Name = 1;
+  string Location = 2;
+  int32 MinGuests = 3;
+  int32 MaxGuests = 4;
+  repeated string Amenities = 5;
 }

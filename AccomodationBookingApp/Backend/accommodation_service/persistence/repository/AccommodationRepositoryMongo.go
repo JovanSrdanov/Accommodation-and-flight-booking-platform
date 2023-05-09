@@ -22,7 +22,7 @@ func (repo AccommodationRepositoryMongo) Create(accommodation *model.Accommodati
 	defer cancel()
 
 	collection := repo.getCollection()
-	//accommodation.ID = primitive.NewObjectID()
+	accommodation.ID = primitive.NewObjectID()
 
 	log.Println(accommodation)
 
