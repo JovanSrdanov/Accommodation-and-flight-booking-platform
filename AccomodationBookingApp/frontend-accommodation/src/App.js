@@ -33,18 +33,53 @@ function App() {
     const [role, setRole] = useState(null);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const pasetoExpirationRole = () => {
-            setRole(localStorage.getItem('role'));
-        };
+    const pasetoExpirationRole = () => {
+        const expirationDateStr = localStorage.getItem('expirationDate');
+        if (expirationDateStr) {
 
+            const currentTime = new Date()
+            const localOffset = currentTime.getTimezoneOffset() // in minutes
+
+            let expirationDate = new Date(expirationDateStr.split(" ")[0] + "T" + expirationDateStr.split(" ")[1]);
+            const utcOffset = expirationDateStr.substring(23, 28);
+            const sign = utcOffset.substring(0, 1);
+            const hours = parseInt(utcOffset.substring(1, 3));
+
+            let expOffset = 0;
+            if (sign === "+") {
+                expOffset = hours;
+            } else if (sign === "-") {
+                expOffset = -hours;
+            }
+            const correctingOffset = expOffset - localOffset
+            expirationDate = new Date(expirationDate.getTime() + correctingOffset * 60 * 1000)
+
+            if (expirationDate < currentTime) {
+                console.log("Token expired")
+                localStorage.removeItem('paseto');
+                localStorage.removeItem('role');
+                localStorage.removeItem('expirationDate');
+                setRole(null);
+            } else {
+                setRole(localStorage.getItem('role'))
+            }
+        } else {
+            localStorage.removeItem('paseto');
+            localStorage.removeItem('role');
+            localStorage.removeItem('expirationDate');
+            setRole(null);
+        }
+    };
+
+
+    useEffect(() => {
         pasetoExpirationRole();
     }, [navigate]);
 
     const handleLogout = () => {
         localStorage.removeItem('paseto');
         localStorage.removeItem('role');
-        localStorage.removeItem('expDate');
+        localStorage.removeItem('expirationDate');
         setRole(null);
         navigate('/login');
     };
@@ -196,10 +231,15 @@ function App() {
                         </>
                     )}
 
-                    <Route path="/login" element={<LoginPage/>}/>
-                    <Route path="/register" element={<RegisterPage/>}/>
+                    {!IS_HOST && !IS_GUEST && (
+                        <>
+                            <Route path="/login" element={<LoginPage/>}/>
+                            <Route path="/register" element={<RegisterPage/>}/>
+                        </>
+                    )}
                     <Route path="/search-accommodation" element={<SearchAccommodationPage/>}/>
-                    <Route path="/" element={<Navigate to="/register"/>}/>
+                    <Route path="/" element={<Navigate to="/search-accommodation"/>}/>
+                    <Route path="*" element={<Navigate to="/search-accommodation"/>}/>
                 </Routes>
             </Box>
         </div>

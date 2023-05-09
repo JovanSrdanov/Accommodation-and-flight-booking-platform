@@ -28,9 +28,13 @@ func NewServer(config *Configuration) *Server {
 	}
 
 	server.server.Use(middleware.AuthTokenParser())
-	// create a new CORS middleware
-	corsMiddleware := cors.Default()
-	// apply the CORS middleware to all endpoints
+
+	corsMiddleware := cors.New(cors.Config{
+		AllowOrigins: []string{"*"},
+		AllowMethods: []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowHeaders: []string{"Authorization", "Content-Type"},
+	})
+
 	server.server.Use(corsMiddleware)
 
 	server.server.NoRoute(func(c *gin.Context) {

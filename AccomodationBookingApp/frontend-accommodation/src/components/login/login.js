@@ -59,7 +59,7 @@ function Login() {
                 <TextField
                     fullWidth
                     variant="filled"
-                    label="E-mail"
+                    label="Username"
                     type={"email"}
                     value={username}
                     onChange={handleEmailChange}
