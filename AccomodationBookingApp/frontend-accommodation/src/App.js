@@ -14,7 +14,7 @@ import ReservationsAndRequestsPage from "./pages/host-pages/reservations-and-req
 import GuestProfilePage from "./pages/guest-pages/guest-profile-page";
 import HostProfilePage from "./pages/host-pages/host-profile-page";
 import SearchAccommodationPage from "./pages/all-roles-pages/search-accommodation-page";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import HistoryIcon from '@mui/icons-material/History';
 import CheckIcon from '@mui/icons-material/Check';
 import RecommendOutlinedIcon from '@mui/icons-material/RecommendOutlined';
@@ -90,7 +90,11 @@ function App() {
 
 
     return (
-        <div className="App">
+
+
+        <div>
+
+
             <ParticlesBg color="#FF9021" type="cobweb" num={100} bg={true}/>
             <Box>
                 <AppBar position="static">
@@ -210,12 +214,12 @@ function App() {
                 </AppBar>
                 <Routes>
 
-
                     {IS_GUEST && (
                         <>
                             <Route path="/booked-places" element={<BookedPlacesPage/>}/>
                             <Route path="/visiting-history" element={<VisitingHistoryPage/>}/>
                             <Route path="/recommendations-for-you" element={<RecommendationsForYouPage/>}/>
+
                             <Route path="/guest-profile" element={<GuestProfilePage/>}/>
                             <Route path="/search-accommodation" element={<SearchAccommodationPage/>}/>
                         </>
