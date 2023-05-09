@@ -36,7 +36,7 @@ function Login() {
                 return
             }
             if (role === 'Guest') {
-                navigate('/guest-profile')
+                navigate('/profile')
                 return
             }
             navigate('/login')

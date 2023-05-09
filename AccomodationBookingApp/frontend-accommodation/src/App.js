@@ -11,8 +11,7 @@ import RecommendationsForYouPage from "./pages/guest-pages/recommendations-for-y
 import MyPlacesPage from "./pages/host-pages/my-places-page";
 import HostAPlacePage from "./pages/host-pages/host-a-place-page";
 import ReservationsAndRequestsPage from "./pages/host-pages/reservations-and-requests-page";
-import GuestProfilePage from "./pages/guest-pages/guest-profile-page";
-import HostProfilePage from "./pages/host-pages/host-profile-page";
+import ProfilePage from "./pages/guest-pages/profile-page";
 import SearchAccommodationPage from "./pages/all-roles-pages/search-accommodation-page";
 import React, {useEffect, useState} from "react";
 import HistoryIcon from '@mui/icons-material/History';
@@ -172,12 +171,7 @@ function App() {
                                     <Button color="info" sx={{marginLeft: 'auto'}}
                                             startIcon={<PersonOutlineOutlinedIcon/>}
                                             onClick={() => {
-
-                                                if (role === "Host") {
-                                                    navigate('/host-profile');
-                                                    return;
-                                                }
-                                                navigate('/guest-profile')
+                                                navigate('/profile');
                                             }}>
 
                                         My profile
@@ -220,7 +214,7 @@ function App() {
                             <Route path="/visiting-history" element={<VisitingHistoryPage/>}/>
                             <Route path="/recommendations-for-you" element={<RecommendationsForYouPage/>}/>
 
-                            <Route path="/guest-profile" element={<GuestProfilePage/>}/>
+                            <Route path="/profile" element={<ProfilePage/>}/>
                             <Route path="/search-accommodation" element={<SearchAccommodationPage/>}/>
                         </>
                     )}
@@ -230,7 +224,7 @@ function App() {
                             <Route path="/my-places" element={<MyPlacesPage/>}/>
                             <Route path="/host-a-place" element={<HostAPlacePage/>}/>
                             <Route path="/reservations-and-requests" element={<ReservationsAndRequestsPage/>}/>
-                            <Route path="/host-profile" element={<HostProfilePage/>}/>
+                            <Route path="/profile" element={<ProfilePage/>}/>
                             <Route path="/search-accommodation" element={<SearchAccommodationPage/>}/>
                         </>
                     )}
