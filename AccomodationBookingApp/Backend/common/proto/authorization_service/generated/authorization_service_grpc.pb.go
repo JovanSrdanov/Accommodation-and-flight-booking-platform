@@ -20,11 +20,12 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	AuthorizationService_Create_FullMethodName        = "/authorization.AuthorizationService/Create"
-	AuthorizationService_GetByUsername_FullMethodName = "/authorization.AuthorizationService/GetByUsername"
-	AuthorizationService_GetById_FullMethodName       = "/authorization.AuthorizationService/GetById"
-	AuthorizationService_Login_FullMethodName         = "/authorization.AuthorizationService/Login"
-	AuthorizationService_Update_FullMethodName        = "/authorization.AuthorizationService/Update"
+	AuthorizationService_Create_FullMethodName         = "/authorization.AuthorizationService/Create"
+	AuthorizationService_GetByUsername_FullMethodName  = "/authorization.AuthorizationService/GetByUsername"
+	AuthorizationService_GetById_FullMethodName        = "/authorization.AuthorizationService/GetById"
+	AuthorizationService_Login_FullMethodName          = "/authorization.AuthorizationService/Login"
+	AuthorizationService_ChangeUsername_FullMethodName = "/authorization.AuthorizationService/ChangeUsername"
+	AuthorizationService_ChangePassword_FullMethodName = "/authorization.AuthorizationService/ChangePassword"
 )
 
 // AuthorizationServiceClient is the client API for AuthorizationService service.
@@ -35,7 +36,8 @@ type AuthorizationServiceClient interface {
 	GetByUsername(ctx context.Context, in *GetByUsernameRequest, opts ...grpc.CallOption) (*GetByUsernameResponse, error)
 	GetById(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*GetByUsernameResponse, error)
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
-	Update(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	ChangeUsername(ctx context.Context, in *ChangeUsernameRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type authorizationServiceClient struct {
@@ -82,9 +84,18 @@ func (c *authorizationServiceClient) Login(ctx context.Context, in *LoginRequest
 	return out, nil
 }
 
-func (c *authorizationServiceClient) Update(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *authorizationServiceClient) ChangeUsername(ctx context.Context, in *ChangeUsernameRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, AuthorizationService_Update_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, AuthorizationService_ChangeUsername_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authorizationServiceClient) ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, AuthorizationService_ChangePassword_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -99,7 +110,8 @@ type AuthorizationServiceServer interface {
 	GetByUsername(context.Context, *GetByUsernameRequest) (*GetByUsernameResponse, error)
 	GetById(context.Context, *GetByIdRequest) (*GetByUsernameResponse, error)
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
-	Update(context.Context, *UpdateRequest) (*emptypb.Empty, error)
+	ChangeUsername(context.Context, *ChangeUsernameRequest) (*emptypb.Empty, error)
+	ChangePassword(context.Context, *ChangePasswordRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedAuthorizationServiceServer()
 }
 
@@ -119,8 +131,11 @@ func (UnimplementedAuthorizationServiceServer) GetById(context.Context, *GetById
 func (UnimplementedAuthorizationServiceServer) Login(context.Context, *LoginRequest) (*LoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
 }
-func (UnimplementedAuthorizationServiceServer) Update(context.Context, *UpdateRequest) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
+func (UnimplementedAuthorizationServiceServer) ChangeUsername(context.Context, *ChangeUsernameRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ChangeUsername not implemented")
+}
+func (UnimplementedAuthorizationServiceServer) ChangePassword(context.Context, *ChangePasswordRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ChangePassword not implemented")
 }
 func (UnimplementedAuthorizationServiceServer) mustEmbedUnimplementedAuthorizationServiceServer() {}
 
@@ -207,20 +222,38 @@ func _AuthorizationService_Login_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AuthorizationService_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateRequest)
+func _AuthorizationService_ChangeUsername_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChangeUsernameRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuthorizationServiceServer).Update(ctx, in)
+		return srv.(AuthorizationServiceServer).ChangeUsername(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: AuthorizationService_Update_FullMethodName,
+		FullMethod: AuthorizationService_ChangeUsername_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthorizationServiceServer).Update(ctx, req.(*UpdateRequest))
+		return srv.(AuthorizationServiceServer).ChangeUsername(ctx, req.(*ChangeUsernameRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthorizationService_ChangePassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChangePasswordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthorizationServiceServer).ChangePassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthorizationService_ChangePassword_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthorizationServiceServer).ChangePassword(ctx, req.(*ChangePasswordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -249,8 +282,12 @@ var AuthorizationService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _AuthorizationService_Login_Handler,
 		},
 		{
-			MethodName: "Update",
-			Handler:    _AuthorizationService_Update_Handler,
+			MethodName: "ChangeUsername",
+			Handler:    _AuthorizationService_ChangeUsername_Handler,
+		},
+		{
+			MethodName: "ChangePassword",
+			Handler:    _AuthorizationService_ChangePassword_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -88,19 +88,27 @@ func (handler AccountCredentialsHandler) Login(ctx context.Context, req *authori
 	return res, nil
 }
 
-func (handler AccountCredentialsHandler) Update(ctx context.Context, req *authorizationProto.UpdateRequest) (*emptypb.Empty, error) {
+func (handler AccountCredentialsHandler) ChangeUsername(ctx context.Context, req *authorizationProto.ChangeUsernameRequest) (*emptypb.Empty, error) {
 	loggedInId, ok := ctx.Value("id").(uuid.UUID)
 	if !ok {
 		return &emptypb.Empty{}, fmt.Errorf("failed to extract id and cast to UUID")
 	}
 
-	//loggedInIdInfoAsString := loggedInId.(string)
-	//loggedInId, err := uuid.Parse(loggedInIdInfoAsString)
-	//if err != nil {
-	//	return &emptypb.Empty{}, err
-	//}
+	err := handler.accCredService.ChangeUsername(loggedInId, req.GetUsername())
+	if err != nil {
+		return &emptypb.Empty{}, err
+	}
 
-	err := handler.accCredService.Update(loggedInId, req.GetUsername(), req.GetPassword())
+	return &emptypb.Empty{}, nil
+}
+
+func (handler AccountCredentialsHandler) ChangePassword(ctx context.Context, req *authorizationProto.ChangePasswordRequest) (*emptypb.Empty, error) {
+	loggedInId, ok := ctx.Value("id").(uuid.UUID)
+	if !ok {
+		return &emptypb.Empty{}, fmt.Errorf("failed to extract id and cast to UUID")
+	}
+
+	err := handler.accCredService.ChangePassword(loggedInId, req.GetOldPassword(), req.GetNewPassword())
 	if err != nil {
 		return &emptypb.Empty{}, err
 	}

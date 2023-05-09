@@ -35,9 +35,16 @@ service AuthorizationService{
     };
   }
 
-  rpc Update(UpdateRequest) returns(google.protobuf.Empty) {
+  rpc ChangeUsername(ChangeUsernameRequest) returns(google.protobuf.Empty) {
     option (google.api.http) = {
-      put: "/api-1/account-credentials",
+      put: "/api-1/account-credentials/change-username",
+      body: "*"
+    };
+  }
+
+  rpc ChangePassword(ChangePasswordRequest) returns(google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/api-1/account-credentials/change-password",
       body: "*"
     };
   }
@@ -93,7 +100,11 @@ message LoginResponse {
   string expiration_date = 3;
 }
 
-message UpdateRequest {
+message ChangeUsernameRequest {
   string username = 1;
-  string password = 2;
+}
+
+message ChangePasswordRequest {
+  string oldPassword = 1;
+  string newPassword = 2;
 }
