@@ -130,7 +130,7 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - ./data:/data/db
+      - accommodationDb:/data/db
     healthcheck:
       test: echo 'db.runCommand("ping").ok'
       interval: 10s

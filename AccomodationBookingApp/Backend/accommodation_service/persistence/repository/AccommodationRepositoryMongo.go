@@ -31,7 +31,7 @@ func (repo AccommodationRepositoryMongo) Create(accommodation *model.Accommodati
 
 	result, err := collection.InsertOne(ctx, &accommodation)
 	if err != nil {
-		log.Println(err)
+		log.Println("GAS: " + err.Error())
 		return primitive.ObjectID{}, err
 	}
 	id := result.InsertedID.(primitive.ObjectID)
