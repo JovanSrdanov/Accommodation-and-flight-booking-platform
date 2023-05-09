@@ -1,0 +1,129 @@
+version: "3.8"
+
+services:
+
+  api_gateway:
+    image: api_gateway
+    container_name: api_gateway
+    build:
+      context: .
+      dockerfile: ./api_gateway/Dockerfile
+    restart: on-failure
+    ports:
+      - ${GATEWAY_PORT}:${GATEWAY_PORT}
+    environment:
+      GATEWAY_PORT: ${GATEWAY_PORT}
+      AUTHORIZATION_SERVICE_PORT: ${AUTHORIZATION_SERVICE_PORT}
+      AUTHORIZATION_SERVICE_HOST: ${AUTHORIZATION_SERVICE_HOST}
+      USER_PROFILE_SERVICE_HOST: ${USER_PROFILE_SERVICE_HOST}
+      USER_PROFILE_SERVICE_PORT: ${USER_PROFILE_SERVICE_PORT}
+      ACCOMMODATION_SERVICE_HOST: ${ACCOMMODATION_SERVICE_HOST}
+      ACCOMMODATION_SERVICE_PORT: ${ACCOMMODATION_SERVICE_PORT}
+    networks:
+      - network
+
+  authorization_service:
+    image: authorization_service
+    container_name: authorization_service
+    build:
+      context: .
+      dockerfile: ./authorization_service/Dockerfile
+    restart: on-failure
+    environment:
+      AUTHORIZATION_DB_HOST: ${AUTHORIZATION_DB_HOST}
+      AUTHORIZATION_DB_PORT: ${AUTHORIZATION_DB_PORT}
+      AUTHORIZATION_DB_USER: ${AUTHORIZATION_DB_USER}
+      AUTHORIZATION_DB_PASS: ${AUTHORIZATION_DB_PASS}
+      AUTHORIZATION_DB_NAME: ${AUTHORIZATION_DB_NAME}
+      AUTHORIZATION_SERVICE_PORT: ${AUTHORIZATION_SERVICE_PORT}
+    depends_on:
+      authorization_db:
+          condition: service_healthy
+    networks:
+      - network
+
+
+  authorization_db:
+    image: authorization_db
+    container_name: authorization_db
+    restart: on-failure
+    build:
+      context: ../Database/Authorization
+      dockerfile: Dockerfile
+    environment:
+      PGUSER: ${AUTHORIZATION_DB_USER}
+      POSTGRES_PASSWORD: ${AUTHORIZATION_DB_PASS}
+      POSTGRES_DB: ${AUTHORIZATION_DB_NAME}
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "54321:5432"
+    networks:
+      - network
+
+  user_profile_service:
+    image: user_profile_service
+    container_name: user_profile_service
+    build:
+      context: .
+      dockerfile: ./user_profile_service/Dockerfile
+    restart: on-failure
+    environment:
+      USER_PROFILE_DB_HOST: ${USER_PROFILE_DB_HOST}
+      USER_PROFILE_DB_PORT: ${USER_PROFILE_DB_PORT}
+      USER_PROFILE_DB_NAME: ${USER_PROFILE_DB_NAME}
+      USER_PROFILE_DB_USER: ${USER_PROFILE_DB_USER}
+      USER_PROFILE_DB_PASS: ${USER_PROFILE_DB_PASS}
+      USER_PROFILE_SERVICE_PORT: ${USER_PROFILE_SERVICE_PORT}
+    depends_on:
+      user_profile_db:
+        condition: service_healthy
+    networks:
+      - network
+
+
+  user_profile_db:
+    image: user_profile_db
+    container_name: user_profile_db
+    restart: on-failure
+    build:
+      context: ../Database/UserProfile
+      dockerfile: Dockerfile
+    environment:
+      PGUSER: ${USER_PROFILE_DB_USER}
+      POSTGRES_PASSWORD: ${USER_PROFILE_DB_PASS}
+      POSTGRES_DB: ${USER_PROFILE_DB_NAME}
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "54320:5432"
+    networks:
+      - network
+
+  mongo:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - accommodationDb:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok'
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    networks:
+      - network
+
+volumes:
+  accommodationDb:
+
+networks:
+  network:
+    driver: bridge

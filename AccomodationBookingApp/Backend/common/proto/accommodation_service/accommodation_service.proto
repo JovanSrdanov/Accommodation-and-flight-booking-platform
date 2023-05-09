@@ -30,6 +30,12 @@ service AccommodationService{
     };
   }
 
+  rpc GetAll(EmptyRequest) returns(GetAllResponse) {
+    option (google.api.http) = {
+      get: "/api-1/accommodation/all"
+    };
+  }
+
   rpc Delete(DeleteRequest) returns(DeleteResponse){
     option (google.api.http) = {
       delete: "/api-1/accommodation/{id}"
@@ -38,6 +44,11 @@ service AccommodationService{
 
 }
 
+message EmptyRequest {}
+
+message GetAllResponse {
+  repeated AccommodationFull accommodation = 1;
+}
 
 message CreateRequest {
   Accommodation accommodation = 1;
@@ -48,7 +59,7 @@ message CreateResponse{
 }
 
 message UpdateRequest {
-  string name = 1;
+  Accommodation accommodation = 1;
 }
 
 message GetByIdResponse{
@@ -67,8 +78,26 @@ message DeleteResponse{ }
 
 message  Accommodation{
   string Name = 1;
-  string Location = 2;
+  Address Address = 2;
   int32 MinGuests = 3;
   int32 MaxGuests = 4;
   repeated string Amenities = 5;
+  string Image = 6;
+}
+
+message AccommodationFull {
+  string id = 1;
+  string Name = 2;
+  Address Address = 3;
+  int32 MinGuests = 4;
+  int32 MaxGuests = 5;
+  repeated string Amenities = 6;
+  string Image = 7;
+}
+
+message Address {
+  string country = 1;
+  string city = 2;
+  string street = 3;
+  string streetNumber= 4;
 }

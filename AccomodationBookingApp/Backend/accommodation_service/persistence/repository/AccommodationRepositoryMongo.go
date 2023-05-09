@@ -3,6 +3,7 @@ package repository
 import (
 	"accommodation_service/domain/model"
 	"context"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"log"
@@ -45,6 +46,28 @@ func (repo AccommodationRepositoryMongo) Update(accommodation *model.Accommodati
 
 func (repo AccommodationRepositoryMongo) GetById(id primitive.ObjectID) (*model.Accommodation, error) {
 	return &model.Accommodation{}, nil
+}
+
+func (repo AccommodationRepositoryMongo) GetAll() (model.Accommodations, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	collection := repo.getCollection()
+
+	cursor, err := collection.Find(ctx, bson.M{})
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	var accommodations model.Accommodations
+	err = cursor.All(ctx, &accommodations)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	return accommodations, nil
 }
 
 func (repo AccommodationRepositoryMongo) getCollection() *mongo.Collection {

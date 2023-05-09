@@ -42,3 +42,7 @@ func (service AccommodationService) Update(id primitive.ObjectID, dto *model.Acc
 func (service AccommodationService) Delete(id primitive.ObjectID) error {
 	return service.accommodationRepo.Delete(id)
 }
+
+func (service AccommodationService) GetAll() (model.Accommodations, error) {
+	return service.accommodationRepo.GetAll()
+}

@@ -16,11 +16,48 @@ func NewAccommodationMapper() *AccommodationMapper {
 }
 
 func (mapper AccommodationMapper) mapFromCreateRequest(request *accommodation.CreateRequest) *model.Accommodation {
+	addressMapper := NewAddressMapper()
 	return &model.Accommodation{
 		Name:      request.Accommodation.Name,
-		Location:  request.Accommodation.Location,
+		Address:   addressMapper.mapToAddressModel(request.Accommodation.Address),
 		MinGuests: request.Accommodation.MinGuests,
 		MaxGuests: request.Accommodation.MaxGuests,
 		Amenities: request.Accommodation.Amenities,
+		Image:     request.Accommodation.Image,
+	}
+}
+
+func (mapper AccommodationMapper) mapToGetByIdResponse(model *model.Accommodation) *accommodation.GetByIdResponse {
+	addressMapper := NewAddressMapper()
+	return &accommodation.GetByIdResponse{
+		Accommodation: &accommodation.Accommodation{
+			Name:      model.Name,
+			Address:   addressMapper.mapToProto(&model.Address),
+			MinGuests: model.MinGuests,
+			MaxGuests: model.MaxGuests,
+			Amenities: model.Amenities,
+			Image:     model.Image,
+		},
+	}
+}
+
+func (mapper AccommodationMapper) mapToGetAllResponse(model model.Accommodations) *accommodation.GetAllResponse {
+	addressMapper := NewAddressMapper()
+	accommodationsProto := make([]*accommodation.AccommodationFull, 0)
+
+	for _, value := range model {
+		accommodationsProto = append(accommodationsProto, &accommodation.AccommodationFull{
+			Id:        value.ID.String(),
+			Name:      value.Name,
+			Address:   addressMapper.mapToProto(&value.Address),
+			MinGuests: value.MinGuests,
+			MaxGuests: value.MaxGuests,
+			Amenities: value.Amenities,
+			Image:     value.Image,
+		})
+	}
+
+	return &accommodation.GetAllResponse{
+		Accommodation: accommodationsProto,
 	}
 }

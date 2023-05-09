@@ -79,3 +79,14 @@ func (handler AccommodationHandler) Delete(ctx context.Context, in *accommodatio
 	*/
 	return &accommodation.DeleteResponse{}, nil
 }
+
+func (handler AccommodationHandler) GetAll(ctx context.Context, in *accommodation.EmptyRequest) (*accommodation.GetAllResponse, error) {
+	accommodations, err := handler.accommodationService.GetAll()
+	if err != nil {
+		return nil, err
+	}
+
+	mapper := NewAccommodationMapper()
+
+	return mapper.mapToGetAllResponse(accommodations), nil
+}
