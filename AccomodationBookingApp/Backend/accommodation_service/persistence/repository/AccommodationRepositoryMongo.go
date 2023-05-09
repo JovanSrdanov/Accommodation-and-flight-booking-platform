@@ -22,21 +22,17 @@ func (repo AccommodationRepositoryMongo) Create(accommodation *model.Accommodati
 	defer cancel()
 
 	collection := repo.getCollection()
-
-	log.Println("UZEO COLLECTION")
-
-	accommodation.ID = primitive.NewObjectID()
+	//accommodation.ID = primitive.NewObjectID()
 
 	log.Println(accommodation)
 
 	result, err := collection.InsertOne(ctx, &accommodation)
 	if err != nil {
-		log.Println("GAS: " + err.Error())
+		log.Println(err)
 		return primitive.ObjectID{}, err
 	}
-	id := result.InsertedID.(primitive.ObjectID)
-	log.Println("Inserted entity, id = '%s'\n", id)
-	return id, nil
+
+	return result.InsertedID.(primitive.ObjectID), nil
 }
 
 func (repo AccommodationRepositoryMongo) Delete(id primitive.ObjectID) error {
