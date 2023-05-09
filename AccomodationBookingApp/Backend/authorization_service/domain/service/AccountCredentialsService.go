@@ -76,6 +76,10 @@ func (service AccountCredentialsService) Login(username, password string) (strin
 }
 
 func (service AccountCredentialsService) ChangeUsername(userId uuid.UUID, username string) error {
+	if username == "" {
+		return fmt.Errorf("username cannot be empty")
+	}
+
 	oldAccCred, err := service.GetById(userId)
 	if err != nil {
 		return fmt.Errorf("error while getting logged-in user info")
@@ -83,10 +87,6 @@ func (service AccountCredentialsService) ChangeUsername(userId uuid.UUID, userna
 
 	if oldAccCred.Username == username {
 		return nil
-	}
-
-	if username == "" {
-		return fmt.Errorf("username cannot be empty")
 	}
 
 	accCred, err := service.GetByUsername(username)
