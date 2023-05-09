@@ -1,5 +1,16 @@
 import React, {useEffect, useState} from 'react';
-import {Alert, Box, Button, FormControl, InputLabel, MenuItem, Select, TextField} from "@mui/material";
+import {
+    Box,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogTitle,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Select,
+    TextField
+} from "@mui/material";
 import LoginIcon from "@mui/icons-material/Login";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
 import {useNavigate} from "react-router-dom";
@@ -23,8 +34,12 @@ function Register() {
         }
     });
     const [showAlert, setShowAlert] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("No error");
+
     const [isDisabled, setIsDisabled] = useState(true);
+    const [usernameTakenDialogShow, setUsernameTakenDialogShow] = useState(false)
+    const usernameTakenDialogClose = () => {
+        setUsernameTakenDialogShow(false)
+    };
     const handleInputChange = (event) => {
 
         const {name, value} = event.target;
@@ -54,10 +69,6 @@ function Register() {
     }, [user]);
 
 
-    const handleAlertClose = () => {
-        setShowAlert(false);
-    };
-
     const handleRegisterClick = () => {
         interceptor
             .post('/api-2/user', user)
@@ -66,12 +77,22 @@ function Register() {
             })
             .catch((error) => {
                 console.error(error);
-                setShowAlert(true);
+                setUsernameTakenDialogShow(true)
             });
     };
 
     return (
         <div>
+            <Dialog onClose={usernameTakenDialogClose} open={usernameTakenDialogShow}>
+                <DialogTitle>That username is already taken</DialogTitle>
+                <DialogActions>
+                    <Button onClick={usernameTakenDialogClose}
+                            variant="contained"
+                    >
+                        Close
+                    </Button>
+                </DialogActions>
+            </Dialog>
             <div className="wrapper">
 
                 <Flex flexDirection="column">
@@ -214,11 +235,7 @@ function Register() {
                 </Flex>
 
             </div>
-            {showAlert && (
-                <Alert sx={{width: "fit-content", margin: "10px auto"}} severity="error" onClose={handleAlertClose}>
-                    {errorMessage}
-                </Alert>
-            )}
+
         </div>
     );
 }

@@ -7,27 +7,11 @@ function Profile() {
 
 
     const [username, setUsername] = useState("")
-
     const [oldPassword, setOldPassword] = useState("")
     const [newPassword, setNewPassword] = useState("")
     const [passwordDialogShow, setPasswordDialogShow] = useState(false)
-
-    const handleOldPasswordChange = (event) => {
-        setOldPassword(event.target.value);
-    };
-
-    const handleNewPasswordChange = (event) => {
-        setNewPassword(event.target.value);
-    };
-
-    const closePasswordDialog = () => {
-
-        setOldPassword("");
-        setNewPassword("");
-        setPasswordDialogShow(false);
-    };
-
-
+    const [successDialogShow, setSuccessDialogShow] = useState(false)
+    const [usernameTakenDialogShow, setUsernameTakenDialogShow] = useState(false)
     const [userInfo, setUserInfo] = useState({
         name: '',
         surname: '',
@@ -39,6 +23,40 @@ function Profile() {
             streetNumber: ''
         }
     });
+
+    const handleOldPasswordChange = (event) => {
+        setOldPassword(event.target.value);
+    };
+
+    const handleNewPasswordChange = (event) => {
+        setNewPassword(event.target.value);
+    };
+
+    const closePasswordDialog = () => {
+        interceptor.put('api-1/account-credentials/change-password', {oldPassword, newPassword})
+            .then((response) => {
+                setOldPassword("");
+                setNewPassword("");
+                setPasswordDialogShow(false);
+                setSuccessDialogShow(true)
+            })
+            .catch((error) => {
+                // Handle the error here, such as showing an error message
+            });
+
+
+    };
+
+
+    const handleUpdateUsernameClick = () => {
+        interceptor.put('api-1/account-credentials/change-username', {username})
+            .then((response) => {
+                setSuccessDialogShow(true)
+            })
+            .catch((error) => {
+                setUsernameTakenDialogShow(true)
+            });
+    };
 
 
     const getAllUserInfo = () => {
@@ -86,8 +104,57 @@ function Profile() {
 
     }
 
+    const UpdateBasicUserInfo = () => {
+        interceptor.put('api-1/user-profile', userInfo)
+            .then((response) => {
+                setSuccessDialogShow(true)
+            })
+            .catch((error) => {
+                // Handle the error here, such as showing an error message
+            });
+    }
+
+    const DeleteProfile = () => {
+        // interceptor.put('api-2/user-profile', userInfo)
+        //     .then((response) => {
+        //
+        //     })
+        //     .catch((error) => {
+        //
+        //     });
+    };
+    const handleClose = () => {
+        setSuccessDialogShow(false)
+    };
+
+    const usernameTakenDialogClose = () => {
+        setUsernameTakenDialogShow(false)
+    };
     return (
         <>
+            <Dialog onClose={handleClose} open={successDialogShow}>
+                <DialogTitle>Update Successful!</DialogTitle>
+                <DialogActions>
+                    <Button onClick={handleClose}
+                            variant="contained"
+                    >
+                        Close
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+
+            <Dialog onClose={usernameTakenDialogClose} open={usernameTakenDialogShow}>
+                <DialogTitle>That username is already taken</DialogTitle>
+                <DialogActions>
+                    <Button onClick={usernameTakenDialogClose}
+                            variant="contained"
+                    >
+                        Close
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
             <Dialog open={passwordDialogShow} onClose={() => setPasswordDialogShow(false)}>
                 <DialogTitle>Change password</DialogTitle>
                 <DialogContent>
@@ -167,7 +234,7 @@ function Profile() {
                              justifyContent="center"
                              alignItems="center">
                             <Button
-
+                                onClick={handleUpdateUsernameClick}
                                 fullWidth
                                 color="warning"
                                 variant="contained"
@@ -278,6 +345,8 @@ function Profile() {
                                 fullWidth
                                 color="warning"
                                 variant="contained"
+                                onClick={UpdateBasicUserInfo}
+
                                 disabled={!(Object.values(userInfo).every(val => val !== '') && /\S+@\S+\.\S+/.test(userInfo.email))}>
 
 
@@ -322,6 +391,7 @@ function Profile() {
                     <Flex flexDirection="column" justifyContent="center" alignItems="center">
                         <Box width={1 / 4} m={1}>
                             <Button
+                                onClick={DeleteProfile}
                                 fullWidth
                                 color="error"
                                 variant="contained">
