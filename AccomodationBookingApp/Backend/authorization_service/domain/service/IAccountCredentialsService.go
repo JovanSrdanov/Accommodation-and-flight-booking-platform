@@ -11,5 +11,6 @@ type IAccountCredentialsService interface {
 	GetByUsername(username string) (*model.AccountCredentials, error)
 	GetById(id uuid.UUID) (*model.AccountCredentials, error)
 	Login(username, password string) (string, model.Role, time.Time, error)
-	Update(id uuid.UUID, newUsername, newPassword string) error
+	ChangePassword(id uuid.UUID, oldPassword, newPassword string) error
+	ChangeUsername(id uuid.UUID, username string) error
 }
