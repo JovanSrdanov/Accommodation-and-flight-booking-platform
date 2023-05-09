@@ -6,7 +6,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/google/uuid"
-	"user_profile_service/communication/client"
+	"user_profile_service/communication"
 	"user_profile_service/domain/service"
 )
 
@@ -39,7 +39,7 @@ func (handler UserProfileHandler) Update(ctx context.Context, req *user_profile.
 	}
 
 	// get account credentials from acc cred microservice
-	accCredClient := client.NewAccountCredentialsClient("authorization_service:8000")
+	accCredClient := communication.NewAccountCredentialsClient("authorization_service:8000")
 	accCred, err := accCredClient.GetById(ctx, &authorization.GetByIdRequest{Id: loggedInId.String()})
 	if err != nil {
 		return nil, err
@@ -77,7 +77,7 @@ func (handler UserProfileHandler) Delete(ctx context.Context, in *user_profile.D
 	if err != nil {
 		return nil, err
 	}
-	err = handler.userProfileService.Delete(id)
+	err = handler.userProfileService.DeleteUser(id)
 
-	return &user_profile.DeleteResponse{}, err
+	return &user_profile.DeleteResponse{Message: "User deleted"}, err
 }
