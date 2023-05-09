@@ -1,6 +1,7 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Flex} from "reflexbox";
 import {Box, TextField} from "@mui/material";
+import interceptor from "../../interceptor/interceptor";
 
 function GuestProfile() {
 
@@ -32,8 +33,17 @@ function GuestProfile() {
 
     const [userName, setUsername] = useState()
 
+    const getAllUserInfo = () => {
 
-    console.log("aaaaaaaa")
+        interceptor.get("api-2/user/logged-in-info").then(res => {
+            setUser(res.data)
+        })
+
+    }
+
+    useEffect(() => {
+        getAllUserInfo();
+    }, []);
 
     const handleInputChange = (event) => {
 
