@@ -85,6 +85,10 @@ func (service AccountCredentialsService) ChangeUsername(userId uuid.UUID, userna
 		return nil
 	}
 
+	if username == "" {
+		return fmt.Errorf("username cannot be empty")
+	}
+
 	accCred, err := service.GetByUsername(username)
 	log.Println("new username: ", username)
 	log.Println("found acc: ", accCred)
