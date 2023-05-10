@@ -211,7 +211,7 @@ function Profile() {
                         <hr
                             style={{
                                 width: "100%",
-                                borderColor: 'black',
+                                border: "1px solid grey",
                             }}
                         />
                         <Box m={1}>
@@ -247,7 +247,7 @@ function Profile() {
                         <hr
                             style={{
                                 width: "100%",
-                                borderColor: 'black',
+                                border: "1px solid grey",
                             }}
                         />
 
@@ -358,7 +358,7 @@ function Profile() {
                     <hr
                         style={{
                             width: "100%",
-                            borderColor: 'black',
+                            border: "1px solid grey",
                         }}
                     />
                     <Flex flexDirection="column" justifyContent="center" alignItems="center">
@@ -384,7 +384,7 @@ function Profile() {
                         <hr
                             style={{
                                 width: "100%",
-                                borderColor: 'black',
+                                border: "1px solid grey",
                             }}
                         />
                     </Flex>
