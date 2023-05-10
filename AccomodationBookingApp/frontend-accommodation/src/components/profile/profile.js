@@ -123,7 +123,7 @@ function Profile() {
     const navigate = useNavigate();
 
     const DeleteProfile = () => {
-        interceptor.delete('api-1/user-info')
+        interceptor.delete('api-1/user')
             .then((response) => {
                 setDeletedAccountDialogShow(true)
                 localStorage.removeItem('paseto');
