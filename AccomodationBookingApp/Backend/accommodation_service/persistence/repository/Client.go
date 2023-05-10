@@ -9,11 +9,11 @@ import (
 	"time"
 )
 
-func GetClient(user string, pass string) (*mongo.Client, error) {
+func GetClient(dbName string, dbPort string) (*mongo.Client, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://"+dbName+":"+dbPort))
 
 	if err != nil {
 		log.Println("database connection error", err)

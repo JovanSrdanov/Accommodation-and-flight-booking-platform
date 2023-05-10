@@ -118,17 +118,17 @@ services:
     environment:
       ACCOMMODATION_SERVICE_HOST: ${ACCOMMODATION_SERVICE_HOST}
       ACCOMMODATION_SERVICE_PORT: ${ACCOMMODATION_SERVICE_PORT}
-      ACCOMMODATION_SERVICE_DB_USER: ${ACCOMMODATION_SERVICE_DB_USER}
-      ACCOMMODATION_SERVICE_DB_PASS: ${ACCOMMODATION_SERVICE_DB_PASS}
+      ACCOMMODATION_SERVICE_DB_NAME: ${ACCOMMODATION_SERVICE_DB_NAME}
+      ACCOMMODATION_SERVICE_DB_PORT: ${ACCOMMODATION_SERVICE_DB_PORT}
     networks:
       - network
     depends_on:
-      mongo:
+      accommodation_db:
         condition: service_healthy
 
-  mongo:
+  accommodation_db:
     image: mongo
-    container_name: mongodb
+    container_name: ${ACCOMMODATION_SERVICE_DB_NAME}
     ports:
       - "27017:27017"
     volumes:
@@ -156,10 +156,10 @@ services:
     networks:
       - network
     depends_on:
-      reservationMongo:
+      reservation_db:
         condition: service_healthy
 
-  reservationMongo:
+  reservation_db:
     image: mongo
     container_name: ${RESERVATION_SERVICE_DB_NAME}
     ports:

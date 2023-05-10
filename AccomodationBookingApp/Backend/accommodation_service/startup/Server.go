@@ -32,7 +32,7 @@ func (server Server) Start() {
 }
 
 func (server Server) initMongoClient() *mongo.Client {
-	client, err := repository.GetClient(server.config.DbUser, server.config.DbPass)
+	client, err := repository.GetClient(server.config.DBName, server.config.DBPort)
 	if err != nil {
 		log.Fatal(err)
 	}
