@@ -2,6 +2,24 @@ version: "3.8"
 
 services:
 
+  api_gateway:
+    image: api_gateway
+    container_name: api_gateway
+    build:
+      context: .
+      dockerfile: ./api_gateway/Dockerfile
+    restart: on-failure
+    ports:
+      - ${GATEWAY_PORT}:${GATEWAY_PORT}
+    environment:
+      GATEWAY_PORT: ${GATEWAY_PORT}
+      AUTHORIZATION_SERVICE_HOST: ${AUTHORIZATION_SERVICE_HOST}
+      AUTHORIZATION_SERVICE_PORT: ${AUTHORIZATION_SERVICE_PORT}
+      USER_PROFILE_SERVICE_HOST: ${USER_PROFILE_SERVICE_HOST}
+      USER_PROFILE_SERVICE_PORT: ${USER_PROFILE_SERVICE_PORT}
+    networks:
+      - network
+
   authorization_service:
     image: authorization_service
     container_name: authorization_service
@@ -16,12 +34,16 @@ services:
       AUTHORIZATION_DB_PASS: ${AUTHORIZATION_DB_PASS}
       AUTHORIZATION_DB_NAME: ${AUTHORIZATION_DB_NAME}
       AUTHORIZATION_SERVICE_PORT: ${AUTHORIZATION_SERVICE_PORT}
+      NATS_HOST: ${NATS_HOST}
+      NATS_PORT: ${NATS_PORT}
+      NATS_USER: ${NATS_USER}
+      NATS_PASS: ${NATS_PASS}
+      DELETE_USER_COMMAND_SUBJECT: ${DELETE_USER_COMMAND_SUBJECT}
+      DELETE_USER_REPLY_SUBJECT: ${DELETE_USER_REPLY_SUBJECT}
     depends_on:
       - authorization_db
     networks:
       - network
-    ports:
-      - 6000:${AUTHORIZATION_SERVICE_PORT}
 
 
   authorization_db:
@@ -38,7 +60,7 @@ services:
     networks:
       - network
     ports:
-      - 5001:${AUTHORIZATION_DB_PORT}
+      - 5001:5432
 
   user_profile_service:
     image: user_profile_service
@@ -54,12 +76,18 @@ services:
       USER_PROFILE_DB_USER: ${USER_PROFILE_DB_USER}
       USER_PROFILE_DB_PASS: ${USER_PROFILE_DB_PASS}
       USER_PROFILE_SERVICE_PORT: ${USER_PROFILE_SERVICE_PORT}
+      NATS_HOST: ${NATS_HOST}
+      NATS_PORT: ${NATS_PORT}
+      NATS_USER: ${NATS_USER}
+      NATS_PASS: ${NATS_PASS}
+      DELETE_USER_COMMAND_SUBJECT: ${DELETE_USER_COMMAND_SUBJECT}
+      DELETE_USER_REPLY_SUBJECT: ${DELETE_USER_REPLY_SUBJECT}
+      AUTHORIZATION_SERVICE_HOST: ${AUTHORIZATION_SERVICE_HOST}
+      AUTHORIZATION_SERVICE_PORT: ${AUTHORIZATION_SERVICE_PORT}
     depends_on:
       - user_profile_db
     networks:
       - network
-    ports:
-      - 7000:${USER_PROFILE_SERVICE_PORT}
 
 
   user_profile_db:
@@ -76,7 +104,14 @@ services:
     networks:
       - network
     ports:
-      - 5000:${USER_PROFILE_DB_PORT}
+      - 5002:5432
+
+  nats:
+    image: nats
+    container_name: nats
+    restart: on-failure
+    networks:
+      - network
 
 networks:
   network:

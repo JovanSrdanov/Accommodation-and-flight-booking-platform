@@ -2,16 +2,21 @@ package service
 
 import (
 	"github.com/google/uuid"
+	"log"
+	"user_profile_service/communication/orchestrator"
 	"user_profile_service/domain/model"
 	"user_profile_service/domain/repository"
 )
 
 type UserProfileService struct {
-	userProfRepo repository.IUserProfileRepository
+	userProfRepo       repository.IUserProfileRepository
+	deleteOrchestrator *orchestrator.DeleteUserOrchestrator
 }
 
-func NewUserProfileService(userProfRepo repository.IUserProfileRepository) *UserProfileService {
-	return &UserProfileService{userProfRepo: userProfRepo}
+func NewUserProfileService(userProfRepo repository.IUserProfileRepository, deleteOrchestrator *orchestrator.DeleteUserOrchestrator) *UserProfileService {
+	return &UserProfileService{
+		userProfRepo:       userProfRepo,
+		deleteOrchestrator: deleteOrchestrator}
 }
 
 func (service UserProfileService) Create(userProf *model.UserProfile) (uuid.UUID, error) {
@@ -31,7 +36,11 @@ func (service UserProfileService) Update(id uuid.UUID, dto *model.UpdateProfileD
 	userInfo.Name = dto.Name
 	userInfo.Surname = dto.Surname
 	userInfo.Email = dto.Email
-	userInfo.Address = dto.Address
+	log.Println("new address: ", dto.Address)
+	userInfo.Address.Street = dto.Address.Street
+	userInfo.Address.City = dto.Address.City
+	userInfo.Address.Country = dto.Address.Country
+	userInfo.Address.StreetNumber = dto.Address.StreetNumber
 
 	userInfo, err = service.userProfRepo.Update(userInfo)
 	if err != nil {
@@ -45,6 +54,10 @@ func (service UserProfileService) Update(id uuid.UUID, dto *model.UpdateProfileD
 		Address: userInfo.Address,
 	}, nil
 }
+func (service UserProfileService) DeleteUser(id uuid.UUID) error {
+	return service.deleteOrchestrator.Start(id)
+}
+
 func (service UserProfileService) Delete(id uuid.UUID) error {
 	return service.userProfRepo.Delete(id)
 }

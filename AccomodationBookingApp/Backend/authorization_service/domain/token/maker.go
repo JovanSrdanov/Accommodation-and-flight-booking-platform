@@ -8,6 +8,6 @@ import (
 
 // Maker is an interface for managing tokens
 type Maker interface {
-	CreateToken(id uuid.UUID, duration time.Duration, role model.Role) (string, model.Role, error)
+	CreateToken(id uuid.UUID, duration time.Duration, role model.Role) (string, Payload, error)
 	VerifyToken(token string) (*Payload, error)
 }

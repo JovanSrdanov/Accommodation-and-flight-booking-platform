@@ -5,29 +5,23 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3aa9defa-c9f7-4ca4-8e89-0f1f4d46dee2" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Backend/api_gateway/communication/Response.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Backend/api_gateway/dto/User.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Backend/.env.local" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/.env.local" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/api_gateway/communication/client/auth_client.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/api_gateway/communication/handler/UserHandler.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/api_gateway/communication/handler/UserHandler.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/api_gateway/domain/model/Address.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/api_gateway/dto/Address.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/api_gateway/domain/model/UserInfo.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/api_gateway/interceptor/auth_client_interceptor.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/authorization_service/persistence/repository/AccountCredentialsRepositoryPG.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/authorization_service/persistence/repository/AccountCredentialsRepositoryPG.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/api_gateway/dto/User.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/api_gateway/dto/User.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/common/proto/authorization_service/authorization_service.proto" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/common/proto/authorization_service/authorization_service.proto" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Backend/common/proto/authorization_service/generated/authorization_service.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/common/proto/authorization_service/generated/authorization_service.pb.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/common/proto/authorization_service/generated/authorization_service_grpc.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/common/proto/authorization_service/generated/authorization_service_grpc.pb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/common/proto/authorization_service/generated/authorization_service.pb.gw.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/common/proto/authorization_service/generated/authorization_service.pb.gw.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Backend/common/proto/user_profile_service/generated/user_profile_service.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/common/proto/user_profile_service/generated/user_profile_service.pb.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Backend/common/proto/user_profile_service/generated/user_profile_service.pb.gw.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/common/proto/user_profile_service/generated/user_profile_service.pb.gw.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Backend/common/proto/user_profile_service/generated/user_profile_service_grpc.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/common/proto/user_profile_service/generated/user_profile_service_grpc.pb.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Backend/common/proto/user_profile_service/user_profile_service.proto" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/common/proto/user_profile_service/user_profile_service.proto" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Backend/common/swagger/apidocs.swagger.json" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/common/swagger/apidocs.swagger.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Backend/docker-compose.local.yml" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/docker-compose.local.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/docker-compose.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Backend/user_profile_service/communication/handler/UserProfileHandler.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/user_profile_service/communication/handler/UserProfileHandler.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/user_profile_service/domain/repository/IUserProfileRepository.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/user_profile_service/domain/repository/IUserProfileRepository.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/user_profile_service/domain/service/IUserProfileService.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/user_profile_service/domain/service/IUserProfileService.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Backend/user_profile_service/domain/service/UserProfileService.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/user_profile_service/domain/service/UserProfileService.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Backend/user_profile_service/persistence/repository/UserProfileRepositoryPG.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/user_profile_service/persistence/repository/UserProfileRepositoryPG.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/user_profile_service/startup/Configuration.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/user_profile_service/startup/Configuration.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/user_profile_service/startup/Server.go" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/user_profile_service/startup/Server.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -53,32 +47,32 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "DefaultGoTemplateProperty": "Go File",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.go.formatter.settings.were.checked": "true",
-    "RunOnceActivity.go.migrated.go.modules.settings": "true",
-    "RunOnceActivity.go.modules.go.list.on.any.changes.was.set": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "go.import.settings.migrated": "true",
-    "go.sdk.automatically.set": "true",
-    "last_opened_file_path": "/home/aleksandar/Repositories/Accommodation-booking-platform/FlightBookingApp",
-    "node.js.detected.package.eslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultGoTemplateProperty&quot;: &quot;Go File&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.formatter.settings.were.checked&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.migrated.go.modules.settings&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.modules.go.list.on.any.changes.was.set&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
+    &quot;go.sdk.automatically.set&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/aleksandar/Repositories/microservices_demo&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="GoMoveDeclarationDialog.RECENT_KEY">
       <recent name="$PROJECT_DIR$/Backend/api_gateway/domain/model" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/Backend/user_profile_service/communication" />
+      <recent name="$PROJECT_DIR$/Backend/user_profile_service/communication/orchestrator" />
       <recent name="$PROJECT_DIR$/Backend/api_gateway/Dto" />
       <recent name="$PROJECT_DIR$/Backend/authorization_service/startup" />
       <recent name="$PROJECT_DIR$/Backend/api_gateway/startup" />
-      <recent name="$PROJECT_DIR$/Backend/api_gateway/domain/model" />
-      <recent name="$PROJECT_DIR$/Backend/user_profile_service/startup" />
     </key>
   </component>
   <component name="RunManager" selected="Go Build.go build api gateway">

@@ -48,27 +48,46 @@ func (repo UserProfileRepositoryPG) Update(userProf *model.UserProfile) (*model.
 	if err := repo.dbClient.Save(&userProf).Error; err != nil {
 		return &model.UserProfile{}, err
 	}
+	repo.dbClient.Save(&userProf.Address)
 
 	return userProf, nil
 }
 func (repo UserProfileRepositoryPG) Delete(id uuid.UUID) error {
 
+	transaction := repo.dbClient.Begin()
+	//For panic recovery
+	defer func() {
+		r := recover()
+		if r != nil {
+			transaction.Rollback()
+		}
+	}()
+
 	var userProfile model.UserProfile
 	//Because of cascade deletion
-	result := repo.dbClient.First(&userProfile, id)
+	result := transaction.First(&userProfile, id)
 	if result.Error != nil {
+		transaction.Rollback()
 		return result.Error
 	}
 
 	// Delete the user profile and its associated address
-	result = repo.dbClient.Delete(&userProfile)
+	result = transaction.Delete(&userProfile)
 	if result.Error != nil {
+		transaction.Rollback()
 		return result.Error
 	}
 
-	result = repo.dbClient.Delete(&model.Address{ID: userProfile.AddressID})
+	result = transaction.Delete(&model.Address{ID: userProfile.AddressID})
 	if result.Error != nil {
+		transaction.Rollback()
 		return result.Error
+	}
+
+	err := transaction.Commit().Error
+	if err != nil {
+		transaction.Rollback()
+		return err
 	}
 
 	return nil

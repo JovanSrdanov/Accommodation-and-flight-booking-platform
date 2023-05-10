@@ -4,10 +4,12 @@ import (
 	"authorization_service/domain/model"
 	"authorization_service/domain/repository"
 	"authorization_service/domain/token"
+	"fmt"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"log"
 	"time"
 )
 
@@ -51,43 +53,80 @@ func (service AccountCredentialsService) GetById(id uuid.UUID) (*model.AccountCr
 	return accountCredentials, nil
 }
 
-func (service AccountCredentialsService) Login(username, password string) (string, model.Role, error) {
+func (service AccountCredentialsService) Login(username, password string) (string, model.Role, time.Time, error) {
 	accountCredentials, err := service.GetByUsername(username)
 	if err != nil {
-		return "", -1, status.Errorf(codes.NotFound, "incorrect username")
+		return "", -1, time.Time{}, status.Errorf(codes.NotFound, "incorrect username")
 	}
 
 	if !accountCredentials.IsPasswordCorrect(password) {
-		return "", -1, status.Errorf(codes.NotFound, "incorrect password")
+		return "", -1, time.Time{}, status.Errorf(codes.NotFound, "incorrect password")
 	}
 
-	accessToken, role, err := service.tokenMaker.CreateToken(
+	accessToken, payload, err := service.tokenMaker.CreateToken(
 		accountCredentials.ID,
 		15*time.Minute,
 		accountCredentials.Role,
 	)
 	if err != nil {
-		return "", -1, status.Errorf(codes.Internal, "Cannot generate access token")
+		return "", -1, time.Time{}, status.Errorf(codes.Internal, "Cannot generate access token")
 	}
 
-	return accessToken, role, nil
+	return accessToken, payload.Role, payload.ExpiredAt, nil
 }
 
-func (service AccountCredentialsService) Update(id uuid.UUID, newUsername, newPassword string) error {
-	accCred, err := service.GetById(id)
-	if err != nil {
-		return err
+func (service AccountCredentialsService) ChangeUsername(userId uuid.UUID, username string) error {
+	if username == "" {
+		return fmt.Errorf("username cannot be empty")
 	}
 
-	accCred.Username = newUsername
+	oldAccCred, err := service.GetById(userId)
+	if err != nil {
+		return fmt.Errorf("error while getting logged-in user info")
+	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
-	accCred.Password = string(hashedPassword)
+	if oldAccCred.Username == username {
+		return nil
+	}
 
-	err = service.accCredRepo.Update(accCred)
+	accCred, err := service.GetByUsername(username)
+	log.Println("new username: ", username)
+	log.Println("found acc: ", accCred)
+	log.Println("err: ", err)
+	if err == nil {
+		return fmt.Errorf("username already exists")
+	}
+
+	oldAccCred.Username = username
+	err = service.accCredRepo.Update(oldAccCred)
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func (service AccountCredentialsService) ChangePassword(id uuid.UUID, oldPassword, newPassword string) error {
+	oldAccCred, err := service.GetById(id)
+	if err != nil {
+		return err
+	}
+
+	if !oldAccCred.IsPasswordCorrect(oldPassword) {
+		return status.Errorf(codes.Unauthenticated, "provided old password is incorrect")
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
+	oldAccCred.Password = string(hashedPassword)
+
+	err = service.accCredRepo.Update(oldAccCred)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (service AccountCredentialsService) Delete(id uuid.UUID) error {
+	return service.accCredRepo.Delete(id)
 }

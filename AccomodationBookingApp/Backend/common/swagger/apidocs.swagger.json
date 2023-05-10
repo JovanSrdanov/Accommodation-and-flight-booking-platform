@@ -11,14 +11,36 @@
     "application/json"
   ],
   "paths": {
-    "/api-1/user-profile": {
-      "post": {
-        "operationId": "UserProfileService_Create",
+    "/api-1/user": {
+      "delete": {
+        "operationId": "UserProfileService_DeleteUser",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/user_profileCreateResponse"
+              "$ref": "#/definitions/user_profileDeleteResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "tags": [
+          "UserProfileService"
+        ]
+      }
+    },
+    "/api-1/user-profile": {
+      "put": {
+        "operationId": "UserProfileService_Update",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/user_profileUpdateRequest"
             }
           },
           "default": {
@@ -34,7 +56,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/user_profileCreateRequest"
+              "$ref": "#/definitions/user_profileUpdateRequest"
             }
           }
         ],
@@ -51,34 +73,6 @@
             "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/user_profileGetByIdResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/runtimeError"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "UserProfileService"
-        ]
-      },
-      "delete": {
-        "operationId": "UserProfileService_Delete",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/user_profileDeleteResponse"
             }
           },
           "default": {
@@ -156,14 +150,6 @@
         }
       }
     },
-    "user_profileCreateRequest": {
-      "type": "object",
-      "properties": {
-        "userProfile": {
-          "$ref": "#/definitions/user_profileUserProfile"
-        }
-      }
-    },
     "user_profileCreateResponse": {
       "type": "object",
       "properties": {
@@ -173,13 +159,35 @@
       }
     },
     "user_profileDeleteResponse": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
     },
     "user_profileGetByIdResponse": {
       "type": "object",
       "properties": {
         "userProfile": {
           "$ref": "#/definitions/user_profileUserProfile"
+        }
+      }
+    },
+    "user_profileUpdateRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "surname": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "address": {
+          "$ref": "#/definitions/user_profileAddress"
         }
       }
     },

@@ -8,13 +8,7 @@ import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 
 service AuthorizationService{
-  rpc Create(CreateRequest) returns(CreateResponse) {
-    option (google.api.http) = {
-      post: "/api-1/account-credentials",
-      //body:"*" works if JSON body has one top level object, otherwise you need to list all individual fields by hand
-      body: "*"
-    };
-  }
+  rpc Create(CreateRequest) returns(CreateResponse) {}
 
   rpc GetByUsername(GetByUsernameRequest) returns(GetByUsernameResponse) {
     option (google.api.http) = {
@@ -35,9 +29,16 @@ service AuthorizationService{
     };
   }
 
-  rpc Update(UpdateRequest) returns(google.protobuf.Empty) {
+  rpc ChangeUsername(ChangeUsernameRequest) returns(google.protobuf.Empty) {
     option (google.api.http) = {
-      put: "/api-1/account-credentials",
+      put: "/api-1/account-credentials/change-username",
+      body: "*"
+    };
+  }
+
+  rpc ChangePassword(ChangePasswordRequest) returns(google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/api-1/account-credentials/change-password",
       body: "*"
     };
   }
@@ -89,10 +90,15 @@ message LoginRequest {
 
 message LoginResponse {
   string access_token = 1;
-  Role role = 3;
+  Role role = 2;
+  string expiration_date = 3;
 }
 
-message UpdateRequest {
+message ChangeUsernameRequest {
   string username = 1;
-  string password = 2;
+}
+
+message ChangePasswordRequest {
+  string oldPassword = 1;
+  string newPassword = 2;
 }

@@ -4,7 +4,6 @@ import (
 	"authorization_service/domain/model"
 	"authorization_service/domain/token"
 	"github.com/gin-gonic/gin"
-	"github.com/o1egl/paseto"
 	"log"
 	"net/http"
 )
@@ -34,15 +33,16 @@ func ValidateToken(tokenMaker token.Maker) gin.HandlerFunc {
 			ctx.Keys = make(map[string]interface{})
 		}
 
-		var footerData map[string]interface{}
-		if err := paseto.ParseFooter(accessToken, &footerData); err != nil {
-			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"failed to parse token footer": err.Error()})
-			return
-		}
-
-		log.Println("footer data: ", footerData)
-
-		providedRole := int8(footerData["Role"].(float64))
+		//var footerData map[string]interface{}
+		//if err := paseto.ParseFooter(accessToken, &footerData); err != nil {
+		//	ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"failed to parse token footer": err.Error()})
+		//	return
+		//}
+		//
+		//log.Println("footer data: ", footerData)
+		//
+		//providedRole := int8(footerData["Role"].(float64))
+		providedRole := tokenPayload.Role
 		log.Println("provided role: ", providedRole)
 
 		ctx.Keys["id"] = tokenPayload.ID
@@ -63,7 +63,7 @@ func Authorization(validRoles []model.Role) gin.HandlerFunc {
 			return
 		}
 
-		userRole := model.Role(role.(int8))
+		userRole := role.(model.Role)
 		// checks if any of the user roles are in the valid roles group
 		if roleMatches(userRole, validRoles) {
 			return
