@@ -1,0 +1,152 @@
+syntax = "proto3";
+
+option go_package = "common/reservation";
+
+package reservation;
+
+import "google/api/annotations.proto";
+
+service ReservationService{
+  rpc CreateAvailability(CreateAvailabilityRequest) returns(CreateAvailabilityResponse) {
+    option (google.api.http) = {
+      post: "/api-1/availability",
+      //body:"*" works if JSON body has one top level object, otherwise you need to list all individual fields by hand
+      body: "*"
+    };
+  }
+
+  rpc GetAllMy(EmptyRequest) returns(GetAllMyResponse) {
+    option (google.api.http) = {
+      get: "/api-1/availability/all"
+    };
+  }
+
+  rpc UpdatePriceAndDate(UpdateRequest) returns(UpdateRequest) {
+    option (google.api.http) = {
+      put: "/api-1/availability",
+      body: "*"
+    };
+  }
+
+  rpc CreateReservation(CreateReservationRequest) returns(CreateReservationRequest) {
+    option (google.api.http) = {
+      post: "/api-1/reservation",
+      //body:"*" works if JSON body has one top level object, otherwise you need to list all individual fields by hand
+      body: "*"
+    };
+  }
+
+  rpc GetAllPendingReservations(EmptyRequest) returns(GetAllPendingReservationsResponse) {
+    option (google.api.http) = {
+      get: "/api-1/reservation/pending"
+    };
+  }
+
+  rpc GetAllRejectedReservations(EmptyRequest) returns(GetAllRejectedReservationsResponse) {
+    option (google.api.http) = {
+      get: "/api-1/reservation/rejected"
+    };
+  }
+
+  rpc RejectReservation(ChangeStatusRequest) returns(RejectReservationResponse) {
+    option (google.api.http) = {
+      get: "/api-1/reservation/reject/{id}"
+    };
+  }
+
+  rpc AcceptReservation(ChangeStatusRequest) returns(RejectReservationResponse) {
+    option (google.api.http) = {
+      get: "/api-1/reservation/accept/{id}"
+    };
+  }
+}
+
+message EmptyRequest {}
+
+message ChangeStatusRequest {
+  string id = 1;
+}
+
+message RejectReservationResponse {
+  string id = 1;
+}
+
+message AcceptReservationResponse {
+  string id = 1;
+}
+
+message GetAllPendingReservationsResponse {
+    ReservationRequest reservationRequest = 1;
+}
+
+message GetAllRejectedReservationsResponse {
+  ReservationRequest reservationRequest = 1;
+}
+
+message CreateReservationRequest {
+    ReservationRequest reservationRequest = 1;
+}
+
+message UpdateRequest {
+  PriceWithDate priceWithDate = 1;
+}
+
+message GetAllMyResponse {
+  repeated Availability availabilities = 1;
+}
+
+message CreateAvailabilityRequest {
+  AvailabilityRequest availability = 1;
+}
+
+message CreateAvailabilityResponse {
+  string availabilityId = 1;
+}
+
+message Availability {
+  repeated PriceWithDate availableDates = 1;
+  repeated Reservation reservedDates = 2;
+  string id = 3;
+  string accommodationId = 4;
+  bool automaticReservation = 5;
+  string hostId = 6;
+}
+
+message DateRange {
+  int64 from = 1;
+  int64 to = 2;
+}
+
+message PriceWithDate {
+  string Id = 1;
+  DateRange dateRange = 2;
+  int32 price = 3;
+  bool isPricePerPerson = 4;
+}
+
+message UpdatePriceAndDate {
+  string Id = 1;
+  DateRange dateRange = 2;
+  int32 price = 3;
+  bool isPricePerPerson = 4;
+  string availabilityId = 5;
+}
+
+message Reservation {
+  string Id = 1;
+  DateRange dateRange = 2;
+  int32 price = 3;
+  int32 numberOfGuests = 4;
+}
+
+message ReservationRequest {
+  string Id = 1;
+  string status = 2;
+  DateRange dateRange = 3;
+  string accommodationId = 4;
+}
+
+message AvailabilityRequest {
+  PriceWithDate priceWithDate = 1;
+  string accommodationId = 2;
+}

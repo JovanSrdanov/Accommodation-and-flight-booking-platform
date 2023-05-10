@@ -21,4 +21,11 @@ proto-accommodation:
 	--grpc-gateway_out ./common/proto/accommodation_service/generated --grpc-gateway_opt paths=source_relative \
 	./common/proto/accommodation_service/accommodation_service.proto
 
-proto-all: proto-authorization proto-user-profile proto-accommodation
+proto-reservation:
+	protoc -I ./common/proto/reservation_service -I ./common/proto \
+	--go_out ./common/proto/reservation_service/generated --go_opt paths=source_relative \
+	--go-grpc_out ./common/proto/reservation_service/generated --go-grpc_opt paths=source_relative \
+	--grpc-gateway_out ./common/proto/reservation_service/generated --grpc-gateway_opt paths=source_relative \
+	./common/proto/reservation_service/reservation_service.proto
+
+proto-all: proto-authorization proto-user-profile proto-accommodation proto-reservation
