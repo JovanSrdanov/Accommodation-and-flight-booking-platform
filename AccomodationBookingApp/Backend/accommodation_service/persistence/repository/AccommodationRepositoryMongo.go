@@ -25,6 +25,10 @@ func (repo AccommodationRepositoryMongo) Create(accommodation *model.Accommodati
 	collection := repo.getCollection()
 	accommodation.ID = primitive.NewObjectID()
 
+	//TODO Strahinja: ove iz pasetoa izvuci id
+
+	accommodation.HostId = "paseto"
+
 	log.Println(accommodation)
 
 	result, err := collection.InsertOne(ctx, &accommodation)
@@ -55,6 +59,31 @@ func (repo AccommodationRepositoryMongo) GetAll() (model.Accommodations, error) 
 	collection := repo.getCollection()
 
 	cursor, err := collection.Find(ctx, bson.M{})
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	var accommodations model.Accommodations
+	err = cursor.All(ctx, &accommodations)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	return accommodations, nil
+}
+
+func (repo AccommodationRepositoryMongo) GetAllMy() (model.Accommodations, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	collection := repo.getCollection()
+
+	//TODO Strahinja: Iz pasetoa izvuci id ulogovanog hosta
+
+	filter := bson.D{{"hostId", "paseto"}}
+	cursor, err := collection.Find(ctx, filter)
 	if err != nil {
 		log.Println(err)
 		return nil, err

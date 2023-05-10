@@ -36,6 +36,12 @@ service AccommodationService{
     };
   }
 
+  rpc GetAllMy(EmptyRequest) returns(GetAllResponse) {
+    option (google.api.http) = {
+      get: "/api-1/accommodation/all-my"
+    };
+  }
+
   rpc Delete(DeleteRequest) returns(DeleteResponse){
     option (google.api.http) = {
       delete: "/api-1/accommodation/{id}"
@@ -92,7 +98,8 @@ message  Accommodation{
   int32 MinGuests = 3;
   int32 MaxGuests = 4;
   repeated string Amenities = 5;
-  string Image = 6;
+  repeated string Images = 6;
+  string HostId = 8;
 }
 
 message AccommodationFull {
@@ -102,7 +109,8 @@ message AccommodationFull {
   int32 MinGuests = 4;
   int32 MaxGuests = 5;
   repeated string Amenities = 6;
-  string Image = 7;
+  repeated string Images = 7;
+  string HostId = 8;
 }
 
 message Address {

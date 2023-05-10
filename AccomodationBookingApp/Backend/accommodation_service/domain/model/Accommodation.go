@@ -11,7 +11,8 @@ type Accommodation struct {
 	MinGuests int32              `json:"minGuests" binding:"required" bson:"minGuests"`
 	MaxGuests int32              `json:"maxGuests" binding:"required" bson:"maxGuests"`
 	Amenities []string           `json:"amenities" binding:"required" bson:"amenities"`
-	Image     string             `json:"image" binding:"required" bson:"image"`
+	Images    []string           `json:"images" binding:"required" bson:"images"`
+	HostId    string             `json:"hostId,omitempty" bson:"hostId"`
 }
 
 type Accommodations []*Accommodation

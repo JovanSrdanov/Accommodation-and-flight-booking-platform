@@ -91,6 +91,17 @@ func (handler AccommodationHandler) GetAll(ctx context.Context, in *accommodatio
 	return mapper.mapToGetAllResponse(accommodations), nil
 }
 
+func (handler AccommodationHandler) GetAllMy(ctx context.Context, in *accommodation.EmptyRequest) (*accommodation.GetAllResponse, error) {
+	accommodations, err := handler.accommodationService.GetAllMy()
+	if err != nil {
+		return nil, err
+	}
+
+	mapper := NewAccommodationMapper()
+
+	return mapper.mapToGetAllResponse(accommodations), nil
+}
+
 func (handler AccommodationHandler) GetAmenities(ctx context.Context, in *accommodation.EmptyRequest) (*accommodation.GetAmenitiesResponse, error) {
 	amenities, err := handler.accommodationService.GetAmenities()
 	if err != nil {

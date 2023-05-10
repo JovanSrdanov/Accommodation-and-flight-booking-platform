@@ -47,6 +47,10 @@ func (service AccommodationService) GetAll() (model.Accommodations, error) {
 	return service.accommodationRepo.GetAll()
 }
 
+func (service AccommodationService) GetAllMy() (model.Accommodations, error) {
+	return service.accommodationRepo.GetAllMy()
+}
+
 func (service AccommodationService) GetAmenities() ([]string, error) {
 	return service.accommodationRepo.GetAmenities()
 }

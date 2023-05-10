@@ -23,7 +23,7 @@ func (mapper AccommodationMapper) mapFromCreateRequest(request *accommodation.Cr
 		MinGuests: request.Accommodation.MinGuests,
 		MaxGuests: request.Accommodation.MaxGuests,
 		Amenities: request.Accommodation.Amenities,
-		Image:     request.Accommodation.Image,
+		Images:    request.Accommodation.Images,
 	}
 }
 
@@ -36,7 +36,8 @@ func (mapper AccommodationMapper) mapToGetByIdResponse(model *model.Accommodatio
 			MinGuests: model.MinGuests,
 			MaxGuests: model.MaxGuests,
 			Amenities: model.Amenities,
-			Image:     model.Image,
+			Images:    model.Images,
+			HostId:    model.HostId,
 		},
 	}
 }
@@ -53,7 +54,8 @@ func (mapper AccommodationMapper) mapToGetAllResponse(model model.Accommodations
 			MinGuests: value.MinGuests,
 			MaxGuests: value.MaxGuests,
 			Amenities: value.Amenities,
-			Image:     value.Image,
+			Images:    value.Images,
+			HostId:    value.HostId,
 		})
 	}
 
