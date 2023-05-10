@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
+	"strings"
 )
 
 type UserInfo struct {
@@ -40,10 +41,10 @@ func (role *Role) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	switch roleString {
-	case "Guest":
+	switch strings.ToLower(roleString) {
+	case "guest":
 		*role = Guest
-	case "Host":
+	case "host":
 		*role = Host
 	default:
 		return fmt.Errorf("invalid Role value: %s", roleString)
