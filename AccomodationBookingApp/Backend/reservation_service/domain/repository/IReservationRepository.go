@@ -1,0 +1,18 @@
+package repository
+
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"reservation_service/domain/model"
+)
+
+type IReservationRepository interface {
+	CreateAvailability(availability *model.AvailabilityRequest) (primitive.ObjectID, error)
+	GetAllMy() (model.Availabilities, error)
+	UpdatePriceAndDate(priceWithDate *model.UpdatePriceAndDate) (*model.UpdatePriceAndDate, error)
+	CreateReservation(reservation *model.Reservation) (*model.Reservation, error)
+	GetAllPendingReservations() (*model.Reservation, error)
+	GetAllRejectedReservations() (*model.Reservation, error)
+	RejectReservation(id primitive.ObjectID) (primitive.ObjectID, error)
+	AcceptReservation(id primitive.ObjectID) (primitive.ObjectID, error)
+	CancelReservation(id primitive.ObjectID) (primitive.ObjectID, error)
+}

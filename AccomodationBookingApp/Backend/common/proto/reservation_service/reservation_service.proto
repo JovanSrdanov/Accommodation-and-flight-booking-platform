@@ -8,6 +8,7 @@ import "google/api/annotations.proto";
 
 service ReservationService{
   rpc CreateAvailability(CreateAvailabilityRequest) returns(CreateAvailabilityResponse) {
+    //Appends to availableDates array
     option (google.api.http) = {
       post: "/api-1/availability",
       //body:"*" works if JSON body has one top level object, otherwise you need to list all individual fields by hand
@@ -16,12 +17,14 @@ service ReservationService{
   }
 
   rpc GetAllMy(EmptyRequest) returns(GetAllMyResponse) {
+    //Gets all availabilities for logged host
     option (google.api.http) = {
       get: "/api-1/availability/all"
     };
   }
 
   rpc UpdatePriceAndDate(UpdateRequest) returns(UpdateRequest) {
+    //Update price and available dateRange
     option (google.api.http) = {
       put: "/api-1/availability",
       body: "*"
@@ -29,6 +32,8 @@ service ReservationService{
   }
 
   rpc CreateReservation(CreateReservationRequest) returns(CreateReservationRequest) {
+    //Create reservation with pending status, if isAutomatic is enabled then status is set to accepted automatically
+    //Reservation can not be created if it its date overlaps with existing *accepted* reservation
     option (google.api.http) = {
       post: "/api-1/reservation",
       //body:"*" works if JSON body has one top level object, otherwise you need to list all individual fields by hand
@@ -59,9 +64,23 @@ service ReservationService{
       get: "/api-1/reservation/accept/{id}"
     };
   }
+
+  rpc CancelReservation(ChangeStatusRequest) returns(RejectReservationResponse) {
+    option (google.api.http) = {
+      get: "/api-1/reservation/cancel/{id}"
+    };
+  }
 }
 
 message EmptyRequest {}
+
+message CreateAvailabilityRequest {
+  AvailabilityRequest availability = 1;
+}
+
+message CreateAvailabilityResponse {
+  string id = 1;
+}
 
 message ChangeStatusRequest {
   string id = 1;
@@ -76,40 +95,31 @@ message AcceptReservationResponse {
 }
 
 message GetAllPendingReservationsResponse {
-    ReservationRequest reservationRequest = 1;
+  Reservation reservation = 1;
 }
 
 message GetAllRejectedReservationsResponse {
-  ReservationRequest reservationRequest = 1;
+  Reservation reservation = 1;
 }
 
 message CreateReservationRequest {
-    ReservationRequest reservationRequest = 1;
+  Reservation reservation = 1;
 }
 
 message UpdateRequest {
-  PriceWithDate priceWithDate = 1;
+  UpdatePriceAndDate priceWithDate = 1;
 }
 
 message GetAllMyResponse {
   repeated Availability availabilities = 1;
 }
 
-message CreateAvailabilityRequest {
-  AvailabilityRequest availability = 1;
-}
-
-message CreateAvailabilityResponse {
-  string availabilityId = 1;
-}
-
 message Availability {
-  repeated PriceWithDate availableDates = 1;
-  repeated Reservation reservedDates = 2;
-  string id = 3;
-  string accommodationId = 4;
-  bool automaticReservation = 5;
-  string hostId = 6;
+  string id = 1;
+  repeated PriceWithDate availableDates = 2;
+  string accommodationId = 3;
+  bool isAutomaticReservation = 4;
+  string hostId = 5;
 }
 
 message DateRange {
@@ -125,25 +135,17 @@ message PriceWithDate {
 }
 
 message UpdatePriceAndDate {
-  string Id = 1;
-  DateRange dateRange = 2;
-  int32 price = 3;
-  bool isPricePerPerson = 4;
-  string availabilityId = 5;
+  PriceWithDate updatedPriceWithDate = 1;
+  string accommodationId = 2;
 }
 
 message Reservation {
   string Id = 1;
-  DateRange dateRange = 2;
-  int32 price = 3;
-  int32 numberOfGuests = 4;
-}
-
-message ReservationRequest {
-  string Id = 1;
   string status = 2;
   DateRange dateRange = 3;
   string accommodationId = 4;
+  int32 price = 5;
+  int32 numberOfGuests = 6;
 }
 
 message AvailabilityRequest {

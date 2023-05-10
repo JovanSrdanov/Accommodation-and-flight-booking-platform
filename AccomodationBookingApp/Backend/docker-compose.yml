@@ -19,6 +19,8 @@ services:
       USER_PROFILE_SERVICE_PORT: ${USER_PROFILE_SERVICE_PORT}
       ACCOMMODATION_SERVICE_HOST: ${ACCOMMODATION_SERVICE_HOST}
       ACCOMMODATION_SERVICE_PORT: ${ACCOMMODATION_SERVICE_PORT}
+      RESERVATION_SERVICE_HOST: ${RESERVATION_SERVICE_HOST}
+      RESERVATION_SERVICE_PORT: ${RESERVATION_SERVICE_PORT}
     networks:
       - network
 
@@ -139,8 +141,42 @@ services:
     networks:
       - network
 
+  reservation_service:
+    image: reservation_service
+    container_name: reservation_service
+    build:
+      context: .
+      dockerfile: ./reservation_service/Dockerfile
+    restart: on-failure
+    environment:
+      RESERVATION_SERVICE_HOST: ${RESERVATION_SERVICE_HOST}
+      RESERVATION_SERVICE_PORT: ${RESERVATION_SERVICE_PORT}
+      RESERVATION_SERVICE_DB_NAME: ${RESERVATION_SERVICE_DB_NAME}
+      RESERVATION_SERVICE_DB_PORT: ${RESERVATION_SERVICE_DB_PORT}
+    networks:
+      - network
+    depends_on:
+      reservationMongo:
+        condition: service_healthy
+
+  reservationMongo:
+    image: mongo
+    container_name: ${RESERVATION_SERVICE_DB_NAME}
+    ports:
+      - "27018:27017"
+    volumes:
+      - reservationDb:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok'
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    networks:
+      - network
+
 volumes:
   accommodationDb:
+  reservationDb:
 
 networks:
   network:
