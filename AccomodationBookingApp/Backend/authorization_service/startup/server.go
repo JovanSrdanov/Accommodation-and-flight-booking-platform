@@ -85,7 +85,7 @@ func getProtectedMethodsWithAllowedRoles() map[string][]model.Role {
 	const authServicePath = "/authorization.AuthorizationService/"
 
 	return map[string][]model.Role{
-		authServicePath + "GetByUsername":  {model.Guest},
+		authServicePath + "GetByUsername":  {model.Guest, model.Host},
 		authServicePath + "ChangeUsername": {model.Guest, model.Host},
 		authServicePath + "ChangePassword": {model.Guest, model.Host},
 	}

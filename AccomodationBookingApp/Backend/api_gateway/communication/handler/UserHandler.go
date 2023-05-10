@@ -35,7 +35,7 @@ func (handler UserHandler) Init(router *gin.RouterGroup) {
 	userGroup := router.Group("/user")
 	userGroup.GET("/:username/info",
 		middleware.ValidateToken(handler.tokenMaker),
-		middleware.Authorization([]model.Role{model.Guest}),
+		middleware.Authorization([]model.Role{model.Guest, model.Host}),
 		handler.GetUserInfo)
 	userGroup.GET("/logged-in-info",
 		middleware.ValidateToken(handler.tokenMaker),
