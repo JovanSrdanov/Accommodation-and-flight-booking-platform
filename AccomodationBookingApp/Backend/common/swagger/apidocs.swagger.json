@@ -11,14 +11,14 @@
     "application/json"
   ],
   "paths": {
-    "/api-1/user-profile": {
-      "post": {
-        "operationId": "UserProfileService_Create",
+    "/api-1/user": {
+      "delete": {
+        "operationId": "UserProfileService_DeleteUser",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/user_profileCreateResponse"
+              "$ref": "#/definitions/user_profileDeleteResponse"
             }
           },
           "default": {
@@ -28,20 +28,12 @@
             }
           }
         },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/user_profileCreateRequest"
-            }
-          }
-        ],
         "tags": [
           "UserProfileService"
         ]
-      },
+      }
+    },
+    "/api-1/user-profile": {
       "put": {
         "operationId": "UserProfileService_Update",
         "responses": {
@@ -81,34 +73,6 @@
             "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/user_profileGetByIdResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/runtimeError"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "UserProfileService"
-        ]
-      },
-      "delete": {
-        "operationId": "UserProfileService_Delete",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/user_profileDeleteResponse"
             }
           },
           "default": {
@@ -183,14 +147,6 @@
         },
         "streetNumber": {
           "type": "string"
-        }
-      }
-    },
-    "user_profileCreateRequest": {
-      "type": "object",
-      "properties": {
-        "userProfile": {
-          "$ref": "#/definitions/user_profileUserProfile"
         }
       }
     },

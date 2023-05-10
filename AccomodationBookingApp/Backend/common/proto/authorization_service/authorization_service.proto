@@ -8,13 +8,7 @@ import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 
 service AuthorizationService{
-  rpc Create(CreateRequest) returns(CreateResponse) {
-    option (google.api.http) = {
-      post: "/api-1/account-credentials",
-      //body:"*" works if JSON body has one top level object, otherwise you need to list all individual fields by hand
-      body: "*"
-    };
-  }
+  rpc Create(CreateRequest) returns(CreateResponse) {}
 
   rpc GetByUsername(GetByUsernameRequest) returns(GetByUsernameResponse) {
     option (google.api.http) = {

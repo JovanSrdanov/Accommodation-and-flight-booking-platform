@@ -9,13 +9,7 @@ import "google/api/annotations.proto";
 
 
 service UserProfileService{
-  rpc Create(CreateRequest) returns(CreateResponse) {
-    option (google.api.http) = {
-      post: "/api-1/user-profile",
-      //body:"*" works if JSON body has one top level object, otherwise you need to list all individual fields by hand
-      body: "*"
-    };
-  }
+  rpc Create(CreateRequest) returns(CreateResponse) {}
 
   rpc Update(UpdateRequest) returns(UpdateRequest) {
     option (google.api.http) = {
@@ -29,13 +23,14 @@ service UserProfileService{
       get: "/api-1/user-profile/{id}"
     };
   }
+//Internal usage only
+ rpc Delete(DeleteRequest) returns(DeleteResponse){ }
 
- rpc Delete(DeleteRequest) returns(DeleteResponse){
-   option (google.api.http) = {
-     delete: "/api-1/user-profile/{id}"
-   };
- }
-
+  rpc DeleteUser(DeleteUserRequest) returns(DeleteResponse){
+    option (google.api.http) = {
+      delete: "/api-1/user"
+    };
+  }
 }
 
 
@@ -65,6 +60,8 @@ message GetByIdRequest{
 message DeleteRequest{
   string id = 1;
 }
+
+message DeleteUserRequest{}
 
 message DeleteResponse{
   string message = 1;
