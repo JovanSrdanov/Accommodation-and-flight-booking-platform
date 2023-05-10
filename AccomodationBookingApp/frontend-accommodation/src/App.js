@@ -13,7 +13,7 @@ import HostAPlacePage from "./pages/host-pages/host-a-place-page";
 import ReservationsAndRequestsPage from "./pages/host-pages/reservations-and-requests-page";
 import ProfilePage from "./pages/guest-pages/profile-page";
 import SearchAccommodationPage from "./pages/all-roles-pages/search-accommodation-page";
-import React, {useEffect, useState} from "react";
+import React, {useEffect} from "react";
 import HistoryIcon from '@mui/icons-material/History';
 import CheckIcon from '@mui/icons-material/Check';
 import RecommendOutlinedIcon from '@mui/icons-material/RecommendOutlined';
@@ -28,12 +28,12 @@ import TravelExploreIcon from '@mui/icons-material/TravelExplore';
 
 function App() {
 
-
-    const [role, setRole] = useState(null);
     const navigate = useNavigate();
+    const ROLE = localStorage.getItem('role');
 
     const pasetoExpirationRole = () => {
         const expirationDateStr = localStorage.getItem('expirationDate');
+
         if (expirationDateStr) {
 
             const currentTime = new Date()
@@ -58,15 +58,14 @@ function App() {
                 localStorage.removeItem('paseto');
                 localStorage.removeItem('role');
                 localStorage.removeItem('expirationDate');
-                setRole(null);
+
             } else {
-                setRole(localStorage.getItem('role'))
+
             }
         } else {
             localStorage.removeItem('paseto');
             localStorage.removeItem('role');
             localStorage.removeItem('expirationDate');
-            setRole(null);
         }
     };
 
@@ -79,15 +78,8 @@ function App() {
         localStorage.removeItem('paseto');
         localStorage.removeItem('role');
         localStorage.removeItem('expirationDate');
-        setRole(null);
         navigate('/login');
     };
-
-
-    const IS_HOST = role === 'Host';
-    const IS_GUEST = role === 'Guest';
-
-
     return (
 
 
@@ -107,7 +99,7 @@ function App() {
                             </Button>
                         </Tooltip>
 
-                        {IS_GUEST && (
+                        {ROLE === 'Guest' && (
                             <>
                                 <Tooltip title="View the places you have booked" arrow>
                                     <Button sx={{color: 'inherit'}}
@@ -138,7 +130,7 @@ function App() {
                             </>
                         )}
 
-                        {IS_HOST && (
+                        {ROLE === 'Host' && (
                             <>
 
                                 <Tooltip title="Places you host" arrow>
@@ -165,7 +157,7 @@ function App() {
                             </>
                         )}
 
-                        {(IS_GUEST || IS_HOST) && (
+                        {(ROLE === 'Guest' || ROLE === 'Host') && (
                             <>
                                 <Tooltip title="Your informations" arrow>
                                     <Button color="info" sx={{marginLeft: 'auto'}}
@@ -186,7 +178,7 @@ function App() {
                             </>
                         )}
 
-                        {(!IS_GUEST && !IS_HOST) && (
+                        {(!(ROLE === 'Guest') && !(ROLE === 'Host')) && (
                             <>   <Tooltip title="View all reservations and request for reservations" arrow>
                                 <Button color="warning" sx={{marginLeft: 'auto'}} startIcon={<LoginIcon/>}
                                         onClick={() => navigate('/login')}>
@@ -208,36 +200,39 @@ function App() {
                 </AppBar>
                 <Routes>
 
-                    {IS_GUEST && (
+
+                    {ROLE === 'Guest' && (
                         <>
+
                             <Route path="/booked-places" element={<BookedPlacesPage/>}/>
                             <Route path="/visiting-history" element={<VisitingHistoryPage/>}/>
                             <Route path="/recommendations-for-you" element={<RecommendationsForYouPage/>}/>
-
                             <Route path="/profile" element={<ProfilePage/>}/>
                             <Route path="/search-accommodation" element={<SearchAccommodationPage/>}/>
+                            <Route path="/*" element={<Navigate to="/search-accommodation"/>}/>
                         </>
                     )}
 
-                    {IS_HOST && (
+                    {ROLE === 'Host' && (
                         <>
                             <Route path="/my-places" element={<MyPlacesPage/>}/>
                             <Route path="/host-a-place" element={<HostAPlacePage/>}/>
                             <Route path="/reservations-and-requests" element={<ReservationsAndRequestsPage/>}/>
                             <Route path="/profile" element={<ProfilePage/>}/>
                             <Route path="/search-accommodation" element={<SearchAccommodationPage/>}/>
+                            <Route path="/*" element={<Navigate to="/search-accommodation"/>}/>
                         </>
                     )}
 
-                    {!IS_HOST && !IS_GUEST && (
+                    {ROLE === null && (
                         <>
                             <Route path="/login" element={<LoginPage/>}/>
                             <Route path="/register" element={<RegisterPage/>}/>
+                            <Route path="/search-accommodation" element={<SearchAccommodationPage/>}/>
+                            <Route path="/*" element={<Navigate to="/search-accommodation"/>}/>
                         </>
                     )}
-                    <Route path="/search-accommodation" element={<SearchAccommodationPage/>}/>
-                    <Route path="/" element={<Navigate to="/search-accommodation"/>}/>
-                    <Route path="*" element={<Navigate to="/search-accommodation"/>}/>
+
                 </Routes>
             </Box>
         </div>

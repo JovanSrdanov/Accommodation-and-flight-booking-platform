@@ -32,7 +32,7 @@ function Login() {
             localStorage.setItem('role', role);
             localStorage.setItem('expirationDate', expirationDate);
             if (role === 'Host') {
-                navigate('/host-profile')
+                navigate('/profile')
                 return
             }
             if (role === 'Guest') {
