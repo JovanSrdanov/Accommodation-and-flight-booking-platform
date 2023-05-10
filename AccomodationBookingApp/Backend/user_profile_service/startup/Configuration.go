@@ -15,6 +15,8 @@ type Configuration struct {
 	NatsPass                 string
 	DeleteUserCommandSubject string
 	DeleteUserReplySubject   string
+	AuthServiceHost          string
+	AuthServicePort          string
 }
 
 func NewConfiguration() *Configuration {
@@ -31,5 +33,7 @@ func NewConfiguration() *Configuration {
 		NatsPass:                 os.Getenv("NATS_PASS"),
 		DeleteUserCommandSubject: os.Getenv("DELETE_USER_COMMAND_SUBJECT"),
 		DeleteUserReplySubject:   os.Getenv("DELETE_USER_REPLY_SUBJECT"),
+		AuthServiceHost:          os.Getenv("AUTHORIZATION_SERVICE_HOST"),
+		AuthServicePort:          os.Getenv("AUTHORIZATION_SERVICE_PORT"),
 	}
 }

@@ -40,7 +40,8 @@ func (server *Server) Start() {
 	deleteUserOrchestrator := server.initDeleteUserOrchestrator(commandPublisher, replySubscriber)
 
 	userProfileService := service.NewUserProfileService(*userProfileRepo, deleteUserOrchestrator)
-	userProfileHandler := handler.NewUserProfileHandler(*userProfileService)
+	authServiceAddress := fmt.Sprintf("%s:%s", server.config.AuthServiceHost, server.config.AuthServicePort)
+	userProfileHandler := handler.NewUserProfileHandler(*userProfileService, authServiceAddress)
 
 	//Delete handler that listens orchestrator
 	commandSubscriber := server.initDeleteSubscriber(server.config.DeleteUserCommandSubject, QueueGroup)
@@ -128,6 +129,7 @@ func getProtectedMethodsWithAllowedRoles() map[string][]model.Role {
 	const authServicePath = "/user_profile.UserProfileService/"
 
 	return map[string][]model.Role{
-		authServicePath + "Update": {model.Guest, model.Host},
+		authServicePath + "Update":     {model.Guest, model.Host},
+		authServicePath + "DeleteUser": {model.Guest, model.Host},
 	}
 }
