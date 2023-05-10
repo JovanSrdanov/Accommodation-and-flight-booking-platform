@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
 import CancelIcon from '@mui/icons-material/Cancel';
-import {Box, Button, Card, Grid, TextField} from "@mui/material";
+import {Box, Button, Card, Dialog, DialogActions, DialogContent, DialogTitle, Grid, TextField} from "@mui/material";
 import {Flex} from "reflexbox";
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -11,20 +11,61 @@ import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import CardHeader from '@mui/material/CardHeader';
-
 import Divider from '@mui/material/Divider';
 import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
+import {useNavigate} from "react-router-dom";
+import interceptor from "../../interceptor/interceptor";
 
 
 function HostAPlace() {
     const [uploadedImages, setUploadedImages] = useState([]);
+    const [checked, setChecked] = React.useState([]);
+    const [left, setLeft] = React.useState(["Wi-Fi", "Heating", "AC", "Kitchen"]);
+    const [right, setRight] = React.useState([]);
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [placeData, setPlaceData] = useState({
+        name: '',
+        minGuests: '1',
+        maxGuests: '1',
+        country: '',
+        city: '',
+        street: '',
+        streetNumber: '',
+    });
 
+    const createAccommodation = () => {
+        const promises = [];
+        uploadedImages.forEach((image) => {
+            const promise = new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    resolve(reader.result);
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(image.file);
+            });
+            promises.push(promise);
+        });
+        Promise.all(promises).then((base64Images) => {
+            const data = {
+                ...placeData,
+                amenities: right,
+                images: base64Images,
+            };
+            interceptor.post("wowow", data).then(() => {
+                setSuccessDialogShow(true);
+            }).catch((err) => {
+                console.log(err);
+            });
+        }).catch((err) => {
+            console.log(err);
+        });
+    };
     const handleImageRemove = (index) => {
         const updatedItems = [...uploadedImages];
         updatedItems.splice(index, 1);
         setUploadedImages(updatedItems);
     };
-
     const handleImageUpload = (event) => {
         const files = Array.from(event.target.files);
 
@@ -32,13 +73,14 @@ function HostAPlace() {
             .map((file) => ({
                 img: URL.createObjectURL(file),
                 file,
-                id: Date.now(), // add a unique identifier to each file object
+                id: Date.now(),
             }));
-
         setUploadedImages([...uploadedImages, ...uploadedItems]);
     };
 
-    ////////////////////////////////////////////
+    const leftChecked = intersection(checked, left);
+    const rightChecked = intersection(checked, right);
+
     function not(a, b) {
         return a.filter((value) => b.indexOf(value) === -1);
     }
@@ -50,14 +92,6 @@ function HostAPlace() {
     function union(a, b) {
         return [...a, ...not(b, a)];
     }
-
-
-    const [checked, setChecked] = React.useState([]);
-    const [left, setLeft] = React.useState(["Wi-Fi", "Heating", "AC", "Kitchen", "Kitchen", "Kitchen", "Kitchen", "Kitchen", "Kitchen", "Kitchen", "Kitchen"]);
-    const [right, setRight] = React.useState([]);
-
-    const leftChecked = intersection(checked, left);
-    const rightChecked = intersection(checked, right);
 
     const handleToggle = (value) => () => {
         const currentIndex = checked.indexOf(value);
@@ -71,9 +105,7 @@ function HostAPlace() {
 
         setChecked(newChecked);
     };
-
     const numberOfChecked = (items) => intersection(checked, items).length;
-
     const handleToggleAll = (items) => () => {
         if (numberOfChecked(items) === items.length) {
             setChecked(not(checked, items));
@@ -81,19 +113,16 @@ function HostAPlace() {
             setChecked(union(checked, items));
         }
     };
-
     const handleCheckedRight = () => {
         setRight(right.concat(leftChecked));
         setLeft(not(left, leftChecked));
         setChecked(not(checked, leftChecked));
     };
-
     const handleCheckedLeft = () => {
         setLeft(left.concat(rightChecked));
         setRight(not(right, rightChecked));
         setChecked(not(checked, rightChecked));
     };
-
     const customList = (title, items) => (
         <Card>
             <CardHeader
@@ -154,17 +183,6 @@ function HostAPlace() {
     );
 
 
-    ////////////////////////////////////////////
-    const [placeData, setPlaceData] = useState({
-        name: '',
-        minGuests: '1',
-        maxGuests: '1',
-        country: '',
-        city: '',
-        street: '',
-        streetNumber: '',
-    });
-
     const handleChange = (event) => {
         const {name, value} = event.target;
         setPlaceData((prevPlaceData) => ({
@@ -174,205 +192,204 @@ function HostAPlace() {
     };
 
 
+    const handleImageClick = (image) => {
+        setSelectedImage(image);
+    };
+    const handleImageClose = () => {
+        setSelectedImage(null);
+
+    };
+
+    const [successDialogShow, setSuccessDialogShow] = useState(false)
+    const navigate = useNavigate();
+    const handleClose = () => {
+        setSuccessDialogShow(false)
+        navigate('my-places');
+    };
+
     return (
-        <div className="wrapper">
-            <Flex flexDirection="rows">
-                <Flex flexDirection="column" alignItems="center" m={2}>
-                    <Box m={1}>
-                        Provide basic information
-                    </Box>
-                    <Box m={1}>
-                        <TextField
-                            fullWidth
-                            variant="filled"
-                            label="Name of the place"
-                            type="text"
-                            name="name"
-                            value={placeData.name}
-                            onChange={handleChange}
-                        />
-                    </Box>
-
-                    <Box m={1}>
-                        <TextField
-                            fullWidth
-                            variant="filled"
-                            type="number"
-                            label="Minimum number of guests"
-                            InputProps={{inputProps: {min: 1}}}
-                            name="minGuests"
-                            value={placeData.minGuests}
-                            onChange={handleChange}
-                        />
-                    </Box>
-
-                    <Box m={1}>
-                        <TextField
-                            fullWidth
-                            variant="filled"
-                            type="number"
-                            label="Maximum number of guests"
-                            InputProps={{inputProps: {min: 1}}}
-                            name="maxGuests"
-                            value={placeData.maxGuests}
-                            onChange={handleChange}
-                        />
-                    </Box>
-
-                    <Box m={1}>
-                        <TextField
-                            fullWidth
-                            variant="filled"
-                            label="Country"
-                            type="text"
-                            name="country"
-                            value={placeData.country}
-                            onChange={handleChange}
-                        />
-                    </Box>
-
-                    <Box m={1}>
-                        <TextField
-                            fullWidth
-                            variant="filled"
-                            label="City"
-                            type="text"
-                            name="city"
-                            value={placeData.city}
-                            onChange={handleChange}
-                        />
-                    </Box>
-
-                    <Box m={1}>
-                        <TextField
-                            fullWidth
-                            variant="filled"
-                            label="Street"
-                            type="text"
-                            name="street"
-                            value={placeData.street}
-                            onChange={handleChange}
-                        />
-                    </Box>
-
-                    <Box m={1}>
-                        <TextField
-                            fullWidth
-                            variant="filled"
-                            label="Street number"
-                            type="text"
-                            name="streetNumber"
-                            value={placeData.streetNumber}
-                            onChange={handleChange}
-                        />
-                    </Box>
-
-                </Flex>
-                <hr
-                    style={{
-                        margin: "10px",
-                        border: "1px solid grey",
-                    }}
-                />
-                <Flex flexDirection="column" alignItems="center" m={2}>
-                    <Box m={1}>
-                        Select amenities
-                    </Box>
-                    <Grid container spacing={2} justifyContent="center">
-                        <Grid item>{customList('Choices', left)}</Grid>
-                        <Grid item>
-                            <Grid container direction="column" alignItems="center">
-                                <Button
-                                    sx={{my: 0.5}}
-                                    variant="outlined"
-                                    size="small"
-                                    onClick={handleCheckedRight}
-                                    disabled={leftChecked.length === 0}
-                                    aria-label="move selected right"
-                                >
-                                    &gt;
-                                </Button>
-                                <Button
-                                    sx={{my: 0.5}}
-                                    variant="outlined"
-                                    size="small"
-                                    onClick={handleCheckedLeft}
-                                    disabled={rightChecked.length === 0}
-                                    aria-label="move selected left"
-                                >
-                                    &lt;
-                                </Button>
+        <>
+            <Dialog open={Boolean(selectedImage)} onClose={handleImageClose} maxWidth="lg" fullWidth>
+                <DialogContent>
+                    <img src={selectedImage?.img} alt="" style={{width: '100%'}}/>
+                    <DialogActions>
+                        <Button onClick={handleImageClose} variant="contained">Close</Button>
+                    </DialogActions>
+                </DialogContent>
+            </Dialog>
+            <Dialog onClose={handleClose} open={successDialogShow}>
+                <DialogTitle>Accommodation created successfully!</DialogTitle>
+                <DialogActions>
+                    <Button onClick={handleClose} variant="contained">Close</Button>
+                </DialogActions>
+            </Dialog>
+            <div className="wrapper">
+                <Flex flexDirection="rows">
+                    <Flex flexDirection="column" alignItems="center" m={2}>
+                        <Box m={1}>Provide basic information</Box>
+                        <Box m={1}>
+                            <TextField
+                                fullWidth
+                                variant="filled"
+                                label="Name of the place"
+                                type="text"
+                                name="name"
+                                value={placeData.name}
+                                onChange={handleChange}
+                            />
+                        </Box>
+                        <Box m={1}>
+                            <TextField
+                                fullWidth
+                                variant="filled"
+                                type="number"
+                                label="Minimum number of guests"
+                                InputProps={{inputProps: {min: 1}}}
+                                name="minGuests"
+                                value={placeData.minGuests}
+                                onChange={handleChange}
+                            />
+                        </Box>
+                        <Box m={1}>
+                            <TextField
+                                fullWidth
+                                variant="filled"
+                                type="number"
+                                label="Maximum number of guests"
+                                InputProps={{inputProps: {min: 1}}}
+                                name="maxGuests"
+                                value={placeData.maxGuests}
+                                onChange={handleChange}
+                            />
+                        </Box>
+                        <Box m={1}>
+                            <TextField
+                                fullWidth
+                                variant="filled"
+                                label="Country"
+                                type="text"
+                                name="country"
+                                value={placeData.country}
+                                onChange={handleChange}
+                            />
+                        </Box>
+                        <Box m={1}>
+                            <TextField
+                                fullWidth
+                                variant="filled"
+                                label="City"
+                                type="text"
+                                name="city"
+                                value={placeData.city}
+                                onChange={handleChange}
+                            />
+                        </Box>
+                        <Box m={1}>
+                            <TextField
+                                fullWidth
+                                variant="filled"
+                                label="Street"
+                                type="text"
+                                name="street"
+                                value={placeData.street}
+                                onChange={handleChange}
+                            />
+                        </Box>
+                        <Box m={1}>
+                            <TextField
+                                fullWidth
+                                variant="filled"
+                                label="Street number"
+                                type="text"
+                                name="streetNumber"
+                                value={placeData.streetNumber}
+                                onChange={handleChange}
+                            />
+                        </Box>
+                    </Flex>
+                    <hr style={{margin: "5px", border: "1px solid grey",}}/>
+                    <Flex flexDirection="column" alignItems="center" m={2}>
+                        <Box m={1}>Select amenities</Box>
+                        <Grid container spacing={2} justifyContent="center">
+                            <Grid item>{customList('Choices', left)}</Grid>
+                            <Grid item>
+                                <Grid container direction="column" alignItems="center">
+                                    <Button
+                                        sx={{my: 0.5}}
+                                        variant="outlined"
+                                        size="small"
+                                        onClick={handleCheckedRight}
+                                        disabled={leftChecked.length === 0}
+                                        aria-label="move selected right"
+                                    >
+                                        &gt;
+                                    </Button>
+                                    <Button
+                                        sx={{my: 0.5}}
+                                        variant="outlined"
+                                        size="small"
+                                        onClick={handleCheckedLeft}
+                                        disabled={rightChecked.length === 0}
+                                        aria-label="move selected left"
+                                    >
+                                        &lt;
+                                    </Button>
+                                </Grid>
                             </Grid>
+                            <Grid item>{customList('Chosen', right)}</Grid>
                         </Grid>
-                        <Grid item>{customList('Chosen', right)}</Grid>
-                    </Grid>
+                    </Flex>
+                    <hr style={{margin: "5px", border: "1px solid grey",}}/>
+                    <Flex flexDirection="column" justifyContent="center" alignItems="center" m={2}>
+                        <Box>Pictures</Box>
+                        <ImageList
+                            sx={{width: 400, height: 400, border: '1px solid #f57c00'}}
+                            cols={3}
+                            rowHeight={164}>
+                            {uploadedImages.map((item, index) => (
+                                <ImageListItem key={item.img}>
+                                    <img src={item.img} alt="" loading="lazy" onClick={() => handleImageClick(item)}
+                                         style={{cursor: 'pointer'}}/>
+                                    <button className="remove-image-button" onClick={() => handleImageRemove(index)}>
+                                        <CancelIcon/>
+                                    </button>
+                                </ImageListItem>
+                            ))}
+                        </ImageList>
+                        <Button variant="contained" color="warning" component="label"
+                                endIcon={<AddPhotoAlternateIcon/>}>
+                            Add pictures
+                            <input
+                                type="file"
+                                onChange={handleImageUpload}
+                                multiple
+                                accept="image/*"
+                                style={{display: 'none'}}
+                            />
+                        </Button>
+                    </Flex>
                 </Flex>
-                <hr
-                    style={{
-                        margin: "10px",
-                        border: "1px solid grey",
-                    }}
-                />
-                <Flex flexDirection="column" justifyContent="center" alignItems="center" m={2}>
-                    <Box>
-                        Pictures
-                    </Box>
-                    <ImageList
-                        sx={{width: 400, height: 400, border: '1px solid #f57c00'}}
-                        cols={3}
-                        rowHeight={164}
+                <Flex m={2} flexDirection="column"
+                      justifyContent="center"
+                      alignItems="center">
+                    <Button
+                        endIcon={<AddCircleOutlineOutlinedIcon/>}
+                        color="warning"
+                        variant="contained"
+                        onClick={createAccommodation}
+                        disabled={(uploadedImages.length === 0 ||
+                            Object.values(placeData).some((val) => val === "") ||
+                            parseInt(placeData.minGuests) > parseInt(placeData.maxGuests))}
                     >
-                        {uploadedImages.map((item, index) => (
-                            <ImageListItem key={item.img}>
-                                <img src={item.img} alt="" loading="lazy"/>
-                                <button
-                                    className="remove-image-button"
-                                    onClick={() => handleImageRemove(index)}
-                                >
-                                    <CancelIcon/>
-                                </button>
-                            </ImageListItem>
-                        ))}
-                    </ImageList>
-
-                    <Button variant="contained" color="warning" component="label"
-                            endIcon={<AddPhotoAlternateIcon/>}>
-                        Add pictures
-                        <input
-                            type="file"
-                            onChange={handleImageUpload}
-                            multiple
-                            accept="image/*"
-                            style={{display: 'none'}}
-                        />
+                        Create accommodation
                     </Button>
-
+                    <Box m={1}>
+                        At least one picture must be uploaded, all fields must be filled and number maximum number of
+                        guest
+                        must be greater or equal to minimum number of guests</Box>
                 </Flex>
-
-
-            </Flex>
-            <Flex m={2} flexDirection="column"
-                  justifyContent="center"
-                  alignItems="center">
-                <Button
-                    endIcon={<AddCircleOutlineOutlinedIcon/>}
-                    color="warning"
-                    variant="contained"
-                    disabled={(uploadedImages.length === 0 ||
-                        Object.values(placeData).some((val) => val === "") ||
-                        parseInt(placeData.minGuests) > parseInt(placeData.maxGuests))}
-                >
-                    Create accommodation
-                </Button>
-                <Box m={1}>
-                    At least one picture must be uploaded, all fields must be filled and number maximum number of guest
-                    must be greater or equal to minimum number of guests
-                </Box>
-
-            </Flex>
-
-
-        </div>
+            </div>
+        </>
     );
 }
 
