@@ -126,3 +126,7 @@ func (service AccountCredentialsService) ChangePassword(id uuid.UUID, oldPasswor
 
 	return nil
 }
+
+func (service AccountCredentialsService) Delete(id uuid.UUID) error {
+	return service.accCredRepo.Delete(id)
+}

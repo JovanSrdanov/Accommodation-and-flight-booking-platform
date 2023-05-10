@@ -66,3 +66,13 @@ func (repo AccountCredentialsRepositoryPG) Update(accCred *model.AccountCredenti
 
 	return nil
 }
+func (repo AccountCredentialsRepositoryPG) Delete(id uuid.UUID) error {
+
+	result := repo.dbClient.Where("user_profile_id = ?", id).Delete(&model.AccountCredentials{})
+
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}

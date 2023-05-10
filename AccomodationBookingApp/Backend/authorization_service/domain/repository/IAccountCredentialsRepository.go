@@ -10,4 +10,5 @@ type IAccountCredentialsRepository interface {
 	GetByUsername(username string) (*model.AccountCredentials, error)
 	GetById(id uuid.UUID) (*model.AccountCredentials, error)
 	Update(accCred *model.AccountCredentials) error
+	Delete(id uuid.UUID) error
 }
