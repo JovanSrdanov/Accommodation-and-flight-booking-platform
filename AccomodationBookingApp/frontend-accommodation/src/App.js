@@ -12,7 +12,7 @@ import MyPlacesPage from "./pages/host-pages/my-places-page";
 import HostAPlacePage from "./pages/host-pages/host-a-place-page";
 import ReservationsAndRequestsPage from "./pages/host-pages/reservations-and-requests-page";
 import ProfilePage from "./pages/guest-pages/profile-page";
-import SearchAccommodationPage from "./pages/all-roles-pages/search-accommodation-page";
+import SearchAndFilterAccommodationsPage from "./pages/all-roles-pages/search-and-filter-accommodations-page";
 import React, {useEffect} from "react";
 import HistoryIcon from '@mui/icons-material/History';
 import CheckIcon from '@mui/icons-material/Check';
@@ -91,7 +91,8 @@ function App() {
                 <AppBar position="static">
                     <Toolbar>
                         <Tooltip title="Search for your desired accommodation" arrow>
-                            <Button sx={{color: "gold", mr: 5}} onClick={() => navigate('/search-accommodation')}
+                            <Button sx={{color: "gold", mr: 5}}
+                                    onClick={() => navigate('/search-and-filter-accommodations')}
                                     endIcon={<TravelExploreIcon/>} startIcon={<HotelIcon/>}>
 
                                 Restful Reserve
@@ -208,8 +209,9 @@ function App() {
                             <Route path="/visiting-history" element={<VisitingHistoryPage/>}/>
                             <Route path="/recommendations-for-you" element={<RecommendationsForYouPage/>}/>
                             <Route path="/profile" element={<ProfilePage/>}/>
-                            <Route path="/search-accommodation" element={<SearchAccommodationPage/>}/>
-                            <Route path="/*" element={<Navigate to="/search-accommodation"/>}/>
+                            <Route path="/search-and-filter-accommodations"
+                                   element={<SearchAndFilterAccommodationsPage/>}/>
+                            <Route path="/*" element={<Navigate to="/search-and-filter-accommodations"/>}/>
                         </>
                     )}
 
@@ -219,8 +221,9 @@ function App() {
                             <Route path="/host-a-place" element={<HostAPlacePage/>}/>
                             <Route path="/reservations-and-requests" element={<ReservationsAndRequestsPage/>}/>
                             <Route path="/profile" element={<ProfilePage/>}/>
-                            <Route path="/search-accommodation" element={<SearchAccommodationPage/>}/>
-                            <Route path="/*" element={<Navigate to="/search-accommodation"/>}/>
+                            <Route path="/search-and-filter-accommodations"
+                                   element={<SearchAndFilterAccommodationsPage/>}/>
+                            <Route path="/*" element={<Navigate to="/search-and-filter-accommodations"/>}/>
                         </>
                     )}
 
@@ -228,8 +231,9 @@ function App() {
                         <>
                             <Route path="/login" element={<LoginPage/>}/>
                             <Route path="/register" element={<RegisterPage/>}/>
-                            <Route path="/search-accommodation" element={<SearchAccommodationPage/>}/>
-                            <Route path="/*" element={<Navigate to="/search-accommodation"/>}/>
+                            <Route path="/search-and-filter-accommodations"
+                                   element={<SearchAndFilterAccommodationsPage/>}/>
+                            <Route path="/*" element={<Navigate to="/search-and-filter-accommodations"/>}/>
                         </>
                     )}
 
