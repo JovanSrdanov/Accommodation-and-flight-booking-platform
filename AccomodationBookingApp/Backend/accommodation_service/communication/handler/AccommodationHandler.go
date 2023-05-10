@@ -90,3 +90,14 @@ func (handler AccommodationHandler) GetAll(ctx context.Context, in *accommodatio
 
 	return mapper.mapToGetAllResponse(accommodations), nil
 }
+
+func (handler AccommodationHandler) GetAmenities(ctx context.Context, in *accommodation.EmptyRequest) (*accommodation.GetAmenitiesResponse, error) {
+	amenities, err := handler.accommodationService.GetAmenities()
+	if err != nil {
+		return nil, err
+	}
+
+	return &accommodation.GetAmenitiesResponse{
+		Amenities: amenities,
+	}, nil
+}

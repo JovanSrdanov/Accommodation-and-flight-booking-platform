@@ -19,11 +19,12 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	AccommodationService_Create_FullMethodName  = "/accommodation.AccommodationService/Create"
-	AccommodationService_Update_FullMethodName  = "/accommodation.AccommodationService/Update"
-	AccommodationService_GetById_FullMethodName = "/accommodation.AccommodationService/GetById"
-	AccommodationService_GetAll_FullMethodName  = "/accommodation.AccommodationService/GetAll"
-	AccommodationService_Delete_FullMethodName  = "/accommodation.AccommodationService/Delete"
+	AccommodationService_Create_FullMethodName       = "/accommodation.AccommodationService/Create"
+	AccommodationService_Update_FullMethodName       = "/accommodation.AccommodationService/Update"
+	AccommodationService_GetById_FullMethodName      = "/accommodation.AccommodationService/GetById"
+	AccommodationService_GetAll_FullMethodName       = "/accommodation.AccommodationService/GetAll"
+	AccommodationService_Delete_FullMethodName       = "/accommodation.AccommodationService/Delete"
+	AccommodationService_GetAmenities_FullMethodName = "/accommodation.AccommodationService/GetAmenities"
 )
 
 // AccommodationServiceClient is the client API for AccommodationService service.
@@ -35,6 +36,7 @@ type AccommodationServiceClient interface {
 	GetById(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*GetByIdResponse, error)
 	GetAll(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*GetAllResponse, error)
 	Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error)
+	GetAmenities(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*GetAmenitiesResponse, error)
 }
 
 type accommodationServiceClient struct {
@@ -90,6 +92,15 @@ func (c *accommodationServiceClient) Delete(ctx context.Context, in *DeleteReque
 	return out, nil
 }
 
+func (c *accommodationServiceClient) GetAmenities(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*GetAmenitiesResponse, error) {
+	out := new(GetAmenitiesResponse)
+	err := c.cc.Invoke(ctx, AccommodationService_GetAmenities_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AccommodationServiceServer is the server API for AccommodationService service.
 // All implementations must embed UnimplementedAccommodationServiceServer
 // for forward compatibility
@@ -99,6 +110,7 @@ type AccommodationServiceServer interface {
 	GetById(context.Context, *GetByIdRequest) (*GetByIdResponse, error)
 	GetAll(context.Context, *EmptyRequest) (*GetAllResponse, error)
 	Delete(context.Context, *DeleteRequest) (*DeleteResponse, error)
+	GetAmenities(context.Context, *EmptyRequest) (*GetAmenitiesResponse, error)
 	mustEmbedUnimplementedAccommodationServiceServer()
 }
 
@@ -120,6 +132,9 @@ func (UnimplementedAccommodationServiceServer) GetAll(context.Context, *EmptyReq
 }
 func (UnimplementedAccommodationServiceServer) Delete(context.Context, *DeleteRequest) (*DeleteResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
+}
+func (UnimplementedAccommodationServiceServer) GetAmenities(context.Context, *EmptyRequest) (*GetAmenitiesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAmenities not implemented")
 }
 func (UnimplementedAccommodationServiceServer) mustEmbedUnimplementedAccommodationServiceServer() {}
 
@@ -224,6 +239,24 @@ func _AccommodationService_Delete_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AccommodationService_GetAmenities_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EmptyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccommodationServiceServer).GetAmenities(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AccommodationService_GetAmenities_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccommodationServiceServer).GetAmenities(ctx, req.(*EmptyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AccommodationService_ServiceDesc is the grpc.ServiceDesc for AccommodationService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -250,6 +283,10 @@ var AccommodationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Delete",
 			Handler:    _AccommodationService_Delete_Handler,
+		},
+		{
+			MethodName: "GetAmenities",
+			Handler:    _AccommodationService_GetAmenities_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

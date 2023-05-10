@@ -70,6 +70,34 @@ func (repo AccommodationRepositoryMongo) GetAll() (model.Accommodations, error) 
 	return accommodations, nil
 }
 
+func (repo AccommodationRepositoryMongo) GetAmenities() ([]string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	db := repo.dbClient.Database("accommodationDb")
+	collection := db.Collection("amenities")
+
+	cursor, err := collection.Find(ctx, bson.M{})
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	var amenities model.Amenities
+	err = cursor.All(ctx, &amenities)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	var amenitiesString []string
+	for _, value := range amenities {
+		amenitiesString = append(amenitiesString, value.Name)
+	}
+
+	return amenitiesString, nil
+}
+
 func (repo AccommodationRepositoryMongo) getCollection() *mongo.Collection {
 	db := repo.dbClient.Database("accommodationDb")
 	collection := db.Collection("accommodations")

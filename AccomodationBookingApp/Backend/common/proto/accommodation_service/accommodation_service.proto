@@ -42,9 +42,19 @@ service AccommodationService{
     };
   }
 
+  rpc GetAmenities(EmptyRequest) returns(GetAmenitiesResponse) {
+    option (google.api.http) = {
+      get: "/api-1/amenities"
+    };
+  }
+
 }
 
 message EmptyRequest {}
+
+message GetAmenitiesResponse {
+  repeated string Amenities = 1;
+}
 
 message GetAllResponse {
   repeated AccommodationFull accommodation = 1;
