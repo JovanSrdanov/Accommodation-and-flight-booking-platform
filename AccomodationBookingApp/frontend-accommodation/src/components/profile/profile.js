@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {Flex} from "reflexbox";
 import {Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField} from "@mui/material";
 import interceptor from "../../interceptor/interceptor";
+import {useNavigate} from "react-router-dom";
 
 function Profile() {
 
@@ -11,7 +12,9 @@ function Profile() {
     const [newPassword, setNewPassword] = useState("")
     const [passwordDialogShow, setPasswordDialogShow] = useState(false)
     const [successDialogShow, setSuccessDialogShow] = useState(false)
+    const [errorDialogShow, setErrorDialogShow] = useState(false)
     const [usernameTakenDialogShow, setUsernameTakenDialogShow] = useState(false)
+    const [deletedAccountDialogShow, setDeletedAccountDialogShow] = useState(false)
     const [userInfo, setUserInfo] = useState({
         name: '',
         surname: '',
@@ -41,7 +44,8 @@ function Profile() {
                 setSuccessDialogShow(true)
             })
             .catch((error) => {
-                // Handle the error here, such as showing an error message
+                setErrorDialogShow(true)
+                setPasswordDialogShow(false);
             });
 
 
@@ -77,7 +81,10 @@ function Profile() {
             setUserInfo(user)
 
             setUsername(res.data.username)
-        }).catch(err => console.log(err));
+        }).catch(() => {
+            setErrorDialogShow(true)
+        });
+
 
     }
 
@@ -106,22 +113,31 @@ function Profile() {
 
     const UpdateBasicUserInfo = () => {
         interceptor.put('api-1/user-profile', userInfo)
-            .then((response) => {
+            .then(() => {
                 setSuccessDialogShow(true)
             })
-            .catch((error) => {
-                // Handle the error here, such as showing an error message
+            .catch(() => {
+                setErrorDialogShow(true)
             });
     }
+    const navigate = useNavigate();
 
     const DeleteProfile = () => {
-        // interceptor.put('api-2/user-profile', userInfo)
-        //     .then((response) => {
-        //
-        //     })
-        //     .catch((error) => {
-        //
-        //     });
+        interceptor.delete('api-1/user-info')
+            .then((response) => {
+                setDeletedAccountDialogShow(true)
+                localStorage.removeItem('paseto');
+                localStorage.removeItem('role');
+                localStorage.removeItem('expirationDate');
+
+
+            })
+            .catch((error) => {
+                setErrorDialogShow(true)
+                localStorage.removeItem('paseto');
+                localStorage.removeItem('role');
+                localStorage.removeItem('expirationDate');
+            });
     };
     const handleClose = () => {
         setSuccessDialogShow(false)
@@ -129,6 +145,13 @@ function Profile() {
 
     const usernameTakenDialogClose = () => {
         setUsernameTakenDialogShow(false)
+    };
+    const handleDeletedAccountClose = () => {
+        setDeletedAccountDialogShow(false)
+        navigate('/login');
+    };
+    const handleErrorClose = () => {
+        setErrorDialogShow(false)
     };
     return (
         <>
@@ -144,8 +167,32 @@ function Profile() {
             </Dialog>
 
 
+            <Dialog onClose={handleErrorClose} open={errorDialogShow}>
+                <DialogTitle>Error</DialogTitle>
+                <DialogActions>
+                    <Button onClick={handleErrorClose}
+                            variant="contained"
+                    >
+                        Close
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+
+            <Dialog onClose={handleDeletedAccountClose} open={deletedAccountDialogShow}>
+                <DialogTitle>Account deleted!</DialogTitle>
+                <DialogActions>
+                    <Button onClick={handleDeletedAccountClose}
+                            variant="contained"
+                    >
+                        Close
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+
             <Dialog onClose={usernameTakenDialogClose} open={usernameTakenDialogShow}>
-                <DialogTitle>That username is already taken</DialogTitle>
+                <DialogTitle>That username is already taken or there has been an error</DialogTitle>
                 <DialogActions>
                     <Button onClick={usernameTakenDialogClose}
                             variant="contained"
