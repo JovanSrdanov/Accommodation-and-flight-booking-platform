@@ -1,4 +1,4 @@
-package client
+package communication
 
 import (
 	authorization "common/proto/authorization_service/generated"

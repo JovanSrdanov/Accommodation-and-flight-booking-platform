@@ -34,6 +34,12 @@ services:
       AUTHORIZATION_DB_PASS: ${AUTHORIZATION_DB_PASS}
       AUTHORIZATION_DB_NAME: ${AUTHORIZATION_DB_NAME}
       AUTHORIZATION_SERVICE_PORT: ${AUTHORIZATION_SERVICE_PORT}
+      NATS_HOST: ${NATS_HOST}
+      NATS_PORT: ${NATS_PORT}
+      NATS_USER: ${NATS_USER}
+      NATS_PASS: ${NATS_PASS}
+      DELETE_USER_COMMAND_SUBJECT: ${DELETE_USER_COMMAND_SUBJECT}
+      DELETE_USER_REPLY_SUBJECT: ${DELETE_USER_REPLY_SUBJECT}
     depends_on:
       - authorization_db
     networks:
@@ -68,6 +74,12 @@ services:
       USER_PROFILE_DB_USER: ${USER_PROFILE_DB_USER}
       USER_PROFILE_DB_PASS: ${USER_PROFILE_DB_PASS}
       USER_PROFILE_SERVICE_PORT: ${USER_PROFILE_SERVICE_PORT}
+      NATS_HOST: ${NATS_HOST}
+      NATS_PORT: ${NATS_PORT}
+      NATS_USER: ${NATS_USER}
+      NATS_PASS: ${NATS_PASS}
+      DELETE_USER_COMMAND_SUBJECT: ${DELETE_USER_COMMAND_SUBJECT}
+      DELETE_USER_REPLY_SUBJECT: ${DELETE_USER_REPLY_SUBJECT}
     depends_on:
       - user_profile_db
     networks:
@@ -85,6 +97,13 @@ services:
       POSTGRES_USER: ${USER_PROFILE_DB_USER}
       POSTGRES_PASSWORD: ${USER_PROFILE_DB_PASS}
       POSTGRES_DB: ${USER_PROFILE_DB_NAME}
+    networks:
+      - network
+
+  nats:
+    image: nats
+    container_name: nats
+    restart: on-failure
     networks:
       - network
 

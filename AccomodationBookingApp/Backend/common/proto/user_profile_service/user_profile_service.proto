@@ -66,7 +66,9 @@ message DeleteRequest{
   string id = 1;
 }
 
-message DeleteResponse{ }
+message DeleteResponse{
+  string message = 1;
+}
 
 message  UserProfile{
   string id = 1;

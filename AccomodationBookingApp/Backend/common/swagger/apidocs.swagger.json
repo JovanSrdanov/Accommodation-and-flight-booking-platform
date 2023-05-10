@@ -41,6 +41,36 @@
         "tags": [
           "UserProfileService"
         ]
+      },
+      "put": {
+        "operationId": "UserProfileService_Update",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/user_profileUpdateRequest"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/user_profileUpdateRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UserProfileService"
+        ]
       }
     },
     "/api-1/user-profile/{id}": {
@@ -173,13 +203,35 @@
       }
     },
     "user_profileDeleteResponse": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
     },
     "user_profileGetByIdResponse": {
       "type": "object",
       "properties": {
         "userProfile": {
           "$ref": "#/definitions/user_profileUserProfile"
+        }
+      }
+    },
+    "user_profileUpdateRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "surname": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "address": {
+          "$ref": "#/definitions/user_profileAddress"
         }
       }
     },
