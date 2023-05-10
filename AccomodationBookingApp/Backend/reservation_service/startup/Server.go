@@ -69,9 +69,9 @@ func (server Server) startGrpcServer(reservationHandler *handler.ReservationHand
 
 // returns a map which consists of a list of grpc methods and allowed roles for each of them
 func getProtectedMethodsWithAllowedRoles() map[string][]model.Role {
-	const authServicePath = "/accommodation.ReservationService/"
+	const authServicePath = "/reservation.ReservationService/"
 
 	return map[string][]model.Role{
-		authServicePath + "Update": {model.Guest},
+		authServicePath + "AcceptReservation": {model.Guest},
 	}
 }
