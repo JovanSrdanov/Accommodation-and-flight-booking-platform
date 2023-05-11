@@ -19,13 +19,14 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	AccommodationService_Create_FullMethodName       = "/accommodation.AccommodationService/Create"
-	AccommodationService_Update_FullMethodName       = "/accommodation.AccommodationService/Update"
-	AccommodationService_GetById_FullMethodName      = "/accommodation.AccommodationService/GetById"
-	AccommodationService_GetAll_FullMethodName       = "/accommodation.AccommodationService/GetAll"
-	AccommodationService_GetAllMy_FullMethodName     = "/accommodation.AccommodationService/GetAllMy"
-	AccommodationService_Delete_FullMethodName       = "/accommodation.AccommodationService/Delete"
-	AccommodationService_GetAmenities_FullMethodName = "/accommodation.AccommodationService/GetAmenities"
+	AccommodationService_Create_FullMethodName         = "/accommodation.AccommodationService/Create"
+	AccommodationService_Update_FullMethodName         = "/accommodation.AccommodationService/Update"
+	AccommodationService_GetById_FullMethodName        = "/accommodation.AccommodationService/GetById"
+	AccommodationService_GetAll_FullMethodName         = "/accommodation.AccommodationService/GetAll"
+	AccommodationService_GetAllMy_FullMethodName       = "/accommodation.AccommodationService/GetAllMy"
+	AccommodationService_Delete_FullMethodName         = "/accommodation.AccommodationService/Delete"
+	AccommodationService_DeleteByHostId_FullMethodName = "/accommodation.AccommodationService/DeleteByHostId"
+	AccommodationService_GetAmenities_FullMethodName   = "/accommodation.AccommodationService/GetAmenities"
 )
 
 // AccommodationServiceClient is the client API for AccommodationService service.
@@ -36,8 +37,9 @@ type AccommodationServiceClient interface {
 	Update(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateRequest, error)
 	GetById(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*GetByIdResponse, error)
 	GetAll(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*GetAllResponse, error)
-	GetAllMy(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*GetAllResponse, error)
+	GetAllMy(ctx context.Context, in *GetMyRequest, opts ...grpc.CallOption) (*GetAllResponse, error)
 	Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error)
+	DeleteByHostId(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error)
 	GetAmenities(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*GetAmenitiesResponse, error)
 }
 
@@ -85,7 +87,7 @@ func (c *accommodationServiceClient) GetAll(ctx context.Context, in *EmptyReques
 	return out, nil
 }
 
-func (c *accommodationServiceClient) GetAllMy(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*GetAllResponse, error) {
+func (c *accommodationServiceClient) GetAllMy(ctx context.Context, in *GetMyRequest, opts ...grpc.CallOption) (*GetAllResponse, error) {
 	out := new(GetAllResponse)
 	err := c.cc.Invoke(ctx, AccommodationService_GetAllMy_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -97,6 +99,15 @@ func (c *accommodationServiceClient) GetAllMy(ctx context.Context, in *EmptyRequ
 func (c *accommodationServiceClient) Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error) {
 	out := new(DeleteResponse)
 	err := c.cc.Invoke(ctx, AccommodationService_Delete_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accommodationServiceClient) DeleteByHostId(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error) {
+	out := new(DeleteResponse)
+	err := c.cc.Invoke(ctx, AccommodationService_DeleteByHostId_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -120,8 +131,9 @@ type AccommodationServiceServer interface {
 	Update(context.Context, *UpdateRequest) (*UpdateRequest, error)
 	GetById(context.Context, *GetByIdRequest) (*GetByIdResponse, error)
 	GetAll(context.Context, *EmptyRequest) (*GetAllResponse, error)
-	GetAllMy(context.Context, *EmptyRequest) (*GetAllResponse, error)
+	GetAllMy(context.Context, *GetMyRequest) (*GetAllResponse, error)
 	Delete(context.Context, *DeleteRequest) (*DeleteResponse, error)
+	DeleteByHostId(context.Context, *DeleteRequest) (*DeleteResponse, error)
 	GetAmenities(context.Context, *EmptyRequest) (*GetAmenitiesResponse, error)
 	mustEmbedUnimplementedAccommodationServiceServer()
 }
@@ -142,11 +154,14 @@ func (UnimplementedAccommodationServiceServer) GetById(context.Context, *GetById
 func (UnimplementedAccommodationServiceServer) GetAll(context.Context, *EmptyRequest) (*GetAllResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAll not implemented")
 }
-func (UnimplementedAccommodationServiceServer) GetAllMy(context.Context, *EmptyRequest) (*GetAllResponse, error) {
+func (UnimplementedAccommodationServiceServer) GetAllMy(context.Context, *GetMyRequest) (*GetAllResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllMy not implemented")
 }
 func (UnimplementedAccommodationServiceServer) Delete(context.Context, *DeleteRequest) (*DeleteResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
+}
+func (UnimplementedAccommodationServiceServer) DeleteByHostId(context.Context, *DeleteRequest) (*DeleteResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteByHostId not implemented")
 }
 func (UnimplementedAccommodationServiceServer) GetAmenities(context.Context, *EmptyRequest) (*GetAmenitiesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAmenities not implemented")
@@ -237,7 +252,7 @@ func _AccommodationService_GetAll_Handler(srv interface{}, ctx context.Context, 
 }
 
 func _AccommodationService_GetAllMy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(EmptyRequest)
+	in := new(GetMyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -249,7 +264,7 @@ func _AccommodationService_GetAllMy_Handler(srv interface{}, ctx context.Context
 		FullMethod: AccommodationService_GetAllMy_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccommodationServiceServer).GetAllMy(ctx, req.(*EmptyRequest))
+		return srv.(AccommodationServiceServer).GetAllMy(ctx, req.(*GetMyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -268,6 +283,24 @@ func _AccommodationService_Delete_Handler(srv interface{}, ctx context.Context, 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AccommodationServiceServer).Delete(ctx, req.(*DeleteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AccommodationService_DeleteByHostId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccommodationServiceServer).DeleteByHostId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AccommodationService_DeleteByHostId_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccommodationServiceServer).DeleteByHostId(ctx, req.(*DeleteRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -320,6 +353,10 @@ var AccommodationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Delete",
 			Handler:    _AccommodationService_Delete_Handler,
+		},
+		{
+			MethodName: "DeleteByHostId",
+			Handler:    _AccommodationService_DeleteByHostId_Handler,
 		},
 		{
 			MethodName: "GetAmenities",

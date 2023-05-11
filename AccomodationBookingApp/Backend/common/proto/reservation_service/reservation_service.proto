@@ -41,6 +41,14 @@ service ReservationService{
     };
   }
 
+  rpc CreateAvailabilityBase(CreateAvailabilityBaseRequest) returns(EmptyRequest) {
+    //Create availability base
+    option (google.api.http) = {
+      post: "/api-1/availability/base",
+      body: "*"
+    };
+  }
+
   rpc GetAllPendingReservations(EmptyRequest) returns(GetAllPendingReservationsResponse) {
     option (google.api.http) = {
       get: "/api-1/reservation/pending"
@@ -71,8 +79,11 @@ service ReservationService{
     };
   }
 }
-
 message EmptyRequest {}
+
+message CreateAvailabilityBaseRequest {
+  AvailabilityBase reservationBase = 1;
+}
 
 message CreateAvailabilityRequest {
   AvailabilityRequest availability = 1;
@@ -120,6 +131,12 @@ message Availability {
   string accommodationId = 3;
   bool isAutomaticReservation = 4;
   string hostId = 5;
+}
+
+message AvailabilityBase {
+  string accommodationId = 1;
+  bool isAutomaticReservation = 2;
+  string hostId = 3;
 }
 
 message DateRange {

@@ -3,6 +3,8 @@ package handler
 import (
 	reservation "common/proto/reservation_service/generated"
 	"context"
+	"fmt"
+	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -88,4 +90,18 @@ func (handler ReservationHandler) CancelReservation(ctx context.Context, in *res
 	return &reservation.RejectReservationResponse{
 		Id: id.String(),
 	}, nil
+}
+func (handler ReservationHandler) CreateAvailabilityBase(ctx context.Context, in *reservation.CreateAvailabilityBaseRequest) (*reservation.EmptyRequest, error) {
+	mapper := NewReservationMapper()
+	loggedInId, ok := ctx.Value("id").(uuid.UUID)
+	if !ok {
+		return nil, fmt.Errorf("failed to extract id and cast to UUID")
+	}
+
+	_, err := handler.reservationService.CreateAvailabilityBase(mapper.mapFromCreateAvailabilityBase(loggedInId.String(), in))
+
+	if err != nil {
+		return nil, err
+	}
+	return &reservation.EmptyRequest{}, nil
 }

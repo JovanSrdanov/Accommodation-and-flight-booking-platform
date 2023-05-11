@@ -50,6 +50,10 @@ func (service ReservationService) CancelReservation(id primitive.ObjectID) (prim
 	return service.reservationRepo.CancelReservation(id)
 }
 
+func (service ReservationService) CreateAvailabilityBase(base *model.Availability) (primitive.ObjectID, error) {
+	return service.reservationRepo.CreateAvailabilityBase(base)
+}
+
 /*
 CreateAvailability(availability *model.AvailabilityRequest) (primitive.ObjectID, error)
 GetAllMy() (model.Availabilities, error)

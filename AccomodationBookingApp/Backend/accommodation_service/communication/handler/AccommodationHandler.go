@@ -4,24 +4,49 @@ import (
 	"accommodation_service/domain/service"
 	accommodation "common/proto/accommodation_service/generated"
 	"context"
+	"fmt"
+	"github.com/google/uuid"
 )
 
 type AccommodationHandler struct {
 	accommodation.UnimplementedAccommodationServiceServer
-	accommodationService service.AccommodationService
+	accommodationService      service.AccommodationService
+	reservationServiceAddress string
 }
 
-func NewAccommodationHandler(accommodationService service.AccommodationService) *AccommodationHandler {
-	return &AccommodationHandler{accommodationService: accommodationService}
+func NewAccommodationHandler(accommodationService service.AccommodationService, reservationServiceAddress string) *AccommodationHandler {
+	return &AccommodationHandler{
+		accommodationService:      accommodationService,
+		reservationServiceAddress: reservationServiceAddress,
+	}
 }
 
 func (handler AccommodationHandler) Create(ctx context.Context, in *accommodation.CreateRequest) (*accommodation.CreateResponse, error) {
 	mapper := NewAccommodationMapper()
-	id, err := handler.accommodationService.Create(mapper.mapFromCreateRequest(in))
+	loggedInId, ok := ctx.Value("id").(uuid.UUID)
+	if !ok {
+		return nil, fmt.Errorf("failed to extract id and cast to UUID")
+	}
+	id, err := handler.accommodationService.Create(mapper.mapFromCreateRequest(loggedInId.String(), in))
 
 	if err != nil {
 		return nil, err
 	}
+
+	// Create availability base
+	//Ovo samo ne radi jbg
+	/*reservationClient := communication.NewReservationClient(handler.reservationServiceAddress)
+	_, err = reservationClient.CreateAvailabilityBase(ctx, &reservation.CreateAvailabilityBaseRequest{
+		ReservationBase: &reservation.AvailabilityBase{
+			AccommodationId:        id.String(),
+			HostId:                 loggedInId.(string),
+			IsAutomaticReservation: in.Accommodation.IsAutomaticReservation,
+		},
+	})
+	if err != nil {
+		return nil, err
+	}*/
+
 	return &accommodation.CreateResponse{
 		Id: id.String(),
 	}, nil
@@ -91,8 +116,9 @@ func (handler AccommodationHandler) GetAll(ctx context.Context, in *accommodatio
 	return mapper.mapToGetAllResponse(accommodations), nil
 }
 
-func (handler AccommodationHandler) GetAllMy(ctx context.Context, in *accommodation.EmptyRequest) (*accommodation.GetAllResponse, error) {
-	accommodations, err := handler.accommodationService.GetAllMy()
+func (handler AccommodationHandler) GetAllMy(ctx context.Context, in *accommodation.GetMyRequest) (*accommodation.GetAllResponse, error) {
+	loggedInId := ctx.Value("id")
+	accommodations, err := handler.accommodationService.GetAllMy(loggedInId.(string))
 	if err != nil {
 		return nil, err
 	}

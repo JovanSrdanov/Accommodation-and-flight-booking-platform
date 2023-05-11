@@ -36,7 +36,7 @@ service AccommodationService{
     };
   }
 
-  rpc GetAllMy(EmptyRequest) returns(GetAllResponse) {
+  rpc GetAllMy(GetMyRequest) returns(GetAllResponse) {
     option (google.api.http) = {
       get: "/api-1/accommodation/all-my"
     };
@@ -45,6 +45,12 @@ service AccommodationService{
   rpc Delete(DeleteRequest) returns(DeleteResponse){
     option (google.api.http) = {
       delete: "/api-1/accommodation/{id}"
+    };
+  }
+
+  rpc DeleteByHostId(DeleteRequest) returns(DeleteResponse){
+    option (google.api.http) = {
+      delete: "/api-1/accommodation/by-host/{id}"
     };
   }
 
@@ -58,6 +64,10 @@ service AccommodationService{
 
 message EmptyRequest {}
 
+message GetMyRequest {
+  string hostId = 1;
+}
+
 message GetAmenitiesResponse {
   repeated string Amenities = 1;
 }
@@ -67,7 +77,7 @@ message GetAllResponse {
 }
 
 message CreateRequest {
-  Accommodation accommodation = 1;
+  CreateAccommodation accommodation = 1;
 }
 
 message CreateResponse{
@@ -91,6 +101,17 @@ message DeleteRequest{
 }
 
 message DeleteResponse{ }
+
+message CreateAccommodation{
+  string Name = 1;
+  Address Address = 2;
+  int32 MinGuests = 3;
+  int32 MaxGuests = 4;
+  repeated string Amenities = 5;
+  repeated string Images = 6;
+  string HostId = 8;
+  bool isAutomaticReservation = 9;
+}
 
 message  Accommodation{
   string Name = 1;

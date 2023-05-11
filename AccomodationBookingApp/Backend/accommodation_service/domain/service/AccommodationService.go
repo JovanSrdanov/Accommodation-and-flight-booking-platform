@@ -47,8 +47,8 @@ func (service AccommodationService) GetAll() (model.Accommodations, error) {
 	return service.accommodationRepo.GetAll()
 }
 
-func (service AccommodationService) GetAllMy() (model.Accommodations, error) {
-	return service.accommodationRepo.GetAllMy()
+func (service AccommodationService) GetAllMy(hostId string) (model.Accommodations, error) {
+	return service.accommodationRepo.GetAllMy(hostId)
 }
 
 func (service AccommodationService) GetAmenities() ([]string, error) {

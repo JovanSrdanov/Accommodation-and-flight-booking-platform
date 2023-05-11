@@ -5,6 +5,7 @@ go 1.20
 require (
 	authorization_service v0.0.0-00010101000000-000000000000
 	common v0.0.0-00010101000000-000000000000
+	github.com/google/uuid v1.3.0
 	go.mongodb.org/mongo-driver v1.11.6
 	google.golang.org/grpc v1.55.0
 )
@@ -15,7 +16,6 @@ require (
 	github.com/aead/poly1305 v0.0.0-20180717145839-3fee0db0b635 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
-	github.com/google/uuid v1.3.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.15.2 // indirect
 	github.com/klauspost/compress v1.16.5 // indirect
 	github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe // indirect

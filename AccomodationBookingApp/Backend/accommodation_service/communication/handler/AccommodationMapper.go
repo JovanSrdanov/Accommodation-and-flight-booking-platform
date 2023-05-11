@@ -15,8 +15,9 @@ func NewAccommodationMapper() *AccommodationMapper {
 	return &AccommodationMapper{}
 }
 
-func (mapper AccommodationMapper) mapFromCreateRequest(request *accommodation.CreateRequest) *model.Accommodation {
+func (mapper AccommodationMapper) mapFromCreateRequest(hostId string, request *accommodation.CreateRequest) *model.Accommodation {
 	addressMapper := NewAddressMapper()
+
 	return &model.Accommodation{
 		Name:      request.Accommodation.Name,
 		Address:   addressMapper.mapToAddressModel(request.Accommodation.Address),
@@ -24,6 +25,7 @@ func (mapper AccommodationMapper) mapFromCreateRequest(request *accommodation.Cr
 		MaxGuests: request.Accommodation.MaxGuests,
 		Amenities: request.Accommodation.Amenities,
 		Images:    request.Accommodation.Images,
+		HostId:    hostId,
 	}
 }
 

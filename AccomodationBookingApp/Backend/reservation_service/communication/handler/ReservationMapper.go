@@ -66,3 +66,13 @@ func (mapper ReservationMapper) mapFromUpdatePriceAndDate(request *reservation.U
 		},
 	}
 }
+
+func (mapper ReservationMapper) mapFromCreateAvailabilityBase(hostId string, request *reservation.CreateAvailabilityBaseRequest) *model.Availability {
+	accommodationId, _ := primitive.ObjectIDFromHex(request.ReservationBase.AccommodationId)
+
+	return &model.Availability{
+		AccommodationId:        accommodationId,
+		HostId:                 hostId,
+		IsAutomaticReservation: request.ReservationBase.IsAutomaticReservation,
+	}
+}

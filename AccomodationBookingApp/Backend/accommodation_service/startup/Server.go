@@ -27,7 +27,10 @@ func (server Server) Start() {
 	mongoClient := server.initMongoClient()
 	accommodationRepo := initUserProfileRepo(mongoClient)
 	accommodationService := service.NewAccommodationService(*accommodationRepo)
-	accommodationHandler := handler.NewAccommodationHandler(*accommodationService)
+
+	reservationServiceAddress := fmt.Sprintf("%s:%s", server.config.ReservationServiceHost, server.config.ReservationServicePort)
+
+	accommodationHandler := handler.NewAccommodationHandler(*accommodationService, reservationServiceAddress)
 	server.startGrpcServer(accommodationHandler)
 }
 
@@ -72,6 +75,7 @@ func getProtectedMethodsWithAllowedRoles() map[string][]model.Role {
 	const authServicePath = "/accommodation.AccommodationService/"
 
 	return map[string][]model.Role{
-		authServicePath + "Update": {model.Guest},
+		authServicePath + "GetAllMy": {model.Host},
+		authServicePath + "Create":   {model.Host},
 	}
 }

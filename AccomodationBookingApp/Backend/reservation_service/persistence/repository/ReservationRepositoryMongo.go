@@ -215,6 +215,24 @@ func (repo ReservationRepositoryMongo) GetAllPendingReservations() (model.Reserv
 	return model.Reservations{}, status.Errorf(codes.Unimplemented, "method CreateAvailability not implemented")
 }
 
+func (repo ReservationRepositoryMongo) CreateAvailabilityBase(base *model.Availability) (primitive.ObjectID, error) {
+	base.AvailableDates = make([]*model.PriceWithDate, 0)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	collection := repo.getCollectionAvailability()
+	base.ID = primitive.NewObjectID()
+
+	result, err := collection.InsertOne(ctx, &base)
+	if err != nil {
+		log.Println(err)
+		return primitive.ObjectID{}, err
+	}
+
+	return result.InsertedID.(primitive.ObjectID), nil
+}
+
 func (repo ReservationRepositoryMongo) CancelReservation(id primitive.ObjectID) (primitive.ObjectID, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

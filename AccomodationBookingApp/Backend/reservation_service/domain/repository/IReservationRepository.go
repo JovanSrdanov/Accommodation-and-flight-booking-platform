@@ -15,4 +15,5 @@ type IReservationRepository interface {
 	RejectReservation(id primitive.ObjectID) (primitive.ObjectID, error)
 	AcceptReservation(id primitive.ObjectID) (primitive.ObjectID, error)
 	CancelReservation(id primitive.ObjectID) (primitive.ObjectID, error)
+	CreateAvailabilityBase(base *model.Availability) (primitive.ObjectID, error)
 }
