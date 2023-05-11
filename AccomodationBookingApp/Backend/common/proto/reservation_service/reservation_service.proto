@@ -1,0 +1,171 @@
+syntax = "proto3";
+
+option go_package = "common/reservation";
+
+package reservation;
+
+import "google/api/annotations.proto";
+
+service ReservationService{
+  rpc CreateAvailability(CreateAvailabilityRequest) returns(CreateAvailabilityResponse) {
+    //Appends to availableDates array
+    option (google.api.http) = {
+      post: "/api-1/availability",
+      //body:"*" works if JSON body has one top level object, otherwise you need to list all individual fields by hand
+      body: "*"
+    };
+  }
+
+  rpc GetAllMy(EmptyRequest) returns(GetAllMyResponse) {
+    //Gets all availabilities for logged host
+    option (google.api.http) = {
+      get: "/api-1/availability/all"
+    };
+  }
+
+  rpc UpdatePriceAndDate(UpdateRequest) returns(UpdateRequest) {
+    //Update price and available dateRange
+    option (google.api.http) = {
+      put: "/api-1/availability",
+      body: "*"
+    };
+  }
+
+  rpc CreateReservation(CreateReservationRequest) returns(CreateReservationRequest) {
+    //Create reservation with pending status, if isAutomatic is enabled then status is set to accepted automatically
+    //Reservation can not be created if it its date overlaps with existing *accepted* reservation
+    option (google.api.http) = {
+      post: "/api-1/reservation",
+      //body:"*" works if JSON body has one top level object, otherwise you need to list all individual fields by hand
+      body: "*"
+    };
+  }
+
+  rpc CreateAvailabilityBase(CreateAvailabilityBaseRequest) returns(EmptyRequest) {
+    //Create availability base
+    option (google.api.http) = {
+      post: "/api-1/availability/base",
+      body: "*"
+    };
+  }
+
+  rpc GetAllPendingReservations(EmptyRequest) returns(GetAllPendingReservationsResponse) {
+    option (google.api.http) = {
+      get: "/api-1/reservation/pending"
+    };
+  }
+
+  rpc GetAllRejectedReservations(EmptyRequest) returns(GetAllRejectedReservationsResponse) {
+    option (google.api.http) = {
+      get: "/api-1/reservation/rejected"
+    };
+  }
+
+  rpc RejectReservation(ChangeStatusRequest) returns(RejectReservationResponse) {
+    option (google.api.http) = {
+      get: "/api-1/reservation/reject/{id}"
+    };
+  }
+
+  rpc AcceptReservation(ChangeStatusRequest) returns(RejectReservationResponse) {
+    option (google.api.http) = {
+      get: "/api-1/reservation/accept/{id}"
+    };
+  }
+
+  rpc CancelReservation(ChangeStatusRequest) returns(RejectReservationResponse) {
+    option (google.api.http) = {
+      get: "/api-1/reservation/cancel/{id}"
+    };
+  }
+}
+message EmptyRequest {}
+
+message CreateAvailabilityBaseRequest {
+  AvailabilityBase reservationBase = 1;
+}
+
+message CreateAvailabilityRequest {
+  AvailabilityRequest availability = 1;
+}
+
+message CreateAvailabilityResponse {
+  string id = 1;
+}
+
+message ChangeStatusRequest {
+  string id = 1;
+}
+
+message RejectReservationResponse {
+  string id = 1;
+}
+
+message AcceptReservationResponse {
+  string id = 1;
+}
+
+message GetAllPendingReservationsResponse {
+  Reservation reservation = 1;
+}
+
+message GetAllRejectedReservationsResponse {
+  Reservation reservation = 1;
+}
+
+message CreateReservationRequest {
+  Reservation reservation = 1;
+}
+
+message UpdateRequest {
+  UpdatePriceAndDate priceWithDate = 1;
+}
+
+message GetAllMyResponse {
+  repeated Availability availabilities = 1;
+}
+
+message Availability {
+  string id = 1;
+  repeated PriceWithDate availableDates = 2;
+  string accommodationId = 3;
+  bool isAutomaticReservation = 4;
+  string hostId = 5;
+}
+
+message AvailabilityBase {
+  string accommodationId = 1;
+  bool isAutomaticReservation = 2;
+  string hostId = 3;
+}
+
+message DateRange {
+  int64 from = 1;
+  int64 to = 2;
+}
+
+message PriceWithDate {
+  string Id = 1;
+  DateRange dateRange = 2;
+  int32 price = 3;
+  bool isPricePerPerson = 4;
+}
+
+message UpdatePriceAndDate {
+  PriceWithDate updatedPriceWithDate = 1;
+  string accommodationId = 2;
+}
+
+message Reservation {
+  string Id = 1;
+  string status = 2;
+  DateRange dateRange = 3;
+  string accommodationId = 4;
+  int32 price = 5;
+  int32 numberOfGuests = 6;
+}
+
+message AvailabilityRequest {
+  PriceWithDate priceWithDate = 1;
+  string accommodationId = 2;
+}

@@ -1,0 +1,142 @@
+syntax = "proto3";
+
+option go_package = "common/accommodation";
+
+package accommodation;
+
+import "google/api/annotations.proto";
+
+
+
+service AccommodationService{
+  rpc Create(CreateRequest) returns(CreateResponse) {
+    option (google.api.http) = {
+      post: "/api-1/accommodation",
+      //body:"*" works if JSON body has one top level object, otherwise you need to list all individual fields by hand
+      body: "*"
+    };
+  }
+
+  rpc Update(UpdateRequest) returns(UpdateRequest) {
+    option (google.api.http) = {
+      put: "/api-1/accommodation",
+      body: "*"
+    };
+  }
+
+  rpc GetById(GetByIdRequest) returns(GetByIdResponse) {
+    option (google.api.http) = {
+      get: "/api-1/accommodation/{id}"
+    };
+  }
+
+  rpc GetAll(EmptyRequest) returns(GetAllResponse) {
+    option (google.api.http) = {
+      get: "/api-1/accommodation/all"
+    };
+  }
+
+  rpc GetAllMy(GetMyRequest) returns(GetAllResponse) {
+    option (google.api.http) = {
+      get: "/api-1/accommodation/all-my"
+    };
+  }
+
+  rpc Delete(DeleteRequest) returns(DeleteResponse){
+    option (google.api.http) = {
+      delete: "/api-1/accommodation/{id}"
+    };
+  }
+
+  rpc DeleteByHostId(DeleteRequest) returns(DeleteResponse){
+    option (google.api.http) = {
+      delete: "/api-1/accommodation/by-host/{id}"
+    };
+  }
+
+  rpc GetAmenities(EmptyRequest) returns(GetAmenitiesResponse) {
+    option (google.api.http) = {
+      get: "/api-1/amenities"
+    };
+  }
+
+}
+
+message EmptyRequest {}
+
+message GetMyRequest {
+  string hostId = 1;
+}
+
+message GetAmenitiesResponse {
+  repeated string Amenities = 1;
+}
+
+message GetAllResponse {
+  repeated AccommodationFull accommodation = 1;
+}
+
+message CreateRequest {
+  CreateAccommodation accommodation = 1;
+}
+
+message CreateResponse{
+  string id = 1;
+}
+
+message UpdateRequest {
+  Accommodation accommodation = 1;
+}
+
+message GetByIdResponse{
+  Accommodation accommodation = 1;
+}
+
+message GetByIdRequest{
+  string id = 1;
+}
+
+message DeleteRequest{
+  string id = 1;
+}
+
+message DeleteResponse{ }
+
+message CreateAccommodation{
+  string Name = 1;
+  Address Address = 2;
+  int32 MinGuests = 3;
+  int32 MaxGuests = 4;
+  repeated string Amenities = 5;
+  repeated string Images = 6;
+  string HostId = 8;
+  bool isAutomaticReservation = 9;
+}
+
+message  Accommodation{
+  string Name = 1;
+  Address Address = 2;
+  int32 MinGuests = 3;
+  int32 MaxGuests = 4;
+  repeated string Amenities = 5;
+  repeated string Images = 6;
+  string HostId = 8;
+}
+
+message AccommodationFull {
+  string id = 1;
+  string Name = 2;
+  Address Address = 3;
+  int32 MinGuests = 4;
+  int32 MaxGuests = 5;
+  repeated string Amenities = 6;
+  repeated string Images = 7;
+  string HostId = 8;
+}
+
+message Address {
+  string country = 1;
+  string city = 2;
+  string street = 3;
+  string streetNumber= 4;
+}
