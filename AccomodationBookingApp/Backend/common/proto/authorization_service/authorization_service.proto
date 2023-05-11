@@ -90,8 +90,6 @@ message LoginRequest {
 
 message LoginResponse {
   string access_token = 1;
-  Role role = 2;
-  string expiration_date = 3;
 }
 
 message ChangeUsernameRequest {

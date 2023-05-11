@@ -6,6 +6,7 @@ import (
 	"github.com/aead/chacha20poly1305"
 	"github.com/google/uuid"
 	"github.com/o1egl/paseto"
+	"strconv"
 	"time"
 )
 
@@ -33,13 +34,11 @@ func (maker *PasetoMaker) CreateToken(id uuid.UUID, duration time.Duration, role
 		return "", Payload{}, nil
 	}
 
-	// user info is stored in the footer, may change later
-	//footer := map[string]interface{}{
-	//	"Role":           role,
-	//	"ExpirationDate": payload.ExpiredAt,
-	//}
+	footer := map[string]interface{}{
+		"RoleAndExp": "role:" + strconv.Itoa(int(role)) + ", expiration date: " + payload.ExpiredAt.String(),
+	}
 
-	token, err := maker.paseto.Encrypt(maker.symmetricKey, payload, nil)
+	token, err := maker.paseto.Encrypt(maker.symmetricKey, payload, footer)
 	return token, *payload, err
 }
 
