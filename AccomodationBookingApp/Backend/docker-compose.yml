@@ -17,6 +17,10 @@ services:
       AUTHORIZATION_SERVICE_PORT: ${AUTHORIZATION_SERVICE_PORT}
       USER_PROFILE_SERVICE_HOST: ${USER_PROFILE_SERVICE_HOST}
       USER_PROFILE_SERVICE_PORT: ${USER_PROFILE_SERVICE_PORT}
+      ACCOMMODATION_SERVICE_HOST: ${ACCOMMODATION_SERVICE_HOST}
+      ACCOMMODATION_SERVICE_PORT: ${ACCOMMODATION_SERVICE_PORT}
+      RESERVATION_SERVICE_HOST: ${RESERVATION_SERVICE_HOST}
+      RESERVATION_SERVICE_PORT: ${RESERVATION_SERVICE_PORT}
     networks:
       - network
 
@@ -41,7 +45,8 @@ services:
       DELETE_USER_COMMAND_SUBJECT: ${DELETE_USER_COMMAND_SUBJECT}
       DELETE_USER_REPLY_SUBJECT: ${DELETE_USER_REPLY_SUBJECT}
     depends_on:
-      - authorization_db
+      authorization_db:
+          condition: service_healthy
     networks:
       - network
 
@@ -54,9 +59,16 @@ services:
       context: ../Database/Authorization
       dockerfile: Dockerfile
     environment:
-      POSTGRES_USER: ${AUTHORIZATION_DB_USER}
+      PGUSER: ${AUTHORIZATION_DB_USER}
       POSTGRES_PASSWORD: ${AUTHORIZATION_DB_PASS}
       POSTGRES_DB: ${AUTHORIZATION_DB_NAME}
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "54321:5432"
     networks:
       - network
 
@@ -83,7 +95,8 @@ services:
       AUTHORIZATION_SERVICE_HOST: ${AUTHORIZATION_SERVICE_HOST}
       AUTHORIZATION_SERVICE_PORT: ${AUTHORIZATION_SERVICE_PORT}
     depends_on:
-      - user_profile_db
+      user_profile_db:
+        condition: service_healthy
     networks:
       - network
 
@@ -96,9 +109,84 @@ services:
       context: ../Database/UserProfile
       dockerfile: Dockerfile
     environment:
-      POSTGRES_USER: ${USER_PROFILE_DB_USER}
+      PGUSER: ${USER_PROFILE_DB_USER}
       POSTGRES_PASSWORD: ${USER_PROFILE_DB_PASS}
       POSTGRES_DB: ${USER_PROFILE_DB_NAME}
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "54320:5432"
+    networks:
+      - network
+
+  accommodation_service:
+    image: accommodation_service
+    container_name: accommodation_service
+    build:
+      context: .
+      dockerfile: ./accommodation_service/Dockerfile
+    restart: on-failure
+    environment:
+      ACCOMMODATION_SERVICE_HOST: ${ACCOMMODATION_SERVICE_HOST}
+      ACCOMMODATION_SERVICE_PORT: ${ACCOMMODATION_SERVICE_PORT}
+      ACCOMMODATION_SERVICE_DB_NAME: ${ACCOMMODATION_SERVICE_DB_NAME}
+      ACCOMMODATION_SERVICE_DB_PORT: ${ACCOMMODATION_SERVICE_DB_PORT}
+      RESERVATION_SERVICE_HOST: ${RESERVATION_SERVICE_HOST}
+      RESERVATION_SERVICE_PORT: ${RESERVATION_SERVICE_PORT}
+    networks:
+      - network
+    depends_on:
+      accommodation_db:
+        condition: service_healthy
+
+  accommodation_db:
+    image: mongo
+    container_name: ${ACCOMMODATION_SERVICE_DB_NAME}
+    ports:
+      - "27017:27017"
+    volumes:
+      - accommodationDb:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok'
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    networks:
+      - network
+
+  reservation_service:
+    image: reservation_service
+    container_name: reservation_service
+    build:
+      context: .
+      dockerfile: ./reservation_service/Dockerfile
+    restart: on-failure
+    environment:
+      RESERVATION_SERVICE_HOST: ${RESERVATION_SERVICE_HOST}
+      RESERVATION_SERVICE_PORT: ${RESERVATION_SERVICE_PORT}
+      RESERVATION_SERVICE_DB_NAME: ${RESERVATION_SERVICE_DB_NAME}
+      RESERVATION_SERVICE_DB_PORT: ${RESERVATION_SERVICE_DB_PORT}
+    networks:
+      - network
+    depends_on:
+      reservation_db:
+        condition: service_healthy
+
+  reservation_db:
+    image: mongo
+    container_name: ${RESERVATION_SERVICE_DB_NAME}
+    ports:
+      - "27018:27017"
+    volumes:
+      - reservationDb:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok'
+      interval: 10s
+      timeout: 10s
+      retries: 10
     networks:
       - network
 
@@ -108,6 +196,10 @@ services:
     restart: on-failure
     networks:
       - network
+
+volumes:
+  accommodationDb:
+  reservationDb:
 
 networks:
   network:
