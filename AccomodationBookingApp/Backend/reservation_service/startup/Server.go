@@ -72,6 +72,6 @@ func getProtectedMethodsWithAllowedRoles() map[string][]model.Role {
 	const authServicePath = "/reservation.ReservationService/"
 
 	return map[string][]model.Role{
-		authServicePath + "AcceptReservation": {model.Guest},
+		authServicePath + "Gas": {model.Guest},
 	}
 }

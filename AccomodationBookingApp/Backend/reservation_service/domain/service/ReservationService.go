@@ -26,11 +26,11 @@ func (service ReservationService) UpdatePriceAndDate(priceWithDate *model.Update
 	return service.reservationRepo.UpdatePriceAndDate(priceWithDate)
 }
 
-func (service ReservationService) GetAllRejectedReservations() (*model.Reservation, error) {
+func (service ReservationService) GetAllRejectedReservations() (model.Reservations, error) {
 	return service.reservationRepo.GetAllRejectedReservations()
 }
 
-func (service ReservationService) GetAllPendingReservations() (*model.Reservation, error) {
+func (service ReservationService) GetAllPendingReservations() (model.Reservations, error) {
 	return service.reservationRepo.GetAllPendingReservations()
 }
 
