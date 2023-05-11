@@ -8,6 +8,7 @@ import (
 	"common/saga/messaging"
 	"common/saga/messaging/nats"
 	"fmt"
+	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc"
 	"gorm.io/gorm"
 	"log"
@@ -48,9 +49,29 @@ func (server *Server) Start() {
 	replyPublisher := server.initDeletePublisher(server.config.DeleteUserReplySubject)
 	server.initDeleteOrderHandler(userProfileService, replyPublisher, commandSubscriber)
 
+	mongoClient := server.initMongoClient()
+	//TODO GURNI GA NEGDE
+	eventRepo := server.initEventRepo(mongoClient)
+	eventRepo.TestEvents()
+
 	server.startGrpcServer(userProfileHandler)
 }
 
+func (server *Server) initMongoClient() *mongo.Client {
+	client, err := repository.GetMongoClient(server.config.userProfileEventDbName, server.config.userProfileEventDbPort)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return client
+}
+
+func (server *Server) initEventRepo(client *mongo.Client) *repository.EventRepositoryMongo {
+	repo, err := repository.NewEventRepositoryMongo(client, server.config.userProfileEventInnerDbName, server.config.userProfileEventDbCollectionName)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return repo
+}
 func initUserProfileRepo(client *gorm.DB) *repository.UserProfileRepositoryPG {
 	repo, err := repository.NewUserProfileRepositoryPG(client)
 	if err != nil {
@@ -59,7 +80,7 @@ func initUserProfileRepo(client *gorm.DB) *repository.UserProfileRepositoryPG {
 	return repo
 }
 func (server *Server) initPostgresClient() *gorm.DB {
-	client, err := repository.GetClient(
+	client, err := repository.GetPostgresClient(
 		server.config.DBHost, server.config.DBUser,
 		server.config.DBPass, server.config.DBName,
 		server.config.DBPort)
