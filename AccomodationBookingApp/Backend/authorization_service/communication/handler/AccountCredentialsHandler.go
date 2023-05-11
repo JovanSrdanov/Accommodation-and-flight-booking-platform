@@ -43,20 +43,6 @@ func (handler AccountCredentialsHandler) Create(ctx context.Context, request *au
 	}, nil
 }
 func (handler AccountCredentialsHandler) GetByUsername(ctx context.Context, request *authorizationProto.GetByUsernameRequest) (*authorizationProto.GetByUsernameResponse, error) {
-	// TODO Stefan: only for testing purposes, remove later
-	//loggedInUserId, ok := ctx.Value("id").(uuid.UUID)
-	//if !ok {
-	//	return nil, fmt.Errorf("failed to extract id and cast to UUID")
-	//}
-	//
-	//loggedInUserRole, err := token.ExtractTokenInfoFromContext(ctx)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//
-	//log.Printf("Logged in user username: %s, role: %s", loggedInUserId, loggedInUserRole)
-	/////////////
-
 	result, err := handler.accCredService.GetByUsername(request.Username)
 	if err != nil {
 		return nil, err
@@ -79,12 +65,12 @@ func (handler AccountCredentialsHandler) GetById(ctx context.Context, req *autho
 
 // Login is an unary rpc
 func (handler AccountCredentialsHandler) Login(ctx context.Context, req *authorizationProto.LoginRequest) (*authorizationProto.LoginResponse, error) {
-	accessToken, role, expDate, err := handler.accCredService.Login(req.GetUsername(), req.GetPassword())
+	accessToken, err := handler.accCredService.Login(req.GetUsername(), req.GetPassword())
 	if err != nil {
 		return nil, err
 	}
 
-	res := &authorizationProto.LoginResponse{AccessToken: accessToken, Role: authorizationProto.Role(role), ExpirationDate: expDate.String()}
+	res := &authorizationProto.LoginResponse{AccessToken: accessToken}
 	return res, nil
 }
 

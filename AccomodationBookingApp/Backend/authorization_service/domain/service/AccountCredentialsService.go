@@ -53,26 +53,26 @@ func (service AccountCredentialsService) GetById(id uuid.UUID) (*model.AccountCr
 	return accountCredentials, nil
 }
 
-func (service AccountCredentialsService) Login(username, password string) (string, model.Role, time.Time, error) {
+func (service AccountCredentialsService) Login(username, password string) (string, error) {
 	accountCredentials, err := service.GetByUsername(username)
 	if err != nil {
-		return "", -1, time.Time{}, status.Errorf(codes.NotFound, "incorrect username")
+		return "", status.Errorf(codes.NotFound, "incorrect username")
 	}
 
 	if !accountCredentials.IsPasswordCorrect(password) {
-		return "", -1, time.Time{}, status.Errorf(codes.NotFound, "incorrect password")
+		return "", status.Errorf(codes.NotFound, "incorrect password")
 	}
 
-	accessToken, payload, err := service.tokenMaker.CreateToken(
+	accessToken, _, err := service.tokenMaker.CreateToken(
 		accountCredentials.ID,
 		180*time.Minute,
 		accountCredentials.Role,
 	)
 	if err != nil {
-		return "", -1, time.Time{}, status.Errorf(codes.Internal, "Cannot generate access token")
+		return "", status.Errorf(codes.Internal, "Cannot generate access token")
 	}
 
-	return accessToken, payload.Role, payload.ExpiredAt, nil
+	return accessToken, nil
 }
 
 func (service AccountCredentialsService) ChangeUsername(userId uuid.UUID, username string) error {
