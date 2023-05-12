@@ -407,6 +407,10 @@ func (repo ReservationRepositoryMongo) AcceptReservation(id primitive.ObjectID) 
 		return primitive.ObjectID{}, err
 	}
 
+	if reservation.Status != "pending" {
+		return primitive.ObjectID{}, status.Errorf(codes.Aborted, "Can not accept reservation that is not pending")
+	}
+
 	//Find all reservation from same accommodation
 	collectionReservations := repo.getCollectionReservation()
 
@@ -431,9 +435,12 @@ func (repo ReservationRepositoryMongo) AcceptReservation(id primitive.ObjectID) 
 			return primitive.ObjectID{}, status.Errorf(codes.Aborted, "Can not accept this reservation, overlaps*")
 		}
 		if reservationValue.ID != reservation.ID && reservationValue.Status == "pending" && reservationValue.DateRange.Overlaps(reservation.DateRange) {
-			pendingIds = append(pendingIds, reservation.ID)
+			pendingIds = append(pendingIds, reservationValue.ID)
 		}
 	}
+
+	pendingIdString := pendingIds[0].String()
+	log.Println(pendingIdString)
 
 	//Ako se ne overlap onda accept
 	filter = bson.D{{"_id", reservation.ID}}

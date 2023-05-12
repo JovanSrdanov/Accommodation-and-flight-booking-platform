@@ -91,7 +91,7 @@ func (handler ReservationHandler) GetAllReservationsForGuest(ctx context.Context
 	mapper := NewReservationMapper()
 
 	loggedInId := ctx.Value("id")
-	reservations, err := handler.reservationService.GetAllPendingReservations(loggedInId.(uuid.UUID).String())
+	reservations, err := handler.reservationService.GetAllReservationsForGuest(loggedInId.(uuid.UUID).String())
 	if err != nil {
 		return &reservation.GetAllReservationsForGuestResponse{}, err
 	}
