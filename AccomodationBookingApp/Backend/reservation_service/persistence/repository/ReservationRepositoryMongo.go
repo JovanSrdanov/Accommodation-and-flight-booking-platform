@@ -26,7 +26,7 @@ func NewReservationRepositoryMongo(dbClient *mongo.Client) (*ReservationReposito
 	UpdatePriceAndDate(priceWithDate *model.UpdatePriceAndDate) (*model.UpdatePriceAndDate, error)
 	CreateReservation(reservation *model.Reservation) (*model.Reservation, error)
 	GetAllPendingReservations() (*model.Reservation, error)
-	GetAllRejectedReservations() (*model.Reservation, error)
+	GetAllAcceptedReservations() (*model.Reservation, error)
 	RejectReservation(id primitive.ObjectID) (primitive.ObjectID, error)
 	AcceptReservation(id primitive.ObjectID) (primitive.ObjectID, error)
 	CancelReservation(id primitive.ObjectID) (primitive.ObjectID, error)
@@ -127,7 +127,7 @@ func (repo ReservationRepositoryMongo) CreateReservation(reservation *model.Rese
 
 func (repo ReservationRepositoryMongo) UpdatePriceAndDate(priceWithDate *model.UpdatePriceAndDate) (*model.UpdatePriceAndDate, error) {
 	//Nadji avail sa accId
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	collection := repo.getCollectionAvailability()
@@ -155,6 +155,13 @@ func (repo ReservationRepositoryMongo) UpdatePriceAndDate(priceWithDate *model.U
 
 	if !dateFound {
 		return &model.UpdatePriceAndDate{}, status.Errorf(codes.Aborted, "This date doesn't exist in database wrong id")
+	}
+
+	//Sad proveri da li se dateRange novog availability-a poklapa sa nekim starim osim sam sa sobom
+	for _, availableDatesIterator := range availability.AvailableDates {
+		if availableDatesIterator.ID != priceWithDate.PriceWithDate.ID && availableDatesIterator.DateRange.Overlaps(priceWithDate.PriceWithDate.DateRange) {
+			return &model.UpdatePriceAndDate{}, status.Errorf(codes.Aborted, "Provided date overlaps with existing available date")
+		}
 	}
 
 	//Proveri da li se taj availDate poklapa sa nekom od rezervacija koja je accepted ili pending
@@ -226,12 +233,108 @@ func (repo ReservationRepositoryMongo) GetAllMy(hostId string) (model.Availabili
 	return availabilities, nil
 }
 
-func (repo ReservationRepositoryMongo) GetAllRejectedReservations() (model.Reservations, error) {
-	return model.Reservations{}, status.Errorf(codes.Unimplemented, "method CreateAvailability not implemented")
+func (repo ReservationRepositoryMongo) GetAllAcceptedReservations(hostId string) (model.Reservations, error) {
+	//Dobavi sve dostpunosti i iz njih izvuci sve accommodationId gde je hostId prosledjenji
+	availabilities, err := repo.GetAllMy(hostId)
+	if err != nil {
+		log.Println(err)
+		return model.Reservations{}, err
+	}
+
+	accommodationIds := make([]primitive.ObjectID, 0)
+
+	for _, availability := range availabilities {
+		accommodationIds = append(accommodationIds, availability.AccommodationId)
+	}
+
+	//Sad dobavi sve rezervacije koje imaju ovaj accId i koje su accepted
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	collection := repo.getCollectionReservation()
+
+	filter := bson.M{
+		"accommodationId": bson.M{"$in": accommodationIds},
+		"status":          "accepted"}
+
+	cursor, err := collection.Find(ctx, filter)
+	if err != nil {
+		log.Println(err)
+		return model.Reservations{}, err
+	}
+
+	var reservations model.Reservations
+	err = cursor.All(ctx, &reservations)
+	if err != nil {
+		log.Println(err)
+		return model.Reservations{}, err
+	}
+
+	return reservations, nil
 }
 
-func (repo ReservationRepositoryMongo) GetAllPendingReservations() (model.Reservations, error) {
-	return model.Reservations{}, status.Errorf(codes.Unimplemented, "method CreateAvailability not implemented")
+func (repo ReservationRepositoryMongo) GetAllPendingReservations(hostId string) (model.Reservations, error) {
+	//Dobavi sve dostpunosti i iz njih izvuci sve accommodationId gde je hostId prosledjenji
+	availabilities, err := repo.GetAllMy(hostId)
+	if err != nil {
+		log.Println(err)
+		return model.Reservations{}, err
+	}
+
+	accommodationIds := make([]primitive.ObjectID, 0)
+
+	for _, availability := range availabilities {
+		accommodationIds = append(accommodationIds, availability.AccommodationId)
+	}
+
+	//Sad dobavi sve rezervacije koje imaju ovaj accId i koje su accepted
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	collection := repo.getCollectionReservation()
+
+	filter := bson.M{
+		"accommodationId": bson.M{"$in": accommodationIds},
+		"status":          "pending"}
+
+	cursor, err := collection.Find(ctx, filter)
+	if err != nil {
+		log.Println(err)
+		return model.Reservations{}, err
+	}
+
+	var reservations model.Reservations
+	err = cursor.All(ctx, &reservations)
+	if err != nil {
+		log.Println(err)
+		return model.Reservations{}, err
+	}
+
+	return reservations, nil
+}
+
+func (repo ReservationRepositoryMongo) GetAllReservationsForGuest(guestId string) (model.Reservations, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	collection := repo.getCollectionReservation()
+
+	filter := bson.D{{"guestId", guestId}}
+
+	cursor, err := collection.Find(ctx, filter)
+	if err != nil {
+		log.Println(err)
+		return model.Reservations{}, err
+	}
+
+	var reservations model.Reservations
+	err = cursor.All(ctx, &reservations)
+	if err != nil {
+		log.Println(err)
+		return model.Reservations{}, err
+	}
+
+	return reservations, nil
 }
 
 func (repo ReservationRepositoryMongo) CreateAvailabilityBase(base *model.Availability) (primitive.ObjectID, error) {

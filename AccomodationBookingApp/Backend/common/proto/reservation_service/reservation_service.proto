@@ -55,9 +55,9 @@ service ReservationService{
     };
   }
 
-  rpc GetAllRejectedReservations(EmptyRequest) returns(GetAllRejectedReservationsResponse) {
+  rpc GetAllAcceptedReservations(EmptyRequest) returns(GetAllAcceptedReservationsResponse) {
     option (google.api.http) = {
-      get: "/api-1/reservation/rejected"
+      get: "/api-1/reservation/accepted"
     };
   }
 
@@ -116,11 +116,11 @@ message AcceptReservationResponse {
 }
 
 message GetAllPendingReservationsResponse {
-  Reservation reservation = 1;
+  repeated Reservation reservation = 1;
 }
 
-message GetAllRejectedReservationsResponse {
-  Reservation reservation = 1;
+message GetAllAcceptedReservationsResponse {
+  repeated Reservation reservation = 1;
 }
 
 message CreateReservationRequest {
