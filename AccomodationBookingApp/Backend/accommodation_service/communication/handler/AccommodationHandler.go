@@ -105,6 +105,15 @@ func (handler AccommodationHandler) Delete(ctx context.Context, in *accommodatio
 	return &accommodation.DeleteResponse{}, nil
 }
 
+func (handler AccommodationHandler) DeleteByHostId(ctx context.Context, in *accommodation.EmptyRequest) (*accommodation.DeleteResponse, error) {
+	loggedInId := ctx.Value("id")
+	err := handler.accommodationService.DeleteByHostId(loggedInId.(uuid.UUID).String())
+	if err != nil {
+		return &accommodation.DeleteResponse{}, err
+	}
+	return &accommodation.DeleteResponse{}, nil
+}
+
 func (handler AccommodationHandler) GetAll(ctx context.Context, in *accommodation.EmptyRequest) (*accommodation.GetAllResponse, error) {
 	accommodations, err := handler.accommodationService.GetAll()
 	if err != nil {
@@ -118,7 +127,7 @@ func (handler AccommodationHandler) GetAll(ctx context.Context, in *accommodatio
 
 func (handler AccommodationHandler) GetAllMy(ctx context.Context, in *accommodation.GetMyRequest) (*accommodation.GetAllResponse, error) {
 	loggedInId := ctx.Value("id")
-	accommodations, err := handler.accommodationService.GetAllMy(loggedInId.(string))
+	accommodations, err := handler.accommodationService.GetAllMy(loggedInId.(uuid.UUID).String())
 	if err != nil {
 		return nil, err
 	}
