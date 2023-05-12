@@ -32,7 +32,15 @@ func (handler ReservationHandler) CreateAvailability(ctx context.Context, in *re
 	}, nil
 }
 func (handler ReservationHandler) GetAllMy(ctx context.Context, in *reservation.EmptyRequest) (*reservation.GetAllMyResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAllMy not implemented")
+	mapper := NewReservationMapper()
+
+	loggedInId := ctx.Value("id")
+	availabilities, err := handler.reservationService.GetAllMy(loggedInId.(uuid.UUID).String())
+	if err != nil {
+		return &reservation.GetAllMyResponse{}, err
+	}
+
+	return mapper.mapToGetAllMyResponse(availabilities), nil
 }
 func (handler ReservationHandler) UpdatePriceAndDate(ctx context.Context, in *reservation.UpdateRequest) (*reservation.UpdateRequest, error) {
 	mapper := NewReservationMapper()
@@ -45,7 +53,10 @@ func (handler ReservationHandler) UpdatePriceAndDate(ctx context.Context, in *re
 }
 func (handler ReservationHandler) CreateReservation(ctx context.Context, in *reservation.CreateReservationRequest) (*reservation.CreateReservationRequest, error) {
 	mapper := NewReservationMapper()
-	_, err := handler.reservationService.CreateReservation(mapper.mapFromCreateReservation(in))
+	mappedReservation := mapper.mapFromCreateReservation(in)
+	loggedInId := ctx.Value("id")
+	mappedReservation.GuestId = loggedInId.(uuid.UUID).String()
+	_, err := handler.reservationService.CreateReservation(mappedReservation)
 
 	if err != nil {
 		return nil, err

@@ -7,7 +7,7 @@ import (
 
 type IReservationRepository interface {
 	CreateAvailability(availability *model.AvailabilityRequest) (primitive.ObjectID, error)
-	GetAllMy() (model.Availabilities, error)
+	GetAllMy(hostId string) (model.Availabilities, error)
 	UpdatePriceAndDate(priceWithDate *model.UpdatePriceAndDate) (*model.UpdatePriceAndDate, error)
 	CreateReservation(reservation *model.Reservation) (*model.Reservation, error)
 	GetAllPendingReservations() (model.Reservations, error)

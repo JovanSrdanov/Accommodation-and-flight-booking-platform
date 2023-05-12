@@ -73,5 +73,6 @@ func getProtectedMethodsWithAllowedRoles() map[string][]model.Role {
 
 	return map[string][]model.Role{
 		authServicePath + "CreateAvailabilityBase": {model.Host},
+		authServicePath + "GetAllMy":               {model.Host},
 	}
 }

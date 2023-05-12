@@ -76,3 +76,40 @@ func (mapper ReservationMapper) mapFromCreateAvailabilityBase(hostId string, req
 		IsAutomaticReservation: request.ReservationBase.IsAutomaticReservation,
 	}
 }
+
+func (mapper ReservationMapper) mapToGetAllMyResponse(in model.Availabilities) *reservation.GetAllMyResponse {
+	availabilitiesProto := make([]*reservation.Availability, 0)
+
+	for _, avail := range in {
+
+		priceWithDateProt := make([]*reservation.PriceWithDate, 0)
+
+		for _, priceWithDate := range avail.AvailableDates {
+			priceProto := &reservation.PriceWithDate{
+				Id: priceWithDate.ID.String(),
+				DateRange: &reservation.DateRange{
+					From: priceWithDate.DateRange.From.Unix(),
+					To:   priceWithDate.DateRange.To.Unix(),
+				},
+				Price:            priceWithDate.Price,
+				IsPricePerPerson: priceWithDate.IsPricePerPerson,
+			}
+
+			priceWithDateProt = append(priceWithDateProt, priceProto)
+		}
+
+		availProto := &reservation.Availability{
+			Id:                     avail.ID.String(),
+			AvailableDates:         priceWithDateProt,
+			AccommodationId:        avail.AccommodationId.String(),
+			IsAutomaticReservation: avail.IsAutomaticReservation,
+			HostId:                 avail.HostId,
+		}
+		availabilitiesProto = append(availabilitiesProto, availProto)
+	}
+
+	return &reservation.GetAllMyResponse{
+		Availabilities: availabilitiesProto,
+	}
+}
+
