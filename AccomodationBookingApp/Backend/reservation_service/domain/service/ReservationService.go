@@ -18,8 +18,8 @@ func (service ReservationService) CreateAvailability(availability *model.Availab
 	return service.reservationRepo.CreateAvailability(availability)
 }
 
-func (service ReservationService) GetAllMy() (model.Availabilities, error) {
-	return service.reservationRepo.GetAllMy()
+func (service ReservationService) GetAllMy(hostId string) (model.Availabilities, error) {
+	return service.reservationRepo.GetAllMy(hostId)
 }
 
 func (service ReservationService) UpdatePriceAndDate(priceWithDate *model.UpdatePriceAndDate) (*model.UpdatePriceAndDate, error) {

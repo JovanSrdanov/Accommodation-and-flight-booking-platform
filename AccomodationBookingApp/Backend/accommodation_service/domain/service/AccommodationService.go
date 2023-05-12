@@ -43,6 +43,10 @@ func (service AccommodationService) Delete(id primitive.ObjectID) error {
 	return service.accommodationRepo.Delete(id)
 }
 
+func (service AccommodationService) DeleteByHostId(id string) error {
+	return service.accommodationRepo.DeleteByHostId(id)
+}
+
 func (service AccommodationService) GetAll() (model.Accommodations, error) {
 	return service.accommodationRepo.GetAll()
 }

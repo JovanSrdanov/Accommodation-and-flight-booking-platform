@@ -203,8 +203,27 @@ func (repo ReservationRepositoryMongo) UpdatePriceAndDate(priceWithDate *model.U
 	return &model.UpdatePriceAndDate{}, nil
 }
 
-func (repo ReservationRepositoryMongo) GetAllMy() (model.Availabilities, error) {
-	return model.Availabilities{}, status.Errorf(codes.Unimplemented, "method CreateAvailability not implemented")
+func (repo ReservationRepositoryMongo) GetAllMy(hostId string) (model.Availabilities, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	collection := repo.getCollectionAvailability()
+
+	filter := bson.D{{"hostId", hostId}}
+
+	cursor, err := collection.Find(ctx, filter)
+	if err != nil {
+		log.Println(err)
+		return model.Availabilities{}, err
+	}
+
+	var availabilities model.Availabilities
+	err = cursor.All(ctx, &availabilities)
+	if err != nil {
+		log.Println(err)
+		return model.Availabilities{}, err
+	}
+	return availabilities, nil
 }
 
 func (repo ReservationRepositoryMongo) GetAllRejectedReservations() (model.Reservations, error) {
@@ -302,9 +321,14 @@ func (repo ReservationRepositoryMongo) AcceptReservation(id primitive.ObjectID) 
 		return primitive.ObjectID{}, err
 	}
 
+	pendingIds := make([]primitive.ObjectID, 0)
+
 	for _, reservationValue := range reservations {
 		if reservationValue.ID != reservation.ID && reservationValue.Status == "accepted" && reservationValue.DateRange.Overlaps(reservation.DateRange) {
 			return primitive.ObjectID{}, status.Errorf(codes.Aborted, "Can not accept this reservation, overlaps*")
+		}
+		if reservationValue.ID != reservation.ID && reservationValue.Status == "pending" && reservationValue.DateRange.Overlaps(reservation.DateRange) {
+			pendingIds = append(pendingIds, reservation.ID)
 		}
 	}
 
@@ -322,7 +346,18 @@ func (repo ReservationRepositoryMongo) AcceptReservation(id primitive.ObjectID) 
 
 	// Check if any document was updated
 	if result.MatchedCount == 0 {
-		return primitive.ObjectID{}, status.Errorf(codes.Unimplemented, "Not updated")
+		return primitive.ObjectID{}, status.Errorf(codes.Canceled, "Not updated")
+	}
+
+	filter = bson.D{{"_id", bson.M{"$in": pendingIds}}}
+
+	// Define an update to set the "status" field to "rejected"
+	update = bson.M{"$set": bson.M{"status": "rejected"}}
+
+	// Update the document matching the filter
+	result, err = collection.UpdateMany(ctx, filter, update)
+	if err != nil {
+		return primitive.ObjectID{}, err
 	}
 
 	return reservation.ID, nil

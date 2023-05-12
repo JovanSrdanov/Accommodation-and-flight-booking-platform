@@ -12,5 +12,6 @@ type IUserProfileService interface {
 	GetAllMy(hostId string) (model.Accommodations, error)
 	Update(id primitive.ObjectID, dto *model.Accommodation) (*model.Accommodation, error)
 	Delete(id primitive.ObjectID) error
+	DeleteByHostId(id string) error
 	GetAmenities() ([]string, error)
 }
