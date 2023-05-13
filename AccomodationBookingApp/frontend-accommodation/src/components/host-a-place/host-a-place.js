@@ -70,7 +70,7 @@ function HostAPlace() {
                     Images: base64Images,
                 },
             }
-            console.log(accommodation)
+        
             interceptor.post("api-1/accommodation", accommodation).then(() => {
                 setSuccessDialogShow(true);
             }).catch((err) => {

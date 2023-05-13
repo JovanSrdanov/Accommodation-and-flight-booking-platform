@@ -17,6 +17,10 @@ body {
 
 }
 
+li {
+    list-style: none;
+}
+
 h1 {
     border-radius: var(--border-radius);
     background: var(--paper);
