@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Flex} from "reflexbox";
 import {Box, Button, Card, Dialog, DialogActions, DialogTitle, FormControlLabel, Grid, TextField} from "@mui/material";
 import {DatePicker, LocalizationProvider} from "@mui/x-date-pickers";
@@ -128,8 +128,41 @@ function SearchAndFilterAccommodations() {
         setResultDialogShow(false)
     };
 
+    const [formData, setFormData] = useState({
+        location: '',
+        minGuests: 1,
+        startDate: dayjs(),
+        endDate: dayjs(),
+        minPrice: 1,
+        maxPrice: 2,
+        prominentHost: false,
+        amenities: []
+    });
+
+    const handleInputChange = (event) => {
+        const {name, value, type, checked} = event.target;
+        const newValue = type === 'checkbox' ? checked : value;
+        setFormData((prevState) => ({
+            ...prevState,
+            [name]: newValue
+        }));
+    };
+
+
     function handleSearch() {
-        setResultDialogShow(true)
+        const searchAndFilterData = {...formData};
+        searchAndFilterData.amenities = right;
+
+        const startDate = new Date(formData.startDate);
+        const utcStartDate = new Date(startDate.getTime() + startDate.getTimezoneOffset() * 60000);
+        searchAndFilterData.startDate = Math.round(utcStartDate.getTime() / 1000);
+
+        const endDate = new Date(formData.endDate);
+        const utcEndDate = new Date(endDate.getTime() + endDate.getTimezoneOffset() * 60000);
+        searchAndFilterData.endDate = Math.round(utcEndDate.getTime() / 1000);
+
+        console.log(searchAndFilterData);
+        setResultDialogShow(true);
     }
 
     return (
@@ -156,6 +189,9 @@ function SearchAndFilterAccommodations() {
                                 fullWidth
                                 variant="filled"
                                 label="Location"
+                                name="location"
+                                value={formData.location}
+                                onChange={handleInputChange}
                             />
                         </Box>
                         <Box width={1 / 4} m={1}>
@@ -165,18 +201,35 @@ function SearchAndFilterAccommodations() {
                                 type="number"
                                 label="Number of guests"
                                 InputProps={{inputProps: {min: 1}}}
+
                                 name="minGuests"
+                                value={formData.minGuests}
+                                onChange={handleInputChange}
                             />
                         </Box>
                         <Box width={1 / 4} m={1}>
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
                                 <DatePicker label="Start date"
+                                            value={formData.startDate}
+                                            onChange={(date) =>
+                                                setFormData((prevState) => ({
+                                                    ...prevState,
+                                                    startDate: date
+                                                }))
+                                            }
                                             minDate={dayjs()}/>
                             </LocalizationProvider>
                         </Box>
                         <Box width={1 / 4} m={1}>
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
                                 <DatePicker label="End date"
+                                            value={formData.endDate}
+                                            onChange={(date) =>
+                                                setFormData((prevState) => ({
+                                                    ...prevState,
+                                                    endDate: date
+                                                }))
+                                            }
                                             minDate={dayjs()}/>
                             </LocalizationProvider>
                         </Box>
@@ -198,6 +251,9 @@ function SearchAndFilterAccommodations() {
                                     type="number"
                                     label="Minimum price"
                                     InputProps={{inputProps: {min: 1}}}
+                                    name="minPrice"
+                                    value={formData.minPrice}
+                                    onChange={handleInputChange}
                                 />
                             </Box>
                             <Box m={1}>
@@ -206,11 +262,23 @@ function SearchAndFilterAccommodations() {
                                     variant="filled"
                                     type="number"
                                     label="Maximum price"
+                                    name="maxPrice"
+                                    value={formData.maxPrice}
+                                    onChange={handleInputChange}
                                     InputProps={{inputProps: {min: 1}}}
                                 />
                             </Box>
                             <Box m={1}>
-                                <FormControlLabel control={<Checkbox/>} label="Prominent Host"/>
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={formData.prominentHost}
+                                            onChange={handleInputChange}
+                                            name="prominentHost"
+                                        />
+                                    }
+                                    label="Prominent Host"
+                                />
                             </Box>
                         </Flex>
 
@@ -260,6 +328,7 @@ function SearchAndFilterAccommodations() {
                                 fullWidth
                                 color="warning"
                                 variant="contained">
+
                                 Search and filter
                             </Button>
                         </Box>

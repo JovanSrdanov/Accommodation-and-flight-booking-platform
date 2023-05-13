@@ -5,8 +5,7 @@ import {AppBar, Box, Button, Toolbar, Tooltip} from "@mui/material";
 import HotelIcon from '@mui/icons-material/Hotel'
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
-import BookedPlacesPage from "./pages/guest-pages/booked-places-page";
-import VisitingHistoryPage from "./pages/guest-pages/visiting-history-page";
+import MyReservationsPage from "./pages/guest-pages/my-reservations-page";
 import RecommendationsForYouPage from "./pages/guest-pages/recommendations-for-you-page";
 import MyPlacesPage from "./pages/host-pages/my-places-page";
 import HostAPlacePage from "./pages/host-pages/host-a-place-page";
@@ -15,7 +14,6 @@ import ProfilePage from "./pages/guest-pages/profile-page";
 import SearchAndFilterAccommodationsPage from "./pages/all-roles-pages/search-and-filter-accommodations-page";
 import React from "react";
 import HistoryIcon from '@mui/icons-material/History';
-import CheckIcon from '@mui/icons-material/Check';
 import RecommendOutlinedIcon from '@mui/icons-material/RecommendOutlined';
 import OtherHousesOutlinedIcon from '@mui/icons-material/OtherHousesOutlined';
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
@@ -116,21 +114,12 @@ function App() {
 
                         {ROLE === 'Guest' && (
                             <>
-                                <Tooltip title="View the places you have booked" arrow>
-                                    <Button sx={{color: 'inherit'}}
-                                            startIcon={<CheckIcon/>}
 
-                                            onClick={() => navigate('/booked-places')}>
-
-                                        Booked places
-                                    </Button>
-                                </Tooltip>
-
-                                <Tooltip title="View the places you have visited" arrow>
+                                <Tooltip title="View your reservations" arrow>
                                     <Button startIcon={<HistoryIcon/>} sx={{color: 'inherit'}}
-                                            onClick={() => navigate('/visiting-history')}>
+                                            onClick={() => navigate('/my-reservations')}>
 
-                                        Visiting history
+                                        My Reservations
                                     </Button>
                                 </Tooltip>
 
@@ -184,7 +173,7 @@ function App() {
                                         My profile
                                     </Button>
                                 </Tooltip>
-                                <Tooltip title="Log out of the sistem" arrow>
+                                <Tooltip title="Log out of the system" arrow>
                                     <Button color="error" onClick={handleLogout} startIcon={<LogoutOutlinedIcon/>}>
 
                                         Log out
@@ -219,8 +208,8 @@ function App() {
                     {ROLE === 'Guest' && (
                         <>
 
-                            <Route path="/booked-places" element={<BookedPlacesPage/>}/>
-                            <Route path="/visiting-history" element={<VisitingHistoryPage/>}/>
+                            <Route path="/my-reservations" element={<MyReservationsPage/>}/>
+
                             <Route path="/recommendations-for-you" element={<RecommendationsForYouPage/>}/>
                             <Route path="/profile" element={<ProfilePage/>}/>
                             <Route path="/search-and-filter-accommodations"
