@@ -67,8 +67,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    ports:
-      - "54321:5432"
     networks:
       - network
 
@@ -117,8 +115,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    ports:
-      - "54320:5432"
     networks:
       - network
 
