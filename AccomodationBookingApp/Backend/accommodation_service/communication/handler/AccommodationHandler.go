@@ -1,11 +1,14 @@
 package handler
 
 import (
+	"accommodation_service/communication"
 	"accommodation_service/domain/service"
 	accommodation "common/proto/accommodation_service/generated"
+	reservation "common/proto/reservation_service/generated"
 	"context"
 	"fmt"
 	"github.com/google/uuid"
+	"log"
 )
 
 type AccommodationHandler struct {
@@ -33,19 +36,21 @@ func (handler AccommodationHandler) Create(ctx context.Context, in *accommodatio
 		return nil, err
 	}
 
+	log.Println(id.Hex())
+
 	// Create availability base
 	//Ovo samo ne radi jbg
-	/*reservationClient := communication.NewReservationClient(handler.reservationServiceAddress)
+	reservationClient := communication.NewReservationClient(handler.reservationServiceAddress)
 	_, err = reservationClient.CreateAvailabilityBase(ctx, &reservation.CreateAvailabilityBaseRequest{
 		ReservationBase: &reservation.AvailabilityBase{
-			AccommodationId:        id.String(),
-			HostId:                 loggedInId.(string),
+			AccommodationId:        id.Hex(),
+			HostId:                 loggedInId.String(),
 			IsAutomaticReservation: in.Accommodation.IsAutomaticReservation,
 		},
 	})
 	if err != nil {
 		return nil, err
-	}*/
+	}
 
 	return &accommodation.CreateResponse{
 		Id: id.String(),
