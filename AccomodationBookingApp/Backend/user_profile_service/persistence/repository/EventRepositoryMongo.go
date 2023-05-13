@@ -2,8 +2,8 @@ package repository
 
 import (
 	"context"
+	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"time"
 	"user_profile_service/event_sourcing"
@@ -31,7 +31,7 @@ func (repo *EventRepositoryMongo) Save(event *event_sourcing.Event) error {
 	return nil
 }
 
-func (repo *EventRepositoryMongo) Read(sagaId primitive.ObjectID, action string) (*event_sourcing.Event, error) {
+func (repo *EventRepositoryMongo) Read(sagaId uuid.UUID, action string) (*event_sourcing.Event, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -50,7 +50,7 @@ func (repo *EventRepositoryMongo) Read(sagaId primitive.ObjectID, action string)
 	return &result, err
 }
 
-func (repo *EventRepositoryMongo) Delete(sagaId primitive.ObjectID, action string) error {
+func (repo *EventRepositoryMongo) Delete(sagaId uuid.UUID, action string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 

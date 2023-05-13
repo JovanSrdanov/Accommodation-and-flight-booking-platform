@@ -16,6 +16,7 @@ import (
 	"user_profile_service/communication/handler"
 	"user_profile_service/communication/orchestrator"
 	"user_profile_service/domain/service"
+	"user_profile_service/event_sourcing"
 	"user_profile_service/persistence/repository"
 )
 
@@ -47,13 +48,12 @@ func (server *Server) Start() {
 	//Delete handler that listens orchestrator
 	commandSubscriber := server.initDeleteSubscriber(server.config.DeleteUserCommandSubject, QueueGroup)
 	replyPublisher := server.initDeletePublisher(server.config.DeleteUserReplySubject)
-	server.initDeleteOrderHandler(userProfileService, replyPublisher, commandSubscriber)
 
 	mongoClient := server.initMongoClient()
-	//TODO GURNI GA NEGDE
 	eventRepo := server.initEventRepo(mongoClient)
-	eventRepo.TestEvents()
+	eventService := event_sourcing.NewEventService(eventRepo)
 
+	server.initDeleteOrderHandler(userProfileService, eventService, replyPublisher, commandSubscriber)
 	server.startGrpcServer(userProfileHandler)
 }
 
@@ -137,8 +137,8 @@ func (server *Server) initDeleteUserOrchestrator(publisher messaging.Publisher, 
 	return orchestrator
 }
 
-func (server *Server) initDeleteOrderHandler(service *service.UserProfileService, publisher messaging.Publisher, subscriber messaging.Subscriber) {
-	_, err := handler.NewDeleteUserProfileHandler(service, publisher, subscriber)
+func (server *Server) initDeleteOrderHandler(userProfileService *service.UserProfileService, eventService *event_sourcing.EventService, publisher messaging.Publisher, subscriber messaging.Subscriber) {
+	_, err := handler.NewDeleteUserProfileHandler(userProfileService, eventService, publisher, subscriber)
 	if err != nil {
 		log.Fatal(err)
 	}

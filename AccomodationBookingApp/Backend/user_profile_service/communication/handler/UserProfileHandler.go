@@ -108,6 +108,9 @@ func (handler UserProfileHandler) DeleteUser(ctx context.Context, in *user_profi
 	}
 
 	err = handler.userProfileService.DeleteUser(userProfileId)
+	if err != nil {
+		return &user_profile.DeleteResponse{Message: err.Error()}, err
+	}
 
 	return &user_profile.DeleteResponse{Message: "User deleted"}, err
 }

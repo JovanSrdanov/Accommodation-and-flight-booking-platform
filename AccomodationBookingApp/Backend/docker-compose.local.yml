@@ -44,6 +44,8 @@ services:
       - authorization_db
     networks:
       - network
+    ports:
+      - 8002:8000
 
 
   authorization_db:
