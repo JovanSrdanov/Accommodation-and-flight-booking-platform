@@ -113,3 +113,25 @@ func (mapper ReservationMapper) mapToGetAllMyResponse(in model.Availabilities) *
 	}
 }
 
+func (mapper ReservationMapper) mapToReservationsProto(in model.Reservations) []*reservation.Reservation {
+	reservationsProt := make([]*reservation.Reservation, 0)
+
+	for _, reservationValue := range in {
+		reservationProto := &reservation.Reservation{
+			Id:     reservationValue.ID.String(),
+			Status: reservationValue.Status,
+			DateRange: &reservation.DateRange{
+				From: reservationValue.DateRange.From.Unix(),
+				To:   reservationValue.DateRange.To.Unix(),
+			},
+			AccommodationId: reservationValue.AccommodationId.String(),
+			Price:           reservationValue.Price,
+			NumberOfGuests:  reservationValue.NumberOfGuests,
+			GuestId:         reservationValue.GuestId,
+		}
+
+		reservationsProt = append(reservationsProt, reservationProto)
+	}
+
+	return reservationsProt
+}

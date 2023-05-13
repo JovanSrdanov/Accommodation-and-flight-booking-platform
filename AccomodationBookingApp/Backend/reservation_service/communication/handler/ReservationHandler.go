@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 	"reservation_service/domain/service"
 )
 
@@ -64,10 +62,43 @@ func (handler ReservationHandler) CreateReservation(ctx context.Context, in *res
 	return &reservation.CreateReservationRequest{}, nil
 }
 func (handler ReservationHandler) GetAllPendingReservations(ctx context.Context, in *reservation.EmptyRequest) (*reservation.GetAllPendingReservationsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAllPendingReservations not implemented")
+	mapper := NewReservationMapper()
+
+	loggedInId := ctx.Value("id")
+	reservations, err := handler.reservationService.GetAllPendingReservations(loggedInId.(uuid.UUID).String())
+	if err != nil {
+		return &reservation.GetAllPendingReservationsResponse{}, err
+	}
+
+	return &reservation.GetAllPendingReservationsResponse{
+		Reservation: mapper.mapToReservationsProto(reservations),
+	}, nil
 }
-func (handler ReservationHandler) GetAllRejectedReservations(ctx context.Context, in *reservation.EmptyRequest) (*reservation.GetAllRejectedReservationsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAllRejectedReservations not implemented")
+func (handler ReservationHandler) GetAllAcceptedReservations(ctx context.Context, in *reservation.EmptyRequest) (*reservation.GetAllAcceptedReservationsResponse, error) {
+	mapper := NewReservationMapper()
+
+	loggedInId := ctx.Value("id")
+	reservations, err := handler.reservationService.GetAllAcceptedReservations(loggedInId.(uuid.UUID).String())
+	if err != nil {
+		return &reservation.GetAllAcceptedReservationsResponse{}, err
+	}
+
+	return &reservation.GetAllAcceptedReservationsResponse{
+		Reservation: mapper.mapToReservationsProto(reservations),
+	}, nil
+}
+func (handler ReservationHandler) GetAllReservationsForGuest(ctx context.Context, in *reservation.EmptyRequest) (*reservation.GetAllReservationsForGuestResponse, error) {
+	mapper := NewReservationMapper()
+
+	loggedInId := ctx.Value("id")
+	reservations, err := handler.reservationService.GetAllReservationsForGuest(loggedInId.(uuid.UUID).String())
+	if err != nil {
+		return &reservation.GetAllReservationsForGuestResponse{}, err
+	}
+
+	return &reservation.GetAllReservationsForGuestResponse{
+		Reservations: mapper.mapToReservationsProto(reservations),
+	}, nil
 }
 func (handler ReservationHandler) RejectReservation(ctx context.Context, in *reservation.ChangeStatusRequest) (*reservation.RejectReservationResponse, error) {
 	id, _ := primitive.ObjectIDFromHex(in.Id)

@@ -26,12 +26,16 @@ func (service ReservationService) UpdatePriceAndDate(priceWithDate *model.Update
 	return service.reservationRepo.UpdatePriceAndDate(priceWithDate)
 }
 
-func (service ReservationService) GetAllRejectedReservations() (model.Reservations, error) {
-	return service.reservationRepo.GetAllRejectedReservations()
+func (service ReservationService) GetAllAcceptedReservations(hostId string) (model.Reservations, error) {
+	return service.reservationRepo.GetAllAcceptedReservations(hostId)
 }
 
-func (service ReservationService) GetAllPendingReservations() (model.Reservations, error) {
-	return service.reservationRepo.GetAllPendingReservations()
+func (service ReservationService) GetAllPendingReservations(hostId string) (model.Reservations, error) {
+	return service.reservationRepo.GetAllPendingReservations(hostId)
+}
+
+func (service ReservationService) GetAllReservationsForGuest(guestId string) (model.Reservations, error) {
+	return service.reservationRepo.GetAllReservationsForGuest(guestId)
 }
 
 func (service ReservationService) CreateReservation(reservation *model.Reservation) (*model.Reservation, error) {
@@ -60,7 +64,7 @@ GetAllMy() (model.Availabilities, error)
 UpdatePriceAndDate(priceWithDate *model.UpdatePriceAndDate) (*model.UpdatePriceAndDate, error)
 CreateReservation(reservation *model.Reservation) (*model.Reservation, error)
 GetAllPendingReservations() (*model.Reservation, error)
-GetAllRejectedReservations() (*model.Reservation, error)
+GetAllAcceptedReservations() (*model.Reservation, error)
 RejectReservation(id primitive.ObjectID) (primitive.ObjectID, error)
 AcceptReservation(id primitive.ObjectID) (primitive.ObjectID, error)
 CancelReservation(id primitive.ObjectID) (primitive.ObjectID, error)
