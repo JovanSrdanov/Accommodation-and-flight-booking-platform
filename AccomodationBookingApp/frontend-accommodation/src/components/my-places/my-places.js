@@ -266,7 +266,7 @@ function MyPlaces() {
         const utcEndDate = new Date(endDate.getTime() - endDate.getTimezoneOffset() * 60000);
         const formattedEndDate = utcEndDate.toLocaleString("en-US", {timeZone: "GMT"}) + " GMT+0000";
         sendData.updatedPriceWithDate.dateRange.to = Date.parse(formattedEndDate) / 1000;
-        console.log(utcEndDate)
+
 
         interceptor.put("api-1/availability", {priceWithDate: sendData}).then(res => {
             getMyPlaces();
