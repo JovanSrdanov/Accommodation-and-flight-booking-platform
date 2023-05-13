@@ -414,8 +414,8 @@ func (repo ReservationRepositoryMongo) CancelReservation(id primitive.ObjectID) 
 		return primitive.ObjectID{}, err
 	}
 
-	if reservation.Status == "accepted" || reservation.Status == "rejected" {
-		return primitive.ObjectID{}, status.Errorf(codes.Unimplemented, "Can not cancel accepted or rejected reservation")
+	if reservation.Status == "rejected" {
+		return primitive.ObjectID{}, status.Errorf(codes.Unimplemented, "Can not cancel rejected reservation")
 	}
 
 	update := bson.M{"$set": bson.M{"status": "canceled"}}

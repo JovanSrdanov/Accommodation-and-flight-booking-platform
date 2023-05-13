@@ -10,8 +10,8 @@ type DateRange struct {
 }
 
 func (dateRange1 DateRange) IsInside(dateRange2 DateRange) bool {
-	NormalizeTime(dateRange1)
-	NormalizeTime(dateRange2)
+	//NormalizeTime(&dateRange1)
+	//NormalizeTime(&dateRange2)
 
 	if (dateRange1.From.After(dateRange2.From) || dateRange1.From.Equal(dateRange2.From)) && (dateRange1.To.Before(dateRange2.To) || dateRange1.To.Equal(dateRange2.To)) {
 		return true
@@ -20,8 +20,8 @@ func (dateRange1 DateRange) IsInside(dateRange2 DateRange) bool {
 }
 
 func (dateRange1 DateRange) Overlaps(dateRange2 DateRange) bool {
-	NormalizeTime(dateRange1)
-	NormalizeTime(dateRange2)
+	//NormalizeTime(&dateRange1)
+	//NormalizeTime(&dateRange2)
 
 	if dateRange1.To.Before(dateRange2.From) || dateRange2.To.Before(dateRange1.From) {
 		return false
@@ -30,8 +30,8 @@ func (dateRange1 DateRange) Overlaps(dateRange2 DateRange) bool {
 }
 
 func (dateRange1 DateRange) IsStartFor(dateRange2 DateRange) bool {
-	NormalizeTime(dateRange1)
-	NormalizeTime(dateRange2)
+	//NormalizeTime(&dateRange1)
+	//NormalizeTime(&dateRange2)
 
 	if (dateRange1.From.Before(dateRange2.From) || dateRange1.From.Equal(dateRange2.From)) && (dateRange1.To.Before(dateRange2.To) || dateRange1.To.Equal(dateRange2.To)) {
 		return true
@@ -40,8 +40,8 @@ func (dateRange1 DateRange) IsStartFor(dateRange2 DateRange) bool {
 }
 
 func (dateRange1 DateRange) IsEndFor(dateRange2 DateRange) bool {
-	NormalizeTime(dateRange1)
-	NormalizeTime(dateRange2)
+	//NormalizeTime(&dateRange1)
+	//NormalizeTime(&dateRange2)
 
 	if (dateRange1.To.After(dateRange2.To) || dateRange1.To.Equal(dateRange2.To)) && (dateRange1.From.After(dateRange2.From) || dateRange1.From.Equal(dateRange2.From)) {
 		return true
@@ -50,18 +50,18 @@ func (dateRange1 DateRange) IsEndFor(dateRange2 DateRange) bool {
 }
 
 func (dateRange1 DateRange) Extends(dateRange2 DateRange) bool {
-	NormalizeTime(dateRange1)
-	NormalizeTime(dateRange2)
+	//NormalizeTime(&dateRange1)
+	//NormalizeTime(&dateRange2)
 
-	if dateRange1.To.Equal(dateRange2.From.AddDate(0, 0, 1)) {
+	if dateRange1.From.Equal(dateRange2.To.AddDate(0, 0, 1).In(time.UTC)) {
 		return true
 	}
 	return false
 }
 
 func (dateRange1 DateRange) DaysInCommon(dateRange2 DateRange) int32 {
-	NormalizeTime(dateRange1)
-	NormalizeTime(dateRange2)
+	//NormalizeTime(&dateRange1)
+	//NormalizeTime(&dateRange2)
 
 	if !dateRange1.Overlaps(dateRange2) {
 		return 0
@@ -84,10 +84,10 @@ func (dateRange1 DateRange) DaysInCommon(dateRange2 DateRange) int32 {
 	return days
 }
 
-func NormalizeTime(dateRange DateRange) {
-	dateRange.To = time.Date(dateRange.To.Year(), dateRange.To.Month(), dateRange.To.Day(), 0, 0, 0, 0, dateRange.To.Location())
-	dateRange.From = time.Date(dateRange.From.Year(), dateRange.From.Month(), dateRange.From.Day(), 0, 0, 0, 0, dateRange.From.Location())
-
+func NormalizeTime(dateRange *DateRange) {
 	dateRange.To = dateRange.To.In(time.UTC)
 	dateRange.From = dateRange.From.In(time.UTC)
+
+	dateRange.To = time.Date(dateRange.To.Year(), dateRange.To.Month(), dateRange.To.Day(), 0, 0, 0, 0, dateRange.To.Location())
+	dateRange.From = time.Date(dateRange.From.Year(), dateRange.From.Month(), dateRange.From.Day(), 0, 0, 0, 0, dateRange.From.Location())
 }
