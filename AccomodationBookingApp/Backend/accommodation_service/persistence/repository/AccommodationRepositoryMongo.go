@@ -38,6 +38,22 @@ func (repo AccommodationRepositoryMongo) Delete(id primitive.ObjectID) error {
 	return nil
 }
 
+func (repo AccommodationRepositoryMongo) DeleteByHostId(id string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	collection := repo.getCollection()
+
+	filter := bson.D{{"hostId", id}}
+
+	_, err := collection.DeleteMany(ctx, filter)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (repo AccommodationRepositoryMongo) Update(accommodation *model.Accommodation) (*model.Accommodation, error) {
 	return accommodation, nil
 }

@@ -55,9 +55,9 @@ service ReservationService{
     };
   }
 
-  rpc GetAllRejectedReservations(EmptyRequest) returns(GetAllRejectedReservationsResponse) {
+  rpc GetAllAcceptedReservations(EmptyRequest) returns(GetAllAcceptedReservationsResponse) {
     option (google.api.http) = {
-      get: "/api-1/reservation/rejected"
+      get: "/api-1/reservation/accepted"
     };
   }
 
@@ -78,8 +78,18 @@ service ReservationService{
       get: "/api-1/reservation/cancel/{id}"
     };
   }
+
+  rpc GetAllReservationsForGuest(EmptyRequest) returns(GetAllReservationsForGuestResponse) {
+    option (google.api.http) = {
+      get: "/api-1/reservation/all/guest"
+    };
+  }
 }
 message EmptyRequest {}
+
+message GetAllReservationsForGuestResponse {
+  repeated Reservation reservations = 1;
+}
 
 message CreateAvailabilityBaseRequest {
   AvailabilityBase reservationBase = 1;
@@ -106,11 +116,11 @@ message AcceptReservationResponse {
 }
 
 message GetAllPendingReservationsResponse {
-  Reservation reservation = 1;
+  repeated Reservation reservation = 1;
 }
 
-message GetAllRejectedReservationsResponse {
-  Reservation reservation = 1;
+message GetAllAcceptedReservationsResponse {
+  repeated Reservation reservation = 1;
 }
 
 message CreateReservationRequest {
@@ -163,6 +173,7 @@ message Reservation {
   string accommodationId = 4;
   int32 price = 5;
   int32 numberOfGuests = 6;
+  string guestId = 7;
 }
 
 message AvailabilityRequest {

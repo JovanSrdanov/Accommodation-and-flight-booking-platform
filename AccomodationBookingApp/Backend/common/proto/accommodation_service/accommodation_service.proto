@@ -48,9 +48,9 @@ service AccommodationService{
     };
   }
 
-  rpc DeleteByHostId(DeleteRequest) returns(DeleteResponse){
+  rpc DeleteByHostId(EmptyRequest) returns(DeleteResponse){
     option (google.api.http) = {
-      delete: "/api-1/accommodation/by-host/{id}"
+      delete: "/api-1/accommodation/by-host"
     };
   }
 

@@ -76,3 +76,62 @@ func (mapper ReservationMapper) mapFromCreateAvailabilityBase(hostId string, req
 		IsAutomaticReservation: request.ReservationBase.IsAutomaticReservation,
 	}
 }
+
+func (mapper ReservationMapper) mapToGetAllMyResponse(in model.Availabilities) *reservation.GetAllMyResponse {
+	availabilitiesProto := make([]*reservation.Availability, 0)
+
+	for _, avail := range in {
+
+		priceWithDateProt := make([]*reservation.PriceWithDate, 0)
+
+		for _, priceWithDate := range avail.AvailableDates {
+			priceProto := &reservation.PriceWithDate{
+				Id: priceWithDate.ID.String(),
+				DateRange: &reservation.DateRange{
+					From: priceWithDate.DateRange.From.Unix(),
+					To:   priceWithDate.DateRange.To.Unix(),
+				},
+				Price:            priceWithDate.Price,
+				IsPricePerPerson: priceWithDate.IsPricePerPerson,
+			}
+
+			priceWithDateProt = append(priceWithDateProt, priceProto)
+		}
+
+		availProto := &reservation.Availability{
+			Id:                     avail.ID.String(),
+			AvailableDates:         priceWithDateProt,
+			AccommodationId:        avail.AccommodationId.String(),
+			IsAutomaticReservation: avail.IsAutomaticReservation,
+			HostId:                 avail.HostId,
+		}
+		availabilitiesProto = append(availabilitiesProto, availProto)
+	}
+
+	return &reservation.GetAllMyResponse{
+		Availabilities: availabilitiesProto,
+	}
+}
+
+func (mapper ReservationMapper) mapToReservationsProto(in model.Reservations) []*reservation.Reservation {
+	reservationsProt := make([]*reservation.Reservation, 0)
+
+	for _, reservationValue := range in {
+		reservationProto := &reservation.Reservation{
+			Id:     reservationValue.ID.String(),
+			Status: reservationValue.Status,
+			DateRange: &reservation.DateRange{
+				From: reservationValue.DateRange.From.Unix(),
+				To:   reservationValue.DateRange.To.Unix(),
+			},
+			AccommodationId: reservationValue.AccommodationId.String(),
+			Price:           reservationValue.Price,
+			NumberOfGuests:  reservationValue.NumberOfGuests,
+			GuestId:         reservationValue.GuestId,
+		}
+
+		reservationsProt = append(reservationsProt, reservationProto)
+	}
+
+	return reservationsProt
+}

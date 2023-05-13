@@ -26,7 +26,7 @@ func NewReservationRepositoryMongo(dbClient *mongo.Client) (*ReservationReposito
 	UpdatePriceAndDate(priceWithDate *model.UpdatePriceAndDate) (*model.UpdatePriceAndDate, error)
 	CreateReservation(reservation *model.Reservation) (*model.Reservation, error)
 	GetAllPendingReservations() (*model.Reservation, error)
-	GetAllRejectedReservations() (*model.Reservation, error)
+	GetAllAcceptedReservations() (*model.Reservation, error)
 	RejectReservation(id primitive.ObjectID) (primitive.ObjectID, error)
 	AcceptReservation(id primitive.ObjectID) (primitive.ObjectID, error)
 	CancelReservation(id primitive.ObjectID) (primitive.ObjectID, error)
@@ -127,7 +127,7 @@ func (repo ReservationRepositoryMongo) CreateReservation(reservation *model.Rese
 
 func (repo ReservationRepositoryMongo) UpdatePriceAndDate(priceWithDate *model.UpdatePriceAndDate) (*model.UpdatePriceAndDate, error) {
 	//Nadji avail sa accId
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	collection := repo.getCollectionAvailability()
@@ -155,6 +155,13 @@ func (repo ReservationRepositoryMongo) UpdatePriceAndDate(priceWithDate *model.U
 
 	if !dateFound {
 		return &model.UpdatePriceAndDate{}, status.Errorf(codes.Aborted, "This date doesn't exist in database wrong id")
+	}
+
+	//Sad proveri da li se dateRange novog availability-a poklapa sa nekim starim osim sam sa sobom
+	for _, availableDatesIterator := range availability.AvailableDates {
+		if availableDatesIterator.ID != priceWithDate.PriceWithDate.ID && availableDatesIterator.DateRange.Overlaps(priceWithDate.PriceWithDate.DateRange) {
+			return &model.UpdatePriceAndDate{}, status.Errorf(codes.Aborted, "Provided date overlaps with existing available date")
+		}
 	}
 
 	//Proveri da li se taj availDate poklapa sa nekom od rezervacija koja je accepted ili pending
@@ -203,16 +210,131 @@ func (repo ReservationRepositoryMongo) UpdatePriceAndDate(priceWithDate *model.U
 	return &model.UpdatePriceAndDate{}, nil
 }
 
-func (repo ReservationRepositoryMongo) GetAllMy() (model.Availabilities, error) {
-	return model.Availabilities{}, status.Errorf(codes.Unimplemented, "method CreateAvailability not implemented")
+func (repo ReservationRepositoryMongo) GetAllMy(hostId string) (model.Availabilities, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	collection := repo.getCollectionAvailability()
+
+	filter := bson.D{{"hostId", hostId}}
+
+	cursor, err := collection.Find(ctx, filter)
+	if err != nil {
+		log.Println(err)
+		return model.Availabilities{}, err
+	}
+
+	var availabilities model.Availabilities
+	err = cursor.All(ctx, &availabilities)
+	if err != nil {
+		log.Println(err)
+		return model.Availabilities{}, err
+	}
+	return availabilities, nil
 }
 
-func (repo ReservationRepositoryMongo) GetAllRejectedReservations() (model.Reservations, error) {
-	return model.Reservations{}, status.Errorf(codes.Unimplemented, "method CreateAvailability not implemented")
+func (repo ReservationRepositoryMongo) GetAllAcceptedReservations(hostId string) (model.Reservations, error) {
+	//Dobavi sve dostpunosti i iz njih izvuci sve accommodationId gde je hostId prosledjenji
+	availabilities, err := repo.GetAllMy(hostId)
+	if err != nil {
+		log.Println(err)
+		return model.Reservations{}, err
+	}
+
+	accommodationIds := make([]primitive.ObjectID, 0)
+
+	for _, availability := range availabilities {
+		accommodationIds = append(accommodationIds, availability.AccommodationId)
+	}
+
+	//Sad dobavi sve rezervacije koje imaju ovaj accId i koje su accepted
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	collection := repo.getCollectionReservation()
+
+	filter := bson.M{
+		"accommodationId": bson.M{"$in": accommodationIds},
+		"status":          "accepted"}
+
+	cursor, err := collection.Find(ctx, filter)
+	if err != nil {
+		log.Println(err)
+		return model.Reservations{}, err
+	}
+
+	var reservations model.Reservations
+	err = cursor.All(ctx, &reservations)
+	if err != nil {
+		log.Println(err)
+		return model.Reservations{}, err
+	}
+
+	return reservations, nil
 }
 
-func (repo ReservationRepositoryMongo) GetAllPendingReservations() (model.Reservations, error) {
-	return model.Reservations{}, status.Errorf(codes.Unimplemented, "method CreateAvailability not implemented")
+func (repo ReservationRepositoryMongo) GetAllPendingReservations(hostId string) (model.Reservations, error) {
+	//Dobavi sve dostpunosti i iz njih izvuci sve accommodationId gde je hostId prosledjenji
+	availabilities, err := repo.GetAllMy(hostId)
+	if err != nil {
+		log.Println(err)
+		return model.Reservations{}, err
+	}
+
+	accommodationIds := make([]primitive.ObjectID, 0)
+
+	for _, availability := range availabilities {
+		accommodationIds = append(accommodationIds, availability.AccommodationId)
+	}
+
+	//Sad dobavi sve rezervacije koje imaju ovaj accId i koje su accepted
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	collection := repo.getCollectionReservation()
+
+	filter := bson.M{
+		"accommodationId": bson.M{"$in": accommodationIds},
+		"status":          "pending"}
+
+	cursor, err := collection.Find(ctx, filter)
+	if err != nil {
+		log.Println(err)
+		return model.Reservations{}, err
+	}
+
+	var reservations model.Reservations
+	err = cursor.All(ctx, &reservations)
+	if err != nil {
+		log.Println(err)
+		return model.Reservations{}, err
+	}
+
+	return reservations, nil
+}
+
+func (repo ReservationRepositoryMongo) GetAllReservationsForGuest(guestId string) (model.Reservations, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	collection := repo.getCollectionReservation()
+
+	filter := bson.D{{"guestId", guestId}}
+
+	cursor, err := collection.Find(ctx, filter)
+	if err != nil {
+		log.Println(err)
+		return model.Reservations{}, err
+	}
+
+	var reservations model.Reservations
+	err = cursor.All(ctx, &reservations)
+	if err != nil {
+		log.Println(err)
+		return model.Reservations{}, err
+	}
+
+	return reservations, nil
 }
 
 func (repo ReservationRepositoryMongo) CreateAvailabilityBase(base *model.Availability) (primitive.ObjectID, error) {
@@ -285,6 +407,10 @@ func (repo ReservationRepositoryMongo) AcceptReservation(id primitive.ObjectID) 
 		return primitive.ObjectID{}, err
 	}
 
+	if reservation.Status != "pending" {
+		return primitive.ObjectID{}, status.Errorf(codes.Aborted, "Can not accept reservation that is not pending")
+	}
+
 	//Find all reservation from same accommodation
 	collectionReservations := repo.getCollectionReservation()
 
@@ -302,11 +428,19 @@ func (repo ReservationRepositoryMongo) AcceptReservation(id primitive.ObjectID) 
 		return primitive.ObjectID{}, err
 	}
 
+	pendingIds := make([]primitive.ObjectID, 0)
+
 	for _, reservationValue := range reservations {
 		if reservationValue.ID != reservation.ID && reservationValue.Status == "accepted" && reservationValue.DateRange.Overlaps(reservation.DateRange) {
 			return primitive.ObjectID{}, status.Errorf(codes.Aborted, "Can not accept this reservation, overlaps*")
 		}
+		if reservationValue.ID != reservation.ID && reservationValue.Status == "pending" && reservationValue.DateRange.Overlaps(reservation.DateRange) {
+			pendingIds = append(pendingIds, reservationValue.ID)
+		}
 	}
+
+	pendingIdString := pendingIds[0].String()
+	log.Println(pendingIdString)
 
 	//Ako se ne overlap onda accept
 	filter = bson.D{{"_id", reservation.ID}}
@@ -322,7 +456,18 @@ func (repo ReservationRepositoryMongo) AcceptReservation(id primitive.ObjectID) 
 
 	// Check if any document was updated
 	if result.MatchedCount == 0 {
-		return primitive.ObjectID{}, status.Errorf(codes.Unimplemented, "Not updated")
+		return primitive.ObjectID{}, status.Errorf(codes.Canceled, "Not updated")
+	}
+
+	filter = bson.D{{"_id", bson.M{"$in": pendingIds}}}
+
+	// Define an update to set the "status" field to "rejected"
+	update = bson.M{"$set": bson.M{"status": "rejected"}}
+
+	// Update the document matching the filter
+	result, err = collection.UpdateMany(ctx, filter, update)
+	if err != nil {
+		return primitive.ObjectID{}, err
 	}
 
 	return reservation.ID, nil

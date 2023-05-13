@@ -72,6 +72,14 @@ func getProtectedMethodsWithAllowedRoles() map[string][]model.Role {
 	const authServicePath = "/reservation.ReservationService/"
 
 	return map[string][]model.Role{
-		authServicePath + "CreateAvailabilityBase": {model.Host},
+		authServicePath + "CreateAvailabilityBase":     {model.Host},
+		authServicePath + "GetAllMy":                   {model.Host},
+		authServicePath + "GetAllPendingReservations":  {model.Host},
+		authServicePath + "GetAllAcceptedReservations": {model.Host},
+		authServicePath + "AcceptReservation":          {model.Host},
+		authServicePath + "RejectReservation":          {model.Host},
+		authServicePath + "CancelReservation":          {model.Guest},
+		authServicePath + "GetAllReservationsForGuest": {model.Guest},
+		authServicePath + "CreateReservation":          {model.Guest},
 	}
 }
