@@ -26,22 +26,8 @@ function Login() {
             password: password
         }).then(res => {
             const paseto = res.data.accessToken;
-            const role = res.data.role;
-            const expirationDate = res.data.expirationDate;
             localStorage.setItem('paseto', paseto);
-            localStorage.setItem('role', role);
-            localStorage.setItem('expirationDate', expirationDate);
-            if (role === 'Host') {
-                navigate('/profile')
-                return
-            }
-            if (role === 'Guest') {
-                navigate('/profile')
-                return
-            }
-            navigate('/login')
-
-
+            navigate("/search-accommodation")
         }).catch(err => {
 
             setShowAlert(true);

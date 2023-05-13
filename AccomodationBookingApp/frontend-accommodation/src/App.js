@@ -13,7 +13,7 @@ import HostAPlacePage from "./pages/host-pages/host-a-place-page";
 import ReservationsAndRequestsPage from "./pages/host-pages/reservations-and-requests-page";
 import ProfilePage from "./pages/guest-pages/profile-page";
 import SearchAndFilterAccommodationsPage from "./pages/all-roles-pages/search-and-filter-accommodations-page";
-import React, {useEffect} from "react";
+import React from "react";
 import HistoryIcon from '@mui/icons-material/History';
 import CheckIcon from '@mui/icons-material/Check';
 import RecommendOutlinedIcon from '@mui/icons-material/RecommendOutlined';
@@ -29,10 +29,24 @@ import TravelExploreIcon from '@mui/icons-material/TravelExplore';
 function App() {
 
     const navigate = useNavigate();
-    const ROLE = localStorage.getItem('role');
+
 
     const pasetoExpirationRole = () => {
-        const expirationDateStr = localStorage.getItem('expirationDate');
+
+        const paseto = localStorage.getItem('paseto');
+        if (!paseto) {
+            localStorage.removeItem('paseto');
+            return null
+        }
+        const footer = paseto.split(".")[3];
+        const decodedFooter = JSON.parse(atob(footer));
+        const roleAndExp = decodedFooter.RoleAndExp;
+
+        const regex = /role:(.*), expiration date: (.*)/;
+        const matches = roleAndExp.match(regex);
+        const role = matches[1];
+        const expirationDateStr = matches[2];
+
 
         if (expirationDateStr) {
 
@@ -56,35 +70,37 @@ function App() {
             if (expirationDate < currentTime) {
                 console.log("Token expired")
                 localStorage.removeItem('paseto');
-                localStorage.removeItem('role');
-                localStorage.removeItem('expirationDate');
+                return null;
 
             } else {
+                if (role === "0") {
+                    return "Host";
+
+                } else if (role === "1") {
+                    return "Guest";
+
+                } else {
+                    localStorage.removeItem('paseto');
+                    return null;
+                }
+
 
             }
         } else {
             localStorage.removeItem('paseto');
-            localStorage.removeItem('role');
-            localStorage.removeItem('expirationDate');
+            return null;
         }
     };
 
+    const ROLE = pasetoExpirationRole();
 
-    useEffect(() => {
-        pasetoExpirationRole();
-    }, [navigate]);
 
     const handleLogout = () => {
         localStorage.removeItem('paseto');
-        localStorage.removeItem('role');
-        localStorage.removeItem('expirationDate');
         navigate('/login');
     };
     return (
-
-
         <div>
-
 
             <ParticlesBg color="#FF9021" type="cobweb" num={100} bg={true}/>
             <Box>
