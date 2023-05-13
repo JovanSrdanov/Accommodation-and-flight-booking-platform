@@ -29,7 +29,6 @@ function Login() {
             localStorage.setItem('paseto', paseto);
             navigate("/search-accommodation")
         }).catch(err => {
-
             setShowAlert(true);
         })
 

@@ -2,7 +2,18 @@ import React, {useState} from 'react';
 import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
 import CancelIcon from '@mui/icons-material/Cancel';
-import {Box, Button, Card, Dialog, DialogActions, DialogContent, DialogTitle, Grid, TextField} from "@mui/material";
+import {
+    Box,
+    Button,
+    Card,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    FormControlLabel,
+    Grid,
+    TextField
+} from "@mui/material";
 import {Flex} from "reflexbox";
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -24,13 +35,17 @@ function HostAPlace() {
     const [right, setRight] = React.useState([]);
     const [selectedImage, setSelectedImage] = useState(null);
     const [placeData, setPlaceData] = useState({
-        name: '',
-        minGuests: '1',
-        maxGuests: '1',
-        country: '',
-        city: '',
-        street: '',
-        streetNumber: '',
+        Name: '',
+        MinGuests: '1',
+        MaxGuests: '1',
+        isAutomaticReservation: true,
+        Address: {
+            country: '',
+            city: '',
+            street: '',
+            streetNumber: '',
+        }
+
     });
 
     const createAccommodation = () => {
@@ -47,12 +62,16 @@ function HostAPlace() {
             promises.push(promise);
         });
         Promise.all(promises).then((base64Images) => {
-            const data = {
-                ...placeData,
-                amenities: right,
-                images: base64Images,
-            };
-            interceptor.post("wowow", data).then(() => {
+
+            const accommodation = {
+                accommodation: {
+                    ...placeData,
+                    Amenities: right,
+                    Images: base64Images,
+                },
+            }
+            console.log(accommodation)
+            interceptor.post("api-1/accommodation", accommodation).then(() => {
                 setSuccessDialogShow(true);
             }).catch((err) => {
                 console.log(err);
@@ -184,13 +203,33 @@ function HostAPlace() {
 
 
     const handleChange = (event) => {
-        const {name, value} = event.target;
-        setPlaceData((prevPlaceData) => ({
-            ...prevPlaceData,
-            [name]: value,
-        }));
+        const {name, value, type, checked} = event.target;
+        if (name === 'isAutomaticReservation') {
+            setPlaceData(prevPlaceData => ({
+                ...prevPlaceData,
+                [name]: checked
+            }));
+        } else if (type === 'number') {
+            setPlaceData(prevPlaceData => ({
+                ...prevPlaceData,
+                [name]: parseInt(value)
+            }));
+        } else if (name.startsWith('Address.')) {
+            const addressFieldName = name.substring('Address.'.length);
+            setPlaceData(prevPlaceData => ({
+                ...prevPlaceData,
+                Address: {
+                    ...prevPlaceData.Address,
+                    [addressFieldName]: value
+                }
+            }));
+        } else {
+            setPlaceData(prevPlaceData => ({
+                ...prevPlaceData,
+                [name]: value
+            }));
+        }
     };
-
 
     const handleImageClick = (image) => {
         setSelectedImage(image);
@@ -233,8 +272,8 @@ function HostAPlace() {
                                 variant="filled"
                                 label="Name of the place"
                                 type="text"
-                                name="name"
-                                value={placeData.name}
+                                name="Name"
+                                value={placeData.Name}
                                 onChange={handleChange}
                             />
                         </Box>
@@ -245,8 +284,8 @@ function HostAPlace() {
                                 type="number"
                                 label="Minimum number of guests"
                                 InputProps={{inputProps: {min: 1}}}
-                                name="minGuests"
-                                value={placeData.minGuests}
+                                name="MinGuests"
+                                value={placeData.MinGuests}
                                 onChange={handleChange}
                             />
                         </Box>
@@ -257,8 +296,8 @@ function HostAPlace() {
                                 type="number"
                                 label="Maximum number of guests"
                                 InputProps={{inputProps: {min: 1}}}
-                                name="maxGuests"
-                                value={placeData.maxGuests}
+                                name="MaxGuests"
+                                value={placeData.MaxGuests}
                                 onChange={handleChange}
                             />
                         </Box>
@@ -268,8 +307,8 @@ function HostAPlace() {
                                 variant="filled"
                                 label="Country"
                                 type="text"
-                                name="country"
-                                value={placeData.country}
+                                name="Address.country"
+                                value={placeData.Address.country}
                                 onChange={handleChange}
                             />
                         </Box>
@@ -279,8 +318,8 @@ function HostAPlace() {
                                 variant="filled"
                                 label="City"
                                 type="text"
-                                name="city"
-                                value={placeData.city}
+                                name="Address.city"
+                                value={placeData.Address.city}
                                 onChange={handleChange}
                             />
                         </Box>
@@ -290,8 +329,8 @@ function HostAPlace() {
                                 variant="filled"
                                 label="Street"
                                 type="text"
-                                name="street"
-                                value={placeData.street}
+                                name="Address.street"
+                                value={placeData.Address.street}
                                 onChange={handleChange}
                             />
                         </Box>
@@ -301,9 +340,21 @@ function HostAPlace() {
                                 variant="filled"
                                 label="Street number"
                                 type="text"
-                                name="streetNumber"
-                                value={placeData.streetNumber}
+                                name="Address.streetNumber"
+                                value={placeData.Address.streetNumber}
                                 onChange={handleChange}
+                            />
+                        </Box>
+                        <Box m={1}>
+                            <FormControlLabel
+                                control={
+                                    <Checkbox
+                                        name="isAutomaticReservation"
+                                        checked={placeData.isAutomaticReservation}
+                                        onChange={handleChange}
+                                    />
+                                }
+                                label="Automatic reservation"
                             />
                         </Box>
                     </Flex>

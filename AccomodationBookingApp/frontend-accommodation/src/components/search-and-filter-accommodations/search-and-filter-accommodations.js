@@ -205,7 +205,7 @@ function SearchAndFilterAccommodations() {
                                     fullWidth
                                     variant="filled"
                                     type="number"
-                                    label="Maximum price price"
+                                    label="Maximum price"
                                     InputProps={{inputProps: {min: 1}}}
                                 />
                             </Box>

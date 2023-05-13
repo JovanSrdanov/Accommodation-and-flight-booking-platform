@@ -83,8 +83,6 @@ function App() {
                     localStorage.removeItem('paseto');
                     return null;
                 }
-
-
             }
         } else {
             localStorage.removeItem('paseto');
