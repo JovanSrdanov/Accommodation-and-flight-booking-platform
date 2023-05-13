@@ -32,14 +32,31 @@ func NewReservationRepositoryMongo(dbClient *mongo.Client) (*ReservationReposito
 	CancelReservation(id primitive.ObjectID) (primitive.ObjectID, error)
 */
 
-func (repo ReservationRepositoryMongo) CreateAvailability(availability *model.AvailabilityRequest) (primitive.ObjectID, error) {
+func (repo ReservationRepositoryMongo) CreateAvailability(newAvailability *model.AvailabilityRequest) (primitive.ObjectID, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
 	collection := repo.getCollectionAvailability()
+	filter := bson.D{{"accommodationId", newAvailability.AccommodationId}}
 
-	availability.PriceWithDate.ID = primitive.NewObjectID()
+	// Find the newAvailability document
+	var availability model.Availability
+	err := collection.FindOne(ctx, filter).Decode(&availability)
+	if err != nil {
+		log.Fatal(err)
+		return primitive.ObjectID{}, err
+	}
 
-	filter := bson.D{{"accommodationId", availability.AccommodationId}}
-	update := bson.M{"$push": bson.M{"availableDates": availability.PriceWithDate}}
-	res, err := collection.UpdateOne(context.Background(), filter, update)
+	for _, availableDate := range availability.AvailableDates {
+		if availableDate.DateRange.Overlaps(newAvailability.PriceWithDate.DateRange) {
+			return primitive.ObjectID{}, status.Errorf(codes.Aborted, "Can not define this availability, overlaps with existing one*")
+		}
+	}
+
+	newAvailability.PriceWithDate.ID = primitive.NewObjectID()
+
+	update := bson.M{"$push": bson.M{"availableDates": newAvailability.PriceWithDate}}
+	res, err := collection.UpdateOne(ctx, filter, update)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -48,7 +65,7 @@ func (repo ReservationRepositoryMongo) CreateAvailability(availability *model.Av
 }
 
 func (repo ReservationRepositoryMongo) CreateReservation(reservation *model.Reservation) (*model.Reservation, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	collection := repo.getCollectionAvailability()
@@ -63,27 +80,42 @@ func (repo ReservationRepositoryMongo) CreateReservation(reservation *model.Rese
 		return &model.Reservation{}, err
 	}
 
-	//Da li postoji uopste range u koji pripada
-	isRangeFound := false
-	var foundRange *model.PriceWithDate
+	//Da li moze da se spoje neke
+	sortedAvailableDates := availability.AvailableDates
+	bubbleSort(sortedAvailableDates)
 
-	for _, availableRange := range availability.AvailableDates {
-		if reservation.DateRange.IsInside(availableRange.DateRange) {
-			isRangeFound = true
-			foundRange = availableRange
+	startFound := false
+	endFound := false
+	foundDates := make([]*model.PriceWithDate, 0)
+
+	for _, date := range sortedAvailableDates {
+		if reservation.DateRange.IsInside(date.DateRange) {
+			startFound = true
+			endFound = true
+			foundDates = append(foundDates, date)
 			break
+		}
+
+		if date.DateRange.IsStartFor(reservation.DateRange) {
+			startFound = true
+			foundDates = append(foundDates, date)
+		} else if startFound && date.DateRange.Extends(foundDates[len(foundDates)-1].DateRange) {
+			foundDates = append(foundDates, date)
+			if date.DateRange.IsEndFor(reservation.DateRange) {
+				endFound = true
+				break
+			}
 		}
 	}
 
-	if !isRangeFound {
+	if !startFound || !endFound {
 		return &model.Reservation{}, status.Errorf(codes.Aborted, "Not available date")
 	}
 
 	//Da li se preklapa sa nekom accpeted rezervacijom
 	collectionReservations := repo.getCollectionReservation()
 
-	filter2 := bson.D{{"accommodationId", reservation.AccommodationId}}
-	cursor, err := collectionReservations.Find(ctx, filter2)
+	cursor, err := collectionReservations.Find(ctx, filter)
 	if err != nil {
 		log.Println(err)
 		return &model.Reservation{}, err
@@ -110,11 +142,8 @@ func (repo ReservationRepositoryMongo) CreateReservation(reservation *model.Rese
 
 	reservation.ID = primitive.NewObjectID()
 
-	if foundRange.IsPricePerPerson {
-		reservation.Price = foundRange.Price * reservation.NumberOfGuests
-	} else {
-		reservation.Price = foundRange.Price
-	}
+	//!!! Kalkulisanje cene
+	reservation.Price = calculatePrice(foundDates, reservation)
 
 	_, err = collectionReservations.InsertOne(ctx, &reservation)
 	if err != nil {
@@ -123,6 +152,20 @@ func (repo ReservationRepositoryMongo) CreateReservation(reservation *model.Rese
 	}
 
 	return reservation, nil
+}
+
+func calculatePrice(dates []*model.PriceWithDate, reservation *model.Reservation) int32 {
+	var price int32 = 0
+	for _, date := range dates {
+		commonDays := date.DateRange.DaysInCommon(reservation.DateRange)
+		if date.IsPricePerPerson {
+			price += commonDays * date.Price * reservation.NumberOfGuests
+		} else {
+			price += commonDays * date.Price
+		}
+	}
+
+	return price
 }
 
 func (repo ReservationRepositoryMongo) UpdatePriceAndDate(priceWithDate *model.UpdatePriceAndDate) (*model.UpdatePriceAndDate, error) {
@@ -509,4 +552,15 @@ func (repo ReservationRepositoryMongo) getCollectionReservation() *mongo.Collect
 	db := repo.dbClient.Database("reservationDb")
 	collection := db.Collection("reservations")
 	return collection
+}
+
+func bubbleSort(nums []*model.PriceWithDate) {
+	n := len(nums)
+	for i := 0; i < n-1; i++ {
+		for j := 0; j < n-i-1; j++ {
+			if nums[j].DateRange.From.After(nums[j+1].DateRange.From) {
+				nums[j], nums[j+1] = nums[j+1], nums[j]
+			}
+		}
+	}
 }
