@@ -224,7 +224,7 @@ function App() {
                             <Route path="/recommendations-for-you" element={<RecommendationsForYouPage/>}/>
                             <Route path="/profile" element={<ProfilePage/>}/>
                             <Route path="/search-and-filter-accommodations"
-                                   element={<SearchAndFilterAccommodationsPage/>}/>
+                                   element={<SearchAndFilterAccommodationsPage canBuy={true}/>}/>
                             <Route path="/*" element={<Navigate to="/search-and-filter-accommodations"/>}/>
                         </>
                     )}
