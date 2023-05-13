@@ -250,8 +250,8 @@ function MyPlaces() {
     const handleChangeAvailability = () => {
         var sendData = {};
         sendData.updatedPriceWithDate = {}
-        sendData.accommodationId = selectedAccommodationForAVCHANGE.id;
-        sendData.updatedPriceWithDate.Id = selectedAVCHANGE.Id;
+        sendData.accommodationId = parseObjectId(selectedAccommodationForAVCHANGE.id);
+        sendData.updatedPriceWithDate.Id = parseObjectId(selectedAVCHANGE.Id);
         sendData.updatedPriceWithDate.isPricePerPerson = availability.priceWithDate.isPricePerPerson;
         sendData.updatedPriceWithDate.price = availability.priceWithDate.price;
         sendData.updatedPriceWithDate.dateRange = {}
@@ -265,9 +265,8 @@ function MyPlaces() {
         const endDate = new Date(availability.priceWithDate.dateRange.to);
         const utcEndDate = new Date(endDate.getTime() - endDate.getTimezoneOffset() * 60000);
         const formattedEndDate = utcEndDate.toLocaleString("en-US", {timeZone: "GMT"}) + " GMT+0000";
-        sendData.updatedPriceWithDate.dateRange.to = Date.parse(formattedStartDate) / 1000;
+        sendData.updatedPriceWithDate.dateRange.to = Date.parse(formattedEndDate) / 1000;
         console.log(utcEndDate)
-
 
         interceptor.put("api-1/availability", {priceWithDate: sendData}).then(res => {
             getMyPlaces();
