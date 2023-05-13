@@ -28,6 +28,7 @@ import {DatePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import Checkbox from "@mui/material/Checkbox";
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const StyledTableCell = styled(TableCell)(({theme}) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -47,8 +48,6 @@ const StyledTableRow = styled(TableRow)(({theme}) => ({
 
 function MyPlaces() {
 
-    const [myAccommodations, setMyAccommodations] = useState(null);
-    const [myAvailabilities, setMyAvailabilities] = useState(null);
 
     const [selectedImages, setSelectedImages] = useState(null);
     const [selectedImage, setSelectedImage] = useState(null);
@@ -56,13 +55,16 @@ function MyPlaces() {
     const [viewImagesDialog, setViewImagesDialog] = useState(false);
     const [viewImageDialog, setViewImageDialog] = useState(false);
 
+    const [errorDialogShow, setErrorDialogShow] = useState(false)
     const [openCreateAvailabilityDialog, setOpenCreateAvailabilityDialog] = useState(false);
 
     const [openUpdateAvailabilityDialog, setOpenUpdateAvailabilityDialog] = useState(false);
 
     const [idForCreatingAvailability, setIdForCreatingAvailability] = useState(null);
     const [idForUpdatingAvailability, setIdForUpdatingAvailability] = useState(null);
-
+    const handleErrorClose = () => {
+        setErrorDialogShow(false)
+    };
 
     const handleFormChange = (event) => {
         const {name, value, checked} = event.target;
@@ -76,31 +78,34 @@ function MyPlaces() {
         }));
     };
 
-    const getMyPlaces = () => {
-        interceptor.get("api-1/accommodation/all-my").then(res => {
-            setMyAccommodations(res.data.accommodation)
+    const getMyPlaces = async () => {
+        try {
+            const res = await interceptor.get("api-1/accommodation/all-my");
+            const accommodations = res.data.accommodation;
 
-        }).catch(err => {
-            console.log(err)
-        })
-    }
+            const res2 = await interceptor.get("/api-1/availability/all");
+            const availabilities = res2.data.availabilities;
 
-    const getMyAvailabilities = () => {
-        interceptor.get("/api-1/availability/all").then(res => {
-            console.log(res.data.availabilities)
-            setMyAvailabilities(res.data.availabilities)
-        }).catch(err => {
-            console.log(err)
-        })
-    }
+            const updatedAccommodations = accommodations.map((accommodation) => {
+                availabilities.forEach((availability) => {
+                    if (accommodation.id === availability.accommodationId) {
+                        accommodation.listOfMyAvailabilities = availability;
+                    }
+                });
+                return accommodation;
+            });
 
-    const getMyInfo = () => {
-        getMyPlaces();
-        getMyAvailabilities();
-    }
+            setMyAccommodations(updatedAccommodations);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    const [myAccommodations, setMyAccommodations] = useState(null);
+
 
     useEffect(() => {
-        getMyInfo();
+        getMyPlaces();
 
     }, []);
 
@@ -148,6 +153,11 @@ function MyPlaces() {
         setIdForCreatingAvailability(parseObjectId(item.id))
     };
 
+    const handleOpenUpdateAvailabilityDialog = (item) => {
+        setOpenCreateAvailabilityDialog(true)
+        setIdForUpdatingAvailability(parseObjectId(item.id))
+    };
+
     const [availability, setAvailability] = useState({
         accommodationId: '',
         priceWithDate: {
@@ -164,19 +174,26 @@ function MyPlaces() {
     const handleCreateAvailability = () => {
         const sendData = {...availability};
         sendData.accommodationId = idForCreatingAvailability;
+        console.log(availability.priceWithDate.dateRange)
 
         // Convert start and end dates to Date objects
-        const startDate = dayjs(availability.priceWithDate.dateRange.from).toDate();
-        const endDate = dayjs(availability.priceWithDate.dateRange.to).toDate();
-        sendData.priceWithDate.dateRange.from = startDate.getTime();
-        sendData.priceWithDate.dateRange.to = endDate.getTime();
+        const startDate = new Date(availability.priceWithDate.dateRange.from);
+        const utcStartDate = new Date(startDate.getTime() - startDate.getTimezoneOffset() * 60000);
+        const formattedStartDate = utcStartDate.toLocaleString("en-US", {timeZone: "GMT"}) + " GMT+0000";
+        sendData.priceWithDate.dateRange.from = Date.parse(formattedStartDate) / 1000;
 
-        console.log(sendData);
+        const endDate = new Date(availability.priceWithDate.dateRange.to);
+        const utcEndDate = new Date(endDate.getTime() - endDate.getTimezoneOffset() * 60000);
+        const formattedEndDate = utcEndDate.toLocaleString("en-US", {timeZone: "GMT"}) + " GMT+0000";
+        sendData.priceWithDate.dateRange.to = Date.parse(formattedEndDate) / 1000;
+
 
         interceptor.post("api-1/availability", {availability: sendData}).then(res => {
-            getMyInfo();
+            getMyPlaces();
+
             handleCloseCreateAvailabilityDialog();
         }).catch(err => {
+            setErrorDialogShow(true)
             console.log(err)
         })
     };
@@ -206,8 +223,159 @@ function MyPlaces() {
     };
 
 
+    const handleCloseUpdateAvailabilityDialog = () => {
+        setOpenUpdateAvailabilityDialog(false)
+        setIdForUpdatingAvailability(null)
+        setAvailability({
+            accommodationId: '',
+            priceWithDate: {
+                dateRange: {
+                    from: null,
+                    to: null
+                },
+                isPricePerPerson: true,
+                price: 1,
+            },
+        });
+
+    };
+
+    const [selectedAccommodationForAVCHANGE, setSelectedAccommodationForAVCHANGE] = useState(false);
+    const [selectedAVCHANGE, setSelectedAVCHANGE] = useState(false);
+    const handleChangeAvailabilityDialog = (item, a) => {
+        setOpenUpdateAvailabilityDialog(true)
+        setSelectedAccommodationForAVCHANGE(item)
+        setSelectedAVCHANGE(a)
+    };
+    const handleChangeAvailability = () => {
+        var sendData = {};
+        sendData.updatedPriceWithDate = {}
+        sendData.accommodationId = selectedAccommodationForAVCHANGE.id;
+        sendData.updatedPriceWithDate.Id = selectedAVCHANGE.Id;
+        sendData.updatedPriceWithDate.isPricePerPerson = availability.priceWithDate.isPricePerPerson;
+        sendData.updatedPriceWithDate.price = availability.priceWithDate.price;
+        sendData.updatedPriceWithDate.dateRange = {}
+
+        // Convert start and end dates to Date objects
+        const startDate = new Date(availability.priceWithDate.dateRange.from);
+        const utcStartDate = new Date(startDate.getTime() - startDate.getTimezoneOffset() * 60000);
+        const formattedStartDate = utcStartDate.toLocaleString("en-US", {timeZone: "GMT"}) + " GMT+0000";
+        sendData.updatedPriceWithDate.dateRange.from = Date.parse(formattedStartDate) / 1000;
+
+        const endDate = new Date(availability.priceWithDate.dateRange.to);
+        const utcEndDate = new Date(endDate.getTime() - endDate.getTimezoneOffset() * 60000);
+        const formattedEndDate = utcEndDate.toLocaleString("en-US", {timeZone: "GMT"}) + " GMT+0000";
+        sendData.updatedPriceWithDate.dateRange.to = Date.parse(formattedStartDate) / 1000;
+        console.log(utcEndDate)
+
+
+        interceptor.put("api-1/availability", {priceWithDate: sendData}).then(res => {
+            getMyPlaces();
+
+            setOpenUpdateAvailabilityDialog(false)
+        }).catch(err => {
+            setErrorDialogShow(true)
+            console.log(err)
+        })
+
+    };
     return (
         <>
+            <Dialog onClose={handleCloseUpdateAvailabilityDialog} open={openUpdateAvailabilityDialog}>
+                <DialogContent>
+                    <Flex flexDirection="column">
+                        <Flex flexDirection="row" justifyContent="center" alignItems="center">
+                            <Box m={1}>
+                                Update availability
+                            </Box>
+                        </Flex>
+                        <Flex flexDirection="row" justifyContent="center" alignItems="center">
+                            <Box width={1 / 2} m={1}>
+                                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                    <DatePicker
+                                        label="Start date"
+                                        minDate={dayjs()}
+                                        name="from"
+                                        onChange={handleStartDateChange}
+                                        value={availability.priceWithDate.dateRange.from}
+
+                                    />
+                                </LocalizationProvider>
+                            </Box>
+                            <Box width={1 / 2} m={1}>
+                                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                    <DatePicker
+                                        label="End date"
+                                        minDate={dayjs()}
+                                        name="to"
+                                        onChange={handleEndDateChange}
+
+                                        value={availability.priceWithDate.dateRange.to}
+
+                                    />
+                                </LocalizationProvider>
+                            </Box>
+                        </Flex>
+                        <Flex flexDirection="row" justifyContent="center" alignItems="center">
+                            <Box m={1} width={1 / 2}>
+                                <TextField
+                                    fullWidth
+                                    variant="filled"
+                                    onChange={handlePriceChange}
+                                    type="number"
+                                    label="Price"
+                                    InputProps={{inputProps: {min: 1}}}
+                                    name="price"
+                                    value={availability.priceWithDate.price}
+
+                                />
+                            </Box>
+                            <Box m={1} width={1 / 2}>
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            name="isPricePerPerson"
+                                            onChange={handleIsPricePerPersonChange}
+                                            checked={availability.priceWithDate.isPricePerPerson}
+
+                                        />
+                                    }
+                                    label="Price per person"
+                                />
+                            </Box>
+                        </Flex>
+                        <Flex flexDirection="row" justifyContent="center" alignItems="center">
+                            <Box m={1}>
+                                <Button
+                                    disabled={(!availability.priceWithDate.dateRange.from || !availability.priceWithDate.dateRange.to || dayjs(availability.priceWithDate.dateRange.to).isBefore(availability.priceWithDate.dateRange.from))}
+                                    onClick={handleChangeAvailability}
+                                    variant="contained" color="warning">Change availability</Button>
+                            </Box>
+                        </Flex>
+                    </Flex>
+                </DialogContent>
+
+                <DialogActions>
+                    <Button onClick={handleCloseCreateAvailabilityDialog} variant="contained">Close
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            <Dialog onClose={handleErrorClose} open={errorDialogShow}>
+                <DialogTitle>Error</DialogTitle>
+                <DialogContent>
+                    This availability can not be made because it overlaps with other availabilities or someone already
+                    made a reservation on it
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleErrorClose}
+                            variant="contained"
+                    >
+                        Close
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
             <Dialog onClose={handleCloseCreateAvailabilityDialog} open={openCreateAvailabilityDialog}>
                 <DialogContent>
                     <Flex flexDirection="column">
@@ -334,7 +502,8 @@ function MyPlaces() {
                         <Box m={1}>
                             My places
                         </Box>
-                        <TableContainer component={Paper} sx={{maxHeight: 500, height: 500}}>
+                        <TableContainer component={Paper}
+                                        sx={{maxHeight: 500, height: 500, overflowY: 'scroll'}}>
                             <Table>
                                 {myAccommodations != null &&
                                     <TableBody>
@@ -343,20 +512,63 @@ function MyPlaces() {
                                                 <StyledTableRow hover>
                                                     <StyledTableCell>
                                                         <li>Name: {item.Name}</li>
-                                                        <li>Automatic reservation: {item.isAutomaticReservation}</li>
+
                                                         <li>Number of guest: {item.MinGuests} - {item.MaxGuests}</li>
                                                         <li>{item.Address.city}, {item.Address.country}</li>
                                                         <li>{item.Address.street}, {item.Address.streetNumber}</li>
                                                     </StyledTableCell>
-                                                    <StyledTableCell align="center">
-                                                        <Accordion>
-                                                            <AccordionSummary>
-                                                                Ameneties
+                                                    <StyledTableCell>
+                                                        <Accordion sx={{border: "1px solid black"}}>
+                                                            <AccordionSummary
+                                                                expandIcon={<ExpandMoreIcon/>}>
+                                                                List Of Ameneties
+                                                            </AccordionSummary>
+                                                            <AccordionDetails sx={{height: 200, overflowY: 'scroll'}}>
+                                                                {item.Amenities.map((a) => (
+                                                                    <Box m={1} key={a}>- {a}</Box>
+                                                                ))}
+                                                            </AccordionDetails>
+                                                        </Accordion>
+                                                    </StyledTableCell>
+                                                    <StyledTableCell>
+                                                        <Accordion sx={{border: "1px solid black"}}>
+                                                            <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
+                                                                List Of Availabilities
                                                             </AccordionSummary>
                                                             <AccordionDetails>
-                                                                {item.Amenities.map((a) => (
-                                                                    <li key={a}>{a}</li>
-                                                                ))}
+                                                                <TableContainer sx={{height: 200, overflowY: 'scroll'}}
+                                                                                component={Paper}
+                                                                >
+                                                                    <Table>
+                                                                        <tbody>
+                                                                        {item.listOfMyAvailabilities &&
+                                                                            item.listOfMyAvailabilities.availableDates &&
+                                                                            item.listOfMyAvailabilities.availableDates.map((a) => (
+                                                                                <StyledTableRow key={a.Id} hover>
+                                                                                    <StyledTableCell>
+                                                                                        <li>From: {new Date(a.dateRange.from * 1000).toLocaleDateString("en-GB")}</li>
+                                                                                        <li>To: {new Date(a.dateRange.to * 1000).toLocaleDateString("en-GB")}</li>
+                                                                                        <li>Price: {a.price}</li>
+                                                                                        <li>Is price per
+                                                                                            person: {a.isPricePerPerson ? 'Yes' : 'No'}</li>
+                                                                                    </StyledTableCell>
+                                                                                    <StyledTableCell align="center">
+                                                                                        <Box m={1}>
+                                                                                            <Button fullWidth
+                                                                                                    color="warning"
+                                                                                                    variant="contained"
+                                                                                                    onClick={() => handleChangeAvailabilityDialog(item, a)}>
+
+                                                                                                Change
+                                                                                            </Button>
+                                                                                        </Box>
+                                                                                    </StyledTableCell>
+                                                                                </StyledTableRow>
+                                                                            ))}
+                                                                        </tbody>
+                                                                    </Table>
+                                                                </TableContainer>
+
                                                             </AccordionDetails>
                                                         </Accordion>
                                                     </StyledTableCell>
@@ -381,38 +593,7 @@ function MyPlaces() {
                             </Table>
                         </TableContainer>
                     </Flex>
-                    <Flex flexDirection="column" alignItems="center" m={2}>
-                        <Box m={1}>
-                            My availabilities
-                        </Box>
 
-                        <TableContainer component={Paper} sx={{maxHeight: 500, height: 500}}>
-                            <Table>
-                                {myAvailabilities != null &&
-                                    <TableBody>
-                                        {myAvailabilities.map((item) => (
-                                            <React.Fragment key={`${item.id}-row-myAvailabilities`}>
-                                                <StyledTableRow hover>
-                                                    <StyledTableCell>
-                                                        <li>From:</li>
-                                                        <li>To</li>
-                                                        <li>Price</li>
-                                                        <li>Per person</li>
-                                                    </StyledTableCell>
-                                                    <StyledTableCell align="center">
-                                                        <Box m={1}>
-                                                            <Button fullWidth variant="contained" color="warning">Change
-                                                                availability</Button>
-                                                        </Box>
-                                                    </StyledTableCell>
-                                                </StyledTableRow>
-                                            </React.Fragment>
-                                        ))}
-                                    </TableBody>
-                                }
-                            </Table>
-                        </TableContainer>
-                    </Flex>
                 </Flex>
             </div>
         </>
