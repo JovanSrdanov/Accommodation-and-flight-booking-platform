@@ -25,13 +25,13 @@ func (repo AccommodationRepositoryMongo) Create(accommodation *model.Accommodati
 	collection := repo.getCollection()
 	accommodation.ID = primitive.NewObjectID()
 
-	result, err := collection.InsertOne(ctx, &accommodation)
+	_, err := collection.InsertOne(ctx, &accommodation)
 	if err != nil {
 		log.Println(err)
 		return primitive.ObjectID{}, err
 	}
 
-	return result.InsertedID.(primitive.ObjectID), nil
+	return accommodation.ID, nil
 }
 
 func (repo AccommodationRepositoryMongo) Delete(id primitive.ObjectID) error {
