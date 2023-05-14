@@ -225,7 +225,7 @@ function App() {
                             <Route path="/reservations-and-requests" element={<ReservationsAndRequestsPage/>}/>
                             <Route path="/profile" element={<ProfilePage/>}/>
                             <Route path="/search-and-filter-accommodations"
-                                   element={<SearchAndFilterAccommodationsPage/>}/>
+                                   element={<SearchAndFilterAccommodationsPage canBuy={false}/>}/>
                             <Route path="/*" element={<Navigate to="/search-and-filter-accommodations"/>}/>
                         </>
                     )}
@@ -235,7 +235,7 @@ function App() {
                             <Route path="/login" element={<LoginPage/>}/>
                             <Route path="/register" element={<RegisterPage/>}/>
                             <Route path="/search-and-filter-accommodations"
-                                   element={<SearchAndFilterAccommodationsPage/>}/>
+                                   element={<SearchAndFilterAccommodationsPage canBuy={false}/>}/>
                             <Route path="/*" element={<Navigate to="/search-and-filter-accommodations"/>}/>
                         </>
                     )}

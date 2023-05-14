@@ -1,6 +1,21 @@
 import React, {useState} from 'react';
 import {Flex} from "reflexbox";
-import {Box, Button, Card, Dialog, DialogActions, DialogTitle, FormControlLabel, Grid, TextField} from "@mui/material";
+import {
+    Box,
+    Button,
+    Card,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    FormControlLabel,
+    Grid,
+    Paper,
+    Table,
+    TableBody,
+    TableContainer,
+    TextField
+} from "@mui/material";
 import {DatePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
@@ -11,8 +26,10 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
+import interceptor from "../../interceptor/interceptor";
 
-function SearchAndFilterAccommodations() {
+function SearchAndFilterAccommodations(props) {
+
     const [left, setLeft] = React.useState(["Wi-Fi", "Heating", "AC", "Kitchen"]);
     const [right, setRight] = React.useState([]);
     const [checked, setChecked] = React.useState([]);
@@ -162,13 +179,42 @@ function SearchAndFilterAccommodations() {
         searchAndFilterData.endDate = Math.round(utcEndDate.getTime() / 1000);
 
         console.log(searchAndFilterData);
-        setResultDialogShow(true);
+
+        interceptor.post("api-2/search-and-filter", searchAndFilterData).then(res => {
+            setResultData(res.data)
+            setResultDialogShow(true);
+        }).catch(err => {
+                console.log(err)
+            }
+        );
+
+
     }
 
     return (
         <>
             <Dialog onClose={handleResultDialogShow} open={resultDialogShow}>
                 <DialogTitle>Search and filter results</DialogTitle>
+
+                <DialogContent>
+                    {resultData != null && resultData.length > 0 &&
+                        <TableContainer component={Paper}
+                                        sx={{maxHeight: 500, height: 500, overflowY: 'scroll'}}>
+                            <Table>
+
+                                <TableBody>
+                                    {resultData.map((item) => (
+                                        <React.Fragment key={`${item.id}-row`}>
+                                        </React.Fragment>
+                                    ))
+                                    }
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    }
+
+                </DialogContent>
+
                 <DialogActions>
                     <Button onClick={handleResultDialogShow}
                             variant="contained"

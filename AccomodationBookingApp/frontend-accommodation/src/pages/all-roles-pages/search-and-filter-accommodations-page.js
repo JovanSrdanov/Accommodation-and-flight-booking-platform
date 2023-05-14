@@ -2,11 +2,12 @@ import React from 'react';
 import SearchAndFilterAccommodations
     from "../../components/search-and-filter-accommodations/search-and-filter-accommodations";
 
-function SearchAndFilterAccommodationsPage() {
+function SearchAndFilterAccommodationsPage(props) {
+
     return (
         <div>
             <h1>Search And Filter Accommodations</h1>
-            <SearchAndFilterAccommodations></SearchAndFilterAccommodations>
+            <SearchAndFilterAccommodations canBuy={props.canBuy}></SearchAndFilterAccommodations>
         </div>
     );
 }
