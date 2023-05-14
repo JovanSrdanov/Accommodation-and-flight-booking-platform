@@ -60,15 +60,22 @@ service AccommodationService{
     };
   }
 
-  rpc SearchA(EmptyRequest) returns(GetAmenitiesResponse) {
-    option (google.api.http) = {
-      get: "/api-1/amenities"
-    };
-  }
+  rpc SearchAccommodation(SearchRequest) returns(GetAllResponse) {}
 
 }
 
 message EmptyRequest {}
+
+message SearchRequest {
+  Filter filter = 1;
+}
+
+message Filter {
+  repeated string amenities = 1;
+  string location = 2;
+  int32 minGuests = 3;
+  string hostId = 4;
+}
 
 message GetMyRequest {
   string hostId = 1;

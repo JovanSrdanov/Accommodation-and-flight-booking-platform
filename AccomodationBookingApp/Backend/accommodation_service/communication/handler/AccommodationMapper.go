@@ -65,3 +65,13 @@ func (mapper AccommodationMapper) mapToGetAllResponse(model model.Accommodations
 		Accommodation: accommodationsProto,
 	}
 }
+
+func (mapper AccommodationMapper) mapFromSearchRequest(request *accommodation.SearchRequest) *model.SearchDto {
+	return &model.SearchDto{
+		//TODO: Popravi posle kad bude filter
+		HostId:    "xxx",
+		MinGuests: request.Filter.MinGuests,
+		Amenities: request.Filter.Amenities,
+		Location:  request.Filter.Location,
+	}
+}

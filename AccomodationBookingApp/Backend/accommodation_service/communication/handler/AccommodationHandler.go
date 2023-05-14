@@ -152,3 +152,14 @@ func (handler AccommodationHandler) GetAmenities(ctx context.Context, in *accomm
 		Amenities: amenities,
 	}, nil
 }
+
+func (handler AccommodationHandler) SearchAccommodation(ctx context.Context, in *accommodation.SearchRequest) (*accommodation.GetAllResponse, error) {
+	mapper := NewAccommodationMapper()
+
+	accommodations, err := handler.accommodationService.SearchAccommodation(mapper.mapFromSearchRequest(in))
+	if err != nil {
+		return nil, err
+	}
+
+	return mapper.mapToGetAllResponse(accommodations), nil
+}

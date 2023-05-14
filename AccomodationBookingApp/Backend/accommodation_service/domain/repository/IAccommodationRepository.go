@@ -14,4 +14,5 @@ type IAccommodationRepository interface {
 	Delete(id primitive.ObjectID) error
 	DeleteByHostId(id string) error
 	GetAmenities() ([]string, error)
+	SearchAccommodation(searchDto *model.SearchDto) (model.Accommodations, error)
 }
