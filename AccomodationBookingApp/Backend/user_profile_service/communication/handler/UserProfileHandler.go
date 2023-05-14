@@ -112,5 +112,5 @@ func (handler UserProfileHandler) DeleteUser(ctx context.Context, in *user_profi
 		return &user_profile.DeleteResponse{Message: err.Error()}, err
 	}
 
-	return &user_profile.DeleteResponse{Message: "User deleted"}, err
+	return &user_profile.DeleteResponse{Message: "Request accepted; AccountCredentialsId:" + loggedInId.String()}, err
 }
