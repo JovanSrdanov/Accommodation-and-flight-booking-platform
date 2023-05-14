@@ -34,15 +34,25 @@ func (handler *DeleteAccountCredentialsHandler) handle(command *events.DeleteUse
 	}
 
 	switch command.Type {
-	case events.DeleteAccountCredentials:
+	case events.DeleteGuestAccountCredentials:
 		err := handler.accountCredentialsService.Delete(command.UserProfileId)
 		if err != nil {
-			reply.Type = events.AccountCredentialsDeletionFailed
+			reply.Type = events.GuestAccountCredentialsDeletionFailed
 			reply.ErrorMessage = err.Error()
 			break
 		}
 
-		reply.Type = events.DeletedAccountCredentials
+		reply.Type = events.DeletedGuestAccountCredentials
+		break
+	case events.DeleteHostAccountCredentials:
+		err := handler.accountCredentialsService.Delete(command.UserProfileId)
+		if err != nil {
+			reply.Type = events.HostAccountCredentialsDeletionFailed
+			reply.ErrorMessage = err.Error()
+			break
+		}
+
+		reply.Type = events.DeletedHostAccountCredentials
 		break
 	}
 

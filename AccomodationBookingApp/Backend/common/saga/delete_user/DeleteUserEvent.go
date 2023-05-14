@@ -10,8 +10,10 @@ type DeleteUserCommandType int8
 const (
 	DeleteGuestProfile DeleteUserCommandType = iota
 	DeleteHostProfile
-	RollbackUserProfile
-	DeleteAccountCredentials
+	RollbackGuestProfile
+	RollbackHostProfile
+	DeleteGuestAccountCredentials
+	DeleteHostAccountCredentials
 	CancelDeletion
 	FinishDeletion
 	UnknownCommand
@@ -28,10 +30,14 @@ type DeleteUserReplyType int8
 const (
 	DeletedGuestProfile DeleteUserReplyType = iota
 	DeletedHostProfile
-	UserProfileDeletionFailed
-	DeletedAccountCredentials
-	AccountCredentialsDeletionFailed
-	RolledbackUserProfile
+	GuestProfileDeletionFailed
+	HostProfileDeletionFailed
+	DeletedGuestAccountCredentials
+	DeletedHostAccountCredentials
+	GuestAccountCredentialsDeletionFailed
+	HostAccountCredentialsDeletionFailed
+	RolledbackGuestProfile
+	RolledbackHostProfile
 	UnknownReply
 )
 

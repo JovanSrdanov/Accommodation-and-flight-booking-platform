@@ -40,16 +40,24 @@ func (orchestrator *DeleteUserOrchestrator) handle(reply *events.DeleteUserReply
 func (orchestrator *DeleteUserOrchestrator) nextCommandType(reply events.DeleteUserReplyType) events.DeleteUserCommandType {
 	switch reply {
 	case events.DeletedGuestProfile:
-		return events.DeleteAccountCredentials
+		return events.DeleteGuestAccountCredentials
 	case events.DeletedHostProfile:
-		return events.DeleteAccountCredentials
-	case events.DeletedAccountCredentials:
+		return events.DeleteHostAccountCredentials
+	case events.DeletedGuestAccountCredentials:
 		return events.UnknownCommand
-	case events.UserProfileDeletionFailed:
+	case events.DeletedHostAccountCredentials:
 		return events.UnknownCommand
-	case events.AccountCredentialsDeletionFailed:
-		return events.RollbackUserProfile
-	case events.RolledbackUserProfile:
+	case events.GuestProfileDeletionFailed:
+		return events.UnknownCommand
+	case events.HostProfileDeletionFailed:
+		return events.UnknownCommand
+	case events.GuestAccountCredentialsDeletionFailed:
+		return events.RollbackGuestProfile
+	case events.HostAccountCredentialsDeletionFailed:
+		return events.RollbackHostProfile
+	case events.RolledbackGuestProfile:
+		return events.UnknownCommand
+	case events.RolledbackHostProfile:
 		return events.UnknownCommand
 	default:
 		return events.UnknownCommand

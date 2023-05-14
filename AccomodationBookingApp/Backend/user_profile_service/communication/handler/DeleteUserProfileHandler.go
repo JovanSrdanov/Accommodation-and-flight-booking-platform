@@ -45,6 +45,16 @@ func (handler *DeleteUserProfileHandler) GuestHasActiveReservations(command *eve
 	return result.HasActiveReservations, nil
 }
 
+func (handler *DeleteUserProfileHandler) HostHasActiveReservations(command *events.DeleteUserCommand) (bool, error) {
+	reservationClient := communication.NewReservationClient(handler.reservationServiceAddress)
+	result, err := reservationClient.HostHasActiveReservations(context.TODO(), &reservation.HostHasActiveReservationsRequest{HostId: command.UserProfileId.String()})
+	if err != nil {
+		return false, err
+	}
+
+	return result.HasActiveReservations, nil
+}
+
 func (handler *DeleteUserProfileHandler) DeleteUserProfile(command *events.DeleteUserCommand) error {
 	//For rollback if needed
 	userProfileBackup, err := handler.userProfileService.GetById(command.UserProfileId)
@@ -68,6 +78,15 @@ func (handler *DeleteUserProfileHandler) DeleteUserProfile(command *events.Delet
 	return nil
 }
 
+func (handler *DeleteUserProfileHandler) RollbackProfile(deleteAction string, command *events.DeleteUserCommand) {
+	//TODO error handling
+	deleteEvent, _ := handler.eventService.Read(command.SagaId, deleteAction)
+
+	var userProfile model.UserProfile
+	handler.eventService.GetEventEntity(deleteEvent, &userProfile)
+	handler.userProfileService.Create(&userProfile)
+}
+
 func (handler *DeleteUserProfileHandler) handle(command *events.DeleteUserCommand) {
 	reply := events.DeleteUserReply{
 		SagaId:        command.SagaId,
@@ -80,32 +99,52 @@ func (handler *DeleteUserProfileHandler) handle(command *events.DeleteUserComman
 	case events.DeleteGuestProfile:
 		guestHasActiveReservations, err := handler.GuestHasActiveReservations(command)
 		if err != nil {
-			reply.Type = events.UserProfileDeletionFailed
+			reply.Type = events.GuestProfileDeletionFailed
 			reply.ErrorMessage = err.Error()
 			break
 		}
 		if guestHasActiveReservations {
-			reply.Type = events.UserProfileDeletionFailed
+			reply.Type = events.GuestProfileDeletionFailed
 			reply.ErrorMessage = "Guest has active reservations"
 			break
 		}
 
 		err = handler.DeleteUserProfile(command)
 		if err != nil {
-			reply.Type = events.UserProfileDeletionFailed
+			reply.Type = events.GuestProfileDeletionFailed
 			break
 		}
 
 		reply.Type = events.DeletedGuestProfile
 		break
-	case events.RollbackUserProfile:
-		//TODO error handling
-		deleteEvent, _ := handler.eventService.Read(command.SagaId, events.DeleteGuestProfile.String())
+	case events.DeleteHostProfile:
+		hostHasActiveReservations, err := handler.HostHasActiveReservations(command)
+		if err != nil {
+			reply.Type = events.HostProfileDeletionFailed
+			break
+		}
 
-		var userProfile model.UserProfile
-		handler.eventService.GetEventEntity(deleteEvent, &userProfile)
-		handler.userProfileService.Create(&userProfile)
-		reply.Type = events.RolledbackUserProfile
+		if hostHasActiveReservations {
+			reply.Type = events.HostProfileDeletionFailed
+			reply.ErrorMessage = "Host has active reservations"
+			break
+		}
+
+		err = handler.DeleteUserProfile(command)
+		if err != nil {
+			reply.Type = events.HostProfileDeletionFailed
+			break
+		}
+
+		reply.Type = events.DeletedHostProfile
+		break
+	case events.RollbackGuestProfile:
+		handler.RollbackProfile(events.DeleteGuestProfile.String(), command)
+		reply.Type = events.RolledbackGuestProfile
+		break
+	case events.RollbackHostProfile:
+		handler.RollbackProfile(events.DeleteHostProfile.String(), command)
+		reply.Type = events.RolledbackHostProfile
 		break
 	default:
 		reply.Type = events.UnknownReply

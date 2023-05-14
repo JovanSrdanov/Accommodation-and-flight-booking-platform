@@ -153,3 +153,21 @@ func (handler ReservationHandler) GuestHasActiveReservations(ctx context.Context
 
 	return &reservation.GuestHasActiveReservationsResponse{HasActiveReservations: hasActiveReservations}, nil
 }
+func (handler ReservationHandler) HostHasActiveReservations(ctx context.Context, in *reservation.HostHasActiveReservationsRequest) (*reservation.HostHasActiveReservationsResponse, error) {
+
+	id, err := uuid.Parse(in.HostId)
+	if err != nil {
+		return nil, err
+	}
+
+	activeReservations, err := handler.reservationService.GetAllAcceptedReservations(id.String())
+	if err != nil {
+		return nil, err
+	}
+
+	if len(activeReservations) <= 1 {
+		return &reservation.HostHasActiveReservationsResponse{HasActiveReservations: false}, nil
+	}
+	return &reservation.HostHasActiveReservationsResponse{HasActiveReservations: true}, nil
+
+}
