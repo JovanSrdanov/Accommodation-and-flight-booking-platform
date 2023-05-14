@@ -191,6 +191,7 @@ services:
     depends_on:
       reservation_db:
         condition: service_healthy
+   
 
   reservation_db:
     image: mongo
@@ -206,6 +207,8 @@ services:
       - 6968:27017
     networks:
       - network
+    ports:
+      - 5000:27017  
 
   nats:
     image: nats

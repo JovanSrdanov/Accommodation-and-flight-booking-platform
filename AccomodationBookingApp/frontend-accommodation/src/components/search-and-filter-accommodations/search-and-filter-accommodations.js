@@ -179,10 +179,10 @@ function SearchAndFilterAccommodations(props) {
         searchAndFilterData.endDate = Math.round(utcEndDate.getTime() / 1000);
 
         console.log(searchAndFilterData);
-
+        setResultDialogShow(true);
         interceptor.post("api-2/search-and-filter", searchAndFilterData).then(res => {
             setResultData(res.data)
-            setResultDialogShow(true);
+
         }).catch(err => {
                 console.log(err)
             }

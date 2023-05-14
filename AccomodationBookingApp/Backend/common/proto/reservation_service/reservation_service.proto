@@ -88,8 +88,7 @@ service ReservationService{
   rpc SearchAccommodation(SearchRequest) returns(SearchResponse) {}
 
   rpc GuestHasActiveReservations(GuestHasActiveReservationsRequest) returns(GuestHasActiveReservationsResponse) { }
-
-
+  rpc HostHasActiveReservations(HostHasActiveReservationsRequest) returns(HostHasActiveReservationsResponse) { }
 }
 message EmptyRequest {}
 
@@ -211,5 +210,12 @@ message GuestHasActiveReservationsRequest{
 }
 
 message GuestHasActiveReservationsResponse{
+  bool hasActiveReservations = 1;
+}
+message HostHasActiveReservationsRequest{
+  string hostId = 1;
+}
+
+message HostHasActiveReservationsResponse{
   bool hasActiveReservations = 1;
 }

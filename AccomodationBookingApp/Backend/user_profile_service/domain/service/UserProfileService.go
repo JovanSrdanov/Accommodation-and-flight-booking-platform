@@ -55,8 +55,8 @@ func (service UserProfileService) Update(id uuid.UUID, dto *model.UpdateProfileD
 		Address: userInfo.Address,
 	}, nil
 }
-func (service UserProfileService) DeleteUser(id uuid.UUID, role authorization.Role) error {
-	return service.deleteOrchestrator.Start(id, role)
+func (service UserProfileService) DeleteUser(accCredId string, userProfileID uuid.UUID, role authorization.Role) error {
+	return service.deleteOrchestrator.Start(accCredId, userProfileID, role)
 }
 
 func (service UserProfileService) Delete(id uuid.UUID) error {
