@@ -90,7 +90,7 @@ function ReservationsAndRequests() {
                         <TableContainer component={Paper} sx={{maxHeight: 500, height: 500}}>
                             <Table>
                                 <TableBody>
-                                    {accepted && accepted.map((a) => (
+                                    {accepted && accepted.length > 0 && accepted.map((a) => (
                                         <StyledTableRow key={a.Id} hover>
                                             <StyledTableCell>
                                                 <li>Price: {a.price}</li>
@@ -115,7 +115,7 @@ function ReservationsAndRequests() {
                         <TableContainer component={Paper} sx={{maxHeight: 500, height: 500}}>
                             <Table>
                                 <TableBody>
-                                    {pending && pending.map((a) => (
+                                    {pending && pending.length > 0 && pending.map((a) => (
                                         <StyledTableRow key={a.Id} hover>
                                             <StyledTableCell>
                                                 <li>Reservation made by:</li>

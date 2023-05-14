@@ -65,11 +65,10 @@ function MyReservations() {
                 <TableContainer component={Paper} sx={{maxHeight: 500, height: 500}}>
                     <Table>
                         <TableBody>
-                            {reservations && reservations.map((r) => (
+                            {reservations && reservations.length > 0 && reservations.map((r) => (
                                 <StyledTableRow key={r.Id} hover>
                                     <StyledTableCell>
-                                        <li>Price: {r.price}</li>
-                                        <li>Total price:</li>
+                                        <li>Total price: {r.price}</li>
                                         <li>Number of guests: {r.numberOfGuests}</li>
                                         <li>From: {new Date(r.dateRange.from * 1000).toLocaleDateString("en-GB")}</li>
                                         <li>To: {new Date(r.dateRange.to * 1000).toLocaleDateString("en-GB")}</li>
@@ -83,7 +82,7 @@ function MyReservations() {
                                                 onClick={() => {
                                                     handleCancel(r.Id)
                                                 }}
-                                                disabled={r.status === 'rejected' || r.status === 'canceled'}
+                                                disabled={r.status === 'rejected' || r.status === 'canceled' || new Date(r.dateRange.from * 1000).setHours(0, 0, 0, 0) <= new Date(new Date().getTime() + 1 * 24 * 60 * 60 * 1000).setHours(0, 0, 0, 0)}
                                                 variant="contained" color="warning">Cancel reservation</Button>
                                         </Box>
                                     </StyledTableCell>
@@ -92,6 +91,9 @@ function MyReservations() {
                         </TableBody>
                     </Table>
                 </TableContainer>
+                <Box m={1}>
+                    Pending and accepted reservations can be canceled up to 24h before start date
+                </Box>
             </div>
         </>
     );

@@ -355,7 +355,7 @@ function MyPlaces() {
                 </DialogContent>
 
                 <DialogActions>
-                    <Button onClick={handleCloseCreateAvailabilityDialog} variant="contained">Close
+                    <Button onClick={handleCloseUpdateAvailabilityDialog} variant="contained">Close
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -501,10 +501,11 @@ function MyPlaces() {
                         <Box m={1}>
                             My places
                         </Box>
-                        <TableContainer component={Paper}
-                                        sx={{maxHeight: 500, height: 500, overflowY: 'scroll'}}>
-                            <Table>
-                                {myAccommodations != null &&
+                        {myAccommodations != null && myAccommodations.length > 0 &&
+                            <TableContainer component={Paper}
+                                            sx={{maxHeight: 500, height: 500, overflowY: 'scroll'}}>
+                                <Table>
+
                                     <TableBody>
                                         {myAccommodations.map((item) => (
                                             <React.Fragment key={`${item.id}-row`}>
@@ -588,9 +589,9 @@ function MyPlaces() {
                                             </React.Fragment>
                                         ))}
                                     </TableBody>
-                                }
-                            </Table>
-                        </TableContainer>
+                                </Table>
+                            </TableContainer>
+                        }
                     </Flex>
 
                 </Flex>
