@@ -60,10 +60,23 @@ service AccommodationService{
     };
   }
 
+  rpc SearchAccommodation(SearchRequest) returns(GetAllResponse) {}
+
   rpc DeleteAllByHostId(DeleteAllByHostIdRequest) returns(DeleteAllByHostIdResponse) {}
 }
 
 message EmptyRequest {}
+
+message SearchRequest {
+  Filter filter = 1;
+}
+
+message Filter {
+  repeated string amenities = 1;
+  string location = 2;
+  int32 minGuests = 3;
+  string hostId = 4;
+}
 
 message GetMyRequest {
   string hostId = 1;
