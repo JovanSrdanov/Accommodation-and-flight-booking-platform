@@ -23,6 +23,7 @@ const (
 	AuthorizationService_Create_FullMethodName         = "/authorization.AuthorizationService/Create"
 	AuthorizationService_GetByUsername_FullMethodName  = "/authorization.AuthorizationService/GetByUsername"
 	AuthorizationService_GetById_FullMethodName        = "/authorization.AuthorizationService/GetById"
+	AuthorizationService_CheckIfDeleted_FullMethodName = "/authorization.AuthorizationService/CheckIfDeleted"
 	AuthorizationService_Login_FullMethodName          = "/authorization.AuthorizationService/Login"
 	AuthorizationService_ChangeUsername_FullMethodName = "/authorization.AuthorizationService/ChangeUsername"
 	AuthorizationService_ChangePassword_FullMethodName = "/authorization.AuthorizationService/ChangePassword"
@@ -35,6 +36,7 @@ type AuthorizationServiceClient interface {
 	Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error)
 	GetByUsername(ctx context.Context, in *GetByUsernameRequest, opts ...grpc.CallOption) (*GetByUsernameResponse, error)
 	GetById(ctx context.Context, in *GetByIdRequest, opts ...grpc.CallOption) (*GetByUsernameResponse, error)
+	CheckIfDeleted(ctx context.Context, in *CheckIfDeletedRequest, opts ...grpc.CallOption) (*CheckIfDeletedResponse, error)
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	ChangeUsername(ctx context.Context, in *ChangeUsernameRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
@@ -75,6 +77,15 @@ func (c *authorizationServiceClient) GetById(ctx context.Context, in *GetByIdReq
 	return out, nil
 }
 
+func (c *authorizationServiceClient) CheckIfDeleted(ctx context.Context, in *CheckIfDeletedRequest, opts ...grpc.CallOption) (*CheckIfDeletedResponse, error) {
+	out := new(CheckIfDeletedResponse)
+	err := c.cc.Invoke(ctx, AuthorizationService_CheckIfDeleted_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *authorizationServiceClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error) {
 	out := new(LoginResponse)
 	err := c.cc.Invoke(ctx, AuthorizationService_Login_FullMethodName, in, out, opts...)
@@ -109,6 +120,7 @@ type AuthorizationServiceServer interface {
 	Create(context.Context, *CreateRequest) (*CreateResponse, error)
 	GetByUsername(context.Context, *GetByUsernameRequest) (*GetByUsernameResponse, error)
 	GetById(context.Context, *GetByIdRequest) (*GetByUsernameResponse, error)
+	CheckIfDeleted(context.Context, *CheckIfDeletedRequest) (*CheckIfDeletedResponse, error)
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 	ChangeUsername(context.Context, *ChangeUsernameRequest) (*emptypb.Empty, error)
 	ChangePassword(context.Context, *ChangePasswordRequest) (*emptypb.Empty, error)
@@ -127,6 +139,9 @@ func (UnimplementedAuthorizationServiceServer) GetByUsername(context.Context, *G
 }
 func (UnimplementedAuthorizationServiceServer) GetById(context.Context, *GetByIdRequest) (*GetByUsernameResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetById not implemented")
+}
+func (UnimplementedAuthorizationServiceServer) CheckIfDeleted(context.Context, *CheckIfDeletedRequest) (*CheckIfDeletedResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckIfDeleted not implemented")
 }
 func (UnimplementedAuthorizationServiceServer) Login(context.Context, *LoginRequest) (*LoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
@@ -204,6 +219,24 @@ func _AuthorizationService_GetById_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthorizationService_CheckIfDeleted_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CheckIfDeletedRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthorizationServiceServer).CheckIfDeleted(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthorizationService_CheckIfDeleted_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthorizationServiceServer).CheckIfDeleted(ctx, req.(*CheckIfDeletedRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AuthorizationService_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(LoginRequest)
 	if err := dec(in); err != nil {
@@ -276,6 +309,10 @@ var AuthorizationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetById",
 			Handler:    _AuthorizationService_GetById_Handler,
+		},
+		{
+			MethodName: "CheckIfDeleted",
+			Handler:    _AuthorizationService_CheckIfDeleted_Handler,
 		},
 		{
 			MethodName: "Login",

@@ -84,6 +84,10 @@ service ReservationService{
       get: "/api-1/reservation/all/guest"
     };
   }
+
+  rpc GuestHasActiveReservations(GuestHasActiveReservationsRequest) returns(GuestHasActiveReservationsResponse) { }
+
+
 }
 message EmptyRequest {}
 
@@ -179,4 +183,12 @@ message Reservation {
 message AvailabilityRequest {
   PriceWithDate priceWithDate = 1;
   string accommodationId = 2;
+}
+
+message GuestHasActiveReservationsRequest{
+  string guestId = 1;
+}
+
+message GuestHasActiveReservationsResponse{
+  bool hasActiveReservations = 1;
 }

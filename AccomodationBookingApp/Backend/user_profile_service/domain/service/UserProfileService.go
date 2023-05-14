@@ -1,6 +1,7 @@
 package service
 
 import (
+	authorization "common/proto/authorization_service/generated"
 	"github.com/google/uuid"
 	"log"
 	"user_profile_service/communication/orchestrator"
@@ -54,8 +55,8 @@ func (service UserProfileService) Update(id uuid.UUID, dto *model.UpdateProfileD
 		Address: userInfo.Address,
 	}, nil
 }
-func (service UserProfileService) DeleteUser(id uuid.UUID) error {
-	return service.deleteOrchestrator.Start(id)
+func (service UserProfileService) DeleteUser(id uuid.UUID, role authorization.Role) error {
+	return service.deleteOrchestrator.Start(id, role)
 }
 
 func (service UserProfileService) Delete(id uuid.UUID) error {

@@ -2,10 +2,14 @@ package delete_user
 
 import "github.com/google/uuid"
 
+// Da bi implementirao stringer interface, treba:https://pkg.go.dev/golang.org/x/tools/cmd/stringer
+// Konkretno, u terminalu se pozicioniras u isti folder gde se enum nalazi i pokrenes:
+// stringer -type=DeleteUserCommandType
 type DeleteUserCommandType int8
 
 const (
-	DeleteUserProfile DeleteUserCommandType = iota
+	DeleteGuestProfile DeleteUserCommandType = iota
+	DeleteHostProfile
 	RollbackUserProfile
 	DeleteAccountCredentials
 	CancelDeletion

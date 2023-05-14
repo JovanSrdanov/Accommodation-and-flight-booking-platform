@@ -22,6 +22,12 @@ service AuthorizationService{
     };
   }
 
+  rpc CheckIfDeleted(CheckIfDeletedRequest) returns (CheckIfDeletedResponse) {
+    option (google.api.http) = {
+      get: "/api-1/account-credentials/is-deleted"
+    };
+  }
+
   rpc Login(LoginRequest) returns (LoginResponse) {
     option (google.api.http) = {
       post: "/api-1/account-credentials/login",
@@ -99,4 +105,12 @@ message ChangeUsernameRequest {
 message ChangePasswordRequest {
   string oldPassword = 1;
   string newPassword = 2;
+}
+
+message CheckIfDeletedRequest {
+
+}
+
+message CheckIfDeletedResponse {
+  bool response = 1;
 }
