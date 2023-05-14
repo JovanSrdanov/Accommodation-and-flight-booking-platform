@@ -8,6 +8,7 @@ function Profile() {
 
 
     const [username, setUsername] = useState("")
+    const [errorMessage, setErrorMessage] = useState("")
     const [oldPassword, setOldPassword] = useState("")
     const [newPassword, setNewPassword] = useState("")
     const [passwordDialogShow, setPasswordDialogShow] = useState(false)
@@ -26,6 +27,7 @@ function Profile() {
             streetNumber: ''
         }
     });
+
 
     const handleOldPasswordChange = (event) => {
         setOldPassword(event.target.value);
@@ -122,22 +124,56 @@ function Profile() {
     }
     const navigate = useNavigate();
 
-    const DeleteProfile = () => {
-        interceptor.delete('api-1/user')
-            .then((response) => {
-                setDeletedAccountDialogShow(true)
+    const DeleteProfile = async () => {
+        try {
+            const paseto = localStorage.getItem('paseto');
+            if (!paseto) {
                 localStorage.removeItem('paseto');
-                localStorage.removeItem('role');
-                localStorage.removeItem('expirationDate');
+                return null
+            }
+            const footer = paseto.split(".")[3];
+            const decodedFooter = JSON.parse(atob(footer));
+            const roleAndExp = decodedFooter.RoleAndExp;
+
+            const regex = /role:(.*), expiration date: (.*)/;
+            const matches = roleAndExp.match(regex);
+            const role = matches[1];
+
+            if (role === "0") {
+                setErrorMessage(": Host can not be deleted because someone has reserved his accommodation")
+            } else if (role === "1") {
+                setErrorMessage(": Guest can not be deleted because he has active reservations")
+            } else {
+                setErrorMessage(": UNKNOWN ERROR")
+            }
 
 
-            })
-            .catch((error) => {
-                setErrorDialogShow(true)
-                localStorage.removeItem('paseto');
-                localStorage.removeItem('role');
-                localStorage.removeItem('expirationDate');
-            });
+            const response = await interceptor.delete('api-1/user');
+            console.log(response);
+
+            let deleted = false;
+            for (let step = 0; step < 5 && !deleted; step++) {
+                await new Promise((resolve) => setTimeout(resolve, 1000));
+                try {
+                    const res = await interceptor.get('api-1/isDeleted');
+                    console.log(res);
+
+                } catch (error) {
+                    setErrorDialogShow(true);
+                    setDeletedAccountDialogShow(true);
+                    deleted = true;
+                    localStorage.removeItem('paseto');
+                    localStorage.removeItem('role');
+                    localStorage.removeItem('expirationDate');
+
+                }
+            }
+            if (!deleted) {
+                setErrorDialogShow(true);
+            }
+        } catch (error) {
+            setErrorDialogShow(true);
+        }
     };
     const handleClose = () => {
         setSuccessDialogShow(false)
@@ -148,6 +184,7 @@ function Profile() {
     };
     const handleDeletedAccountClose = () => {
         setDeletedAccountDialogShow(false)
+
         navigate('/login');
     };
     const handleErrorClose = () => {
