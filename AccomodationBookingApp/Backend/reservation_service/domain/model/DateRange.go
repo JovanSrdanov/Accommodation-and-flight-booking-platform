@@ -79,7 +79,7 @@ func (dateRange1 DateRange) DaysInCommon(dateRange2 DateRange) int32 {
 
 	// Calculate the number of days between the start date and end date
 	duration := endDate.Sub(startDate)
-	days := int32(duration.Hours() / 24)
+	days := int32(duration.Hours()/24) + 1
 
 	return days
 }

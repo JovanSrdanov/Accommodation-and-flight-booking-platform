@@ -482,9 +482,6 @@ func (repo ReservationRepositoryMongo) AcceptReservation(id primitive.ObjectID) 
 		}
 	}
 
-	pendingIdString := pendingIds[0].String()
-	log.Println(pendingIdString)
-
 	//Ako se ne overlap onda accept
 	filter = bson.D{{"_id", reservation.ID}}
 
