@@ -26,7 +26,8 @@ type DeleteUserCommand struct {
 type DeleteUserReplyType int8
 
 const (
-	DeletedUserProfile DeleteUserReplyType = iota
+	DeletedGuestProfile DeleteUserReplyType = iota
+	DeletedHostProfile
 	UserProfileDeletionFailed
 	DeletedAccountCredentials
 	AccountCredentialsDeletionFailed

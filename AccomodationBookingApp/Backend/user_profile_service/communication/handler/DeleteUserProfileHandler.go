@@ -36,6 +36,38 @@ func NewDeleteUserProfileHandler(userProfileService *service.UserProfileService,
 	return handler, nil
 }
 
+func (handler *DeleteUserProfileHandler) GuestHasActiveReservations(command *events.DeleteUserCommand) (bool, error) {
+	reservationClient := communication.NewReservationClient(handler.reservationServiceAddress)
+	result, err := reservationClient.GuestHasActiveReservations(context.TODO(), &reservation.GuestHasActiveReservationsRequest{GuestId: command.UserProfileId.String()})
+	if err != nil {
+		return false, err
+	}
+	return result.HasActiveReservations, nil
+}
+
+func (handler *DeleteUserProfileHandler) DeleteUserProfile(command *events.DeleteUserCommand) error {
+	//For rollback if needed
+	userProfileBackup, err := handler.userProfileService.GetById(command.UserProfileId)
+	if err != nil {
+		return err
+	}
+
+	err = handler.userProfileService.Delete(command.UserProfileId)
+	if err != nil {
+		return err
+	}
+
+	//For rollback if needed
+	handler.eventService.Save(&event_sourcing.Event{
+		ID:     primitive.NewObjectID(),
+		SagaId: command.SagaId,
+		Action: command.Type.String(),
+		Entity: userProfileBackup,
+	})
+
+	return nil
+}
+
 func (handler *DeleteUserProfileHandler) handle(command *events.DeleteUserCommand) {
 	reply := events.DeleteUserReply{
 		SagaId:        command.SagaId,
@@ -46,42 +78,25 @@ func (handler *DeleteUserProfileHandler) handle(command *events.DeleteUserComman
 
 	switch command.Type {
 	case events.DeleteGuestProfile:
-		reservationClient := communication.NewReservationClient(handler.reservationServiceAddress)
-		//TODO context namesti
-		result, err := reservationClient.GuestHasActiveReservations(context.TODO(), &reservation.GuestHasActiveReservationsRequest{GuestId: command.UserProfileId.String()})
+		guestHasActiveReservations, err := handler.GuestHasActiveReservations(command)
 		if err != nil {
-
 			reply.Type = events.UserProfileDeletionFailed
 			reply.ErrorMessage = err.Error()
 			break
 		}
-
-		if result.HasActiveReservations {
+		if guestHasActiveReservations {
 			reply.Type = events.UserProfileDeletionFailed
 			reply.ErrorMessage = "Guest has active reservations"
 			break
 		}
 
-		userProfileBackup, err := handler.userProfileService.GetById(command.UserProfileId)
+		err = handler.DeleteUserProfile(command)
 		if err != nil {
 			reply.Type = events.UserProfileDeletionFailed
 			break
 		}
 
-		err = handler.userProfileService.Delete(command.UserProfileId)
-		if err != nil {
-			reply.Type = events.UserProfileDeletionFailed
-			break
-		}
-
-		handler.eventService.Save(&event_sourcing.Event{
-			ID:     primitive.NewObjectID(),
-			SagaId: command.SagaId,
-			Action: command.Type.String(),
-			Entity: userProfileBackup,
-		})
-		reply.Type = events.DeletedUserProfile
-
+		reply.Type = events.DeletedGuestProfile
 		break
 	case events.RollbackUserProfile:
 		//TODO error handling
