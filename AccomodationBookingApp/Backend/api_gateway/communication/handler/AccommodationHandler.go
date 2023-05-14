@@ -4,6 +4,7 @@ import (
 	"api_gateway/communication"
 	"api_gateway/dto"
 	accommodation "common/proto/accommodation_service/generated"
+	reservation "common/proto/reservation_service/generated"
 	"context"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -43,7 +44,13 @@ func (handler AccommodationHandler) SearchAccommodation(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, firstRoundDto)
+	finalDto, err := handler.FindReservations(searchDto, firstRoundDto)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, communication.NewErrorResponse(err.Error()))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, finalDto)
 
 }
 
@@ -89,5 +96,41 @@ func (handler AccommodationHandler) FindAccommodations(searchDto dto.SearchAccom
 }
 
 func (handler AccommodationHandler) FindReservations(searchDto dto.SearchAccommodationDto, firstRoundDto dto.SearchResponseDto) (dto.SearchResponseDto, error) {
-	//todo
+	client := communication.NewReservationClient(handler.reservationServiceAddress)
+
+	accIds := make([]string, 0)
+
+	for _, id := range firstRoundDto {
+		accIds = append(accIds, id.ID.Hex())
+	}
+
+	res, err := client.SearchAccommodation(context.TODO(), &reservation.SearchRequest{Filter: &reservation.Filter{
+		AccommodationIds: accIds,
+		DateRange: &reservation.DateRange{
+			From: searchDto.StartDate,
+			To:   searchDto.EndDate,
+		},
+		NumberOfGuests: searchDto.MinGuests,
+	}})
+
+	if err != nil {
+		return nil, err
+	}
+
+	var finalDto dto.SearchResponseDto
+
+	for _, oldAcc := range firstRoundDto {
+		for _, foundIds := range res.SearchResponse {
+			id, err2 := primitive.ObjectIDFromHex(foundIds.AccommodationId)
+			if err2 != nil {
+				return nil, err
+			}
+			if oldAcc.ID == id {
+				oldAcc.Price = foundIds.Price
+				finalDto = append(finalDto, oldAcc)
+			}
+		}
+	}
+
+	return finalDto, nil
 }
