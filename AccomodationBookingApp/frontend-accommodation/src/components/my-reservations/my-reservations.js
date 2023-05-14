@@ -62,7 +62,7 @@ function MyReservations() {
                             {reservations && reservations.length > 0 && reservations.map((r) => (
                                 <StyledTableRow key={r.Id} hover>
                                     <StyledTableCell>
-                                        <li>Total price: {r.price}</li>
+                                        <li>Total price: {r.price}$</li>
                                         <li>Number of guests: {r.numberOfGuests}</li>
                                         <li>From: {new Date(r.dateRange.from * 1000).toLocaleDateString("en-GB")}</li>
                                         <li>To: {new Date(r.dateRange.to * 1000).toLocaleDateString("en-GB")}</li>
