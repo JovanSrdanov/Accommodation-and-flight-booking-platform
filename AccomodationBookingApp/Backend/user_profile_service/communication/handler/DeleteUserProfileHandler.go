@@ -1,6 +1,7 @@
 package handler
 
 import (
+	accommodation "common/proto/accommodation_service/generated"
 	reservation "common/proto/reservation_service/generated"
 	events "common/saga/delete_user"
 	"common/saga/messaging"
@@ -13,20 +14,22 @@ import (
 )
 
 type DeleteUserProfileHandler struct {
-	userProfileService        *service.UserProfileService
-	reservationServiceAddress string
-	eventService              *event_sourcing.EventService
-	replyPublisher            messaging.Publisher
-	commandSubscriber         messaging.Subscriber
+	userProfileService          *service.UserProfileService
+	reservationServiceAddress   string
+	accommodationServiceAddress string
+	eventService                *event_sourcing.EventService
+	replyPublisher              messaging.Publisher
+	commandSubscriber           messaging.Subscriber
 }
 
-func NewDeleteUserProfileHandler(userProfileService *service.UserProfileService, reservationServiceAddress string, eventService *event_sourcing.EventService, replyPublisher messaging.Publisher, commandSubscriber messaging.Subscriber) (*DeleteUserProfileHandler, error) {
+func NewDeleteUserProfileHandler(userProfileService *service.UserProfileService, reservationServiceAddress, accommodationServiceAddress string, eventService *event_sourcing.EventService, replyPublisher messaging.Publisher, commandSubscriber messaging.Subscriber) (*DeleteUserProfileHandler, error) {
 	handler := &DeleteUserProfileHandler{
-		userProfileService:        userProfileService,
-		reservationServiceAddress: reservationServiceAddress,
-		eventService:              eventService,
-		replyPublisher:            replyPublisher,
-		commandSubscriber:         commandSubscriber}
+		userProfileService:          userProfileService,
+		reservationServiceAddress:   reservationServiceAddress,
+		accommodationServiceAddress: accommodationServiceAddress,
+		eventService:                eventService,
+		replyPublisher:              replyPublisher,
+		commandSubscriber:           commandSubscriber}
 
 	err := handler.commandSubscriber.Subscribe(handler.handle)
 	if err != nil {
@@ -133,6 +136,24 @@ func (handler *DeleteUserProfileHandler) handle(command *events.DeleteUserComman
 
 		err = handler.DeleteUserProfile(command)
 		if err != nil {
+			reply.Type = events.HostProfileDeletionFailed
+			break
+		}
+
+		//Delete accommodations
+		accommodationClient := communication.NewAccommodationClient(handler.accommodationServiceAddress)
+		result, err := accommodationClient.DeleteAllByHostId(context.TODO(), &accommodation.DeleteAllByHostIdRequest{HostId: command.AccCredId})
+		if err != nil {
+			reply.Type = events.HostProfileDeletionFailed
+			break
+		}
+
+		accommodationIds := result.AccommodationIds
+
+		//Delete reservations and availabilities
+		reservationClient := communication.NewReservationClient(handler.reservationServiceAddress)
+		accommodationServiceResult, err := reservationClient.DeleteAvailabilitiesAndReservationsByAccommodationIds(context.TODO(), &reservation.DeleteAvailabilitiesAndReservationsByAccommodationIdsRequest{AccommodationIds: accommodationIds})
+		if err != nil || !accommodationServiceResult.Success {
 			reply.Type = events.HostProfileDeletionFailed
 			break
 		}

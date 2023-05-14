@@ -62,6 +62,9 @@ func (service ReservationService) CreateAvailabilityBase(base *model.Availabilit
 func (service ReservationService) GuestHasActiveReservations(guestID uuid.UUID) (bool, error) {
 	return service.reservationRepo.GuestHasActiveReservations(guestID)
 }
+func (service ReservationService) DeleteAvailabilitiesAndReservationsByAccommodationId(accommodationId primitive.ObjectID) error {
+	return service.reservationRepo.DeleteAvailabilitiesAndReservationsByAccommodationId(accommodationId)
+}
 
 func (service ReservationService) SearchAccommodation(accommodationIds []*primitive.ObjectID, dateRange model.DateRange, numberOfGuests int32) ([]*model.SearchResponseDto, error) {
 	return service.reservationRepo.SearchAccommodation(accommodationIds, dateRange, numberOfGuests)

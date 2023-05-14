@@ -43,7 +43,7 @@ func (mapper UserProfileMapper) mapUpdateRequestToUpdateDto(request *user_profil
 	addressMapper := NewAddressMapper()
 	return &model.UpdateProfileDto{
 		Name:    request.Name,
-		Surname: request.Name,
+		Surname: request.Surname,
 		Email:   request.Email,
 		Address: *addressMapper.mapToAddressModel(request.Address),
 	}

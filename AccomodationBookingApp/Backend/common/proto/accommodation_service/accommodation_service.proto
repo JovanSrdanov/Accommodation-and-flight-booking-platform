@@ -60,22 +60,10 @@ service AccommodationService{
     };
   }
 
-  rpc SearchAccommodation(SearchRequest) returns(GetAllResponse) {}
-
+  rpc DeleteAllByHostId(DeleteAllByHostIdRequest) returns(DeleteAllByHostIdResponse) {}
 }
 
 message EmptyRequest {}
-
-message SearchRequest {
-  Filter filter = 1;
-}
-
-message Filter {
-  repeated string amenities = 1;
-  string location = 2;
-  int32 minGuests = 3;
-  string hostId = 4;
-}
 
 message GetMyRequest {
   string hostId = 1;
@@ -152,4 +140,12 @@ message Address {
   string city = 2;
   string street = 3;
   string streetNumber= 4;
+}
+
+message DeleteAllByHostIdRequest{
+  string hostId = 1;
+}
+
+message DeleteAllByHostIdResponse{
+  repeated string accommodationIds = 1;
 }

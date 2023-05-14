@@ -1,9 +1,10 @@
 package repository
 
 import (
+	"reservation_service/domain/model"
+
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"reservation_service/domain/model"
 )
 
 type IReservationRepository interface {
@@ -20,4 +21,5 @@ type IReservationRepository interface {
 	GetAllReservationsForGuest(guestId string) (model.Reservations, error)
 	GuestHasActiveReservations(guestID uuid.UUID) (bool, error)
 	SearchAccommodation(accommodationIds []*primitive.ObjectID, dateRange model.DateRange, numberOfGuests int32) ([]*model.SearchResponseDto, error)
+	DeleteAvailabilitiesAndReservationsByAccommodationId(accommodationId primitive.ObjectID) error
 }

@@ -23,6 +23,8 @@ type Configuration struct {
 	UserProfileEventDbCollectionName string
 	ReservationServiceHost           string
 	ReservationServicePort           string
+	AccommodationServiceHost         string
+	AccommodationServicePort         string
 }
 
 func NewConfiguration() *Configuration {
@@ -47,5 +49,7 @@ func NewConfiguration() *Configuration {
 		UserProfileEventDbCollectionName: os.Getenv("USER_PROFILE_EVENT_DB_COLLECTION_NAME"),
 		ReservationServiceHost:           os.Getenv("RESERVATION_SERVICE_HOST"),
 		ReservationServicePort:           os.Getenv("RESERVATION_SERVICE_PORT"),
+		AccommodationServiceHost:         os.Getenv("ACCOMMODATION_SERVICE_HOST"),
+		AccommodationServicePort:         os.Getenv("ACCOMMODATION_SERVICE_PORT"),
 	}
 }
