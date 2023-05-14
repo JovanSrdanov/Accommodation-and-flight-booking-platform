@@ -88,4 +88,6 @@ func (handler AccommodationHandler) FindAccommodations(searchDto dto.SearchAccom
 	return nil
 }
 
-//func (handler AccommodationHandler) FindReservations()
+func (handler AccommodationHandler) FindReservations(searchDto dto.SearchAccommodationDto, firstRoundDto dto.SearchResponseDto) (dto.SearchResponseDto, error) {
+	//todo
+}
