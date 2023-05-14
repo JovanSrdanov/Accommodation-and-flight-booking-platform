@@ -101,3 +101,23 @@ func (handler AccountCredentialsHandler) ChangePassword(ctx context.Context, req
 
 	return &emptypb.Empty{}, nil
 }
+
+func (handler AccountCredentialsHandler) CheckIfDeleted(ctx context.Context, req *authorizationProto.CheckIfDeletedRequest) (*authorizationProto.CheckIfDeletedResponse, error) {
+	loggedInId, ok := ctx.Value("id").(uuid.UUID)
+	if !ok {
+		return &authorizationProto.CheckIfDeletedResponse{
+			Response: false,
+		}, fmt.Errorf("failed to extract id and cast to UUID")
+	}
+
+	_, err := handler.accCredService.GetById(loggedInId)
+	if err != nil {
+		return &authorizationProto.CheckIfDeletedResponse{
+			Response: true,
+		}, nil
+	} else {
+		return &authorizationProto.CheckIfDeletedResponse{
+			Response: false,
+		}, nil
+	}
+}
