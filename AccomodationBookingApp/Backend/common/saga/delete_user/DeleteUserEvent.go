@@ -10,8 +10,10 @@ type DeleteUserCommandType int8
 const (
 	DeleteGuestProfile DeleteUserCommandType = iota
 	DeleteHostProfile
-	RollbackUserProfile
-	DeleteAccountCredentials
+	RollbackGuestProfile
+	RollbackHostProfile
+	DeleteGuestAccountCredentials
+	DeleteHostAccountCredentials
 	CancelDeletion
 	FinishDeletion
 	UnknownCommand
@@ -20,22 +22,29 @@ const (
 type DeleteUserCommand struct {
 	Type          DeleteUserCommandType
 	SagaId        uuid.UUID
+	AccCredId     string
 	UserProfileId uuid.UUID
 }
 
 type DeleteUserReplyType int8
 
 const (
-	DeletedUserProfile DeleteUserReplyType = iota
-	UserProfileDeletionFailed
-	DeletedAccountCredentials
-	AccountCredentialsDeletionFailed
-	RolledbackUserProfile
+	DeletedGuestProfile DeleteUserReplyType = iota
+	DeletedHostProfile
+	GuestProfileDeletionFailed
+	HostProfileDeletionFailed
+	DeletedGuestAccountCredentials
+	DeletedHostAccountCredentials
+	GuestAccountCredentialsDeletionFailed
+	HostAccountCredentialsDeletionFailed
+	RolledbackGuestProfile
+	RolledbackHostProfile
 	UnknownReply
 )
 
 type DeleteUserReply struct {
 	Type          DeleteUserReplyType
+	AccCredId     string
 	SagaId        uuid.UUID
 	UserProfileId uuid.UUID
 	ErrorMessage  string

@@ -5,6 +5,7 @@ import (
 	"context"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"log"
 	"reservation_service/domain/service"
 )
 
@@ -152,4 +153,27 @@ func (handler ReservationHandler) GuestHasActiveReservations(ctx context.Context
 	}
 
 	return &reservation.GuestHasActiveReservationsResponse{HasActiveReservations: hasActiveReservations}, nil
+}
+func (handler ReservationHandler) HostHasActiveReservations(ctx context.Context, in *reservation.HostHasActiveReservationsRequest) (*reservation.HostHasActiveReservationsResponse, error) {
+
+	id, err := uuid.Parse(in.HostId)
+	if err != nil {
+		return nil, err
+	}
+	log.Println("HOST ID:" + id.String())
+
+	activeReservations, err := handler.reservationService.GetAllAcceptedReservations(id.String())
+	if err != nil {
+		return nil, err
+	}
+	log.Println(activeReservations)
+
+	duzina := len(activeReservations)
+	log.Println(duzina)
+
+	if duzina < 1 {
+		return &reservation.HostHasActiveReservationsResponse{HasActiveReservations: false}, nil
+	}
+	return &reservation.HostHasActiveReservationsResponse{HasActiveReservations: true}, nil
+
 }

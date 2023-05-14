@@ -39,22 +39,32 @@ func (orchestrator *DeleteUserOrchestrator) handle(reply *events.DeleteUserReply
 
 func (orchestrator *DeleteUserOrchestrator) nextCommandType(reply events.DeleteUserReplyType) events.DeleteUserCommandType {
 	switch reply {
-	case events.DeletedUserProfile:
-		return events.DeleteAccountCredentials
-	case events.DeletedAccountCredentials:
+	case events.DeletedGuestProfile:
+		return events.DeleteGuestAccountCredentials
+	case events.DeletedHostProfile:
+		return events.DeleteHostAccountCredentials
+	case events.DeletedGuestAccountCredentials:
 		return events.UnknownCommand
-	case events.UserProfileDeletionFailed:
+	case events.DeletedHostAccountCredentials:
 		return events.UnknownCommand
-	case events.AccountCredentialsDeletionFailed:
-		return events.RollbackUserProfile
-	case events.RolledbackUserProfile:
+	case events.GuestProfileDeletionFailed:
+		return events.UnknownCommand
+	case events.HostProfileDeletionFailed:
+		return events.UnknownCommand
+	case events.GuestAccountCredentialsDeletionFailed:
+		return events.RollbackGuestProfile
+	case events.HostAccountCredentialsDeletionFailed:
+		return events.RollbackHostProfile
+	case events.RolledbackGuestProfile:
+		return events.UnknownCommand
+	case events.RolledbackHostProfile:
 		return events.UnknownCommand
 	default:
 		return events.UnknownCommand
 	}
 }
 
-func (orchestrator *DeleteUserOrchestrator) Start(userProfileId uuid.UUID, role authorization.Role) error {
+func (orchestrator *DeleteUserOrchestrator) Start(accCredId string, userProfileId uuid.UUID, role authorization.Role) error {
 	sagaId, err := uuid.NewUUID()
 	if err != nil {
 		return err
@@ -62,6 +72,7 @@ func (orchestrator *DeleteUserOrchestrator) Start(userProfileId uuid.UUID, role 
 
 	command := events.DeleteUserCommand{
 		SagaId:        sagaId,
+		AccCredId:     accCredId,
 		UserProfileId: userProfileId,
 	}
 
