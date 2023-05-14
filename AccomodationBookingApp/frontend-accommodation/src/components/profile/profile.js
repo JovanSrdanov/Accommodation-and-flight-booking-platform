@@ -125,52 +125,52 @@ function Profile() {
     const navigate = useNavigate();
 
     const DeleteProfile = async () => {
-        try {
-            const paseto = localStorage.getItem('paseto');
-            if (!paseto) {
-                localStorage.removeItem('paseto');
-                return null
-            }
-            const footer = paseto.split(".")[3];
-            const decodedFooter = JSON.parse(atob(footer));
-            const roleAndExp = decodedFooter.RoleAndExp;
 
-            const regex = /role:(.*), expiration date: (.*)/;
-            const matches = roleAndExp.match(regex);
-            const role = matches[1];
+        const paseto = localStorage.getItem('paseto');
+        if (!paseto) {
+            localStorage.removeItem('paseto');
+            return null
+        }
+        const footer = paseto.split(".")[3];
+        const decodedFooter = JSON.parse(atob(footer));
+        const roleAndExp = decodedFooter.RoleAndExp;
 
-            if (role === "0") {
-                setErrorMessage(": Host can not be deleted because someone has reserved his accommodation")
-            } else if (role === "1") {
-                setErrorMessage(": Guest can not be deleted because he has active reservations")
-            } else {
-                setErrorMessage(": UNKNOWN ERROR")
-            }
+        const regex = /role:(.*), expiration date: (.*)/;
+        const matches = roleAndExp.match(regex);
+        const role = matches[1];
+
+        if (role === "0") {
+            setErrorMessage(": Host can not be deleted because someone has reserved his accommodation")
+        } else if (role === "1") {
+            setErrorMessage(": Guest can not be deleted because he has active reservations")
+        } else {
+            setErrorMessage(": UNKNOWN ERROR")
+        }
 
 
-            const response = await interceptor.delete('api-1/user');
-            console.log(response);
+        const response = await interceptor.delete('api-1/user');
+        console.log(response);
 
-            let deleted = false;
-            for (let step = 0; step < 5 && !deleted; step++) {
-                await new Promise((resolve) => setTimeout(resolve, 1000));
-                try {
-                    const res = await interceptor.get('api-1/isDeleted');
-                    console.log(res);
-
-                } catch (error) {
+        let deleted = false;
+        for (let step = 0; step < 5 && !deleted; step++) {
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+            try {
+                const res = await interceptor.get('api-1/account-credentials/is-deleted');
+                if (res.data.response) {
                     setDeletedAccountDialogShow(true);
                     deleted = true;
                     localStorage.removeItem('paseto');
-
                 }
+            } catch (error) {
             }
-            if (!deleted) {
-                setErrorDialogShow(true);
-            }
-        } catch (error) {
+
+
+        }
+        if (!deleted) {
             setErrorDialogShow(true);
         }
+
+
     };
     const handleClose = () => {
         setSuccessDialogShow(false)
@@ -202,7 +202,7 @@ function Profile() {
 
 
             <Dialog onClose={handleErrorClose} open={errorDialogShow}>
-                <DialogTitle>Error</DialogTitle>
+                <DialogTitle>Error {errorMessage}</DialogTitle>
                 <DialogActions>
                     <Button onClick={handleErrorClose}
                             variant="contained"
