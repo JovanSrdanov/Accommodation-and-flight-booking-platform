@@ -8,6 +8,7 @@ import (
 	"context"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"log"
 	"net/http"
 )
 
@@ -43,6 +44,8 @@ func (handler AccommodationHandler) SearchAccommodation(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, communication.NewErrorResponse(err.Error()))
 		return
 	}
+
+	log.Println(firstRoundDto)
 
 	finalDto, err := handler.FindReservations(searchDto, firstRoundDto)
 	if err != nil {

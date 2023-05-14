@@ -169,6 +169,8 @@ services:
       interval: 10s
       timeout: 10s
       retries: 10
+    ports:
+      - 6969:27017
     networks:
       - network
 
@@ -200,6 +202,8 @@ services:
       interval: 10s
       timeout: 10s
       retries: 10
+    ports:
+      - 6968:27017
     networks:
       - network
 
