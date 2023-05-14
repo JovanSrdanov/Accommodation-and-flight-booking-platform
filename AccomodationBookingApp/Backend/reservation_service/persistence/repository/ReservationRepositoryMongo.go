@@ -65,6 +65,96 @@ func (repo ReservationRepositoryMongo) CreateAvailability(newAvailability *model
 	return primitive.ObjectID{}, nil
 }
 
+func (repo ReservationRepositoryMongo) SearchAccommodation(accommodationIds []*primitive.ObjectID, dateRange model.DateRange, numberOfGuests int32) ([]*model.SearchResponseDto, error) {
+	validAccommodationIds := make([]*model.SearchResponseDto, 0)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	collection := repo.getCollectionAvailability()
+
+	for _, accId := range accommodationIds {
+
+		filter := bson.D{{"accommodationId", accId}}
+
+		// Find the availability document
+		var availability model.Availability
+		err := collection.FindOne(ctx, filter).Decode(&availability)
+		if err != nil {
+			log.Fatal(err)
+			return []*model.SearchResponseDto{}, err
+		}
+
+		//Da li moze da se spoje neke
+		sortedAvailableDates := availability.AvailableDates
+		bubbleSort(sortedAvailableDates)
+
+		startFound := false
+		endFound := false
+		foundDates := make([]*model.PriceWithDate, 0)
+
+		for _, date := range sortedAvailableDates {
+			if dateRange.IsInside(date.DateRange) {
+				startFound = true
+				endFound = true
+				foundDates = append(foundDates, date)
+				break
+			}
+
+			if date.DateRange.IsStartFor(dateRange) {
+				startFound = true
+				foundDates = append(foundDates, date)
+			} else if startFound && date.DateRange.Extends(foundDates[len(foundDates)-1].DateRange) {
+				foundDates = append(foundDates, date)
+				if date.DateRange.IsEndFor(dateRange) {
+					endFound = true
+					break
+				}
+			}
+		}
+
+		if !startFound || !endFound {
+			//return []*model.SearchResponseDto{}, status.Errorf(codes.Aborted, "Not available date")
+			continue
+		}
+
+		//Da li se preklapa sa nekom accpeted rezervacijom
+		collectionReservations := repo.getCollectionReservation()
+
+		cursor, err := collectionReservations.Find(ctx, filter)
+		if err != nil {
+			log.Println(err)
+			return []*model.SearchResponseDto{}, err
+		}
+
+		var reservations []*model.Reservation
+		err = cursor.All(ctx, &reservations)
+		if err != nil {
+			log.Println(err)
+			return []*model.SearchResponseDto{}, err
+		}
+
+		for _, reservationValue := range reservations {
+			if reservationValue.Status == "accepted" && reservationValue.DateRange.Overlaps(dateRange) {
+				//return []*model.SearchResponseDto{}, status.Errorf(codes.Aborted, "Not available date, overlaps*")
+				continue
+			}
+		}
+
+		price := calculatePrice(foundDates, &model.Reservation{
+			DateRange:      dateRange,
+			NumberOfGuests: numberOfGuests,
+		})
+
+		validAccommodationIds = append(validAccommodationIds, &model.SearchResponseDto{
+			AccommodationId: accId,
+			Price:           price,
+		})
+	}
+
+	return validAccommodationIds, nil
+}
+
 func (repo ReservationRepositoryMongo) CreateReservation(reservation *model.Reservation) (*model.Reservation, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -134,6 +224,8 @@ func (repo ReservationRepositoryMongo) CreateReservation(reservation *model.Rese
 			return &model.Reservation{}, status.Errorf(codes.Aborted, "Not available date, overlaps*")
 		}
 	}
+
+	//Kreiranje rezervacije
 
 	if availability.IsAutomaticReservation {
 		reservation.Status = "accepted"

@@ -60,6 +60,12 @@ service AccommodationService{
     };
   }
 
+  rpc SearchA(EmptyRequest) returns(GetAmenitiesResponse) {
+    option (google.api.http) = {
+      get: "/api-1/amenities"
+    };
+  }
+
 }
 
 message EmptyRequest {}

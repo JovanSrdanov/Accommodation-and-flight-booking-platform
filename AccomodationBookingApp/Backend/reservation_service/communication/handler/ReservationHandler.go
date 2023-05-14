@@ -153,3 +153,13 @@ func (handler ReservationHandler) GuestHasActiveReservations(ctx context.Context
 
 	return &reservation.GuestHasActiveReservationsResponse{HasActiveReservations: hasActiveReservations}, nil
 }
+func (handler ReservationHandler) SearchAccommodation(ctx context.Context, in *reservation.SearchRequest) (*reservation.SearchResponse, error) {
+	mapper := NewReservationMapper()
+
+	searchResponse, err := handler.reservationService.SearchAccommodation(mapper.mapFromSearchRequest(in))
+	if err != nil {
+		return nil, err
+	}
+
+	return mapper.mapToSearchResponse(searchResponse), nil
+}

@@ -85,11 +85,32 @@ service ReservationService{
     };
   }
 
+  rpc SearchAccommodation(SearchRequest) returns(SearchResponse) {}
+
   rpc GuestHasActiveReservations(GuestHasActiveReservationsRequest) returns(GuestHasActiveReservationsResponse) { }
 
 
 }
 message EmptyRequest {}
+
+message SearchRequest {
+  Filter filter = 1;
+}
+
+message SearchResponse {
+    repeated SearchResponseDto searchResponse = 1;
+}
+
+message SearchResponseDto {
+  string accommodationId = 1;
+  int32 price = 2;
+}
+
+message Filter {
+  repeated string accommodationIds = 1;
+  DateRange dateRange = 2;
+  int32 numberOfGuests = 3;
+}
 
 message GetAllReservationsForGuestResponse {
   repeated Reservation reservations = 1;

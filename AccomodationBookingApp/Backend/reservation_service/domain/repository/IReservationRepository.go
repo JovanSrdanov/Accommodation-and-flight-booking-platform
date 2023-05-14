@@ -19,4 +19,5 @@ type IReservationRepository interface {
 	CreateAvailabilityBase(base *model.Availability) (primitive.ObjectID, error)
 	GetAllReservationsForGuest(guestId string) (model.Reservations, error)
 	GuestHasActiveReservations(guestID uuid.UUID) (bool, error)
+	SearchAccommodation(accommodationIds []*primitive.ObjectID, dateRange model.DateRange, numberOfGuests int32) ([]*model.SearchResponseDto, error)
 }

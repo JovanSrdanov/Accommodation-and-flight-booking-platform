@@ -140,6 +140,37 @@ func (mapper ReservationMapper) mapToReservationsProto(in model.Reservations) []
 	return reservationsProt
 }
 
+func (mapper ReservationMapper) mapFromSearchRequest(request *reservation.SearchRequest) ([]*primitive.ObjectID, model.DateRange, int32) {
+	ids := make([]*primitive.ObjectID, 0)
+
+	for _, protoId := range request.Filter.AccommodationIds {
+		conv, _ := primitive.ObjectIDFromHex(protoId)
+		ids = append(ids, &conv)
+	}
+
+	dateRange := model.DateRange{
+		From: time.Unix(request.Filter.DateRange.From, 0).In(time.UTC),
+		To:   time.Unix(request.Filter.DateRange.To, 0).In(time.UTC),
+	}
+
+	NormalizeTime(&dateRange)
+
+	return ids, dateRange, request.Filter.NumberOfGuests
+}
+
+func (mapper ReservationMapper) mapToSearchResponse(in []*model.SearchResponseDto) *reservation.SearchResponse {
+	searchResponseProto := make([]*reservation.SearchResponseDto, 0)
+
+	for _, dto := range in {
+		searchResponseProto = append(searchResponseProto, &reservation.SearchResponseDto{
+			AccommodationId: dto.AccommodationId.Hex(),
+			Price:           dto.Price,
+		})
+	}
+
+	return &reservation.SearchResponse{SearchResponse: searchResponseProto}
+}
+
 func NormalizeTime(dateRange *model.DateRange) {
 	dateRange.To = dateRange.To.In(time.UTC)
 	dateRange.From = dateRange.From.In(time.UTC)
