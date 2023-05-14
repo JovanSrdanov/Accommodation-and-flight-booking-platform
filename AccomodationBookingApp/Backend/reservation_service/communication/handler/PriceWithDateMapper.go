@@ -24,6 +24,8 @@ func (mapper PriceWithDateMapper) mapToModel(request *reservation.PriceWithDate)
 		To:   time.Unix(request.DateRange.To, 0),
 	}
 
+	NormalizeTime(&dateRange)
+
 	return model.PriceWithDate{
 		ID:               Id,
 		DateRange:        dateRange,

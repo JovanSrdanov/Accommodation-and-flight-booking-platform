@@ -30,9 +30,11 @@ func (mapper ReservationMapper) mapFromCreateAvailability(request *reservation.C
 
 func (mapper ReservationMapper) mapFromCreateReservation(request *reservation.CreateReservationRequest) *model.Reservation {
 	dateRange := model.DateRange{
-		From: time.Unix(request.Reservation.DateRange.From, 0),
-		To:   time.Unix(request.Reservation.DateRange.To, 0),
+		From: time.Unix(request.Reservation.DateRange.From, 0).In(time.UTC),
+		To:   time.Unix(request.Reservation.DateRange.To, 0).In(time.UTC),
 	}
+
+	NormalizeTime(&dateRange)
 
 	id, _ := primitive.ObjectIDFromHex(request.Reservation.Id)
 	accommodationId, _ := primitive.ObjectIDFromHex(request.Reservation.AccommodationId)
@@ -49,9 +51,11 @@ func (mapper ReservationMapper) mapFromCreateReservation(request *reservation.Cr
 
 func (mapper ReservationMapper) mapFromUpdatePriceAndDate(request *reservation.UpdateRequest) *model.UpdatePriceAndDate {
 	dateRange := model.DateRange{
-		From: time.Unix(request.PriceWithDate.UpdatedPriceWithDate.DateRange.From, 0),
-		To:   time.Unix(request.PriceWithDate.UpdatedPriceWithDate.DateRange.To, 0),
+		From: time.Unix(request.PriceWithDate.UpdatedPriceWithDate.DateRange.From, 0).In(time.UTC),
+		To:   time.Unix(request.PriceWithDate.UpdatedPriceWithDate.DateRange.To, 0).In(time.UTC),
 	}
+
+	NormalizeTime(&dateRange)
 
 	id, _ := primitive.ObjectIDFromHex(request.PriceWithDate.UpdatedPriceWithDate.Id)
 	accommodationId, _ := primitive.ObjectIDFromHex(request.PriceWithDate.AccommodationId)
@@ -134,4 +138,15 @@ func (mapper ReservationMapper) mapToReservationsProto(in model.Reservations) []
 	}
 
 	return reservationsProt
+}
+
+func NormalizeTime(dateRange *model.DateRange) {
+	dateRange.To = dateRange.To.In(time.UTC)
+	dateRange.From = dateRange.From.In(time.UTC)
+
+	dateRange.To = time.Date(dateRange.To.Year(), dateRange.To.Month(), dateRange.To.Day(), 0, 0, 0, 0, dateRange.To.Location())
+	dateRange.From = time.Date(dateRange.From.Year(), dateRange.From.Month(), dateRange.From.Day(), 0, 0, 0, 0, dateRange.From.Location())
+
+	//dateRange.To = dateRange.To.AddDate(0, 0, 1)
+	//dateRange.From = dateRange.From.AddDate(0, 0, 1)
 }
