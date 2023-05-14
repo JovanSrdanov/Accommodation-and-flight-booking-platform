@@ -181,8 +181,6 @@ services:
       - 6969:27017
     networks:
       - network
-    ports:
-      - 5004:27017
 
   reservation_service:
     image: reservation_service

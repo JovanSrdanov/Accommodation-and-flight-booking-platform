@@ -19,20 +19,21 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	ReservationService_CreateAvailability_FullMethodName         = "/reservation.ReservationService/CreateAvailability"
-	ReservationService_GetAllMy_FullMethodName                   = "/reservation.ReservationService/GetAllMy"
-	ReservationService_UpdatePriceAndDate_FullMethodName         = "/reservation.ReservationService/UpdatePriceAndDate"
-	ReservationService_CreateReservation_FullMethodName          = "/reservation.ReservationService/CreateReservation"
-	ReservationService_CreateAvailabilityBase_FullMethodName     = "/reservation.ReservationService/CreateAvailabilityBase"
-	ReservationService_GetAllPendingReservations_FullMethodName  = "/reservation.ReservationService/GetAllPendingReservations"
-	ReservationService_GetAllAcceptedReservations_FullMethodName = "/reservation.ReservationService/GetAllAcceptedReservations"
-	ReservationService_RejectReservation_FullMethodName          = "/reservation.ReservationService/RejectReservation"
-	ReservationService_AcceptReservation_FullMethodName          = "/reservation.ReservationService/AcceptReservation"
-	ReservationService_CancelReservation_FullMethodName          = "/reservation.ReservationService/CancelReservation"
-	ReservationService_GetAllReservationsForGuest_FullMethodName = "/reservation.ReservationService/GetAllReservationsForGuest"
-	ReservationService_SearchAccommodation_FullMethodName        = "/reservation.ReservationService/SearchAccommodation"
-	ReservationService_GuestHasActiveReservations_FullMethodName = "/reservation.ReservationService/GuestHasActiveReservations"
-	ReservationService_HostHasActiveReservations_FullMethodName  = "/reservation.ReservationService/HostHasActiveReservations"
+	ReservationService_CreateAvailability_FullMethodName                                    = "/reservation.ReservationService/CreateAvailability"
+	ReservationService_GetAllMy_FullMethodName                                              = "/reservation.ReservationService/GetAllMy"
+	ReservationService_UpdatePriceAndDate_FullMethodName                                    = "/reservation.ReservationService/UpdatePriceAndDate"
+	ReservationService_CreateReservation_FullMethodName                                     = "/reservation.ReservationService/CreateReservation"
+	ReservationService_CreateAvailabilityBase_FullMethodName                                = "/reservation.ReservationService/CreateAvailabilityBase"
+	ReservationService_GetAllPendingReservations_FullMethodName                             = "/reservation.ReservationService/GetAllPendingReservations"
+	ReservationService_GetAllAcceptedReservations_FullMethodName                            = "/reservation.ReservationService/GetAllAcceptedReservations"
+	ReservationService_RejectReservation_FullMethodName                                     = "/reservation.ReservationService/RejectReservation"
+	ReservationService_AcceptReservation_FullMethodName                                     = "/reservation.ReservationService/AcceptReservation"
+	ReservationService_CancelReservation_FullMethodName                                     = "/reservation.ReservationService/CancelReservation"
+	ReservationService_GetAllReservationsForGuest_FullMethodName                            = "/reservation.ReservationService/GetAllReservationsForGuest"
+	ReservationService_SearchAccommodation_FullMethodName                                   = "/reservation.ReservationService/SearchAccommodation"
+	ReservationService_GuestHasActiveReservations_FullMethodName                            = "/reservation.ReservationService/GuestHasActiveReservations"
+	ReservationService_HostHasActiveReservations_FullMethodName                             = "/reservation.ReservationService/HostHasActiveReservations"
+	ReservationService_DeleteAvailabilitiesAndReservationsByAccommodationIds_FullMethodName = "/reservation.ReservationService/DeleteAvailabilitiesAndReservationsByAccommodationIds"
 )
 
 // ReservationServiceClient is the client API for ReservationService service.
@@ -192,7 +193,7 @@ func (c *reservationServiceClient) HostHasActiveReservations(ctx context.Context
 
 func (c *reservationServiceClient) DeleteAvailabilitiesAndReservationsByAccommodationIds(ctx context.Context, in *DeleteAvailabilitiesAndReservationsByAccommodationIdsRequest, opts ...grpc.CallOption) (*DeleteAvailabilitiesAndReservationsByAccommodationIdsResponse, error) {
 	out := new(DeleteAvailabilitiesAndReservationsByAccommodationIdsResponse)
-	err := c.cc.Invoke(ctx, "/reservation.ReservationService/DeleteAvailabilitiesAndReservationsByAccommodationIds", in, out, opts...)
+	err := c.cc.Invoke(ctx, ReservationService_DeleteAvailabilitiesAndReservationsByAccommodationIds_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -545,7 +546,7 @@ func _ReservationService_DeleteAvailabilitiesAndReservationsByAccommodationIds_H
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/reservation.ReservationService/DeleteAvailabilitiesAndReservationsByAccommodationIds",
+		FullMethod: ReservationService_DeleteAvailabilitiesAndReservationsByAccommodationIds_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ReservationServiceServer).DeleteAvailabilitiesAndReservationsByAccommodationIds(ctx, req.(*DeleteAvailabilitiesAndReservationsByAccommodationIdsRequest))
