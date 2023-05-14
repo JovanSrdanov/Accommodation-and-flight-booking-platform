@@ -146,7 +146,7 @@ services:
     networks:
       - network
     ports:
-      - 5003:5432
+      - 5003:27017
 
   reservation_service:
     image: reservation_service
