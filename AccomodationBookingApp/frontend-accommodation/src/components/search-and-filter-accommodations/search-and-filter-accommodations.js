@@ -227,11 +227,11 @@ function SearchAndFilterAccommodations(props) {
     const handleReserve = (item) => {
 
         const startDate = new Date(formData.startDate);
-        const utcStartDate = new Date(startDate.getTime() + startDate.getTimezoneOffset() * 60000);
+        const utcStartDate = new Date(startDate.getTime() - startDate.getTimezoneOffset() * 60000);
 
 
         const endDate = new Date(formData.endDate);
-        const utcEndDate = new Date(endDate.getTime() + endDate.getTimezoneOffset() * 60000);
+        const utcEndDate = new Date(endDate.getTime() - endDate.getTimezoneOffset() * 60000);
 
 
         var sendData = {}
