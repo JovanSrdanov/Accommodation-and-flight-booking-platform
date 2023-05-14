@@ -19,15 +19,16 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	AccommodationService_Create_FullMethodName            = "/accommodation.AccommodationService/Create"
-	AccommodationService_Update_FullMethodName            = "/accommodation.AccommodationService/Update"
-	AccommodationService_GetById_FullMethodName           = "/accommodation.AccommodationService/GetById"
-	AccommodationService_GetAll_FullMethodName            = "/accommodation.AccommodationService/GetAll"
-	AccommodationService_GetAllMy_FullMethodName          = "/accommodation.AccommodationService/GetAllMy"
-	AccommodationService_Delete_FullMethodName            = "/accommodation.AccommodationService/Delete"
-	AccommodationService_DeleteByHostId_FullMethodName    = "/accommodation.AccommodationService/DeleteByHostId"
-	AccommodationService_GetAmenities_FullMethodName      = "/accommodation.AccommodationService/GetAmenities"
-	AccommodationService_DeleteAllByHostId_FullMethodName = "/accommodation.AccommodationService/DeleteAllByHostId"
+	AccommodationService_Create_FullMethodName              = "/accommodation.AccommodationService/Create"
+	AccommodationService_Update_FullMethodName              = "/accommodation.AccommodationService/Update"
+	AccommodationService_GetById_FullMethodName             = "/accommodation.AccommodationService/GetById"
+	AccommodationService_GetAll_FullMethodName              = "/accommodation.AccommodationService/GetAll"
+	AccommodationService_GetAllMy_FullMethodName            = "/accommodation.AccommodationService/GetAllMy"
+	AccommodationService_Delete_FullMethodName              = "/accommodation.AccommodationService/Delete"
+	AccommodationService_DeleteByHostId_FullMethodName      = "/accommodation.AccommodationService/DeleteByHostId"
+	AccommodationService_GetAmenities_FullMethodName        = "/accommodation.AccommodationService/GetAmenities"
+	AccommodationService_SearchAccommodation_FullMethodName = "/accommodation.AccommodationService/SearchAccommodation"
+	AccommodationService_DeleteAllByHostId_FullMethodName   = "/accommodation.AccommodationService/DeleteAllByHostId"
 )
 
 // AccommodationServiceClient is the client API for AccommodationService service.
@@ -42,6 +43,7 @@ type AccommodationServiceClient interface {
 	Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error)
 	DeleteByHostId(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*DeleteResponse, error)
 	GetAmenities(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*GetAmenitiesResponse, error)
+	SearchAccommodation(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*GetAllResponse, error)
 	DeleteAllByHostId(ctx context.Context, in *DeleteAllByHostIdRequest, opts ...grpc.CallOption) (*DeleteAllByHostIdResponse, error)
 }
 
@@ -125,6 +127,15 @@ func (c *accommodationServiceClient) GetAmenities(ctx context.Context, in *Empty
 	return out, nil
 }
 
+func (c *accommodationServiceClient) SearchAccommodation(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*GetAllResponse, error) {
+	out := new(GetAllResponse)
+	err := c.cc.Invoke(ctx, AccommodationService_SearchAccommodation_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *accommodationServiceClient) DeleteAllByHostId(ctx context.Context, in *DeleteAllByHostIdRequest, opts ...grpc.CallOption) (*DeleteAllByHostIdResponse, error) {
 	out := new(DeleteAllByHostIdResponse)
 	err := c.cc.Invoke(ctx, AccommodationService_DeleteAllByHostId_FullMethodName, in, out, opts...)
@@ -146,6 +157,7 @@ type AccommodationServiceServer interface {
 	Delete(context.Context, *DeleteRequest) (*DeleteResponse, error)
 	DeleteByHostId(context.Context, *EmptyRequest) (*DeleteResponse, error)
 	GetAmenities(context.Context, *EmptyRequest) (*GetAmenitiesResponse, error)
+	SearchAccommodation(context.Context, *SearchRequest) (*GetAllResponse, error)
 	DeleteAllByHostId(context.Context, *DeleteAllByHostIdRequest) (*DeleteAllByHostIdResponse, error)
 	mustEmbedUnimplementedAccommodationServiceServer()
 }
@@ -177,6 +189,9 @@ func (UnimplementedAccommodationServiceServer) DeleteByHostId(context.Context, *
 }
 func (UnimplementedAccommodationServiceServer) GetAmenities(context.Context, *EmptyRequest) (*GetAmenitiesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAmenities not implemented")
+}
+func (UnimplementedAccommodationServiceServer) SearchAccommodation(context.Context, *SearchRequest) (*GetAllResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchAccommodation not implemented")
 }
 func (UnimplementedAccommodationServiceServer) DeleteAllByHostId(context.Context, *DeleteAllByHostIdRequest) (*DeleteAllByHostIdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteAllByHostId not implemented")
@@ -338,6 +353,24 @@ func _AccommodationService_GetAmenities_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AccommodationService_SearchAccommodation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccommodationServiceServer).SearchAccommodation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AccommodationService_SearchAccommodation_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccommodationServiceServer).SearchAccommodation(ctx, req.(*SearchRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AccommodationService_DeleteAllByHostId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeleteAllByHostIdRequest)
 	if err := dec(in); err != nil {
@@ -394,6 +427,10 @@ var AccommodationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAmenities",
 			Handler:    _AccommodationService_GetAmenities_Handler,
+		},
+		{
+			MethodName: "SearchAccommodation",
+			Handler:    _AccommodationService_SearchAccommodation_Handler,
 		},
 		{
 			MethodName: "DeleteAllByHostId",
