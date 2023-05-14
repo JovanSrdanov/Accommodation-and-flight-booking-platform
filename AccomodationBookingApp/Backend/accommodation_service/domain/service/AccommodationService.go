@@ -58,3 +58,21 @@ func (service AccommodationService) GetAllMy(hostId string) (model.Accommodation
 func (service AccommodationService) GetAmenities() ([]string, error) {
 	return service.accommodationRepo.GetAmenities()
 }
+func (service AccommodationService) DeleteAllByHostId(hostId string) ([]string, error) {
+	accommodations, err := service.GetAllMy(hostId)
+	if err != nil {
+		return nil, err
+	}
+
+	var accommodationIds []string
+
+	for _, accommodation := range accommodations {
+		err = service.DeleteByHostId(accommodation.HostId)
+		if err != nil {
+			return nil, err
+		}
+		accommodationIds = append(accommodationIds, accommodation.ID.Hex())
+	}
+
+	return accommodationIds, err
+}

@@ -60,6 +60,7 @@ service AccommodationService{
     };
   }
 
+  rpc DeleteAllByHostId(DeleteAllByHostIdRequest) returns(DeleteAllByHostIdResponse) {}
 }
 
 message EmptyRequest {}
@@ -139,4 +140,12 @@ message Address {
   string city = 2;
   string street = 3;
   string streetNumber= 4;
+}
+
+message DeleteAllByHostIdRequest{
+  string hostId = 1;
+}
+
+message DeleteAllByHostIdResponse{
+  repeated string accommodationIds = 1;
 }
