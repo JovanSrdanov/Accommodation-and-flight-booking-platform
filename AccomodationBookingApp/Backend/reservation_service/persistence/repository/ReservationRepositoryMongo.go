@@ -134,11 +134,22 @@ func (repo ReservationRepositoryMongo) SearchAccommodation(accommodationIds []*p
 			return []*model.SearchResponseDto{}, err
 		}
 
+		gas := false
+
 		for _, reservationValue := range reservations {
+			log.Println(reservationValue.Status)
+			log.Println(dateRange.From.String() + " " + dateRange.To.String())
+			log.Println(reservationValue.DateRange.From.String() + " " + reservationValue.DateRange.To.String())
+
 			if reservationValue.Status == "accepted" && reservationValue.DateRange.Overlaps(dateRange) {
 				//return []*model.SearchResponseDto{}, status.Errorf(codes.Aborted, "Not available date, overlaps*")
-				continue
+				gas = true
+				break
 			}
+		}
+
+		if gas {
+			continue
 		}
 
 		price := calculatePrice(foundDates, &model.Reservation{

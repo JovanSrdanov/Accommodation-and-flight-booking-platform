@@ -50,7 +50,7 @@ func (mapper AccommodationMapper) mapToGetAllResponse(model model.Accommodations
 
 	for _, value := range model {
 		accommodationsProto = append(accommodationsProto, &accommodation.AccommodationFull{
-			Id:        value.ID.String(),
+			Id:        value.ID.Hex(),
 			Name:      value.Name,
 			Address:   addressMapper.mapToProto(&value.Address),
 			MinGuests: value.MinGuests,

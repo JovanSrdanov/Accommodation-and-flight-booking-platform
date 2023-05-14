@@ -1,6 +1,9 @@
 import React, {useState} from 'react';
 import {Flex} from "reflexbox";
 import {
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
     Box,
     Button,
     Card,
@@ -11,9 +14,13 @@ import {
     FormControlLabel,
     Grid,
     Paper,
+    styled,
     Table,
     TableBody,
+    TableCell,
+    tableCellClasses,
     TableContainer,
+    TableRow,
     TextField
 } from "@mui/material";
 import {DatePicker, LocalizationProvider} from "@mui/x-date-pickers";
@@ -27,6 +34,26 @@ import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import interceptor from "../../interceptor/interceptor";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ImageList from "@mui/material/ImageList";
+import ImageListItem from "@mui/material/ImageListItem";
+import {useNavigate} from "react-router-dom";
+
+const StyledTableCell = styled(TableCell)(({theme}) => ({
+    [`&.${tableCellClasses.head}`]: {
+        backgroundColor: theme.palette.common.black,
+        color: theme.palette.common.white,
+    },
+    [`&.${tableCellClasses.body}`]: {
+        fontSize: 14,
+    },
+}));
+
+const StyledTableRow = styled(TableRow)(({theme}) => ({
+    '&:nth-of-type(odd)': {
+        backgroundColor: theme.palette.action.focusOpacity,
+    }
+}));
 
 function SearchAndFilterAccommodations(props) {
 
@@ -177,11 +204,13 @@ function SearchAndFilterAccommodations(props) {
         const endDate = new Date(formData.endDate);
         const utcEndDate = new Date(endDate.getTime() + endDate.getTimezoneOffset() * 60000);
         searchAndFilterData.endDate = Math.round(utcEndDate.getTime() / 1000);
+        searchAndFilterData.minGuests = parseInt(searchAndFilterData.minGuests)
 
         console.log(searchAndFilterData);
         setResultDialogShow(true);
-        interceptor.post("api-2/search-and-filter", searchAndFilterData).then(res => {
+        interceptor.post("api-2/accommodation/search", searchAndFilterData).then(res => {
             setResultData(res.data)
+
 
         }).catch(err => {
                 console.log(err)
@@ -191,6 +220,34 @@ function SearchAndFilterAccommodations(props) {
 
     }
 
+    const navigate = useNavigate();
+    const handleReserve = (item) => {
+
+        const startDate = new Date(formData.startDate);
+        const utcStartDate = new Date(startDate.getTime() + startDate.getTimezoneOffset() * 60000);
+
+
+        const endDate = new Date(formData.endDate);
+        const utcEndDate = new Date(endDate.getTime() + endDate.getTimezoneOffset() * 60000);
+
+
+        var sendData = {}
+        sendData.accommodationId = item.id
+        sendData.numberOfGuests = parseInt(formData.minGuests)
+        sendData.dateRange = {}
+        sendData.dateRange.from = Math.round(utcStartDate.getTime() / 1000);
+        sendData.dateRange.to = Math.round(utcEndDate.getTime() / 1000);
+
+        interceptor.post("api-1/reservation", {reservation: sendData}).then(res => {
+            navigate("/profile")
+
+        }).catch(err => {
+                console.log(err)
+            }
+        );
+
+
+    };
     return (
         <>
             <Dialog onClose={handleResultDialogShow} open={resultDialogShow}>
@@ -205,6 +262,58 @@ function SearchAndFilterAccommodations(props) {
                                 <TableBody>
                                     {resultData.map((item) => (
                                         <React.Fragment key={`${item.id}-row`}>
+                                            <StyledTableRow>
+                                                <StyledTableCell>
+                                                    <li>Name: {item.name}</li>
+                                                    <li>Total price: {item.price}</li>
+                                                    <li>{item.address.city}, {item.address.country}</li>
+                                                    <li>{item.address.street}, {item.address.streetNumber}</li>
+
+                                                </StyledTableCell>
+                                                <StyledTableCell>
+                                                    <Accordion sx={{border: "1px solid black"}}>
+                                                        <AccordionSummary
+                                                            expandIcon={<ExpandMoreIcon/>}>
+                                                            Images
+                                                        </AccordionSummary>
+                                                        <AccordionDetails>
+                                                            {item.images && item.images.length > 0 && (
+                                                                <ImageList variant="masonry"
+                                                                           sx={{
+                                                                               width: 250,
+                                                                               height: 250,
+                                                                               border: '1px solid #f57c00'
+                                                                           }}
+                                                                           cols={2}
+                                                                           gap={1}>
+                                                                    {item.images.map((item1, index) => (
+                                                                        <ImageListItem key={item1}>
+                                                                            <img src={item1} alt="" loading="lazy"
+                                                                            />
+                                                                        </ImageListItem>
+                                                                    ))}
+                                                                </ImageList>
+                                                            )}
+                                                        </AccordionDetails>
+                                                    </Accordion>
+                                                </StyledTableCell>
+
+                                                {props.canBuy && props.canBuy == true &&
+                                                    <StyledTableCell>
+                                                        <Button
+                                                            onClick={() => {
+                                                                handleReserve(item)
+                                                            }}
+                                                            fullWidth
+                                                            color="warning"
+                                                            variant="contained">
+
+                                                            Reserve
+                                                        </Button>
+                                                    </StyledTableCell>
+                                                }
+
+                                            </StyledTableRow>
                                         </React.Fragment>
                                     ))
                                     }

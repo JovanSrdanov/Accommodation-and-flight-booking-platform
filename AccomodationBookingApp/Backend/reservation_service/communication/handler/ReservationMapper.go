@@ -90,7 +90,7 @@ func (mapper ReservationMapper) mapToGetAllMyResponse(in model.Availabilities) *
 
 		for _, priceWithDate := range avail.AvailableDates {
 			priceProto := &reservation.PriceWithDate{
-				Id: priceWithDate.ID.String(),
+				Id: priceWithDate.ID.Hex(),
 				DateRange: &reservation.DateRange{
 					From: priceWithDate.DateRange.From.Unix(),
 					To:   priceWithDate.DateRange.To.Unix(),
@@ -103,9 +103,9 @@ func (mapper ReservationMapper) mapToGetAllMyResponse(in model.Availabilities) *
 		}
 
 		availProto := &reservation.Availability{
-			Id:                     avail.ID.String(),
+			Id:                     avail.ID.Hex(),
 			AvailableDates:         priceWithDateProt,
-			AccommodationId:        avail.AccommodationId.String(),
+			AccommodationId:        avail.AccommodationId.Hex(),
 			IsAutomaticReservation: avail.IsAutomaticReservation,
 			HostId:                 avail.HostId,
 		}
@@ -122,13 +122,13 @@ func (mapper ReservationMapper) mapToReservationsProto(in model.Reservations) []
 
 	for _, reservationValue := range in {
 		reservationProto := &reservation.Reservation{
-			Id:     reservationValue.ID.String(),
+			Id:     reservationValue.ID.Hex(),
 			Status: reservationValue.Status,
 			DateRange: &reservation.DateRange{
 				From: reservationValue.DateRange.From.Unix(),
 				To:   reservationValue.DateRange.To.Unix(),
 			},
-			AccommodationId: reservationValue.AccommodationId.String(),
+			AccommodationId: reservationValue.AccommodationId.Hex(),
 			Price:           reservationValue.Price,
 			NumberOfGuests:  reservationValue.NumberOfGuests,
 			GuestId:         reservationValue.GuestId,

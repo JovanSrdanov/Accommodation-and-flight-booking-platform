@@ -142,20 +142,16 @@ function MyPlaces() {
         });
     };
 
-    function parseObjectId(str) {
-        const regex = /^ObjectID\("(.+)"\)$/;
-        const match = str.match(regex);
-        return match ? match[1] : null;
-    }
 
     const handleOpenCreateAvailabilityDialog = (item) => {
+
         setOpenCreateAvailabilityDialog(true)
-        setIdForCreatingAvailability(parseObjectId(item.id))
+        setIdForCreatingAvailability(item.id)
     };
 
     const handleOpenUpdateAvailabilityDialog = (item) => {
         setOpenCreateAvailabilityDialog(true)
-        setIdForUpdatingAvailability(parseObjectId(item.id))
+        setIdForUpdatingAvailability(item.id)
     };
 
     const [availability, setAvailability] = useState({
@@ -186,11 +182,10 @@ function MyPlaces() {
         const utcEndDate = new Date(endDate.getTime() - endDate.getTimezoneOffset() * 60000);
         const formattedEndDate = utcEndDate.toLocaleString("en-US", {timeZone: "GMT"}) + " GMT+0000";
         sendData.priceWithDate.dateRange.to = Date.parse(formattedEndDate) / 1000;
-
+        console.log(sendData)
 
         interceptor.post("api-1/availability", {availability: sendData}).then(res => {
             getMyPlaces();
-
             handleCloseCreateAvailabilityDialog();
         }).catch(err => {
             setErrorDialogShow(true)
@@ -250,8 +245,8 @@ function MyPlaces() {
     const handleChangeAvailability = () => {
         var sendData = {};
         sendData.updatedPriceWithDate = {}
-        sendData.accommodationId = parseObjectId(selectedAccommodationForAVCHANGE.id);
-        sendData.updatedPriceWithDate.Id = parseObjectId(selectedAVCHANGE.Id);
+        sendData.accommodationId = selectedAccommodationForAVCHANGE.id;
+        sendData.updatedPriceWithDate.Id = selectedAVCHANGE.Id;
         sendData.updatedPriceWithDate.isPricePerPerson = availability.priceWithDate.isPricePerPerson;
         sendData.updatedPriceWithDate.price = availability.priceWithDate.price;
         sendData.updatedPriceWithDate.dateRange = {}

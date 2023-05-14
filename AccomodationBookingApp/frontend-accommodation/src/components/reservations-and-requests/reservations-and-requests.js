@@ -58,21 +58,16 @@ function ReservationsAndRequests() {
         getData();
     }, []);
 
-    function parseObjectId(str) {
-        const regex = /^ObjectID\("(.+)"\)$/;
-        const match = str.match(regex);
-        return match ? match[1] : null;
-    }
 
     const handleAccept = (Id) => {
-        interceptor.get("api-1/reservation/accept/" + parseObjectId(Id)).then(res => {
+        interceptor.get("api-1/reservation/accept/" + Id).then(res => {
             getData();
         }).catch(err => {
             console.log(err)
         })
     };
     const handleReject = (Id) => {
-        interceptor.get("api-1/reservation/reject/" + parseObjectId(Id)).then(res => {
+        interceptor.get("api-1/reservation/reject/" + Id).then(res => {
             getData();
         }).catch(err => {
             console.log(err)

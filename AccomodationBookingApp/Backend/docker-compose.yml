@@ -207,8 +207,6 @@ services:
       - 6968:27017
     networks:
       - network
-    ports:
-      - 5000:27017  
 
   nats:
     image: nats

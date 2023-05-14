@@ -53,7 +53,7 @@ func (handler AccommodationHandler) Create(ctx context.Context, in *accommodatio
 	}
 
 	return &accommodation.CreateResponse{
-		Id: id.String(),
+		Id: id.Hex(),
 	}, nil
 }
 
@@ -154,8 +154,6 @@ func (handler AccommodationHandler) GetAmenities(ctx context.Context, in *accomm
 }
 
 func (handler AccommodationHandler) SearchAccommodation(ctx context.Context, in *accommodation.SearchRequest) (*accommodation.GetAllResponse, error) {
-	log.Println("mrs")
-
 	mapper := NewAccommodationMapper()
 
 	accommodations, err := handler.accommodationService.SearchAccommodation(mapper.mapFromSearchRequest(in))

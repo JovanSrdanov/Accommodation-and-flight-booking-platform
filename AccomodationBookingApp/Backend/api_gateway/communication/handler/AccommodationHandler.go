@@ -39,7 +39,7 @@ func (handler AccommodationHandler) SearchAccommodation(ctx *gin.Context) {
 	}
 
 	var firstRoundDto dto.SearchResponseDto
-	err = handler.FindAccommodations(searchDto, firstRoundDto)
+	firstRoundDto, err = handler.FindAccommodations(searchDto)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, communication.NewErrorResponse(err.Error()))
 		return
@@ -57,7 +57,9 @@ func (handler AccommodationHandler) SearchAccommodation(ctx *gin.Context) {
 
 }
 
-func (handler AccommodationHandler) FindAccommodations(searchDto dto.SearchAccommodationDto, responseDto dto.SearchResponseDto) error {
+func (handler AccommodationHandler) FindAccommodations(searchDto dto.SearchAccommodationDto) (dto.SearchResponseDto, error) {
+	var responseDto dto.SearchResponseDto
+
 	client := communication.NewAccommodationClient(handler.accommodationServiceAddress)
 	response, err := client.SearchAccommodation(context.TODO(), &accommodation.SearchRequest{Filter: &accommodation.Filter{
 		Amenities: searchDto.Amenities,
@@ -67,14 +69,14 @@ func (handler AccommodationHandler) FindAccommodations(searchDto dto.SearchAccom
 	}})
 
 	if err != nil {
-		return err
+		return dto.SearchResponseDto{}, err
 	}
 
 	for _, value := range response.Accommodation {
 
 		id, err := primitive.ObjectIDFromHex(value.Id)
 		if err != nil {
-			return err
+			return dto.SearchResponseDto{}, err
 		}
 
 		responseDto = append(responseDto, &dto.Accommodation{
@@ -95,7 +97,7 @@ func (handler AccommodationHandler) FindAccommodations(searchDto dto.SearchAccom
 		})
 	}
 
-	return nil
+	return responseDto, nil
 }
 
 func (handler AccommodationHandler) FindReservations(searchDto dto.SearchAccommodationDto, firstRoundDto dto.SearchResponseDto) (dto.SearchResponseDto, error) {
@@ -128,6 +130,7 @@ func (handler AccommodationHandler) FindReservations(searchDto dto.SearchAccommo
 			if err2 != nil {
 				return nil, err
 			}
+			//TODO: Strahinja dodati ovde posle za max price proveru (&&)
 			if oldAcc.ID == id {
 				oldAcc.Price = foundIds.Price
 				finalDto = append(finalDto, oldAcc)

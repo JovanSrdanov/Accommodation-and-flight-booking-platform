@@ -3,7 +3,6 @@ package handler
 import (
 	reservation "common/proto/reservation_service/generated"
 	"context"
-	"log"
 	"reservation_service/domain/service"
 
 	"github.com/google/uuid"
@@ -27,7 +26,7 @@ func (handler ReservationHandler) CreateAvailability(ctx context.Context, in *re
 		return nil, err
 	}
 	return &reservation.CreateAvailabilityResponse{
-		Id: id.String(),
+		Id: id.Hex(),
 	}, nil
 }
 func (handler ReservationHandler) GetAllMy(ctx context.Context, in *reservation.EmptyRequest) (*reservation.GetAllMyResponse, error) {
@@ -109,7 +108,7 @@ func (handler ReservationHandler) RejectReservation(ctx context.Context, in *res
 		return nil, err
 	}
 	return &reservation.RejectReservationResponse{
-		Id: id.String(),
+		Id: id.Hex(),
 	}, nil
 }
 func (handler ReservationHandler) AcceptReservation(ctx context.Context, in *reservation.ChangeStatusRequest) (*reservation.RejectReservationResponse, error) {
@@ -120,7 +119,7 @@ func (handler ReservationHandler) AcceptReservation(ctx context.Context, in *res
 		return nil, err
 	}
 	return &reservation.RejectReservationResponse{
-		Id: id.String(),
+		Id: id.Hex(),
 	}, nil
 }
 func (handler ReservationHandler) CancelReservation(ctx context.Context, in *reservation.ChangeStatusRequest) (*reservation.RejectReservationResponse, error) {
@@ -131,7 +130,7 @@ func (handler ReservationHandler) CancelReservation(ctx context.Context, in *res
 		return nil, err
 	}
 	return &reservation.RejectReservationResponse{
-		Id: id.String(),
+		Id: id.Hex(),
 	}, nil
 }
 func (handler ReservationHandler) CreateAvailabilityBase(ctx context.Context, in *reservation.CreateAvailabilityBaseRequest) (*reservation.EmptyRequest, error) {
@@ -173,16 +172,16 @@ func (handler ReservationHandler) HostHasActiveReservations(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	log.Println("HOST ID:" + id.String())
+	//log.Println("HOST ID:" + id.String())
 
 	activeReservations, err := handler.reservationService.GetAllAcceptedReservations(id.String())
 	if err != nil {
 		return nil, err
 	}
-	log.Println(activeReservations)
+	//log.Println(activeReservations)
 
 	duzina := len(activeReservations)
-	log.Println(duzina)
+	//log.Println(duzina)
 
 	if duzina < 1 {
 		return &reservation.HostHasActiveReservationsResponse{HasActiveReservations: false}, nil
