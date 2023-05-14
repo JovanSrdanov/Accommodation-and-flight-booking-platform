@@ -74,5 +74,9 @@ func (repo AccountCredentialsRepositoryPG) Delete(id uuid.UUID) error {
 		return result.Error
 	}
 
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("account credentials with given user profile id not found")
+	}
+
 	return nil
 }

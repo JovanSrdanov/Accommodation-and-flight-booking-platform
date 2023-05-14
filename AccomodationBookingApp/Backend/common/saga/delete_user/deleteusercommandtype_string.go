@@ -8,17 +8,18 @@ func _() {
 	// An "invalid array index" compiler error signifies that the constant values have changed.
 	// Re-run the stringer command to generate them again.
 	var x [1]struct{}
-	_ = x[DeleteUserProfile-0]
-	_ = x[RollbackUserProfile-1]
-	_ = x[DeleteAccountCredentials-2]
-	_ = x[CancelDeletion-3]
-	_ = x[FinishDeletion-4]
-	_ = x[UnknownCommand-5]
+	_ = x[DeleteGuestProfile-0]
+	_ = x[DeleteHostProfile-1]
+	_ = x[RollbackUserProfile-2]
+	_ = x[DeleteAccountCredentials-3]
+	_ = x[CancelDeletion-4]
+	_ = x[FinishDeletion-5]
+	_ = x[UnknownCommand-6]
 }
 
-const _DeleteUserCommandType_name = "DeleteUserProfileRollbackUserProfileDeleteAccountCredentialsCancelDeletionFinishDeletionUnknownCommand"
+const _DeleteUserCommandType_name = "DeleteGuestProfileDeleteHostProfileRollbackUserProfileDeleteAccountCredentialsCancelDeletionFinishDeletionUnknownCommand"
 
-var _DeleteUserCommandType_index = [...]uint8{0, 17, 36, 60, 74, 88, 102}
+var _DeleteUserCommandType_index = [...]uint8{0, 18, 35, 54, 78, 92, 106, 120}
 
 func (i DeleteUserCommandType) String() string {
 	if i < 0 || i >= DeleteUserCommandType(len(_DeleteUserCommandType_index)-1) {

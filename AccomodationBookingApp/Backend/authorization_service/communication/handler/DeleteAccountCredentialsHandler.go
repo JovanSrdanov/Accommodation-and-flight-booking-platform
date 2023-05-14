@@ -30,6 +30,7 @@ func (handler *DeleteAccountCredentialsHandler) handle(command *events.DeleteUse
 		SagaId:        command.SagaId,
 		UserProfileId: command.UserProfileId,
 		ErrorMessage:  "",
+		Type:          events.UnknownReply,
 	}
 
 	switch command.Type {

@@ -568,8 +568,9 @@ func (repo ReservationRepositoryMongo) GuestHasActiveReservations(guestID uuid.U
 	defer cancel()
 
 	filter := bson.M{
-		"guestId":        guestID,
+		"guestId":        guestID.String(),
 		"dateRange.from": bson.M{"$gte": time.Now().UTC()},
+		"status":         "accepted",
 	}
 
 	reservations := repo.getCollectionReservation()

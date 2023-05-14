@@ -97,6 +97,20 @@ services:
     ports:
       - 5002:5432
 
+  user_profile_event_db:
+    image: mongo
+    container_name: user_profile_event_db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok'
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    networks:
+      - network
+    ports:
+      - 5005:27017
+
+
   accommodation_service:
     image: accommodation_service
     container_name: accommodation_service
@@ -152,7 +166,7 @@ services:
       reservation_db:
         condition: service_healthy
     ports:
-      - 8003:${RESERVATION_SERVICE_DB_PORT}
+      - 8003:${RESERVATION_SERVICE_PORT}
 
   reservation_db:
     image: mongo
@@ -175,6 +189,8 @@ services:
     restart: on-failure
     networks:
       - network
+    ports:
+      - 4000:4222
 
 volumes:
   accommodationDb:

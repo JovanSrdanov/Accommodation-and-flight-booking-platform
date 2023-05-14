@@ -107,7 +107,7 @@ func (handler UserProfileHandler) DeleteUser(ctx context.Context, in *user_profi
 		return nil, err
 	}
 
-	err = handler.userProfileService.DeleteUser(userProfileId)
+	err = handler.userProfileService.DeleteUser(userProfileId, accCred.AccountCredentials.Role)
 	if err != nil {
 		return &user_profile.DeleteResponse{Message: err.Error()}, err
 	}
