@@ -1,0 +1,12 @@
+.wrapper {
+    background: var(--paper);
+    width: fit-content;
+    height: fit-content;
+    margin: auto;
+    padding: 20px;
+    border-radius: var(--border-radius);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    gap: 10px;
+}

@@ -65,7 +65,7 @@ func (service AccountCredentialsService) Login(username, password string) (strin
 
 	accessToken, _, err := service.tokenMaker.CreateToken(
 		accountCredentials.ID,
-		15*time.Minute,
+		180*time.Minute,
 		accountCredentials.Role,
 	)
 	if err != nil {
