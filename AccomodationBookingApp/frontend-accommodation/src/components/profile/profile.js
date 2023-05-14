@@ -159,12 +159,9 @@ function Profile() {
                     console.log(res);
 
                 } catch (error) {
-                    setErrorDialogShow(true);
                     setDeletedAccountDialogShow(true);
                     deleted = true;
                     localStorage.removeItem('paseto');
-                    localStorage.removeItem('role');
-                    localStorage.removeItem('expirationDate');
 
                 }
             }
