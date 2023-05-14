@@ -17,6 +17,10 @@ services:
       AUTHORIZATION_SERVICE_PORT: ${AUTHORIZATION_SERVICE_PORT}
       USER_PROFILE_SERVICE_HOST: ${USER_PROFILE_SERVICE_HOST}
       USER_PROFILE_SERVICE_PORT: ${USER_PROFILE_SERVICE_PORT}
+      ACCOMMODATION_SERVICE_HOST: ${ACCOMMODATION_SERVICE_HOST}
+      ACCOMMODATION_SERVICE_PORT: ${ACCOMMODATION_SERVICE_PORT}
+      RESERVATION_SERVICE_HOST: ${RESERVATION_SERVICE_HOST}
+      RESERVATION_SERVICE_PORT: ${RESERVATION_SERVICE_PORT}
     networks:
       - network
 
@@ -41,9 +45,12 @@ services:
       DELETE_USER_COMMAND_SUBJECT: ${DELETE_USER_COMMAND_SUBJECT}
       DELETE_USER_REPLY_SUBJECT: ${DELETE_USER_REPLY_SUBJECT}
     depends_on:
-      - authorization_db
+      authorization_db:
+          condition: service_healthy
     networks:
       - network
+    ports:
+      - 8001:${AUTHORIZATION_SERVICE_PORT}
 
 
   authorization_db:
@@ -54,40 +61,19 @@ services:
       context: ../Database/Authorization
       dockerfile: Dockerfile
     environment:
-      POSTGRES_USER: ${AUTHORIZATION_DB_USER}
+      PGUSER: ${AUTHORIZATION_DB_USER}
       POSTGRES_PASSWORD: ${AUTHORIZATION_DB_PASS}
       POSTGRES_DB: ${AUTHORIZATION_DB_NAME}
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - network
     ports:
       - 5001:5432
 
-  user_profile_service:
-    image: user_profile_service
-    container_name: user_profile_service
-    build:
-      context: .
-      dockerfile: ./user_profile_service/Dockerfile
-    restart: on-failure
-    environment:
-      USER_PROFILE_DB_HOST: ${USER_PROFILE_DB_HOST}
-      USER_PROFILE_DB_PORT: ${USER_PROFILE_DB_PORT}
-      USER_PROFILE_DB_NAME: ${USER_PROFILE_DB_NAME}
-      USER_PROFILE_DB_USER: ${USER_PROFILE_DB_USER}
-      USER_PROFILE_DB_PASS: ${USER_PROFILE_DB_PASS}
-      USER_PROFILE_SERVICE_PORT: ${USER_PROFILE_SERVICE_PORT}
-      NATS_HOST: ${NATS_HOST}
-      NATS_PORT: ${NATS_PORT}
-      NATS_USER: ${NATS_USER}
-      NATS_PASS: ${NATS_PASS}
-      DELETE_USER_COMMAND_SUBJECT: ${DELETE_USER_COMMAND_SUBJECT}
-      DELETE_USER_REPLY_SUBJECT: ${DELETE_USER_REPLY_SUBJECT}
-      AUTHORIZATION_SERVICE_HOST: ${AUTHORIZATION_SERVICE_HOST}
-      AUTHORIZATION_SERVICE_PORT: ${AUTHORIZATION_SERVICE_PORT}
-    depends_on:
-      - user_profile_db
-    networks:
-      - network
 
 
   user_profile_db:
@@ -98,13 +84,104 @@ services:
       context: ../Database/UserProfile
       dockerfile: Dockerfile
     environment:
-      POSTGRES_USER: ${USER_PROFILE_DB_USER}
+      PGUSER: ${USER_PROFILE_DB_USER}
       POSTGRES_PASSWORD: ${USER_PROFILE_DB_PASS}
       POSTGRES_DB: ${USER_PROFILE_DB_NAME}
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - network
     ports:
       - 5002:5432
+
+  user_profile_event_db:
+    image: mongo
+    container_name: user_profile_event_db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok'
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    networks:
+      - network
+    ports:
+      - 5005:27017
+
+
+  accommodation_service:
+    image: accommodation_service
+    container_name: accommodation_service
+    build:
+      context: .
+      dockerfile: ./accommodation_service/Dockerfile
+    restart: on-failure
+    environment:
+      ACCOMMODATION_SERVICE_HOST: ${ACCOMMODATION_SERVICE_HOST}
+      ACCOMMODATION_SERVICE_PORT: ${ACCOMMODATION_SERVICE_PORT}
+      ACCOMMODATION_SERVICE_DB_NAME: ${ACCOMMODATION_SERVICE_DB_NAME}
+      ACCOMMODATION_SERVICE_DB_PORT: ${ACCOMMODATION_SERVICE_DB_PORT}
+      RESERVATION_SERVICE_HOST: ${RESERVATION_SERVICE_HOST}
+      RESERVATION_SERVICE_PORT: ${RESERVATION_SERVICE_PORT}
+    networks:
+      - network
+    depends_on:
+      accommodation_db:
+        condition: service_healthy
+    ports:
+      - 8002:${ACCOMMODATION_SERVICE_PORT}
+
+  accommodation_db:
+    image: mongo
+    container_name: ${ACCOMMODATION_SERVICE_DB_NAME}
+    volumes:
+      - accommodationDb:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok'
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    networks:
+      - network
+    ports:
+      - 5003:5432
+
+  reservation_service:
+    image: reservation_service
+    container_name: reservation_service
+    build:
+      context: .
+      dockerfile: ./reservation_service/Dockerfile
+    restart: on-failure
+    environment:
+      RESERVATION_SERVICE_HOST: ${RESERVATION_SERVICE_HOST}
+      RESERVATION_SERVICE_PORT: ${RESERVATION_SERVICE_PORT}
+      RESERVATION_SERVICE_DB_NAME: ${RESERVATION_SERVICE_DB_NAME}
+      RESERVATION_SERVICE_DB_PORT: ${RESERVATION_SERVICE_DB_PORT}
+    networks:
+      - network
+    depends_on:
+      reservation_db:
+        condition: service_healthy
+    ports:
+      - 8003:${RESERVATION_SERVICE_PORT}
+
+  reservation_db:
+    image: mongo
+    container_name: ${RESERVATION_SERVICE_DB_NAME}
+    volumes:
+      - reservationDb:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok'
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    networks:
+      - network
+    ports:
+      - 5004:27017
 
   nats:
     image: nats
@@ -112,7 +189,14 @@ services:
     restart: on-failure
     networks:
       - network
+    ports:
+      - 4000:4222
+
+volumes:
+  accommodationDb:
+  reservationDb:
 
 networks:
   network:
     driver: bridge
+

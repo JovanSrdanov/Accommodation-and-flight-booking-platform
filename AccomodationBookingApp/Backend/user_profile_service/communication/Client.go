@@ -2,6 +2,7 @@ package communication
 
 import (
 	authorization "common/proto/authorization_service/generated"
+	reservation "common/proto/reservation_service/generated"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"log"
@@ -14,6 +15,15 @@ func NewAccountCredentialsClient(address string) authorization.AuthorizationServ
 	}
 
 	return authorization.NewAuthorizationServiceClient(conn)
+}
+
+func NewReservationClient(address string) reservation.ReservationServiceClient {
+	conn, err := getConnection(address)
+	if err != nil {
+		log.Fatalf("Failed to start gRPC connection to AccountCredentials service: %v", err)
+	}
+
+	return reservation.NewReservationServiceClient(conn)
 }
 
 func getConnection(address string) (*grpc.ClientConn, error) {

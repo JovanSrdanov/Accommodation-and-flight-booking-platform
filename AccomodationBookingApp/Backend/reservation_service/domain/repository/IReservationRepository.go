@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"reservation_service/domain/model"
 )
@@ -17,4 +18,5 @@ type IReservationRepository interface {
 	CancelReservation(id primitive.ObjectID) (primitive.ObjectID, error)
 	CreateAvailabilityBase(base *model.Availability) (primitive.ObjectID, error)
 	GetAllReservationsForGuest(guestId string) (model.Reservations, error)
+	GuestHasActiveReservations(guestID uuid.UUID) (bool, error)
 }

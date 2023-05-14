@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -560,4 +561,28 @@ func bubbleSort(nums []*model.PriceWithDate) {
 			}
 		}
 	}
+}
+
+func (repo ReservationRepositoryMongo) GuestHasActiveReservations(guestID uuid.UUID) (bool, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	filter := bson.M{
+		"guestId":        guestID.String(),
+		"dateRange.from": bson.M{"$gte": time.Now().UTC()},
+		"status":         "accepted",
+	}
+
+	reservations := repo.getCollectionReservation()
+
+	count, err := reservations.CountDocuments(ctx, filter)
+	if err != nil {
+		return false, err
+	}
+
+	if count > 0 {
+		return true, nil
+	}
+
+	return false, nil
 }

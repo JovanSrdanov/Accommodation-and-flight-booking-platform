@@ -8,6 +8,7 @@ import (
 	"common/saga/messaging"
 	"common/saga/messaging/nats"
 	"fmt"
+	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc"
 	"gorm.io/gorm"
 	"log"
@@ -15,6 +16,7 @@ import (
 	"user_profile_service/communication/handler"
 	"user_profile_service/communication/orchestrator"
 	"user_profile_service/domain/service"
+	"user_profile_service/event_sourcing"
 	"user_profile_service/persistence/repository"
 )
 
@@ -46,11 +48,31 @@ func (server *Server) Start() {
 	//Delete handler that listens orchestrator
 	commandSubscriber := server.initDeleteSubscriber(server.config.DeleteUserCommandSubject, QueueGroup)
 	replyPublisher := server.initDeletePublisher(server.config.DeleteUserReplySubject)
-	server.initDeleteOrderHandler(userProfileService, replyPublisher, commandSubscriber)
 
+	mongoClient := server.initMongoClient()
+	eventRepo := server.initEventRepo(mongoClient)
+	eventService := event_sourcing.NewEventService(eventRepo)
+
+	reservationServiceAddress := fmt.Sprintf("%s:%s", server.config.ReservationServiceHost, server.config.ReservationServicePort)
+	server.initDeleteOrderHandler(userProfileService, reservationServiceAddress, eventService, replyPublisher, commandSubscriber)
 	server.startGrpcServer(userProfileHandler)
 }
 
+func (server *Server) initMongoClient() *mongo.Client {
+	client, err := repository.GetMongoClient(server.config.UserProfileEventDbName, server.config.UserProfileEventDbPort)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return client
+}
+
+func (server *Server) initEventRepo(client *mongo.Client) *repository.EventRepositoryMongo {
+	repo, err := repository.NewEventRepositoryMongo(client, server.config.UserProfileEventInnerDbName, server.config.UserProfileEventDbCollectionName)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return repo
+}
 func initUserProfileRepo(client *gorm.DB) *repository.UserProfileRepositoryPG {
 	repo, err := repository.NewUserProfileRepositoryPG(client)
 	if err != nil {
@@ -59,7 +81,7 @@ func initUserProfileRepo(client *gorm.DB) *repository.UserProfileRepositoryPG {
 	return repo
 }
 func (server *Server) initPostgresClient() *gorm.DB {
-	client, err := repository.GetClient(
+	client, err := repository.GetPostgresClient(
 		server.config.DBHost, server.config.DBUser,
 		server.config.DBPass, server.config.DBName,
 		server.config.DBPort)
@@ -116,8 +138,8 @@ func (server *Server) initDeleteUserOrchestrator(publisher messaging.Publisher, 
 	return orchestrator
 }
 
-func (server *Server) initDeleteOrderHandler(service *service.UserProfileService, publisher messaging.Publisher, subscriber messaging.Subscriber) {
-	_, err := handler.NewDeleteUserProfileHandler(service, publisher, subscriber)
+func (server *Server) initDeleteOrderHandler(userProfileService *service.UserProfileService, reservationServiceAddress string, eventService *event_sourcing.EventService, publisher messaging.Publisher, subscriber messaging.Subscriber) {
+	_, err := handler.NewDeleteUserProfileHandler(userProfileService, reservationServiceAddress, eventService, publisher, subscriber)
 	if err != nil {
 		log.Fatal(err)
 	}
