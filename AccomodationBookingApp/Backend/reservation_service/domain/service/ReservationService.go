@@ -66,14 +66,6 @@ func (service ReservationService) DeleteAvailabilitiesAndReservationsByAccommoda
 	return service.reservationRepo.DeleteAvailabilitiesAndReservationsByAccommodationId(accommodationId)
 }
 
-/*
-CreateAvailability(availability *model.AvailabilityRequest) (primitive.ObjectID, error)
-GetAllMy() (model.Availabilities, error)
-UpdatePriceAndDate(priceWithDate *model.UpdatePriceAndDate) (*model.UpdatePriceAndDate, error)
-CreateReservation(reservation *model.Reservation) (*model.Reservation, error)
-GetAllPendingReservations() (*model.Reservation, error)
-GetAllAcceptedReservations() (*model.Reservation, error)
-RejectReservation(id primitive.ObjectID) (primitive.ObjectID, error)
-AcceptReservation(id primitive.ObjectID) (primitive.ObjectID, error)
-CancelReservation(id primitive.ObjectID) (primitive.ObjectID, error)
-*/
+func (service ReservationService) SearchAccommodation(accommodationIds []*primitive.ObjectID, dateRange model.DateRange, numberOfGuests int32) ([]*model.SearchResponseDto, error) {
+	return service.reservationRepo.SearchAccommodation(accommodationIds, dateRange, numberOfGuests)
+}

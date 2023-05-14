@@ -41,18 +41,12 @@ function MyReservations() {
 
     }
 
-    function parseObjectId(str) {
-        const regex = /^ObjectID\("(.+)"\)$/;
-        const match = str.match(regex);
-        return match ? match[1] : null;
-    }
-
 
     useEffect(() => {
         getAllReservations();
     }, []);
     const handleCancel = (Id) => {
-        interceptor.get("api-1/reservation/cancel/" + parseObjectId(Id)).then(res => {
+        interceptor.get("api-1/reservation/cancel/" + Id).then(res => {
             getAllReservations();
         }).catch(err => {
             console.log(err)

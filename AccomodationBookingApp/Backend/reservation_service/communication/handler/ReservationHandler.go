@@ -3,9 +3,10 @@ package handler
 import (
 	reservation "common/proto/reservation_service/generated"
 	"context"
+	"reservation_service/domain/service"
+
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"reservation_service/domain/service"
 )
 
 type ReservationHandler struct {
@@ -25,7 +26,7 @@ func (handler ReservationHandler) CreateAvailability(ctx context.Context, in *re
 		return nil, err
 	}
 	return &reservation.CreateAvailabilityResponse{
-		Id: id.String(),
+		Id: id.Hex(),
 	}, nil
 }
 func (handler ReservationHandler) GetAllMy(ctx context.Context, in *reservation.EmptyRequest) (*reservation.GetAllMyResponse, error) {
@@ -107,7 +108,7 @@ func (handler ReservationHandler) RejectReservation(ctx context.Context, in *res
 		return nil, err
 	}
 	return &reservation.RejectReservationResponse{
-		Id: id.String(),
+		Id: id.Hex(),
 	}, nil
 }
 func (handler ReservationHandler) AcceptReservation(ctx context.Context, in *reservation.ChangeStatusRequest) (*reservation.RejectReservationResponse, error) {
@@ -118,7 +119,7 @@ func (handler ReservationHandler) AcceptReservation(ctx context.Context, in *res
 		return nil, err
 	}
 	return &reservation.RejectReservationResponse{
-		Id: id.String(),
+		Id: id.Hex(),
 	}, nil
 }
 func (handler ReservationHandler) CancelReservation(ctx context.Context, in *reservation.ChangeStatusRequest) (*reservation.RejectReservationResponse, error) {
@@ -129,7 +130,7 @@ func (handler ReservationHandler) CancelReservation(ctx context.Context, in *res
 		return nil, err
 	}
 	return &reservation.RejectReservationResponse{
-		Id: id.String(),
+		Id: id.Hex(),
 	}, nil
 }
 func (handler ReservationHandler) CreateAvailabilityBase(ctx context.Context, in *reservation.CreateAvailabilityBaseRequest) (*reservation.EmptyRequest, error) {
@@ -153,12 +154,25 @@ func (handler ReservationHandler) GuestHasActiveReservations(ctx context.Context
 
 	return &reservation.GuestHasActiveReservationsResponse{HasActiveReservations: hasActiveReservations}, nil
 }
+
+func (handler ReservationHandler) SearchAccommodation(ctx context.Context, in *reservation.SearchRequest) (*reservation.SearchResponse, error) {
+	mapper := NewReservationMapper()
+
+	searchResponse, err := handler.reservationService.SearchAccommodation(mapper.mapFromSearchRequest(in))
+	if err != nil {
+		return nil, err
+	}
+
+	return mapper.mapToSearchResponse(searchResponse), nil
+}
+
 func (handler ReservationHandler) HostHasActiveReservations(ctx context.Context, in *reservation.HostHasActiveReservationsRequest) (*reservation.HostHasActiveReservationsResponse, error) {
 
 	id, err := uuid.Parse(in.HostId)
 	if err != nil {
 		return nil, err
 	}
+	//log.Println("HOST ID:" + id.String())
 
 	activeReservations, err := handler.reservationService.GetAllAcceptedReservations(id.String())
 	if err != nil {
@@ -169,7 +183,6 @@ func (handler ReservationHandler) HostHasActiveReservations(ctx context.Context,
 		return &reservation.HostHasActiveReservationsResponse{HasActiveReservations: false}, nil
 	}
 	return &reservation.HostHasActiveReservationsResponse{HasActiveReservations: true}, nil
-
 }
 func (handler ReservationHandler) DeleteAvailabilitiesAndReservationsByAccommodationIds(ctx context.Context, in *reservation.DeleteAvailabilitiesAndReservationsByAccommodationIdsRequest) (*reservation.DeleteAvailabilitiesAndReservationsByAccommodationIdsResponse, error) {
 	for _, accomodationId := range in.AccommodationIds {

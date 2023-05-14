@@ -1,29 +1,6 @@
 version: "3.8"
 
 services:
-
-  api_gateway:
-    image: api_gateway
-    container_name: api_gateway
-    build:
-      context: .
-      dockerfile: ./api_gateway/Dockerfile
-    restart: on-failure
-    ports:
-      - ${GATEWAY_PORT}:${GATEWAY_PORT}
-    environment:
-      GATEWAY_PORT: ${GATEWAY_PORT}
-      AUTHORIZATION_SERVICE_HOST: ${AUTHORIZATION_SERVICE_HOST}
-      AUTHORIZATION_SERVICE_PORT: ${AUTHORIZATION_SERVICE_PORT}
-      USER_PROFILE_SERVICE_HOST: ${USER_PROFILE_SERVICE_HOST}
-      USER_PROFILE_SERVICE_PORT: ${USER_PROFILE_SERVICE_PORT}
-      ACCOMMODATION_SERVICE_HOST: ${ACCOMMODATION_SERVICE_HOST}
-      ACCOMMODATION_SERVICE_PORT: ${ACCOMMODATION_SERVICE_PORT}
-      RESERVATION_SERVICE_HOST: ${RESERVATION_SERVICE_HOST}
-      RESERVATION_SERVICE_PORT: ${RESERVATION_SERVICE_PORT}
-    networks:
-      - network
-
   authorization_service:
     image: authorization_service
     container_name: authorization_service
@@ -46,9 +23,11 @@ services:
       DELETE_USER_REPLY_SUBJECT: ${DELETE_USER_REPLY_SUBJECT}
     depends_on:
       authorization_db:
-          condition: service_healthy
+        condition: service_healthy
     networks:
       - network
+    ports:
+      - "8001:8001"
 
   authorization_db:
     image: authorization_db
@@ -68,8 +47,6 @@ services:
       retries: 5
     networks:
       - network
-    ports:
-      - 5001:5432
 
 
   user_profile_service:
@@ -102,13 +79,13 @@ services:
       AUTHORIZATION_SERVICE_PORT: ${AUTHORIZATION_SERVICE_PORT}
       RESERVATION_SERVICE_HOST: ${RESERVATION_SERVICE_HOST}
       RESERVATION_SERVICE_PORT: ${RESERVATION_SERVICE_PORT}
-      ACCOMMODATION_SERVICE_HOST: ${ACCOMMODATION_SERVICE_HOST}
-      ACCOMMODATION_SERVICE_PORT: ${ACCOMMODATION_SERVICE_PORT}
     depends_on:
       user_profile_db:
         condition: service_healthy
     networks:
       - network
+    ports:
+      - "8002:8002"
 
 
 
@@ -130,8 +107,6 @@ services:
       retries: 5
     networks:
       - network
-    ports:
-      - 5002:5432
 
   user_profile_event_db:
     image: mongo
@@ -143,8 +118,6 @@ services:
       retries: 10
     networks:
       - network
-    ports:
-      - 5003:27017
 
 
   accommodation_service:
@@ -166,6 +139,8 @@ services:
     depends_on:
       accommodation_db:
         condition: service_healthy
+    ports:
+      - "8003:8003"
 
   accommodation_db:
     image: mongo
@@ -178,7 +153,7 @@ services:
       timeout: 10s
       retries: 10
     ports:
-      - 6969:27017
+      - "6969:27017"
     networks:
       - network
 
@@ -199,7 +174,8 @@ services:
     depends_on:
       reservation_db:
         condition: service_healthy
-   
+    ports:
+      - "8004:8004"
 
   reservation_db:
     image: mongo
@@ -212,7 +188,7 @@ services:
       timeout: 10s
       retries: 10
     ports:
-      - 6968:27017
+      - "6968:27017"
     networks:
       - network
 

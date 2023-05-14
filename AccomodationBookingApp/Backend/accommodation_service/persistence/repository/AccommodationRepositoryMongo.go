@@ -107,6 +107,40 @@ func (repo AccommodationRepositoryMongo) GetAllMy(hostId string) (model.Accommod
 	return accommodations, nil
 }
 
+func (repo AccommodationRepositoryMongo) SearchAccommodation(searchDto *model.SearchDto) (model.Accommodations, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	collection := repo.getCollection()
+
+	//TODO: Prosiriti da gleda i hostId gde je host promoted?
+	filter := bson.M{
+		"$or": []bson.M{
+			{"address.country": bson.M{"$regex": primitive.Regex{Pattern: searchDto.Location, Options: "i"}}},
+			{"address.city": bson.M{"$regex": primitive.Regex{Pattern: searchDto.Location, Options: "i"}}},
+			{"address.street": bson.M{"$regex": primitive.Regex{Pattern: searchDto.Location, Options: "i"}}},
+		},
+		//"amenities": bson.M{"$all": searchDto.Amenities},
+		"minGuests": bson.M{"$lte": searchDto.MinGuests},
+		"maxGuests": bson.M{"$gte": searchDto.MinGuests},
+	}
+
+	cursor, err := collection.Find(ctx, filter)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	var accommodations model.Accommodations
+	err = cursor.All(ctx, &accommodations)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	return accommodations, nil
+}
+
 func (repo AccommodationRepositoryMongo) GetAmenities() ([]string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

@@ -22,6 +22,10 @@ func (service AccommodationService) GetById(id primitive.ObjectID) (*model.Accom
 	return service.accommodationRepo.GetById(id)
 }
 
+func (service AccommodationService) SearchAccommodation(searchDto *model.SearchDto) (model.Accommodations, error) {
+	return service.accommodationRepo.SearchAccommodation(searchDto)
+}
+
 func (service AccommodationService) Update(id primitive.ObjectID, dto *model.Accommodation) (*model.Accommodation, error) {
 	accommodation, err := service.GetById(id)
 	if err != nil {

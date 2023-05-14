@@ -50,7 +50,7 @@ func (mapper AccommodationMapper) mapToGetAllResponse(model model.Accommodations
 
 	for _, value := range model {
 		accommodationsProto = append(accommodationsProto, &accommodation.AccommodationFull{
-			Id:        value.ID.String(),
+			Id:        value.ID.Hex(),
 			Name:      value.Name,
 			Address:   addressMapper.mapToProto(&value.Address),
 			MinGuests: value.MinGuests,
@@ -63,5 +63,15 @@ func (mapper AccommodationMapper) mapToGetAllResponse(model model.Accommodations
 
 	return &accommodation.GetAllResponse{
 		Accommodation: accommodationsProto,
+	}
+}
+
+func (mapper AccommodationMapper) mapFromSearchRequest(request *accommodation.SearchRequest) *model.SearchDto {
+	return &model.SearchDto{
+		//TODO: Popravi posle kad bude filter
+		HostId:    "xxx",
+		MinGuests: request.Filter.MinGuests,
+		Amenities: request.Filter.Amenities,
+		Location:  request.Filter.Location,
 	}
 }

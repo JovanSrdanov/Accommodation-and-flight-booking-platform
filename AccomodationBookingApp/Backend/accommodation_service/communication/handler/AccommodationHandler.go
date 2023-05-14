@@ -7,8 +7,9 @@ import (
 	reservation "common/proto/reservation_service/generated"
 	"context"
 	"fmt"
-	"github.com/google/uuid"
 	"log"
+
+	"github.com/google/uuid"
 )
 
 type AccommodationHandler struct {
@@ -53,7 +54,7 @@ func (handler AccommodationHandler) Create(ctx context.Context, in *accommodatio
 	}
 
 	return &accommodation.CreateResponse{
-		Id: id.String(),
+		Id: id.Hex(),
 	}, nil
 }
 
@@ -160,4 +161,15 @@ func (handler AccommodationHandler) DeleteAllByHostId(ctx context.Context, in *a
 	}
 
 	return &accommodation.DeleteAllByHostIdResponse{AccommodationIds: accommodationIds}, nil
+}
+
+func (handler AccommodationHandler) SearchAccommodation(ctx context.Context, in *accommodation.SearchRequest) (*accommodation.GetAllResponse, error) {
+	mapper := NewAccommodationMapper()
+
+	accommodations, err := handler.accommodationService.SearchAccommodation(mapper.mapFromSearchRequest(in))
+	if err != nil {
+		return nil, err
+	}
+
+	return mapper.mapToGetAllResponse(accommodations), nil
 }
