@@ -30,6 +30,7 @@ type AccommodationServiceClient interface {
 	Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error)
 	DeleteByHostId(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*DeleteResponse, error)
 	GetAmenities(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*GetAmenitiesResponse, error)
+	DeleteAllByHostId(ctx context.Context, in *DeleteAllByHostIdRequest, opts ...grpc.CallOption) (*DeleteAllByHostIdResponse, error)
 }
 
 type accommodationServiceClient struct {
@@ -112,6 +113,15 @@ func (c *accommodationServiceClient) GetAmenities(ctx context.Context, in *Empty
 	return out, nil
 }
 
+func (c *accommodationServiceClient) DeleteAllByHostId(ctx context.Context, in *DeleteAllByHostIdRequest, opts ...grpc.CallOption) (*DeleteAllByHostIdResponse, error) {
+	out := new(DeleteAllByHostIdResponse)
+	err := c.cc.Invoke(ctx, "/accommodation.AccommodationService/DeleteAllByHostId", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AccommodationServiceServer is the server API for AccommodationService service.
 // All implementations must embed UnimplementedAccommodationServiceServer
 // for forward compatibility
@@ -124,6 +134,7 @@ type AccommodationServiceServer interface {
 	Delete(context.Context, *DeleteRequest) (*DeleteResponse, error)
 	DeleteByHostId(context.Context, *EmptyRequest) (*DeleteResponse, error)
 	GetAmenities(context.Context, *EmptyRequest) (*GetAmenitiesResponse, error)
+	DeleteAllByHostId(context.Context, *DeleteAllByHostIdRequest) (*DeleteAllByHostIdResponse, error)
 	mustEmbedUnimplementedAccommodationServiceServer()
 }
 
@@ -154,6 +165,9 @@ func (UnimplementedAccommodationServiceServer) DeleteByHostId(context.Context, *
 }
 func (UnimplementedAccommodationServiceServer) GetAmenities(context.Context, *EmptyRequest) (*GetAmenitiesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAmenities not implemented")
+}
+func (UnimplementedAccommodationServiceServer) DeleteAllByHostId(context.Context, *DeleteAllByHostIdRequest) (*DeleteAllByHostIdResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteAllByHostId not implemented")
 }
 func (UnimplementedAccommodationServiceServer) mustEmbedUnimplementedAccommodationServiceServer() {}
 
@@ -312,6 +326,24 @@ func _AccommodationService_GetAmenities_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AccommodationService_DeleteAllByHostId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteAllByHostIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccommodationServiceServer).DeleteAllByHostId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/accommodation.AccommodationService/DeleteAllByHostId",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccommodationServiceServer).DeleteAllByHostId(ctx, req.(*DeleteAllByHostIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AccommodationService_ServiceDesc is the grpc.ServiceDesc for AccommodationService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -350,6 +382,10 @@ var AccommodationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAmenities",
 			Handler:    _AccommodationService_GetAmenities_Handler,
+		},
+		{
+			MethodName: "DeleteAllByHostId",
+			Handler:    _AccommodationService_DeleteAllByHostId_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

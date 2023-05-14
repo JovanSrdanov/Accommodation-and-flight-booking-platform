@@ -5,7 +5,6 @@ import (
 	"context"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"log"
 	"reservation_service/domain/service"
 )
 
@@ -160,20 +159,29 @@ func (handler ReservationHandler) HostHasActiveReservations(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	log.Println("HOST ID:" + id.String())
 
 	activeReservations, err := handler.reservationService.GetAllAcceptedReservations(id.String())
 	if err != nil {
 		return nil, err
 	}
-	log.Println(activeReservations)
 
-	duzina := len(activeReservations)
-	log.Println(duzina)
-
-	if duzina < 1 {
+	if len(activeReservations) < 1 {
 		return &reservation.HostHasActiveReservationsResponse{HasActiveReservations: false}, nil
 	}
 	return &reservation.HostHasActiveReservationsResponse{HasActiveReservations: true}, nil
 
+}
+func (handler ReservationHandler) DeleteAvailabilitiesAndReservationsByAccommodationIds(ctx context.Context, in *reservation.DeleteAvailabilitiesAndReservationsByAccommodationIdsRequest) (*reservation.DeleteAvailabilitiesAndReservationsByAccommodationIdsResponse, error) {
+	for _, accomodationId := range in.AccommodationIds {
+		accommodationIdObj, err := primitive.ObjectIDFromHex(accomodationId)
+		if err != nil {
+			return &reservation.DeleteAvailabilitiesAndReservationsByAccommodationIdsResponse{Success: false}, err
+		}
+
+		err = handler.reservationService.DeleteAvailabilitiesAndReservationsByAccommodationId(accommodationIdObj)
+		if err != nil {
+			return &reservation.DeleteAvailabilitiesAndReservationsByAccommodationIdsResponse{Success: false}, err
+		}
+	}
+	return &reservation.DeleteAvailabilitiesAndReservationsByAccommodationIdsResponse{Success: true}, nil
 }

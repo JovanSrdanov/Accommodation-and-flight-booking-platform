@@ -19,4 +19,5 @@ type IReservationRepository interface {
 	CreateAvailabilityBase(base *model.Availability) (primitive.ObjectID, error)
 	GetAllReservationsForGuest(guestId string) (model.Reservations, error)
 	GuestHasActiveReservations(guestID uuid.UUID) (bool, error)
+	DeleteAvailabilitiesAndReservationsByAccommodationId(accommodationId primitive.ObjectID) error
 }

@@ -152,3 +152,12 @@ func (handler AccommodationHandler) GetAmenities(ctx context.Context, in *accomm
 		Amenities: amenities,
 	}, nil
 }
+
+func (handler AccommodationHandler) DeleteAllByHostId(ctx context.Context, in *accommodation.DeleteAllByHostIdRequest) (*accommodation.DeleteAllByHostIdResponse, error) {
+	accommodationIds, err := handler.accommodationService.DeleteAllByHostId(in.HostId)
+	if err != nil {
+		return nil, err
+	}
+
+	return &accommodation.DeleteAllByHostIdResponse{AccommodationIds: accommodationIds}, nil
+}

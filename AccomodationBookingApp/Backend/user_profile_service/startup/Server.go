@@ -54,7 +54,8 @@ func (server *Server) Start() {
 	eventService := event_sourcing.NewEventService(eventRepo)
 
 	reservationServiceAddress := fmt.Sprintf("%s:%s", server.config.ReservationServiceHost, server.config.ReservationServicePort)
-	server.initDeleteOrderHandler(userProfileService, reservationServiceAddress, eventService, replyPublisher, commandSubscriber)
+	accommodationServiceAddress := fmt.Sprintf("%s:%s", server.config.AccommodationServiceHost, server.config.AccommodationServicePort)
+	server.initDeleteUserHandler(userProfileService, reservationServiceAddress, accommodationServiceAddress, eventService, replyPublisher, commandSubscriber)
 	server.startGrpcServer(userProfileHandler)
 }
 
@@ -138,8 +139,8 @@ func (server *Server) initDeleteUserOrchestrator(publisher messaging.Publisher, 
 	return orchestrator
 }
 
-func (server *Server) initDeleteOrderHandler(userProfileService *service.UserProfileService, reservationServiceAddress string, eventService *event_sourcing.EventService, publisher messaging.Publisher, subscriber messaging.Subscriber) {
-	_, err := handler.NewDeleteUserProfileHandler(userProfileService, reservationServiceAddress, eventService, publisher, subscriber)
+func (server *Server) initDeleteUserHandler(userProfileService *service.UserProfileService, reservationServiceAddress, accommodationServiceAddress string, eventService *event_sourcing.EventService, publisher messaging.Publisher, subscriber messaging.Subscriber) {
+	_, err := handler.NewDeleteUserProfileHandler(userProfileService, reservationServiceAddress, accommodationServiceAddress, eventService, publisher, subscriber)
 	if err != nil {
 		log.Fatal(err)
 	}
