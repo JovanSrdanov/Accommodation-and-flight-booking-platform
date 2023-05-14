@@ -38,7 +38,7 @@ func NewDeleteUserProfileHandler(userProfileService *service.UserProfileService,
 
 func (handler *DeleteUserProfileHandler) GuestHasActiveReservations(command *events.DeleteUserCommand) (bool, error) {
 	reservationClient := communication.NewReservationClient(handler.reservationServiceAddress)
-	result, err := reservationClient.GuestHasActiveReservations(context.TODO(), &reservation.GuestHasActiveReservationsRequest{GuestId: command.UserProfileId.String()})
+	result, err := reservationClient.GuestHasActiveReservations(context.TODO(), &reservation.GuestHasActiveReservationsRequest{GuestId: command.AccCredId})
 	if err != nil {
 		return false, err
 	}
@@ -47,7 +47,7 @@ func (handler *DeleteUserProfileHandler) GuestHasActiveReservations(command *eve
 
 func (handler *DeleteUserProfileHandler) HostHasActiveReservations(command *events.DeleteUserCommand) (bool, error) {
 	reservationClient := communication.NewReservationClient(handler.reservationServiceAddress)
-	result, err := reservationClient.HostHasActiveReservations(context.TODO(), &reservation.HostHasActiveReservationsRequest{HostId: command.UserProfileId.String()})
+	result, err := reservationClient.HostHasActiveReservations(context.TODO(), &reservation.HostHasActiveReservationsRequest{HostId: command.AccCredId})
 	if err != nil {
 		return false, err
 	}
@@ -90,6 +90,7 @@ func (handler *DeleteUserProfileHandler) RollbackProfile(deleteAction string, co
 func (handler *DeleteUserProfileHandler) handle(command *events.DeleteUserCommand) {
 	reply := events.DeleteUserReply{
 		SagaId:        command.SagaId,
+		AccCredId:     command.AccCredId,
 		UserProfileId: command.UserProfileId,
 		ErrorMessage:  "",
 		Type:          events.UnknownReply,

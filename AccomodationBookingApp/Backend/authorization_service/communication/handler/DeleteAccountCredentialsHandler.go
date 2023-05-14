@@ -28,6 +28,7 @@ func NewDeleteAccountCredentialsHandler(accountCredentialsService *service.Accou
 func (handler *DeleteAccountCredentialsHandler) handle(command *events.DeleteUserCommand) {
 	reply := events.DeleteUserReply{
 		SagaId:        command.SagaId,
+		AccCredId:     command.AccCredId,
 		UserProfileId: command.UserProfileId,
 		ErrorMessage:  "",
 		Type:          events.UnknownReply,

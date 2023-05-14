@@ -64,7 +64,7 @@ func (orchestrator *DeleteUserOrchestrator) nextCommandType(reply events.DeleteU
 	}
 }
 
-func (orchestrator *DeleteUserOrchestrator) Start(userProfileId uuid.UUID, role authorization.Role) error {
+func (orchestrator *DeleteUserOrchestrator) Start(accCredId string, userProfileId uuid.UUID, role authorization.Role) error {
 	sagaId, err := uuid.NewUUID()
 	if err != nil {
 		return err
@@ -72,6 +72,7 @@ func (orchestrator *DeleteUserOrchestrator) Start(userProfileId uuid.UUID, role 
 
 	command := events.DeleteUserCommand{
 		SagaId:        sagaId,
+		AccCredId:     accCredId,
 		UserProfileId: userProfileId,
 	}
 

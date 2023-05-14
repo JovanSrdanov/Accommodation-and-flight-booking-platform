@@ -22,6 +22,7 @@ const (
 type DeleteUserCommand struct {
 	Type          DeleteUserCommandType
 	SagaId        uuid.UUID
+	AccCredId     string
 	UserProfileId uuid.UUID
 }
 
@@ -43,6 +44,7 @@ const (
 
 type DeleteUserReply struct {
 	Type          DeleteUserReplyType
+	AccCredId     string
 	SagaId        uuid.UUID
 	UserProfileId uuid.UUID
 	ErrorMessage  string
