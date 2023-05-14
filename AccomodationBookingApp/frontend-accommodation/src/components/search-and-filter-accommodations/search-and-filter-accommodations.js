@@ -194,19 +194,22 @@ function SearchAndFilterAccommodations(props) {
 
 
     function handleSearch() {
+
+
         const searchAndFilterData = {...formData};
         searchAndFilterData.amenities = right;
 
         const startDate = new Date(formData.startDate);
-        const utcStartDate = new Date(startDate.getTime() + startDate.getTimezoneOffset() * 60000);
+        const utcStartDate = new Date(startDate.getTime() - startDate.getTimezoneOffset() * 60000);
+        console.log(utcStartDate)
         searchAndFilterData.startDate = Math.round(utcStartDate.getTime() / 1000);
 
         const endDate = new Date(formData.endDate);
-        const utcEndDate = new Date(endDate.getTime() + endDate.getTimezoneOffset() * 60000);
+        const utcEndDate = new Date(endDate.getTime() - endDate.getTimezoneOffset() * 60000);
         searchAndFilterData.endDate = Math.round(utcEndDate.getTime() / 1000);
         searchAndFilterData.minGuests = parseInt(searchAndFilterData.minGuests)
 
-        console.log(searchAndFilterData);
+
         setResultDialogShow(true);
         interceptor.post("api-2/accommodation/search", searchAndFilterData).then(res => {
             setResultData(res.data)
