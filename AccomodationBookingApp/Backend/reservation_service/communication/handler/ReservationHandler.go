@@ -141,3 +141,15 @@ func (handler ReservationHandler) CreateAvailabilityBase(ctx context.Context, in
 	}
 	return &reservation.EmptyRequest{}, nil
 }
+func (handler ReservationHandler) GuestHasActiveReservations(ctx context.Context, in *reservation.GuestHasActiveReservationsRequest) (*reservation.GuestHasActiveReservationsResponse, error) {
+	id, err := uuid.Parse(in.GuestId)
+	if err != nil {
+		return nil, err
+	}
+	hasActiveReservations, err := handler.reservationService.GuestHasActiveReservations(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return &reservation.GuestHasActiveReservationsResponse{HasActiveReservations: hasActiveReservations}, nil
+}

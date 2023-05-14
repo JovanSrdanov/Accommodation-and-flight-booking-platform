@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"reservation_service/domain/model"
 	"reservation_service/domain/repository"
@@ -56,6 +57,10 @@ func (service ReservationService) CancelReservation(id primitive.ObjectID) (prim
 
 func (service ReservationService) CreateAvailabilityBase(base *model.Availability) (primitive.ObjectID, error) {
 	return service.reservationRepo.CreateAvailabilityBase(base)
+}
+
+func (service ReservationService) GuestHasActiveReservations(guestID uuid.UUID) (bool, error) {
+	return service.reservationRepo.GuestHasActiveReservations(guestID)
 }
 
 /*

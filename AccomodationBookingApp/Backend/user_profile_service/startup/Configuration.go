@@ -17,10 +17,12 @@ type Configuration struct {
 	DeleteUserReplySubject           string
 	AuthServiceHost                  string
 	AuthServicePort                  string
-	userProfileEventDbName           string
-	userProfileEventDbPort           string
-	userProfileEventInnerDbName      string
-	userProfileEventDbCollectionName string
+	UserProfileEventDbName           string
+	UserProfileEventDbPort           string
+	UserProfileEventInnerDbName      string
+	UserProfileEventDbCollectionName string
+	ReservationServiceHost           string
+	ReservationServicePort           string
 }
 
 func NewConfiguration() *Configuration {
@@ -39,9 +41,11 @@ func NewConfiguration() *Configuration {
 		DeleteUserReplySubject:           os.Getenv("DELETE_USER_REPLY_SUBJECT"),
 		AuthServiceHost:                  os.Getenv("AUTHORIZATION_SERVICE_HOST"),
 		AuthServicePort:                  os.Getenv("AUTHORIZATION_SERVICE_PORT"),
-		userProfileEventDbName:           os.Getenv("USER_PROFILE_EVENT_DB_NAME"),
-		userProfileEventDbPort:           os.Getenv("USER_PROFILE_EVENT_DB_PORT"),
-		userProfileEventInnerDbName:      os.Getenv("USER_PROFILE_EVENT_INNER_DB_NAME"),
-		userProfileEventDbCollectionName: os.Getenv("USER_PROFILE_EVENT_DB_COLLECTION_NAME"),
+		UserProfileEventDbName:           os.Getenv("USER_PROFILE_EVENT_DB_NAME"),
+		UserProfileEventDbPort:           os.Getenv("USER_PROFILE_EVENT_DB_PORT"),
+		UserProfileEventInnerDbName:      os.Getenv("USER_PROFILE_EVENT_INNER_DB_NAME"),
+		UserProfileEventDbCollectionName: os.Getenv("USER_PROFILE_EVENT_DB_COLLECTION_NAME"),
+		ReservationServiceHost:           os.Getenv("RESERVATION_SERVICE_HOST"),
+		ReservationServicePort:           os.Getenv("RESERVATION_SERVICE_PORT"),
 	}
 }

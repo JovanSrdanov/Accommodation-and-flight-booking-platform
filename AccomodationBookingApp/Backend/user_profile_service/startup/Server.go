@@ -53,12 +53,13 @@ func (server *Server) Start() {
 	eventRepo := server.initEventRepo(mongoClient)
 	eventService := event_sourcing.NewEventService(eventRepo)
 
-	server.initDeleteOrderHandler(userProfileService, eventService, replyPublisher, commandSubscriber)
+	reservationServiceAddress := fmt.Sprintf("%s:%s", server.config.ReservationServiceHost, server.config.ReservationServicePort)
+	server.initDeleteOrderHandler(userProfileService, reservationServiceAddress, eventService, replyPublisher, commandSubscriber)
 	server.startGrpcServer(userProfileHandler)
 }
 
 func (server *Server) initMongoClient() *mongo.Client {
-	client, err := repository.GetMongoClient(server.config.userProfileEventDbName, server.config.userProfileEventDbPort)
+	client, err := repository.GetMongoClient(server.config.UserProfileEventDbName, server.config.UserProfileEventDbPort)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -66,7 +67,7 @@ func (server *Server) initMongoClient() *mongo.Client {
 }
 
 func (server *Server) initEventRepo(client *mongo.Client) *repository.EventRepositoryMongo {
-	repo, err := repository.NewEventRepositoryMongo(client, server.config.userProfileEventInnerDbName, server.config.userProfileEventDbCollectionName)
+	repo, err := repository.NewEventRepositoryMongo(client, server.config.UserProfileEventInnerDbName, server.config.UserProfileEventDbCollectionName)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -137,8 +138,8 @@ func (server *Server) initDeleteUserOrchestrator(publisher messaging.Publisher, 
 	return orchestrator
 }
 
-func (server *Server) initDeleteOrderHandler(userProfileService *service.UserProfileService, eventService *event_sourcing.EventService, publisher messaging.Publisher, subscriber messaging.Subscriber) {
-	_, err := handler.NewDeleteUserProfileHandler(userProfileService, eventService, publisher, subscriber)
+func (server *Server) initDeleteOrderHandler(userProfileService *service.UserProfileService, reservationServiceAddress string, eventService *event_sourcing.EventService, publisher messaging.Publisher, subscriber messaging.Subscriber) {
+	_, err := handler.NewDeleteUserProfileHandler(userProfileService, reservationServiceAddress, eventService, publisher, subscriber)
 	if err != nil {
 		log.Fatal(err)
 	}
