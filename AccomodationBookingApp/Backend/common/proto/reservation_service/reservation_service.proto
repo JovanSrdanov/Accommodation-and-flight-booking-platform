@@ -141,7 +141,7 @@ message AcceptReservationResponse {
 }
 
 message GetAllPendingReservationsResponse {
-  repeated Reservation reservation = 1;
+  repeated ReservationFront reservation = 1;
 }
 
 message GetAllAcceptedReservationsResponse {
@@ -199,6 +199,17 @@ message Reservation {
   int32 price = 5;
   int32 numberOfGuests = 6;
   string guestId = 7;
+}
+
+message ReservationFront {
+  string Id = 1;
+  string status = 2;
+  DateRange dateRange = 3;
+  string accommodationId = 4;
+  int32 price = 5;
+  int32 numberOfGuests = 6;
+  string guestId = 7;
+  int32 numberOfCancellations = 8;
 }
 
 message AvailabilityRequest {

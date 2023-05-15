@@ -65,13 +65,13 @@ func (handler ReservationHandler) GetAllPendingReservations(ctx context.Context,
 	mapper := NewReservationMapper()
 
 	loggedInId := ctx.Value("id")
-	reservations, err := handler.reservationService.GetAllPendingReservations(loggedInId.(uuid.UUID).String())
+	reservations, numberOfCancellations, err := handler.reservationService.GetAllPendingReservations(loggedInId.(uuid.UUID).String())
 	if err != nil {
 		return &reservation.GetAllPendingReservationsResponse{}, err
 	}
 
 	return &reservation.GetAllPendingReservationsResponse{
-		Reservation: mapper.mapToReservationsProto(reservations),
+		Reservation: mapper.mapToReservationsProtoDto(reservations, numberOfCancellations),
 	}, nil
 }
 func (handler ReservationHandler) GetAllAcceptedReservations(ctx context.Context, in *reservation.EmptyRequest) (*reservation.GetAllAcceptedReservationsResponse, error) {
@@ -154,7 +154,6 @@ func (handler ReservationHandler) GuestHasActiveReservations(ctx context.Context
 
 	return &reservation.GuestHasActiveReservationsResponse{HasActiveReservations: hasActiveReservations}, nil
 }
-
 func (handler ReservationHandler) SearchAccommodation(ctx context.Context, in *reservation.SearchRequest) (*reservation.SearchResponse, error) {
 	mapper := NewReservationMapper()
 
@@ -165,7 +164,6 @@ func (handler ReservationHandler) SearchAccommodation(ctx context.Context, in *r
 
 	return mapper.mapToSearchResponse(searchResponse), nil
 }
-
 func (handler ReservationHandler) HostHasActiveReservations(ctx context.Context, in *reservation.HostHasActiveReservationsRequest) (*reservation.HostHasActiveReservationsResponse, error) {
 
 	id, err := uuid.Parse(in.HostId)

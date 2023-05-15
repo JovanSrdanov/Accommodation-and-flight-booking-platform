@@ -21,18 +21,6 @@ func NewReservationRepositoryMongo(dbClient *mongo.Client) (*ReservationReposito
 	return &ReservationRepositoryMongo{dbClient: dbClient}, nil
 }
 
-/*
-	CreateAvailability(availability *model.AvailabilityRequest) (primitive.ObjectID, error)
-	GetAllMy() (model.Availabilities, error)
-	UpdatePriceAndDate(priceWithDate *model.UpdatePriceAndDate) (*model.UpdatePriceAndDate, error)
-	CreateReservation(reservation *model.Reservation) (*model.Reservation, error)
-	GetAllPendingReservations() (*model.Reservation, error)
-	GetAllAcceptedReservations() (*model.Reservation, error)
-	RejectReservation(id primitive.ObjectID) (primitive.ObjectID, error)
-	AcceptReservation(id primitive.ObjectID) (primitive.ObjectID, error)
-	CancelReservation(id primitive.ObjectID) (primitive.ObjectID, error)
-*/
-
 func (repo ReservationRepositoryMongo) CreateAvailability(newAvailability *model.AvailabilityRequest) (primitive.ObjectID, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -420,12 +408,12 @@ func (repo ReservationRepositoryMongo) GetAllAcceptedReservations(hostId string)
 	return reservations, nil
 }
 
-func (repo ReservationRepositoryMongo) GetAllPendingReservations(hostId string) (model.Reservations, error) {
+func (repo ReservationRepositoryMongo) GetAllPendingReservations(hostId string) (model.Reservations, []int32, error) {
 	//Dobavi sve dostpunosti i iz njih izvuci sve accommodationId gde je hostId prosledjenji
 	availabilities, err := repo.GetAllMy(hostId)
 	if err != nil {
 		log.Println(err)
-		return model.Reservations{}, err
+		return model.Reservations{}, []int32{}, err
 	}
 
 	accommodationIds := make([]primitive.ObjectID, 0)
@@ -447,17 +435,33 @@ func (repo ReservationRepositoryMongo) GetAllPendingReservations(hostId string) 
 	cursor, err := collection.Find(ctx, filter)
 	if err != nil {
 		log.Println(err)
-		return model.Reservations{}, err
+		return model.Reservations{}, []int32{}, err
 	}
 
 	var reservations model.Reservations
 	err = cursor.All(ctx, &reservations)
 	if err != nil {
 		log.Println(err)
-		return model.Reservations{}, err
+		return model.Reservations{}, []int32{}, err
 	}
 
-	return reservations, nil
+	cancelSlice := make([]int32, 0)
+
+	for _, resr := range reservations {
+
+		filter2 := bson.M{
+			"guestId": resr.GuestId,
+			"status":  "canceled"}
+
+		count, err := collection.CountDocuments(ctx, filter2)
+		if err != nil {
+			return model.Reservations{}, []int32{}, err
+		}
+
+		cancelSlice = append(cancelSlice, int32(count))
+	}
+
+	return reservations, cancelSlice, nil
 }
 
 func (repo ReservationRepositoryMongo) GetAllReservationsForGuest(guestId string) (model.Reservations, error) {
@@ -689,6 +693,7 @@ func (repo ReservationRepositoryMongo) GuestHasActiveReservations(guestID uuid.U
 
 	return false, nil
 }
+
 func (repo ReservationRepositoryMongo) DeleteAvailabilitiesAndReservationsByAccommodationId(accommodationId primitive.ObjectID) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

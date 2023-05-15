@@ -140,6 +140,30 @@ func (mapper ReservationMapper) mapToReservationsProto(in model.Reservations) []
 	return reservationsProt
 }
 
+func (mapper ReservationMapper) mapToReservationsProtoDto(in model.Reservations, numberOfCancellations []int32) []*reservation.ReservationFront {
+	reservationsProt := make([]*reservation.ReservationFront, 0)
+
+	for i, reservationValue := range in {
+		reservationProto := &reservation.ReservationFront{
+			Id:     reservationValue.ID.Hex(),
+			Status: reservationValue.Status,
+			DateRange: &reservation.DateRange{
+				From: reservationValue.DateRange.From.Unix(),
+				To:   reservationValue.DateRange.To.Unix(),
+			},
+			AccommodationId:       reservationValue.AccommodationId.Hex(),
+			Price:                 reservationValue.Price,
+			NumberOfGuests:        reservationValue.NumberOfGuests,
+			GuestId:               reservationValue.GuestId,
+			NumberOfCancellations: numberOfCancellations[i],
+		}
+
+		reservationsProt = append(reservationsProt, reservationProto)
+	}
+
+	return reservationsProt
+}
+
 func (mapper ReservationMapper) mapFromSearchRequest(request *reservation.SearchRequest) ([]*primitive.ObjectID, model.DateRange, int32) {
 	ids := make([]*primitive.ObjectID, 0)
 

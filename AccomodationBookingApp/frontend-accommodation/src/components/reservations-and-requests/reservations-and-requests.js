@@ -88,13 +88,10 @@ function ReservationsAndRequests() {
                                     {accepted && accepted.length > 0 && accepted.map((a) => (
                                         <StyledTableRow key={a.Id} hover>
                                             <StyledTableCell>
-                                                <li>Price: {a.price}</li>
-                                                <li>Total price:</li>
+                                                <li>Total price: {a.price}$</li>
                                                 <li>Number of guests: {a.numberOfGuests}</li>
                                                 <li>From: {new Date(a.dateRange.from * 1000).toLocaleDateString("en-GB")}</li>
                                                 <li>To: {new Date(a.dateRange.to * 1000).toLocaleDateString("en-GB")}</li>
-                                                <li>Reservation made by:</li>
-                                                <li>Reserved place:</li>
                                             </StyledTableCell>
                                         </StyledTableRow>
                                     ))}
@@ -113,11 +110,9 @@ function ReservationsAndRequests() {
                                     {pending && pending.length > 0 && pending.map((a) => (
                                         <StyledTableRow key={a.Id} hover>
                                             <StyledTableCell>
-                                                <li>Reservation made by:</li>
-                                                <li>Number of past cancellations of this person:</li>
-                                                <li>Reserved place:</li>
-                                                <li>Price: {a.price}</li>
-                                                <li>Total price:</li>
+                                                <li>Number of past cancellations by this
+                                                    person: {a.numberOfCancellations}</li>
+                                                <li>Total price: {a.price}$</li>
                                                 <li>Number of guests: {a.numberOfGuests}</li>
                                                 <li>From: {new Date(a.dateRange.from * 1000).toLocaleDateString("en-GB")}</li>
                                                 <li>To: {new Date(a.dateRange.to * 1000).toLocaleDateString("en-GB")}</li>

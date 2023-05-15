@@ -31,7 +31,7 @@ func (service ReservationService) GetAllAcceptedReservations(hostId string) (mod
 	return service.reservationRepo.GetAllAcceptedReservations(hostId)
 }
 
-func (service ReservationService) GetAllPendingReservations(hostId string) (model.Reservations, error) {
+func (service ReservationService) GetAllPendingReservations(hostId string) (model.Reservations, []int32, error) {
 	return service.reservationRepo.GetAllPendingReservations(hostId)
 }
 

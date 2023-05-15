@@ -253,46 +253,44 @@ function SearchAndFilterAccommodations(props) {
     };
     return (
         <>
-            <Dialog onClose={handleResultDialogShow} open={resultDialogShow}>
+            <Dialog onClose={handleResultDialogShow} open={resultDialogShow} fullWidth maxWidth="lg">
                 <DialogTitle>Search and filter results</DialogTitle>
-
                 <DialogContent>
-                    {resultData != null && resultData.length > 0 &&
-                        <TableContainer component={Paper}
-                                        sx={{maxHeight: 500, height: 500, overflowY: 'scroll'}}>
+                    {resultData != null && resultData.length > 0 && (
+                        <TableContainer component={Paper} sx={{maxHeight: 500, height: 500, overflowY: 'scroll'}}>
                             <Table>
-
                                 <TableBody>
                                     {resultData.map((item) => (
                                         <React.Fragment key={`${item.id}-row`}>
                                             <StyledTableRow>
                                                 <StyledTableCell>
-                                                    <li>Name: {item.name}</li>
-                                                    <li>Total price: {item.price}</li>
-                                                    <li>{item.address.city}, {item.address.country}</li>
-                                                    <li>{item.address.street}, {item.address.streetNumber}</li>
-
+                                                    <Box m={1}>
+                                                        <li>Name: {item.name}</li>
+                                                        <li>Total price: {item.price}$</li>
+                                                        <li>{item.address.city}, {item.address.country}</li>
+                                                        <li>{item.address.street}, {item.address.streetNumber}</li>
+                                                    </Box>
                                                 </StyledTableCell>
                                                 <StyledTableCell>
-                                                    <Accordion sx={{border: "1px solid black"}}>
+                                                    <Accordion sx={{border: '1px solid black'}}>
                                                         <AccordionSummary
-                                                            expandIcon={<ExpandMoreIcon/>}>
-                                                            Images
-                                                        </AccordionSummary>
+                                                            expandIcon={<ExpandMoreIcon/>}>Images</AccordionSummary>
                                                         <AccordionDetails>
                                                             {item.images && item.images.length > 0 && (
-                                                                <ImageList variant="masonry"
-                                                                           sx={{
-                                                                               width: 250,
-                                                                               height: 250,
-                                                                               border: '1px solid #f57c00'
-                                                                           }}
-                                                                           cols={2}
-                                                                           gap={1}>
+                                                                <ImageList
+                                                                    variant="masonry"
+                                                                    sx={{
+                                                                        width: 400,
+                                                                        height: 200,
+                                                                        border: '1px solid #f57c00',
+                                                                        margin: '0 auto' // Center horizontally
+                                                                    }}
+                                                                    cols={2}
+                                                                    gap={1}
+                                                                >
                                                                     {item.images.map((item1, index) => (
                                                                         <ImageListItem key={item1}>
-                                                                            <img src={item1} alt="" loading="lazy"
-                                                                            />
+                                                                            <img src={item1} alt="" loading="lazy"/>
                                                                         </ImageListItem>
                                                                     ))}
                                                                 </ImageList>
@@ -300,37 +298,30 @@ function SearchAndFilterAccommodations(props) {
                                                         </AccordionDetails>
                                                     </Accordion>
                                                 </StyledTableCell>
-
-                                                {props.canBuy && props.canBuy == true &&
+                                                {props.canBuy && props.canBuy == true && (
                                                     <StyledTableCell>
                                                         <Button
                                                             onClick={() => {
-                                                                handleReserve(item)
+                                                                handleReserve(item);
                                                             }}
                                                             fullWidth
                                                             color="warning"
-                                                            variant="contained">
-
+                                                            variant="contained"
+                                                        >
                                                             Reserve
                                                         </Button>
                                                     </StyledTableCell>
-                                                }
-
+                                                )}
                                             </StyledTableRow>
                                         </React.Fragment>
-                                    ))
-                                    }
+                                    ))}
                                 </TableBody>
                             </Table>
                         </TableContainer>
-                    }
-
+                    )}
                 </DialogContent>
-
                 <DialogActions>
-                    <Button onClick={handleResultDialogShow}
-                            variant="contained"
-                    >
+                    <Button onClick={handleResultDialogShow} variant="contained">
                         Close
                     </Button>
                 </DialogActions>

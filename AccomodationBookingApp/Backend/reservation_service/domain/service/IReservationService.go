@@ -10,7 +10,7 @@ type IAvailabilityService interface {
 	GetAllMy(hostId string) (model.Availabilities, error)
 	UpdatePriceAndDate(priceWithDate *model.UpdatePriceAndDate) (*model.UpdatePriceAndDate, error)
 	CreateReservation(reservation *model.Reservation) (*model.Reservation, error)
-	GetAllPendingReservations(hostId string) (model.Reservations, error)
+	GetAllPendingReservations(hostId string) (model.Reservations, []int32, error)
 	GetAllAcceptedReservations(hostId string) (model.Reservations, error)
 	RejectReservation(id primitive.ObjectID) (primitive.ObjectID, error)
 	AcceptReservation(id primitive.ObjectID) (primitive.ObjectID, error)
