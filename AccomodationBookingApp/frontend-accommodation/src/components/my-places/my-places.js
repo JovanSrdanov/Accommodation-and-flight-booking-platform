@@ -188,6 +188,7 @@ function MyPlaces() {
             getMyPlaces();
             handleCloseCreateAvailabilityDialog();
         }).catch(err => {
+            handleCloseCreateAvailabilityDialog();
             setErrorDialogShow(true)
             console.log(err)
         })
@@ -265,9 +266,9 @@ function MyPlaces() {
 
         interceptor.put("api-1/availability", {priceWithDate: sendData}).then(res => {
             getMyPlaces();
-
             setOpenUpdateAvailabilityDialog(false)
         }).catch(err => {
+            setOpenUpdateAvailabilityDialog(false)
             setErrorDialogShow(true)
             console.log(err)
         })
