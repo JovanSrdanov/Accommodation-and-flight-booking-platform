@@ -1,0 +1,35 @@
+:root {
+    --paper: #272727;
+    --gap-size: 15px;
+    --border-radius: 5px
+}
+
+
+* {
+    color-scheme: dark;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+}
+
+
+body {
+    overflow-y: scroll;
+
+
+}
+
+li {
+    list-style: none;
+}
+
+h1 {
+    border-radius: var(--border-radius);
+    background: var(--paper);
+    padding: var(--gap-size);
+    width: fit-content;
+    height: fit-content;
+    margin: 10px auto;
+    font-weight: 10;
+    font-size: 20px;
+
+}
+

@@ -1,0 +1,83 @@
+syntax = "proto3";
+
+option go_package = "common/user_profile";
+
+package user_profile;
+
+import "google/api/annotations.proto";
+
+
+
+service UserProfileService{
+  rpc Create(CreateRequest) returns(CreateResponse) {}
+
+  rpc Update(UpdateRequest) returns(UpdateRequest) {
+    option (google.api.http) = {
+      put: "/api-1/user-profile",
+      body: "*"
+    };
+  }
+
+  rpc GetById(GetByIdRequest) returns(GetByIdResponse) {
+    option (google.api.http) = {
+      get: "/api-1/user-profile/{id}"
+    };
+  }
+//Internal usage only
+ rpc Delete(DeleteRequest) returns(DeleteResponse){ }
+
+  rpc DeleteUser(DeleteUserRequest) returns(DeleteResponse){
+    option (google.api.http) = {
+      delete: "/api-1/user"
+    };
+  }
+}
+
+
+message CreateRequest {
+  UserProfile userProfile = 1;
+}
+
+message CreateResponse{
+  string id = 1;
+}
+
+message UpdateRequest {
+  string name = 1;
+  string surname = 2;
+  string email = 3;
+  Address address = 4;
+}
+
+message GetByIdResponse{
+  UserProfile userProfile = 1;
+}
+
+message GetByIdRequest{
+  string id = 1;
+}
+
+message DeleteRequest{
+  string id = 1;
+}
+
+message DeleteUserRequest{}
+
+message DeleteResponse{
+  string message = 1;
+}
+
+message  UserProfile{
+  string id = 1;
+  string name = 2;
+  string surname = 3;
+  string email = 4;
+  Address address = 5;
+}
+message Address {
+  string id = 1;
+  string country = 2;
+  string city = 3;
+  string street = 4;
+  string streetNumber= 5;
+}
