@@ -34,7 +34,7 @@ func NewUserProfileClient(address string) user_profile.UserProfileServiceClient 
 func NewAccommodationClient(address string) accommodation.AccommodationServiceClient {
 	conn, err := getConnection(address)
 	if err != nil {
-		log.Fatalf("Failed to start gRPC connection to UserProfile service: %v", err)
+		log.Fatalf("Failed to start gRPC connection to Accomodation service: %v", err)
 	}
 	return accommodation.NewAccommodationServiceClient(conn)
 }
@@ -42,7 +42,7 @@ func NewAccommodationClient(address string) accommodation.AccommodationServiceCl
 func NewReservationClient(address string) reservation.ReservationServiceClient {
 	conn, err := getConnection(address)
 	if err != nil {
-		log.Fatalf("Failed to start gRPC connection to UserProfile service: %v", err)
+		log.Fatalf("Failed to start gRPC connection to Reservationservice: %v", err)
 	}
 	return reservation.NewReservationServiceClient(conn)
 }
@@ -50,7 +50,7 @@ func NewReservationClient(address string) reservation.ReservationServiceClient {
 func NewNotificationClient(address string) notification.NotificationServiceClient {
 	conn, err := getConnection(address)
 	if err != nil {
-		log.Fatalf("Failed to start gRPC connection to UserProfile service: %v", err)
+		log.Fatalf("Failed to start gRPC connection to Notification service: %v", err)
 	}
 	return notification.NewNotificationServiceClient(conn)
 }

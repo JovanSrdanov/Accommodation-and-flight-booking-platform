@@ -33,13 +33,13 @@ func (handler AccountCredentialsHandler) Create(ctx context.Context, request *au
 		return nil, err
 	}
 
-	result, err := handler.accCredService.Create(accCred)
+	accCredId, err := handler.accCredService.Create(accCred)
 	if err != nil {
 		return nil, err
 	}
 
 	return &authorizationProto.CreateResponse{
-		Id: result.String(),
+		Id: accCredId.String(),
 	}, nil
 }
 func (handler AccountCredentialsHandler) GetByUsername(ctx context.Context, request *authorizationProto.GetByUsernameRequest) (*authorizationProto.GetByUsernameResponse, error) {

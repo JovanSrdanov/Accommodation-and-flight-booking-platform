@@ -25,11 +25,13 @@ type UserHandler struct {
 	tokenMaker                  token.Maker
 }
 
-func NewUserHandler(authorizationServiceAddress string, userProfileServiceAddress string,
+func NewUserHandler(authorizationServiceAddress, userProfileServiceAddress, notificationServiceAddress string,
 	tokenMaker token.Maker) *UserHandler {
-	return &UserHandler{authorizationServiceAddress: authorizationServiceAddress,
-		userProfileServiceAddress: userProfileServiceAddress,
-		tokenMaker:                tokenMaker,
+	return &UserHandler{
+		authorizationServiceAddress: authorizationServiceAddress,
+		userProfileServiceAddress:   userProfileServiceAddress,
+		notificationServiceAddress:  notificationServiceAddress,
+		tokenMaker:                  tokenMaker,
 	}
 }
 
@@ -125,8 +127,8 @@ func (handler UserHandler) CreateUser(ctx *gin.Context) {
 		return
 	}
 
-	_, err = handler.CreateAccountCredentials(&user, userProfileId)
-	//	accountID, err := handler.CreateAccountCredentials(&user, userProfileId)
+	//_, err = handler.CreateAccountCredentials(&user, userProfileId)
+	accountID, err := handler.CreateAccountCredentials(&user, userProfileId)
 	if err != nil {
 		deleteErr := handler.DeleteUserProfile(userProfileId)
 		if deleteErr != nil {
@@ -137,11 +139,11 @@ func (handler UserHandler) CreateUser(ctx *gin.Context) {
 		return
 	}
 
-	//err = handler.CreateNotificationConsent(accountID)
-	//if err != nil {
-	//	ctx.JSON(http.StatusBadRequest, communication.NewErrorResponse(err.Error()))
-	//	return
-	//}
+	err = handler.CreateNotificationConsent(accountID)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, communication.NewErrorResponse(err.Error()))
+		return
+	}
 
 	ctx.JSON(http.StatusCreated, communication.NewCreatedUserResponse(user.Username, userProfileId))
 }
