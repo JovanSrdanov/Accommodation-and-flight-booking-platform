@@ -16,5 +16,10 @@ func NewNotificationConsentHandler(notificationConsentService service.Notificati
 }
 
 func (handler *NotificationConsentHandler) Create(ctx context.Context, req *notification.CreateRequest) (*notification.CreateResponse, error) {
-	return &notification.CreateResponse{}, handler.notificationConsentService.Create(mapFromCreateRequest(req))
+	notificationConsent, err := mapFromCreateRequest(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return &notification.CreateResponse{}, handler.notificationConsentService.Create(notificationConsent)
 }
