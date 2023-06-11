@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "user_profile_service.proto",
+    "title": "authorization_service.proto",
     "version": "version not set"
   },
   "consumes": [
@@ -11,36 +11,14 @@
     "application/json"
   ],
   "paths": {
-    "/api-1/user": {
-      "delete": {
-        "operationId": "UserProfileService_DeleteUser",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/user_profileDeleteResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/runtimeError"
-            }
-          }
-        },
-        "tags": [
-          "UserProfileService"
-        ]
-      }
-    },
-    "/api-1/user-profile": {
+    "/api-1/account-credentials/change-password": {
       "put": {
-        "operationId": "UserProfileService_Update",
+        "operationId": "AuthorizationService_ChangePassword",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/user_profileUpdateRequest"
+              "properties": {}
             }
           },
           "default": {
@@ -56,23 +34,139 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/user_profileUpdateRequest"
+              "$ref": "#/definitions/authorizationChangePasswordRequest"
             }
           }
         ],
         "tags": [
-          "UserProfileService"
+          "AuthorizationService"
         ]
       }
     },
-    "/api-1/user-profile/{id}": {
-      "get": {
-        "operationId": "UserProfileService_GetById",
+    "/api-1/account-credentials/change-username": {
+      "put": {
+        "operationId": "AuthorizationService_ChangeUsername",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/user_profileGetByIdResponse"
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/authorizationChangeUsernameRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AuthorizationService"
+        ]
+      }
+    },
+    "/api-1/account-credentials/is-deleted": {
+      "get": {
+        "operationId": "AuthorizationService_CheckIfDeleted",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/authorizationCheckIfDeletedResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "tags": [
+          "AuthorizationService"
+        ]
+      }
+    },
+    "/api-1/account-credentials/login": {
+      "post": {
+        "operationId": "AuthorizationService_Login",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/authorizationLoginResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/authorizationLoginRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AuthorizationService"
+        ]
+      }
+    },
+    "/api-1/account-credentials/username/{username}": {
+      "get": {
+        "operationId": "AuthorizationService_GetByUsername",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/authorizationGetByUsernameResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "AuthorizationService"
+        ]
+      }
+    },
+    "/api-1/account-credentials/{id}": {
+      "get": {
+        "operationId": "AuthorizationService_GetById",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/authorizationGetByUsernameResponse"
             }
           },
           "default": {
@@ -91,12 +185,119 @@
           }
         ],
         "tags": [
-          "UserProfileService"
+          "AuthorizationService"
         ]
       }
     }
   },
   "definitions": {
+    "authorizationAccountCredentials": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "role": {
+          "$ref": "#/definitions/authorizationRole"
+        },
+        "userProfileId": {
+          "type": "string"
+        }
+      }
+    },
+    "authorizationChangePasswordRequest": {
+      "type": "object",
+      "properties": {
+        "oldPassword": {
+          "type": "string"
+        },
+        "newPassword": {
+          "type": "string"
+        }
+      }
+    },
+    "authorizationChangeUsernameRequest": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        }
+      }
+    },
+    "authorizationCheckIfDeletedResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "type": "boolean"
+        }
+      }
+    },
+    "authorizationCreateAccountCredentials": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "role": {
+          "$ref": "#/definitions/authorizationRole"
+        },
+        "userProfileId": {
+          "type": "string"
+        }
+      }
+    },
+    "authorizationCreateResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      }
+    },
+    "authorizationGetByUsernameResponse": {
+      "type": "object",
+      "properties": {
+        "accountCredentials": {
+          "$ref": "#/definitions/authorizationAccountCredentials"
+        }
+      }
+    },
+    "authorizationLoginRequest": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    },
+    "authorizationLoginResponse": {
+      "type": "object",
+      "properties": {
+        "access_token": {
+          "type": "string"
+        }
+      }
+    },
+    "authorizationRole": {
+      "type": "string",
+      "enum": [
+        "Host",
+        "Guest"
+      ],
+      "default": "Host"
+    },
     "protobufAny": {
       "type": "object",
       "properties": {
@@ -127,87 +328,6 @@
           "items": {
             "$ref": "#/definitions/protobufAny"
           }
-        }
-      }
-    },
-    "user_profileAddress": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "country": {
-          "type": "string"
-        },
-        "city": {
-          "type": "string"
-        },
-        "street": {
-          "type": "string"
-        },
-        "streetNumber": {
-          "type": "string"
-        }
-      }
-    },
-    "user_profileCreateResponse": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        }
-      }
-    },
-    "user_profileDeleteResponse": {
-      "type": "object",
-      "properties": {
-        "message": {
-          "type": "string"
-        }
-      }
-    },
-    "user_profileGetByIdResponse": {
-      "type": "object",
-      "properties": {
-        "userProfile": {
-          "$ref": "#/definitions/user_profileUserProfile"
-        }
-      }
-    },
-    "user_profileUpdateRequest": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "surname": {
-          "type": "string"
-        },
-        "email": {
-          "type": "string"
-        },
-        "address": {
-          "$ref": "#/definitions/user_profileAddress"
-        }
-      }
-    },
-    "user_profileUserProfile": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "surname": {
-          "type": "string"
-        },
-        "email": {
-          "type": "string"
-        },
-        "address": {
-          "$ref": "#/definitions/user_profileAddress"
         }
       }
     }

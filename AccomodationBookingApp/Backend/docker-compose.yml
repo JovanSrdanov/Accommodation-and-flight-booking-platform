@@ -21,6 +21,8 @@ services:
       ACCOMMODATION_SERVICE_PORT: ${ACCOMMODATION_SERVICE_PORT}
       RESERVATION_SERVICE_HOST: ${RESERVATION_SERVICE_HOST}
       RESERVATION_SERVICE_PORT: ${RESERVATION_SERVICE_PORT}
+      NOTIFICATION_SERVICE_HOST: ${NOTIFICATION_SERVICE_HOST}
+      NOTIFICATION_SERVICE_PORT: ${NOTIFICATION_SERVICE_PORT}
     networks:
       - network
 
@@ -215,6 +217,52 @@ services:
       - 6968:27017
     networks:
       - network
+
+  notification_service:
+    image: notification_service
+    container_name: notification_service
+    build:
+      context: .
+      dockerfile: ./notification_service/Dockerfile
+    restart: on-failure
+    environment:
+      NOTIFICATION_DB_HOST: ${NOTIFICATION_DB_HOST}
+      NOTIFICATION_DB_PORT: ${NOTIFICATION_DB_PORT}
+      NOTIFICATION_DB_NAME: ${NOTIFICATION_DB_NAME}
+      NOTIFICATION_DB_USER: ${NOTIFICATION_DB_USER}
+      NOTIFICATION_DB_PASS: ${NOTIFICATION_DB_PASS}
+
+      NOTIFICATION_SERVICE_PORT: ${NOTIFICATION_SERVICE_PORT}
+      NATS_HOST: ${NATS_HOST}
+      NATS_PORT: ${NATS_PORT}
+      NATS_USER: ${NATS_USER}
+      NATS_PASS: ${NATS_PASS}
+    depends_on:
+      notification_db:
+        condition: service_healthy
+    networks:
+      - network
+
+  notification_db:
+    image: notification_db
+    container_name: notification_db
+    restart: on-failure
+    build:
+      context: ../Database/UserProfile
+      dockerfile: Dockerfile
+    environment:
+      PGUSER: ${NOTIFICATION_DB_USER}
+      POSTGRES_PASSWORD: ${NOTIFICATION_DB_PASS}
+      POSTGRES_DB: ${NOTIFICATION_DB_NAME}
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - network
+    ports:
+      - 5004:5432
 
   nats:
     image: nats
