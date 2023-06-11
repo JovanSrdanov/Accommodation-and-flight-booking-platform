@@ -216,6 +216,51 @@ services:
     networks:
       - network
 
+  rating_service:
+    image: rating_service
+    container_name: rating_service
+    build:
+      context: .
+      dockerfile: ./rating_service/Dockerfile
+    restart: on-failure
+    environment:
+      RATING_SERVICE_HOST: ${RATING_SERVICE_HOST}
+      RATING_SERVICE_PORT: ${RATING_SERVICE_PORT}
+      NEO4J_DB: ${RATING_DB}
+      NEO4J_USERNAME: ${RATING_DB_USER}
+      NEO4J_PASS: ${RATING_DB_PASS}
+    networks:
+      - network
+    depends_on:
+      rating_db:
+        condition: service_healthy
+
+  rating_db:
+    image: neo4j
+    restart: always
+    ports:
+      # bolt
+      - "7687:7687"
+      # http
+      - "7474:7474"
+      # https
+      - "7473:7473"
+    # Docker healtcheck - checks if database is "alive"
+    healthcheck:
+      # test: [ "CMD-SHELL", "echo RETURN 1 | cypher-shell -a <NEO4J_dbms_connector_bolt_listen__address> -u <user defined username> -p <user defined password> || exit 1" ]
+      test:
+        [
+          "CMD-SHELL",
+          "echo RETURN 1 | cypher-shell -a bolt://neo4j:7687 -u neo4j -p nekaSifra || exit 1",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    environment:
+      - NEO4J_AUTH=neo4j/nekaSifra
+    volumes:
+      - ratingDb:/data
+
   nats:
     image: nats
     container_name: nats
@@ -226,6 +271,7 @@ services:
 volumes:
   accommodationDb:
   reservationDb:
+  ratingDb:
 
 networks:
   network:

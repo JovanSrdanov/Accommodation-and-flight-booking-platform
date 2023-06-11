@@ -50,7 +50,6 @@ services:
     networks:
       - network
 
-
   authorization_db:
     image: authorization_db
     container_name: authorization_db
@@ -69,6 +68,9 @@ services:
       retries: 5
     networks:
       - network
+    ports:
+      - 5001:5432
+
 
   user_profile_service:
     image: user_profile_service
@@ -83,6 +85,12 @@ services:
       USER_PROFILE_DB_NAME: ${USER_PROFILE_DB_NAME}
       USER_PROFILE_DB_USER: ${USER_PROFILE_DB_USER}
       USER_PROFILE_DB_PASS: ${USER_PROFILE_DB_PASS}
+
+      USER_PROFILE_EVENT_DB_NAME: ${USER_PROFILE_EVENT_DB_NAME}
+      USER_PROFILE_EVENT_DB_PORT: ${USER_PROFILE_EVENT_DB_PORT}
+      USER_PROFILE_EVENT_INNER_DB_NAME: ${USER_PROFILE_EVENT_INNER_DB_NAME}
+      USER_PROFILE_EVENT_DB_COLLECTION_NAME: ${USER_PROFILE_EVENT_DB_COLLECTION_NAME}
+
       USER_PROFILE_SERVICE_PORT: ${USER_PROFILE_SERVICE_PORT}
       NATS_HOST: ${NATS_HOST}
       NATS_PORT: ${NATS_PORT}
@@ -92,11 +100,16 @@ services:
       DELETE_USER_REPLY_SUBJECT: ${DELETE_USER_REPLY_SUBJECT}
       AUTHORIZATION_SERVICE_HOST: ${AUTHORIZATION_SERVICE_HOST}
       AUTHORIZATION_SERVICE_PORT: ${AUTHORIZATION_SERVICE_PORT}
+      RESERVATION_SERVICE_HOST: ${RESERVATION_SERVICE_HOST}
+      RESERVATION_SERVICE_PORT: ${RESERVATION_SERVICE_PORT}
+      ACCOMMODATION_SERVICE_HOST: ${ACCOMMODATION_SERVICE_HOST}
+      ACCOMMODATION_SERVICE_PORT: ${ACCOMMODATION_SERVICE_PORT}
     depends_on:
       user_profile_db:
         condition: service_healthy
     networks:
       - network
+
 
 
   user_profile_db:
@@ -117,6 +130,22 @@ services:
       retries: 5
     networks:
       - network
+    ports:
+      - 5002:5432
+
+  user_profile_event_db:
+    image: mongo
+    container_name: user_profile_event_db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok'
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    networks:
+      - network
+    ports:
+      - 5003:27017
+
 
   accommodation_service:
     image: accommodation_service
@@ -141,8 +170,6 @@ services:
   accommodation_db:
     image: mongo
     container_name: ${ACCOMMODATION_SERVICE_DB_NAME}
-    ports:
-      - "27017:27017"
     volumes:
       - accommodationDb:/data/db
     healthcheck:
@@ -150,14 +177,33 @@ services:
       interval: 10s
       timeout: 10s
       retries: 10
+    ports:
+      - 6969:27017
     networks:
       - network
+
+  reservation_service:
+    image: reservation_service
+    container_name: reservation_service
+    build:
+      context: .
+      dockerfile: ./reservation_service/Dockerfile
+    restart: on-failure
+    environment:
+      RESERVATION_SERVICE_HOST: ${RESERVATION_SERVICE_HOST}
+      RESERVATION_SERVICE_PORT: ${RESERVATION_SERVICE_PORT}
+      RESERVATION_SERVICE_DB_NAME: ${RESERVATION_SERVICE_DB_NAME}
+      RESERVATION_SERVICE_DB_PORT: ${RESERVATION_SERVICE_DB_PORT}
+    networks:
+      - network
+    depends_on:
+      reservation_db:
+        condition: service_healthy
+
 
   reservation_db:
     image: mongo
     container_name: ${RESERVATION_SERVICE_DB_NAME}
-    ports:
-      - "27018:27017"
     volumes:
       - reservationDb:/data/db
     healthcheck:
@@ -165,8 +211,36 @@ services:
       interval: 10s
       timeout: 10s
       retries: 10
+    ports:
+      - 6968:27017
     networks:
       - network
+
+  rating_db:
+    image: neo4j
+    restart: always
+    ports:
+      # bolt
+      - "7687:7687"
+      # http
+      - "7474:7474"
+      # https
+      - "7473:7473"
+    # Docker healtcheck - checks if database is "alive"
+    healthcheck:
+      # test: [ "CMD-SHELL", "echo RETURN 1 | cypher-shell -a <NEO4J_dbms_connector_bolt_listen__address> -u <user defined username> -p <user defined password> || exit 1" ]
+      test:
+        [
+          "CMD-SHELL",
+          "echo RETURN 1 | cypher-shell -a bolt://neo4j:7687 -u neo4j -p nekaSifra || exit 1",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    environment:
+      - NEO4J_AUTH=neo4j/nekaSifra
+    volumes:
+      - ratingDb:/data
 
   nats:
     image: nats
@@ -178,7 +252,9 @@ services:
 volumes:
   accommodationDb:
   reservationDb:
+  ratingDb:
 
 networks:
   network:
     driver: bridge
+

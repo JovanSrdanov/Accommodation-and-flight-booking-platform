@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+option go_package = "common/rating";
+
+package reservation;
+
+import "google/api/annotations.proto";
+
+service RatingService{
+  rpc RateAccommodation(RateAccommodationRequest) returns(RateAccommodationResponse) {
+    option (google.api.http) = {
+      post: "/api-1/rate/accommodation",
+      body: "*"
+    };
+  }
+}
+
+message RateAccommodation {
+  int32 rating = 1;
+  string accommodationId = 2;
+}
+
+message RateAccommodationResponse {}
+
+message RateAccommodationRequest {
+  RateAccommodation rating = 1;
+}
