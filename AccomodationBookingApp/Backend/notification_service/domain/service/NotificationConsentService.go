@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/google/uuid"
 	"notification_service/domain/model"
 	"notification_service/domain/repository"
 )
@@ -20,4 +21,8 @@ func (service NotificationConsentService) Create(notificationConsent *model.Noti
 	}
 	return nil
 
+}
+
+func (service NotificationConsentService) GetById(id uuid.UUID) (*model.NotificationConsent, error) {
+	return service.notificationConsentRepository.GetById(id)
 }

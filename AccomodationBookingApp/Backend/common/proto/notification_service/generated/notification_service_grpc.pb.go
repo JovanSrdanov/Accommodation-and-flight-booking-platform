@@ -19,7 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	NotificationService_Create_FullMethodName = "/notification.NotificationService/Create"
+	NotificationService_Create_FullMethodName                      = "/notification.NotificationService/Create"
+	NotificationService_UpdateMyNotificationConsent_FullMethodName = "/notification.NotificationService/UpdateMyNotificationConsent"
+	NotificationService_GetMyNotificationSettings_FullMethodName   = "/notification.NotificationService/GetMyNotificationSettings"
 )
 
 // NotificationServiceClient is the client API for NotificationService service.
@@ -27,6 +29,8 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type NotificationServiceClient interface {
 	Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error)
+	UpdateMyNotificationConsent(ctx context.Context, in *UpdateMyNotificationConsentRequest, opts ...grpc.CallOption) (*UpdateMyNotificationConsentResponse, error)
+	GetMyNotificationSettings(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*GetMyNotificationSettingsResponse, error)
 }
 
 type notificationServiceClient struct {
@@ -46,11 +50,31 @@ func (c *notificationServiceClient) Create(ctx context.Context, in *CreateReques
 	return out, nil
 }
 
+func (c *notificationServiceClient) UpdateMyNotificationConsent(ctx context.Context, in *UpdateMyNotificationConsentRequest, opts ...grpc.CallOption) (*UpdateMyNotificationConsentResponse, error) {
+	out := new(UpdateMyNotificationConsentResponse)
+	err := c.cc.Invoke(ctx, NotificationService_UpdateMyNotificationConsent_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *notificationServiceClient) GetMyNotificationSettings(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*GetMyNotificationSettingsResponse, error) {
+	out := new(GetMyNotificationSettingsResponse)
+	err := c.cc.Invoke(ctx, NotificationService_GetMyNotificationSettings_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // NotificationServiceServer is the server API for NotificationService service.
 // All implementations must embed UnimplementedNotificationServiceServer
 // for forward compatibility
 type NotificationServiceServer interface {
 	Create(context.Context, *CreateRequest) (*CreateResponse, error)
+	UpdateMyNotificationConsent(context.Context, *UpdateMyNotificationConsentRequest) (*UpdateMyNotificationConsentResponse, error)
+	GetMyNotificationSettings(context.Context, *EmptyRequest) (*GetMyNotificationSettingsResponse, error)
 	mustEmbedUnimplementedNotificationServiceServer()
 }
 
@@ -60,6 +84,12 @@ type UnimplementedNotificationServiceServer struct {
 
 func (UnimplementedNotificationServiceServer) Create(context.Context, *CreateRequest) (*CreateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
+}
+func (UnimplementedNotificationServiceServer) UpdateMyNotificationConsent(context.Context, *UpdateMyNotificationConsentRequest) (*UpdateMyNotificationConsentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateMyNotificationConsent not implemented")
+}
+func (UnimplementedNotificationServiceServer) GetMyNotificationSettings(context.Context, *EmptyRequest) (*GetMyNotificationSettingsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMyNotificationSettings not implemented")
 }
 func (UnimplementedNotificationServiceServer) mustEmbedUnimplementedNotificationServiceServer() {}
 
@@ -92,6 +122,42 @@ func _NotificationService_Create_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _NotificationService_UpdateMyNotificationConsent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateMyNotificationConsentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(NotificationServiceServer).UpdateMyNotificationConsent(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: NotificationService_UpdateMyNotificationConsent_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(NotificationServiceServer).UpdateMyNotificationConsent(ctx, req.(*UpdateMyNotificationConsentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _NotificationService_GetMyNotificationSettings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EmptyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(NotificationServiceServer).GetMyNotificationSettings(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: NotificationService_GetMyNotificationSettings_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(NotificationServiceServer).GetMyNotificationSettings(ctx, req.(*EmptyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // NotificationService_ServiceDesc is the grpc.ServiceDesc for NotificationService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -102,6 +168,14 @@ var NotificationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Create",
 			Handler:    _NotificationService_Create_Handler,
+		},
+		{
+			MethodName: "UpdateMyNotificationConsent",
+			Handler:    _NotificationService_UpdateMyNotificationConsent_Handler,
+		},
+		{
+			MethodName: "GetMyNotificationSettings",
+			Handler:    _NotificationService_GetMyNotificationSettings_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

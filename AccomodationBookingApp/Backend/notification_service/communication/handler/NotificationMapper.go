@@ -22,3 +22,14 @@ func mapFromCreateRequest(request *notification.CreateRequest) (*model.Notificat
 		HostResponded:            request.HostResponded,
 	}, nil
 }
+
+func mapToRequest(consent *model.NotificationConsent) *notification.GetMyNotificationSettingsResponse {
+	return &notification.GetMyNotificationSettingsResponse{
+		RequestMade:              consent.RequestMade,
+		ReservationCanceled:      consent.ReservationCanceled,
+		HostRatingGiven:          consent.HostRatingGiven,
+		AccommodationRatingGiven: consent.AccommodationRatingGiven,
+		ProminentHost:            consent.ProminentHost,
+		HostResponded:            consent.HostResponded,
+	}
+}

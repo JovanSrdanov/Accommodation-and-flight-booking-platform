@@ -6,6 +6,7 @@ import (
 	"authorization_service/domain/token"
 	accommodation "common/proto/accommodation_service/generated"
 	authorization "common/proto/authorization_service/generated"
+	notification "common/proto/notification_service/generated"
 	reservation "common/proto/reservation_service/generated"
 	user_profile "common/proto/user_profile_service/generated"
 	"context"
@@ -76,6 +77,12 @@ func (server *Server) initGrpcHandlers(mux *runtime.ServeMux) {
 
 	reservationEndpoint := fmt.Sprintf("%s:%s", server.config.ReservationHost, server.config.ReservationPort)
 	err = reservation.RegisterReservationServiceHandlerFromEndpoint(context.TODO(), mux, reservationEndpoint, opts)
+	if err != nil {
+		panic(err)
+	}
+
+	notificationEndpoint := fmt.Sprintf("%s:%s", server.config.NotificationHost, server.config.NotificationPort)
+	err = notification.RegisterNotificationServiceHandlerFromEndpoint(context.TODO(), mux, notificationEndpoint, opts)
 	if err != nil {
 		panic(err)
 	}

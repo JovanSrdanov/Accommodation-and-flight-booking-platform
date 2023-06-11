@@ -28,4 +28,11 @@ proto-reservation:
 	--grpc-gateway_out ./common/proto/reservation_service/generated --grpc-gateway_opt paths=source_relative \
 	./common/proto/reservation_service/reservation_service.proto
 
-proto-all: proto-authorization proto-user-profile proto-accommodation proto-reservation
+proto-notification:
+	protoc -I ./common/proto/notification_service -I ./common/proto \
+	--go_out ./common/proto/notification_service/generated --go_opt paths=source_relative \
+	--go-grpc_out ./common/proto/notification_service/generated --go-grpc_opt paths=source_relative \
+	--grpc-gateway_out ./common/proto/notification_service/generated --grpc-gateway_opt paths=source_relative \
+	./common/proto/notification_service/notification_service.proto
+
+proto-all: proto-authorization proto-user-profile proto-accommodation proto-reservation notification_service

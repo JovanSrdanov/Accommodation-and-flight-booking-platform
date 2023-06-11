@@ -33,7 +33,7 @@ func (server *Server) Start() {
 	server.startGrpcServer(notificationConsentHandler)
 }
 
-func initNotificationConsentRepo(client *gorm.DB) *repository.NotificationConsentServicePG {
+func initNotificationConsentRepo(client *gorm.DB) *repository.NotificationConsentRepositoryPG {
 	repo, err := repository.NewNotificationConsentServicePG(client)
 	if err != nil {
 		log.Fatal(err)
@@ -75,8 +75,7 @@ func getProtectedMethodsWithAllowedRoles() map[string][]model.Role {
 	const authServicePath = "/notification.NotificationService/"
 
 	return map[string][]model.Role{
-		// Kao primer za kasnije
-		//authServicePath + "Update":     {model.Guest, model.Host},
-		//authServicePath + "DeleteUser": {model.Guest, model.Host},
+		authServicePath + "UpdateMyNotificationConsent": {model.Guest, model.Host},
+		authServicePath + "GetMyNotificationSettings":   {model.Guest, model.Host},
 	}
 }
