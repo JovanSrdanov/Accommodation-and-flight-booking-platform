@@ -248,7 +248,7 @@ services:
     container_name: notification_db
     restart: on-failure
     build:
-      context: ../Database/UserProfile
+      context: ../Database/Notification
       dockerfile: Dockerfile
     environment:
       PGUSER: ${NOTIFICATION_DB_USER}
