@@ -33,3 +33,15 @@ func mapToRequest(consent *model.NotificationConsent) *notification.GetMyNotific
 		HostResponded:            consent.HostResponded,
 	}
 }
+
+func mapFromUpdateMyNotificationConsentRequest(request *notification.UpdateMyNotificationConsentRequest, id uuid.UUID) *model.NotificationConsent {
+	return &model.NotificationConsent{
+		UserProfileID:            id,
+		RequestMade:              request.RequestMade,
+		ReservationCanceled:      request.ReservationCanceled,
+		HostRatingGiven:          request.HostRatingGiven,
+		AccommodationRatingGiven: request.AccommodationRatingGiven,
+		ProminentHost:            request.ProminentHost,
+		HostResponded:            request.HostResponded,
+	}
+}

@@ -6,8 +6,8 @@ import (
 )
 
 type INotificationConsentRepository interface {
-	Create(accCred *model.NotificationConsent) error
-	Update(accCred *model.NotificationConsent) error
+	Create(notificationConsent *model.NotificationConsent) error
+	Update(notificationConsent *model.NotificationConsent) (*model.NotificationConsent, error)
 	GetById(id uuid.UUID) (*model.NotificationConsent, error)
 	Delete(id uuid.UUID) error
 }

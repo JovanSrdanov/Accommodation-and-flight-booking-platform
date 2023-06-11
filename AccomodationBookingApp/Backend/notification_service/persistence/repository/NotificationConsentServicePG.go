@@ -35,9 +35,9 @@ func (repo NotificationConsentRepositoryPG) GetById(id uuid.UUID) (*model.Notifi
 	return notificationConsent, nil
 }
 
-func (repo NotificationConsentRepositoryPG) Update(accCred *model.NotificationConsent) error {
-	//TODO implement me
-	panic("implement me")
+func (repo NotificationConsentRepositoryPG) Update(notificationConsent *model.NotificationConsent) (*model.NotificationConsent, error) {
+	repo.dbClient.Save(&notificationConsent)
+	return nil, nil
 }
 
 func (repo NotificationConsentRepositoryPG) Delete(id uuid.UUID) error {

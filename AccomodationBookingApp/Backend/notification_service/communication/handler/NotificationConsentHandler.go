@@ -5,8 +5,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/google/uuid"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 	"notification_service/domain/service"
 )
 
@@ -29,8 +27,21 @@ func (handler *NotificationConsentHandler) Create(ctx context.Context, req *noti
 }
 
 func (handler *NotificationConsentHandler) UpdateMyNotificationConsent(ctx context.Context, req *notification.UpdateMyNotificationConsentRequest) (*notification.UpdateMyNotificationConsentResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateMyNotificationConsent not implemented")
+
+	loggedInId, ok := ctx.Value("id").(uuid.UUID)
+	if !ok {
+		return nil, fmt.Errorf("failed to extract id and cast to UUID")
+	}
+	UpdateMyNotificationConsent := mapFromUpdateMyNotificationConsentRequest(req, loggedInId)
+	_, err := handler.notificationConsentService.UpdateMyNotificationConsent(UpdateMyNotificationConsent)
+
+	if err != nil {
+		return nil, err
+	}
+	return &notification.UpdateMyNotificationConsentResponse{Message: "Updated"}, nil
+
 }
+
 func (handler *NotificationConsentHandler) GetMyNotificationSettings(ctx context.Context, req *notification.EmptyRequest) (*notification.GetMyNotificationSettingsResponse, error) {
 	loggedInId, ok := ctx.Value("id").(uuid.UUID)
 	if !ok {

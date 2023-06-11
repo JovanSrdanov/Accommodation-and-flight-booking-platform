@@ -26,3 +26,7 @@ func (service NotificationConsentService) Create(notificationConsent *model.Noti
 func (service NotificationConsentService) GetById(id uuid.UUID) (*model.NotificationConsent, error) {
 	return service.notificationConsentRepository.GetById(id)
 }
+
+func (service NotificationConsentService) UpdateMyNotificationConsent(notificationConsent *model.NotificationConsent) (*model.NotificationConsent, error) {
+	return service.notificationConsentRepository.Update(notificationConsent)
+}
