@@ -93,31 +93,31 @@ func (server *Server) initGrpcHandlers(mux *runtime.ServeMux) {
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
 
 	authorizationEndpoint := fmt.Sprintf("%s:%s", server.config.AuthorizationHost, server.config.AuthorizationPort)
-	err := authorization.RegisterAuthorizationServiceHandlerFromEndpoint(context.Background(), mux, authorizationEndpoint, opts)
+	err := authorization.RegisterAuthorizationServiceHandlerFromEndpoint(context.TODO(), mux, authorizationEndpoint, opts)
 	if err != nil {
 		panic(err)
 	}
 
 	userProfileEndpoint := fmt.Sprintf("%s:%s", server.config.UserProfileHost, server.config.UserProfilePort)
-	err = user_profile.RegisterUserProfileServiceHandlerFromEndpoint(context.Background(), mux, userProfileEndpoint, opts)
+	err = user_profile.RegisterUserProfileServiceHandlerFromEndpoint(context.TODO(), mux, userProfileEndpoint, opts)
 	if err != nil {
 		panic(err)
 	}
 
 	accommodationEndpoint := fmt.Sprintf("%s:%s", server.config.AccommodationHost, server.config.AccommodationPort)
-	err = accommodation.RegisterAccommodationServiceHandlerFromEndpoint(context.Background(), mux, accommodationEndpoint, opts)
+	err = accommodation.RegisterAccommodationServiceHandlerFromEndpoint(context.TODO(), mux, accommodationEndpoint, opts)
 	if err != nil {
 		panic(err)
 	}
 
 	reservationEndpoint := fmt.Sprintf("%s:%s", server.config.ReservationHost, server.config.ReservationPort)
-	err = reservation.RegisterReservationServiceHandlerFromEndpoint(context.Background(), mux, reservationEndpoint, opts)
+	err = reservation.RegisterReservationServiceHandlerFromEndpoint(context.TODO(), mux, reservationEndpoint, opts)
 	if err != nil {
 		panic(err)
 	}
 
 	notificationEndpoint := fmt.Sprintf("%s:%s", server.config.NotificationHost, server.config.NotificationPort)
-	err = notification.RegisterNotificationServiceHandlerFromEndpoint(context.Background(), mux, notificationEndpoint, opts)
+	err = notification.RegisterNotificationServiceHandlerFromEndpoint(context.TODO(), mux, notificationEndpoint, opts)
 	if err != nil {
 		panic(err)
 	}

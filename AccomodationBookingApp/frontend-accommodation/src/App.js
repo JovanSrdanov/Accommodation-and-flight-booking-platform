@@ -73,7 +73,6 @@ function App() {
 
 
     const pasetoExpirationRole = () => {
-
         const paseto = localStorage.getItem('paseto');
         if (!paseto) {
             localStorage.removeItem('paseto');
@@ -82,7 +81,7 @@ function App() {
         const footer = paseto.split(".")[3];
         const decodedFooter = JSON.parse(atob(footer));
         const roleAndExp = decodedFooter.RoleAndExp;
-        //console.log(decodedFooter)
+
 
         const regex = /role:(.*), expiration date: (.*)/;
         const matches = roleAndExp.match(regex);
@@ -115,6 +114,7 @@ function App() {
                 return null;
 
             } else {
+           
                 if (role === "0") {
 
                     return "Host";
@@ -179,6 +179,10 @@ function App() {
             });
     };
 
+    // useEffect(() => {
+    //
+    // }, []);
+
     useEffect(() => {
 
         if (isFirstRender.current || isClickOpen.current) {
@@ -196,10 +200,6 @@ function App() {
                 // Handle the error
             });
     }, [selectedItem]);
-
-    useEffect(() => {
-        openWebSocket()
-    }, []);
 
 
     return (
