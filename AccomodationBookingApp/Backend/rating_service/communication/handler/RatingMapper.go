@@ -24,3 +24,10 @@ func (mapper RatingMapper) mapFromRateAccommodationRequest(request *rating.RateA
 		Date:            time.Now(),
 	}
 }
+
+func (mapper RatingMapper) mapToRatingForAccommodationResponse(in *model.RatingResponse) *rating.RatingForAccommodationResponse {
+	return &rating.RatingForAccommodationResponse{Rating: &rating.AccommodationRating{
+		Rating:          in.Rating,
+		AccommodationId: in.AccommodationId,
+	}}
+}

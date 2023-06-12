@@ -21,6 +21,8 @@ services:
       ACCOMMODATION_SERVICE_PORT: ${ACCOMMODATION_SERVICE_PORT}
       RESERVATION_SERVICE_HOST: ${RESERVATION_SERVICE_HOST}
       RESERVATION_SERVICE_PORT: ${RESERVATION_SERVICE_PORT}
+      RATING_SERVICE_HOST: ${RATING_SERVICE_HOST}
+      RATING_SERVICE_PORT: ${RATING_SERVICE_PORT}
     networks:
       - network
 
@@ -30,7 +32,7 @@ services:
     build:
       context: .
       dockerfile: ./authorization_service/Dockerfile
-    restart: on-failure
+    restart: always
     environment:
       AUTHORIZATION_DB_HOST: ${AUTHORIZATION_DB_HOST}
       AUTHORIZATION_DB_PORT: ${AUTHORIZATION_DB_PORT}
@@ -64,8 +66,8 @@ services:
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready" ]
       interval: 10s
-      timeout: 5s
-      retries: 5
+      timeout: 10s
+      retries: 10
     networks:
       - network
     ports:
@@ -78,7 +80,7 @@ services:
     build:
       context: .
       dockerfile: ./user_profile_service/Dockerfile
-    restart: on-failure
+    restart: always
     environment:
       USER_PROFILE_DB_HOST: ${USER_PROFILE_DB_HOST}
       USER_PROFILE_DB_PORT: ${USER_PROFILE_DB_PORT}
@@ -125,9 +127,9 @@ services:
       POSTGRES_DB: ${USER_PROFILE_DB_NAME}
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      interval: 5s
+      timeout: 10s
+      retries: 10
     networks:
       - network
     ports:
@@ -222,13 +224,13 @@ services:
     build:
       context: .
       dockerfile: ./rating_service/Dockerfile
-    restart: on-failure
+    restart: always
     environment:
       RATING_SERVICE_HOST: ${RATING_SERVICE_HOST}
       RATING_SERVICE_PORT: ${RATING_SERVICE_PORT}
-      NEO4J_DB: ${RATING_DB}
-      NEO4J_USERNAME: ${RATING_DB_USER}
-      NEO4J_PASS: ${RATING_DB_PASS}
+      NEO4J_DB: ${NEO4J_DB}
+      NEO4J_USERNAME: ${NEO4J_USERNAME}
+      NEO4J_PASS: ${NEO4J_PASS}
     networks:
       - network
     depends_on:
@@ -238,6 +240,7 @@ services:
   neo4j:
     image: neo4j
     restart: always
+    container_name: rating_db
     ports:
       # bolt
       - "7687:7687"
@@ -254,8 +257,10 @@ services:
           "echo RETURN 1 | cypher-shell -a bolt://neo4j:7687 -u neo4j -p nekaSifra || exit 1",
         ]
       interval: 5s
-      timeout: 5s
+      timeout: 10s
       retries: 10
+    networks:
+      - network
     environment:
       - NEO4J_AUTH=neo4j/nekaSifra
     volumes:

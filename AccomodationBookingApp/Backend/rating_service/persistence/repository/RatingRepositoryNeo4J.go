@@ -19,5 +19,8 @@ func (repo RatingRepositoryNeo4J) RateAccommodation(rating *model.Rating) error 
 }
 
 func (repo RatingRepositoryNeo4J) GetRatingForAccommodation(id primitive.ObjectID) (model.RatingResponse, error) {
-	return model.RatingResponse{}, nil
+	return model.RatingResponse{
+		AccommodationId: id.Hex(),
+		Rating:          10,
+	}, nil
 }

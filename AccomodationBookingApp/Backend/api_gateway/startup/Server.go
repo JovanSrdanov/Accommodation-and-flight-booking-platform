@@ -6,6 +6,7 @@ import (
 	"authorization_service/domain/token"
 	accommodation "common/proto/accommodation_service/generated"
 	authorization "common/proto/authorization_service/generated"
+	rating "common/proto/rating_service/generated"
 	reservation "common/proto/reservation_service/generated"
 	user_profile "common/proto/user_profile_service/generated"
 	"context"
@@ -76,6 +77,12 @@ func (server *Server) initGrpcHandlers(mux *runtime.ServeMux) {
 
 	reservationEndpoint := fmt.Sprintf("%s:%s", server.config.ReservationHost, server.config.ReservationPort)
 	err = reservation.RegisterReservationServiceHandlerFromEndpoint(context.TODO(), mux, reservationEndpoint, opts)
+	if err != nil {
+		panic(err)
+	}
+
+	ratingEndpoint := fmt.Sprintf("%s:%s", server.config.RatingHost, server.config.RatingPort)
+	err = rating.RegisterRatingServiceHandlerFromEndpoint(context.TODO(), mux, ratingEndpoint, opts)
 	if err != nil {
 		panic(err)
 	}

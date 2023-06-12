@@ -3,6 +3,7 @@ package handler
 import (
 	rating "common/proto/rating_service/generated"
 	"context"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"rating_service/domain/service"
 )
 
@@ -26,5 +27,12 @@ func (handler RatingHandler) RateAccommodation(ctx context.Context, in *rating.R
 }
 
 func (handler RatingHandler) GetRatingForAccommodation(ctx context.Context, in *rating.RatingForAccommodationRequest) (*rating.RatingForAccommodationResponse, error) {
-	return &rating.RatingForAccommodationResponse{}, nil
+	mapper := NewRatingMapper()
+
+	accommodationId, _ := primitive.ObjectIDFromHex(in.AccommodationId)
+	res, err := handler.ratingService.GetRatingForAccommodation(accommodationId)
+	if err != nil {
+		return &rating.RatingForAccommodationResponse{}, err
+	}
+	return mapper.mapToRatingForAccommodationResponse(&res), nil
 }
