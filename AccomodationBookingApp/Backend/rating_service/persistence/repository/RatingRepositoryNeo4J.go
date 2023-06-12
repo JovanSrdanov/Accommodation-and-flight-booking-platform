@@ -185,8 +185,80 @@ func (repo RatingRepositoryNeo4J) GetRatingForAccommodation(id primitive.ObjectI
 }
 
 func (repo RatingRepositoryNeo4J) GetRecommendedAccommodations(guestId string) (model.RecommendedAccommodations, error) {
-	slice := make([]primitive.ObjectID, 0)
+	/*slice := make([]primitive.ObjectID, 0)
 	slice = append(slice, primitive.NewObjectID())
 	slice = append(slice, primitive.NewObjectID())
-	return model.RecommendedAccommodations{AccommodationsIds: slice}, nil
+	return model.RecommendedAccommodations{AccommodationsIds: slice}, nil*/
+
+	session := repo.dbClient.NewSession(neo4j.SessionConfig{})
+	defer session.Close()
+
+	guestID := "guest123"
+
+	result, err := session.ReadTransaction(func(tx neo4j.Transaction) (interface{}, error) {
+		// Find similar guests
+		result, err := tx.Run(
+			"MATCH (g1:Guest {guestId: $guestID})-[r1:RATED]->(a:Accommodation)<-[r2:RATED]-(g2:Guest) "+
+				"WHERE abs(r1.rating - r2.rating) <= 1 "+
+				"WITH g1, g2, COUNT(DISTINCT a) AS commonRatings "+
+				"WHERE g1 <> g2 AND commonRatings > 0 "+
+				"RETURN g2.guestId",
+			map[string]interface{}{
+				"guestID": guestID,
+			},
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		similarGuests := make([]string, 0)
+		for result.Next() {
+			record := result.Record()
+			guestID, ok := record.Get("g2.guestId")
+			if ok {
+				similarGuests = append(similarGuests, guestID.(string))
+			}
+		}
+
+		// Find accommodations rated by similar guests with rating >= 4
+		result, err = tx.Run(
+			"MATCH (:Guest {guestId: $guestID})-[:RATED]->(a1:Accommodation)<-[:RATED]-(g:Guest)-[r:RATED]->(a2:Accommodation) "+
+				"WHERE a1 <> a2 AND g.guestId IN $similarGuests AND r.rating >= 4 "+
+				"RETURN DISTINCT a2.accommodationId",
+			map[string]interface{}{
+				"guestID":       guestID,
+				"similarGuests": similarGuests,
+			},
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		recommendations := make([]string, 0)
+		for result.Next() {
+			record := result.Record()
+			accommodationID, ok := record.Get("a2.accommodationId")
+			if ok {
+				recommendations = append(recommendations, accommodationID.(string))
+			}
+		}
+
+		return recommendations, nil
+	})
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	recommendationsOid := make([]primitive.ObjectID, 0)
+	if result != nil {
+		recommendations := result.([]string)
+
+		for _, accommodationID := range recommendations {
+			oid, _ := primitive.ObjectIDFromHex(accommodationID)
+			recommendationsOid = append(recommendationsOid, oid)
+		}
+	}
+
+	return model.RecommendedAccommodations{AccommodationsIds: recommendationsOid}, nil
 }
