@@ -19,6 +19,16 @@ service RatingService{
       get: "/api-1/rating/{accommodationId}"
     };
   }
+
+  rpc GetRecommendedAccommodations(RecommendedAccommodationsRequest) returns(RecommendedAccommodationsResponse) {
+    option (google.api.http) = {
+      get: "/api-1/rating/recommended/{guestId}"
+    };
+  }
+}
+
+message RecommendedAccommodationsResponse {
+  repeated string accommodationId = 1;
 }
 
 message RatingForAccommodationRequest {
@@ -27,6 +37,10 @@ message RatingForAccommodationRequest {
 
 message RatingForAccommodationResponse {
     AccommodationRating rating = 1;
+}
+
+message RecommendedAccommodationsRequest {
+  string guestId = 1;
 }
 
 message AccommodationRating {

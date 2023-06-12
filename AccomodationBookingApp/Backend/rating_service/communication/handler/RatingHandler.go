@@ -39,3 +39,14 @@ func (handler RatingHandler) GetRatingForAccommodation(ctx context.Context, in *
 	}
 	return mapper.mapToRatingForAccommodationResponse(&res), nil
 }
+
+func (handler RatingHandler) GetRecommendedAccommodations(ctx context.Context, in *rating.RecommendedAccommodationsRequest) (*rating.RecommendedAccommodationsResponse, error) {
+	mapper := NewRatingMapper()
+
+	res, err := handler.ratingService.GetRecommendedAccommodations(in.GuestId)
+	if err != nil {
+		return &rating.RecommendedAccommodationsResponse{}, err
+	}
+
+	return mapper.mapToRecommendedAccommodationsResponse(&res), nil
+}

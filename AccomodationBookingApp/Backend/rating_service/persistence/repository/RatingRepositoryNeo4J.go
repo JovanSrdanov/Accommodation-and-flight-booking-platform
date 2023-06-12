@@ -129,8 +129,64 @@ func (repo RatingRepositoryNeo4J) RateAccommodation(guestId string, ratingDto *m
 }
 
 func (repo RatingRepositoryNeo4J) GetRatingForAccommodation(id primitive.ObjectID) (model.RatingResponse, error) {
+	session := repo.dbClient.NewSession(neo4j.SessionConfig{})
+	defer session.Close()
+
+	accommodationID := id.Hex()
+
+	result, err := session.ReadTransaction(func(tx neo4j.Transaction) (interface{}, error) {
+		// Retrieve ratings for the accommodation
+		result, err := tx.Run(
+			"MATCH (:Guest)-[r:RATED]->(a:Accommodation {accommodationId: $accommodationID}) RETURN r.rating",
+			map[string]interface{}{
+				"accommodationID": accommodationID,
+			},
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		ratingSum := int64(0)
+		count := int64(0)
+		for result.Next() {
+			record := result.Record()
+			ratingValue, ok := record.Get("r.rating")
+			if ok {
+				rating := ratingValue.(int64)
+				ratingSum += rating
+				count++
+			}
+		}
+
+		if count > 0 {
+			ratingAverage := float64(ratingSum) / float64(count)
+			return ratingAverage, nil
+		}
+
+		return nil, nil
+	})
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	ratingAverage := float64(0)
+
+	if result != nil {
+		ratingAverage = result.(float64)
+	} else {
+		ratingAverage = -1
+	}
+
 	return model.RatingResponse{
 		AccommodationId: id.Hex(),
-		Rating:          10,
+		Rating:          float32(ratingAverage),
 	}, nil
+}
+
+func (repo RatingRepositoryNeo4J) GetRecommendedAccommodations(guestId string) (model.RecommendedAccommodations, error) {
+	slice := make([]primitive.ObjectID, 0)
+	slice = append(slice, primitive.NewObjectID())
+	slice = append(slice, primitive.NewObjectID())
+	return model.RecommendedAccommodations{AccommodationsIds: slice}, nil
 }

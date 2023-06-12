@@ -31,3 +31,13 @@ func (mapper RatingMapper) mapToRatingForAccommodationResponse(in *model.RatingR
 		AccommodationId: in.AccommodationId,
 	}}
 }
+
+func (mapper RatingMapper) mapToRecommendedAccommodationsResponse(in *model.RecommendedAccommodations) *rating.RecommendedAccommodationsResponse {
+	slice := make([]string, 0)
+
+	for _, val := range in.AccommodationsIds {
+		slice = append(slice, val.Hex())
+	}
+
+	return &rating.RecommendedAccommodationsResponse{AccommodationId: slice}
+}

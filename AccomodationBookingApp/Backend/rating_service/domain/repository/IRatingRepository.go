@@ -8,4 +8,5 @@ import (
 type IRatingRepository interface {
 	RateAccommodation(guestId string, rating *model.Rating) error
 	GetRatingForAccommodation(id primitive.ObjectID) (model.RatingResponse, error)
+	GetRecommendedAccommodations(guestId string) (model.RecommendedAccommodations, error)
 }

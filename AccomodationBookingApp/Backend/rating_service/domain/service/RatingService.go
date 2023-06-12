@@ -22,3 +22,7 @@ func (service RatingService) RateAccommodation(guestId string, rating *model.Rat
 func (service RatingService) GetRatingForAccommodation(id primitive.ObjectID) (model.RatingResponse, error) {
 	return service.ratingRepo.GetRatingForAccommodation(id)
 }
+
+func (service RatingService) GetRecommendedAccommodations(guestId string) (model.RecommendedAccommodations, error) {
+	return service.ratingRepo.GetRecommendedAccommodations(guestId)
+}
