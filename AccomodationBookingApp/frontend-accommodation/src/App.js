@@ -47,7 +47,11 @@ function App() {
     const [notificationSnackBar, setNotificationSnackBar] = useState(false);
     const [message, setMessage] = useState('');
     const openWebSocket = () => {
-
+        const paseto = localStorage.getItem('paseto');
+        if (!paseto) {
+            localStorage.removeItem('paseto');
+            return null
+        }
         const ws = new WebSocket('ws://localhost:8000/ws');
 
         ws.onopen = () => {
@@ -112,11 +116,11 @@ function App() {
 
             } else {
                 if (role === "0") {
-                    openWebSocket();
+
                     return "Host";
 
                 } else if (role === "1") {
-                    openWebSocket();
+
                     return "Guest";
 
                 } else {
@@ -176,7 +180,7 @@ function App() {
     };
 
     useEffect(() => {
-        console.log(new Date())
+
         if (isFirstRender.current || isClickOpen.current) {
             isFirstRender.current = false;
             isClickOpen.current = false;
@@ -192,6 +196,10 @@ function App() {
                 // Handle the error
             });
     }, [selectedItem]);
+
+    useEffect(() => {
+        openWebSocket()
+    }, []);
 
 
     return (
