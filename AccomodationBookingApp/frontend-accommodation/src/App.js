@@ -1,7 +1,18 @@
 import ParticlesBg from 'particles-bg'
 import "./particles.css"
 import {Navigate, Route, Routes, useNavigate} from "react-router-dom";
-import {AppBar, Box, Button, Toolbar, Tooltip} from "@mui/material";
+import {
+    AppBar,
+    Box,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    FormControlLabel,
+    Switch,
+    Toolbar,
+    Tooltip
+} from "@mui/material";
 import HotelIcon from '@mui/icons-material/Hotel'
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
@@ -12,7 +23,7 @@ import HostAPlacePage from "./pages/host-pages/host-a-place-page";
 import ReservationsAndRequestsPage from "./pages/host-pages/reservations-and-requests-page";
 import ProfilePage from "./pages/guest-pages/profile-page";
 import SearchAndFilterAccommodationsPage from "./pages/all-roles-pages/search-and-filter-accommodations-page";
-import React from "react";
+import React, {useEffect, useRef, useState} from "react";
 import HistoryIcon from '@mui/icons-material/History';
 import RecommendOutlinedIcon from '@mui/icons-material/RecommendOutlined';
 import OtherHousesOutlinedIcon from '@mui/icons-material/OtherHousesOutlined';
@@ -23,6 +34,9 @@ import RegisterPage from "./pages/unauthenticated-pages/register-page";
 import LoginIcon from '@mui/icons-material/Login';
 import HowToRegIcon from '@mui/icons-material/HowToReg';
 import TravelExploreIcon from '@mui/icons-material/TravelExplore';
+import {Flex} from "reflexbox";
+import interceptor from "./interceptor/interceptor";
+import EditNotificationsIcon from '@mui/icons-material/EditNotifications';
 
 function App() {
 
@@ -95,8 +109,151 @@ function App() {
         localStorage.removeItem('paseto');
         navigate('/login');
     };
+
+    const [selectedItem, setSelectedItem] = useState({
+        RequestMade: false,
+        ReservationCanceled: true,
+        HostRatingGiven: false,
+        AccommodationRatingGiven: false,
+        ProminentHost: false,
+        HostResponded: false,
+    });
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
+    const handleSwitchChange = (event) => {
+        setSelectedItem((prevState) => ({
+            ...prevState,
+            [event.target.name]: event.target.checked,
+        }));
+    };
+
+    const [open, setOpen] = useState(false);
+    const isFirstRender = useRef(true);
+    const isClickOpen = useRef(false);
+
+    const handleClickOpen = () => {
+        isClickOpen.current = true;
+        interceptor
+            .get("/api-1/notification/get-my")
+            .then((res) => {
+                setSelectedItem(res.data);
+                setOpen(true);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    };
+
+    useEffect(() => {
+        if (isFirstRender.current || isClickOpen.current) {
+            isFirstRender.current = false;
+            isClickOpen.current = false;
+            return;
+        }
+
+        interceptor
+            .put("/api-1/notification/update-my", selectedItem)
+            .then((res) => {
+                // Handle the response
+            })
+            .catch((err) => {
+                // Handle the error
+            });
+    }, [selectedItem]);
+
+
     return (
-        <div>
+        <>
+            <Dialog open={open} onClose={handleClose}>
+
+                <DialogContent>
+
+                    <Flex flexDirection="column">
+                        {ROLE === 'Host' && (
+                            <>
+                                <FormControlLabel
+                                    control={
+                                        <Switch
+                                            checked={selectedItem.RequestMade}
+                                            onChange={handleSwitchChange}
+                                            name="RequestMade"
+                                            color="primary"
+                                        />
+                                    }
+                                    label="Request Made"
+                                />
+                                <FormControlLabel
+                                    control={
+                                        <Switch
+                                            checked={selectedItem.ReservationCanceled}
+                                            onChange={handleSwitchChange}
+                                            name="ReservationCanceled"
+                                            color="primary"
+                                        />
+                                    }
+                                    label="Reservation Canceled"
+                                />
+                                <FormControlLabel
+                                    control={
+                                        <Switch
+                                            checked={selectedItem.HostRatingGiven}
+                                            onChange={handleSwitchChange}
+                                            name="HostRatingGiven"
+                                            color="primary"
+                                        />
+                                    }
+                                    label="Host Rating Given"
+                                />
+                                <FormControlLabel
+                                    control={
+                                        <Switch
+                                            checked={selectedItem.AccommodationRatingGiven}
+                                            onChange={handleSwitchChange}
+                                            name="AccommodationRatingGiven"
+                                            color="primary"
+                                        />
+                                    }
+                                    label="Accommodation Rating Given"
+                                />
+                                <FormControlLabel
+                                    control={
+                                        <Switch
+                                            checked={selectedItem.ProminentHost}
+                                            onChange={handleSwitchChange}
+                                            name="ProminentHost"
+                                            color="primary"
+                                        />
+                                    }
+                                    label="Prominent Host"
+                                />
+                            </>
+                        )}
+                        {ROLE === 'Guest' && (
+                            <FormControlLabel
+                                control={
+                                    <Switch
+                                        checked={selectedItem.HostResponded}
+                                        onChange={handleSwitchChange}
+                                        name="HostResponded"
+                                        color="primary"
+                                    />
+                                }
+                                label="Host Responded"
+                            />
+                        )}
+                    </Flex>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose} color="primary">
+                        Close
+                    </Button>
+
+                </DialogActions>
+            </Dialog>
+
 
             <ParticlesBg color="#FF9021" type="cobweb" num={100} bg={true}/>
             <Box>
@@ -163,8 +320,17 @@ function App() {
 
                         {(ROLE === 'Guest' || ROLE === 'Host') && (
                             <>
+                                <Tooltip title="Your notifications" arrow>
+                                    <Button startIcon={<EditNotificationsIcon/>} sx={{marginLeft: 'auto'}}
+                                            color="success"
+                                            onClick={handleClickOpen}>
+                                        Notifications
+                                    </Button>
+                                </Tooltip>
+
+
                                 <Tooltip title="Your informations" arrow>
-                                    <Button color="info" sx={{marginLeft: 'auto'}}
+                                    <Button color="info"
                                             startIcon={<PersonOutlineOutlinedIcon/>}
                                             onClick={() => {
                                                 navigate('/profile');
@@ -242,7 +408,7 @@ function App() {
 
                 </Routes>
             </Box>
-        </div>
+        </>
 
 
     );
