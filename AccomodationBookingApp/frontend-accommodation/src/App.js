@@ -2,13 +2,16 @@ import ParticlesBg from 'particles-bg'
 import "./particles.css"
 import {Navigate, Route, Routes, useNavigate} from "react-router-dom";
 import {
+    Alert,
     AppBar,
     Box,
     Button,
     Dialog,
     DialogActions,
     DialogContent,
+    DialogTitle,
     FormControlLabel,
+    Snackbar,
     Switch,
     Toolbar,
     Tooltip
@@ -41,6 +44,28 @@ import EditNotificationsIcon from '@mui/icons-material/EditNotifications';
 function App() {
 
     const navigate = useNavigate();
+    const [notificationSnackBar, setNotificationSnackBar] = useState(false);
+    const [message, setMessage] = useState('');
+    const openWebSocket = () => {
+
+        const ws = new WebSocket('ws://localhost:8000/ws');
+
+        ws.onopen = () => {
+            console.log('WebSocket connection established');
+        };
+
+        ws.onmessage = (event) => {
+            setMessage(event.data);
+        };
+
+        ws.onclose = () => {
+            console.log('WebSocket connection closed');
+        };
+
+        return () => {
+            ws.close();
+        };
+    };
 
 
     const pasetoExpirationRole = () => {
@@ -53,6 +78,7 @@ function App() {
         const footer = paseto.split(".")[3];
         const decodedFooter = JSON.parse(atob(footer));
         const roleAndExp = decodedFooter.RoleAndExp;
+        //console.log(decodedFooter)
 
         const regex = /role:(.*), expiration date: (.*)/;
         const matches = roleAndExp.match(regex);
@@ -86,9 +112,11 @@ function App() {
 
             } else {
                 if (role === "0") {
+                    openWebSocket();
                     return "Host";
 
                 } else if (role === "1") {
+                    openWebSocket();
                     return "Guest";
 
                 } else {
@@ -107,7 +135,7 @@ function App() {
 
     const handleLogout = () => {
         localStorage.removeItem('paseto');
-        navigate('/login');
+        window.location.href = "/login";
     };
 
     const [selectedItem, setSelectedItem] = useState({
@@ -148,6 +176,7 @@ function App() {
     };
 
     useEffect(() => {
+        console.log(new Date())
         if (isFirstRender.current || isClickOpen.current) {
             isFirstRender.current = false;
             isClickOpen.current = false;
@@ -167,8 +196,23 @@ function App() {
 
     return (
         <>
-            <Dialog open={open} onClose={handleClose}>
+            <Snackbar
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                }}
+                open={notificationSnackBar}
+                autoHideDuration={5000}
+                onClose={() => setNotificationSnackBar(false)}
+                message={message}
+            >
+                <Alert onClose={handleClose} severity="info" sx={{width: '100%'}}>
+                    {message}
+                </Alert>
+            </Snackbar>
 
+            <Dialog open={open} onClose={handleClose}>
+                <DialogTitle>Choose about what you want to be notified</DialogTitle>
                 <DialogContent>
 
                     <Flex flexDirection="column">
@@ -180,7 +224,7 @@ function App() {
                                             checked={selectedItem.RequestMade}
                                             onChange={handleSwitchChange}
                                             name="RequestMade"
-                                            color="primary"
+                                            color="success"
                                         />
                                     }
                                     label="Request Made"
@@ -191,7 +235,7 @@ function App() {
                                             checked={selectedItem.ReservationCanceled}
                                             onChange={handleSwitchChange}
                                             name="ReservationCanceled"
-                                            color="primary"
+                                            color="success"
                                         />
                                     }
                                     label="Reservation Canceled"
@@ -202,7 +246,7 @@ function App() {
                                             checked={selectedItem.HostRatingGiven}
                                             onChange={handleSwitchChange}
                                             name="HostRatingGiven"
-                                            color="primary"
+                                            color="success"
                                         />
                                     }
                                     label="Host Rating Given"
@@ -213,7 +257,7 @@ function App() {
                                             checked={selectedItem.AccommodationRatingGiven}
                                             onChange={handleSwitchChange}
                                             name="AccommodationRatingGiven"
-                                            color="primary"
+                                            color="success"
                                         />
                                     }
                                     label="Accommodation Rating Given"
@@ -224,7 +268,7 @@ function App() {
                                             checked={selectedItem.ProminentHost}
                                             onChange={handleSwitchChange}
                                             name="ProminentHost"
-                                            color="primary"
+                                            color="success"
                                         />
                                     }
                                     label="Prominent Host"
@@ -238,7 +282,7 @@ function App() {
                                         checked={selectedItem.HostResponded}
                                         onChange={handleSwitchChange}
                                         name="HostResponded"
-                                        color="primary"
+                                        color="success"
                                     />
                                 }
                                 label="Host Responded"
@@ -247,7 +291,7 @@ function App() {
                     </Flex>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} color="primary">
+                    <Button onClick={handleClose} color="info" variant="outlined">
                         Close
                     </Button>
 
