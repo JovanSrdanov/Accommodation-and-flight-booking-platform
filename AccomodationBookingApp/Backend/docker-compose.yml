@@ -232,10 +232,10 @@ services:
     networks:
       - network
     depends_on:
-      rating_db:
+      neo4j:
         condition: service_healthy
 
-  rating_db:
+  neo4j:
     image: neo4j
     restart: always
     ports:

@@ -19,7 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	RatingService_RateAccommodation_FullMethodName = "/reservation.RatingService/RateAccommodation"
+	RatingService_RateAccommodation_FullMethodName         = "/reservation.RatingService/RateAccommodation"
+	RatingService_GetRatingForAccommodation_FullMethodName = "/reservation.RatingService/GetRatingForAccommodation"
 )
 
 // RatingServiceClient is the client API for RatingService service.
@@ -27,6 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RatingServiceClient interface {
 	RateAccommodation(ctx context.Context, in *RateAccommodationRequest, opts ...grpc.CallOption) (*RateAccommodationResponse, error)
+	GetRatingForAccommodation(ctx context.Context, in *RatingForAccommodationRequest, opts ...grpc.CallOption) (*RatingForAccommodationResponse, error)
 }
 
 type ratingServiceClient struct {
@@ -46,11 +48,21 @@ func (c *ratingServiceClient) RateAccommodation(ctx context.Context, in *RateAcc
 	return out, nil
 }
 
+func (c *ratingServiceClient) GetRatingForAccommodation(ctx context.Context, in *RatingForAccommodationRequest, opts ...grpc.CallOption) (*RatingForAccommodationResponse, error) {
+	out := new(RatingForAccommodationResponse)
+	err := c.cc.Invoke(ctx, RatingService_GetRatingForAccommodation_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RatingServiceServer is the server API for RatingService service.
 // All implementations must embed UnimplementedRatingServiceServer
 // for forward compatibility
 type RatingServiceServer interface {
 	RateAccommodation(context.Context, *RateAccommodationRequest) (*RateAccommodationResponse, error)
+	GetRatingForAccommodation(context.Context, *RatingForAccommodationRequest) (*RatingForAccommodationResponse, error)
 	mustEmbedUnimplementedRatingServiceServer()
 }
 
@@ -60,6 +72,9 @@ type UnimplementedRatingServiceServer struct {
 
 func (UnimplementedRatingServiceServer) RateAccommodation(context.Context, *RateAccommodationRequest) (*RateAccommodationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RateAccommodation not implemented")
+}
+func (UnimplementedRatingServiceServer) GetRatingForAccommodation(context.Context, *RatingForAccommodationRequest) (*RatingForAccommodationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetRatingForAccommodation not implemented")
 }
 func (UnimplementedRatingServiceServer) mustEmbedUnimplementedRatingServiceServer() {}
 
@@ -92,6 +107,24 @@ func _RatingService_RateAccommodation_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RatingService_GetRatingForAccommodation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RatingForAccommodationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RatingServiceServer).GetRatingForAccommodation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RatingService_GetRatingForAccommodation_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RatingServiceServer).GetRatingForAccommodation(ctx, req.(*RatingForAccommodationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RatingService_ServiceDesc is the grpc.ServiceDesc for RatingService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -102,6 +135,10 @@ var RatingService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RateAccommodation",
 			Handler:    _RatingService_RateAccommodation_Handler,
+		},
+		{
+			MethodName: "GetRatingForAccommodation",
+			Handler:    _RatingService_GetRatingForAccommodation_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

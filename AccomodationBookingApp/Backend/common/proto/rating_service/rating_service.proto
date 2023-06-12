@@ -9,10 +9,29 @@ import "google/api/annotations.proto";
 service RatingService{
   rpc RateAccommodation(RateAccommodationRequest) returns(RateAccommodationResponse) {
     option (google.api.http) = {
-      post: "/api-1/rate/accommodation",
+      post: "/api-1/rating/accommodation",
       body: "*"
     };
   }
+
+  rpc GetRatingForAccommodation(RatingForAccommodationRequest) returns(RatingForAccommodationResponse) {
+    option (google.api.http) = {
+      get: "/api-1/rating/{accommodationId}"
+    };
+  }
+}
+
+message RatingForAccommodationRequest {
+  string accommodationId = 1;
+}
+
+message RatingForAccommodationResponse {
+    AccommodationRating rating = 1;
+}
+
+message AccommodationRating {
+  float rating = 1;
+  string accommodationId = 2;
 }
 
 message RateAccommodation {

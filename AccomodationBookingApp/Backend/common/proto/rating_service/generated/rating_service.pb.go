@@ -21,6 +21,155 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type RatingForAccommodationRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	AccommodationId string `protobuf:"bytes,1,opt,name=accommodationId,proto3" json:"accommodationId,omitempty"`
+}
+
+func (x *RatingForAccommodationRequest) Reset() {
+	*x = RatingForAccommodationRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_rating_service_proto_msgTypes[0]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *RatingForAccommodationRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RatingForAccommodationRequest) ProtoMessage() {}
+
+func (x *RatingForAccommodationRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_rating_service_proto_msgTypes[0]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RatingForAccommodationRequest.ProtoReflect.Descriptor instead.
+func (*RatingForAccommodationRequest) Descriptor() ([]byte, []int) {
+	return file_rating_service_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *RatingForAccommodationRequest) GetAccommodationId() string {
+	if x != nil {
+		return x.AccommodationId
+	}
+	return ""
+}
+
+type RatingForAccommodationResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Rating *AccommodationRating `protobuf:"bytes,1,opt,name=rating,proto3" json:"rating,omitempty"`
+}
+
+func (x *RatingForAccommodationResponse) Reset() {
+	*x = RatingForAccommodationResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_rating_service_proto_msgTypes[1]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *RatingForAccommodationResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RatingForAccommodationResponse) ProtoMessage() {}
+
+func (x *RatingForAccommodationResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_rating_service_proto_msgTypes[1]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RatingForAccommodationResponse.ProtoReflect.Descriptor instead.
+func (*RatingForAccommodationResponse) Descriptor() ([]byte, []int) {
+	return file_rating_service_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *RatingForAccommodationResponse) GetRating() *AccommodationRating {
+	if x != nil {
+		return x.Rating
+	}
+	return nil
+}
+
+type AccommodationRating struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Rating          float32 `protobuf:"fixed32,1,opt,name=rating,proto3" json:"rating,omitempty"`
+	AccommodationId string  `protobuf:"bytes,2,opt,name=accommodationId,proto3" json:"accommodationId,omitempty"`
+}
+
+func (x *AccommodationRating) Reset() {
+	*x = AccommodationRating{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_rating_service_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *AccommodationRating) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AccommodationRating) ProtoMessage() {}
+
+func (x *AccommodationRating) ProtoReflect() protoreflect.Message {
+	mi := &file_rating_service_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AccommodationRating.ProtoReflect.Descriptor instead.
+func (*AccommodationRating) Descriptor() ([]byte, []int) {
+	return file_rating_service_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *AccommodationRating) GetRating() float32 {
+	if x != nil {
+		return x.Rating
+	}
+	return 0
+}
+
+func (x *AccommodationRating) GetAccommodationId() string {
+	if x != nil {
+		return x.AccommodationId
+	}
+	return ""
+}
+
 type RateAccommodation struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -33,7 +182,7 @@ type RateAccommodation struct {
 func (x *RateAccommodation) Reset() {
 	*x = RateAccommodation{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_rating_service_proto_msgTypes[0]
+		mi := &file_rating_service_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -46,7 +195,7 @@ func (x *RateAccommodation) String() string {
 func (*RateAccommodation) ProtoMessage() {}
 
 func (x *RateAccommodation) ProtoReflect() protoreflect.Message {
-	mi := &file_rating_service_proto_msgTypes[0]
+	mi := &file_rating_service_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -59,7 +208,7 @@ func (x *RateAccommodation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RateAccommodation.ProtoReflect.Descriptor instead.
 func (*RateAccommodation) Descriptor() ([]byte, []int) {
-	return file_rating_service_proto_rawDescGZIP(), []int{0}
+	return file_rating_service_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *RateAccommodation) GetRating() int32 {
@@ -85,7 +234,7 @@ type RateAccommodationResponse struct {
 func (x *RateAccommodationResponse) Reset() {
 	*x = RateAccommodationResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_rating_service_proto_msgTypes[1]
+		mi := &file_rating_service_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -98,7 +247,7 @@ func (x *RateAccommodationResponse) String() string {
 func (*RateAccommodationResponse) ProtoMessage() {}
 
 func (x *RateAccommodationResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_rating_service_proto_msgTypes[1]
+	mi := &file_rating_service_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -111,7 +260,7 @@ func (x *RateAccommodationResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RateAccommodationResponse.ProtoReflect.Descriptor instead.
 func (*RateAccommodationResponse) Descriptor() ([]byte, []int) {
-	return file_rating_service_proto_rawDescGZIP(), []int{1}
+	return file_rating_service_proto_rawDescGZIP(), []int{4}
 }
 
 type RateAccommodationRequest struct {
@@ -125,7 +274,7 @@ type RateAccommodationRequest struct {
 func (x *RateAccommodationRequest) Reset() {
 	*x = RateAccommodationRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_rating_service_proto_msgTypes[2]
+		mi := &file_rating_service_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -138,7 +287,7 @@ func (x *RateAccommodationRequest) String() string {
 func (*RateAccommodationRequest) ProtoMessage() {}
 
 func (x *RateAccommodationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rating_service_proto_msgTypes[2]
+	mi := &file_rating_service_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -151,7 +300,7 @@ func (x *RateAccommodationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RateAccommodationRequest.ProtoReflect.Descriptor instead.
 func (*RateAccommodationRequest) Descriptor() ([]byte, []int) {
-	return file_rating_service_proto_rawDescGZIP(), []int{2}
+	return file_rating_service_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *RateAccommodationRequest) GetRating() *RateAccommodation {
@@ -168,7 +317,23 @@ var file_rating_service_proto_rawDesc = []byte{
 	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x0b, 0x72, 0x65, 0x73, 0x65, 0x72, 0x76, 0x61, 0x74,
 	0x69, 0x6f, 0x6e, 0x1a, 0x1c, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f,
 	0x61, 0x6e, 0x6e, 0x6f, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x22, 0x55, 0x0a, 0x11, 0x52, 0x61, 0x74, 0x65, 0x41, 0x63, 0x63, 0x6f, 0x6d, 0x6d, 0x6f,
+	0x6f, 0x22, 0x49, 0x0a, 0x1d, 0x52, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x46, 0x6f, 0x72, 0x41, 0x63,
+	0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x64, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x12, 0x28, 0x0a, 0x0f, 0x61, 0x63, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x64, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0f, 0x61, 0x63, 0x63,
+	0x6f, 0x6d, 0x6d, 0x6f, 0x64, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x22, 0x5a, 0x0a, 0x1e,
+	0x52, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x46, 0x6f, 0x72, 0x41, 0x63, 0x63, 0x6f, 0x6d, 0x6d, 0x6f,
+	0x64, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x38,
+	0x0a, 0x06, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x20,
+	0x2e, 0x72, 0x65, 0x73, 0x65, 0x72, 0x76, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x41, 0x63, 0x63,
+	0x6f, 0x6d, 0x6d, 0x6f, 0x64, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x61, 0x74, 0x69, 0x6e, 0x67,
+	0x52, 0x06, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x22, 0x57, 0x0a, 0x13, 0x41, 0x63, 0x63, 0x6f,
+	0x6d, 0x6d, 0x6f, 0x64, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x12,
+	0x16, 0x0a, 0x06, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x18, 0x01, 0x20, 0x01, 0x28, 0x02, 0x52,
+	0x06, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x12, 0x28, 0x0a, 0x0f, 0x61, 0x63, 0x63, 0x6f, 0x6d,
+	0x6d, 0x6f, 0x64, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x0f, 0x61, 0x63, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x64, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49,
+	0x64, 0x22, 0x55, 0x0a, 0x11, 0x52, 0x61, 0x74, 0x65, 0x41, 0x63, 0x63, 0x6f, 0x6d, 0x6d, 0x6f,
 	0x64, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x16, 0x0a, 0x06, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67,
 	0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x06, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x12, 0x28,
 	0x0a, 0x0f, 0x61, 0x63, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x64, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49,
@@ -180,18 +345,29 @@ var file_rating_service_proto_rawDesc = []byte{
 	0x74, 0x12, 0x36, 0x0a, 0x06, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x18, 0x01, 0x20, 0x01, 0x28,
 	0x0b, 0x32, 0x1e, 0x2e, 0x72, 0x65, 0x73, 0x65, 0x72, 0x76, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x2e,
 	0x52, 0x61, 0x74, 0x65, 0x41, 0x63, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x64, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x52, 0x06, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x32, 0x9a, 0x01, 0x0a, 0x0d, 0x52, 0x61,
-	0x74, 0x69, 0x6e, 0x67, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x88, 0x01, 0x0a, 0x11,
+	0x6e, 0x52, 0x06, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x32, 0xbc, 0x02, 0x0a, 0x0d, 0x52, 0x61,
+	0x74, 0x69, 0x6e, 0x67, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x8a, 0x01, 0x0a, 0x11,
 	0x52, 0x61, 0x74, 0x65, 0x41, 0x63, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x64, 0x61, 0x74, 0x69, 0x6f,
 	0x6e, 0x12, 0x25, 0x2e, 0x72, 0x65, 0x73, 0x65, 0x72, 0x76, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x2e,
 	0x52, 0x61, 0x74, 0x65, 0x41, 0x63, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x64, 0x61, 0x74, 0x69, 0x6f,
 	0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x26, 0x2e, 0x72, 0x65, 0x73, 0x65, 0x72,
 	0x76, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x52, 0x61, 0x74, 0x65, 0x41, 0x63, 0x63, 0x6f, 0x6d,
 	0x6d, 0x6f, 0x64, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x22, 0x24, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x1e, 0x3a, 0x01, 0x2a, 0x22, 0x19, 0x2f, 0x61, 0x70,
-	0x69, 0x2d, 0x31, 0x2f, 0x72, 0x61, 0x74, 0x65, 0x2f, 0x61, 0x63, 0x63, 0x6f, 0x6d, 0x6d, 0x6f,
-	0x64, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x0f, 0x5a, 0x0d, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e,
-	0x2f, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x22, 0x26, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x20, 0x3a, 0x01, 0x2a, 0x22, 0x1b, 0x2f, 0x61, 0x70,
+	0x69, 0x2d, 0x31, 0x2f, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x2f, 0x61, 0x63, 0x63, 0x6f, 0x6d,
+	0x6d, 0x6f, 0x64, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x9d, 0x01, 0x0a, 0x19, 0x47, 0x65, 0x74,
+	0x52, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x46, 0x6f, 0x72, 0x41, 0x63, 0x63, 0x6f, 0x6d, 0x6d, 0x6f,
+	0x64, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x2a, 0x2e, 0x72, 0x65, 0x73, 0x65, 0x72, 0x76, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x52, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x46, 0x6f, 0x72, 0x41, 0x63,
+	0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x64, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x1a, 0x2b, 0x2e, 0x72, 0x65, 0x73, 0x65, 0x72, 0x76, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x2e, 0x52, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x46, 0x6f, 0x72, 0x41, 0x63, 0x63, 0x6f, 0x6d, 0x6d,
+	0x6f, 0x64, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22,
+	0x27, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x21, 0x12, 0x1f, 0x2f, 0x61, 0x70, 0x69, 0x2d, 0x31, 0x2f,
+	0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x2f, 0x7b, 0x61, 0x63, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x64,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x7d, 0x42, 0x0f, 0x5a, 0x0d, 0x63, 0x6f, 0x6d, 0x6d,
+	0x6f, 0x6e, 0x2f, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x33,
 }
 
 var (
@@ -206,21 +382,27 @@ func file_rating_service_proto_rawDescGZIP() []byte {
 	return file_rating_service_proto_rawDescData
 }
 
-var file_rating_service_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_rating_service_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_rating_service_proto_goTypes = []interface{}{
-	(*RateAccommodation)(nil),         // 0: reservation.RateAccommodation
-	(*RateAccommodationResponse)(nil), // 1: reservation.RateAccommodationResponse
-	(*RateAccommodationRequest)(nil),  // 2: reservation.RateAccommodationRequest
+	(*RatingForAccommodationRequest)(nil),  // 0: reservation.RatingForAccommodationRequest
+	(*RatingForAccommodationResponse)(nil), // 1: reservation.RatingForAccommodationResponse
+	(*AccommodationRating)(nil),            // 2: reservation.AccommodationRating
+	(*RateAccommodation)(nil),              // 3: reservation.RateAccommodation
+	(*RateAccommodationResponse)(nil),      // 4: reservation.RateAccommodationResponse
+	(*RateAccommodationRequest)(nil),       // 5: reservation.RateAccommodationRequest
 }
 var file_rating_service_proto_depIdxs = []int32{
-	0, // 0: reservation.RateAccommodationRequest.rating:type_name -> reservation.RateAccommodation
-	2, // 1: reservation.RatingService.RateAccommodation:input_type -> reservation.RateAccommodationRequest
-	1, // 2: reservation.RatingService.RateAccommodation:output_type -> reservation.RateAccommodationResponse
-	2, // [2:3] is the sub-list for method output_type
-	1, // [1:2] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	2, // 0: reservation.RatingForAccommodationResponse.rating:type_name -> reservation.AccommodationRating
+	3, // 1: reservation.RateAccommodationRequest.rating:type_name -> reservation.RateAccommodation
+	5, // 2: reservation.RatingService.RateAccommodation:input_type -> reservation.RateAccommodationRequest
+	0, // 3: reservation.RatingService.GetRatingForAccommodation:input_type -> reservation.RatingForAccommodationRequest
+	4, // 4: reservation.RatingService.RateAccommodation:output_type -> reservation.RateAccommodationResponse
+	1, // 5: reservation.RatingService.GetRatingForAccommodation:output_type -> reservation.RatingForAccommodationResponse
+	4, // [4:6] is the sub-list for method output_type
+	2, // [2:4] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_rating_service_proto_init() }
@@ -230,7 +412,7 @@ func file_rating_service_proto_init() {
 	}
 	if !protoimpl.UnsafeEnabled {
 		file_rating_service_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*RateAccommodation); i {
+			switch v := v.(*RatingForAccommodationRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -242,7 +424,7 @@ func file_rating_service_proto_init() {
 			}
 		}
 		file_rating_service_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*RateAccommodationResponse); i {
+			switch v := v.(*RatingForAccommodationResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -254,6 +436,42 @@ func file_rating_service_proto_init() {
 			}
 		}
 		file_rating_service_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*AccommodationRating); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_rating_service_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RateAccommodation); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_rating_service_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RateAccommodationResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_rating_service_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*RateAccommodationRequest); i {
 			case 0:
 				return &v.state
@@ -272,7 +490,7 @@ func file_rating_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_rating_service_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

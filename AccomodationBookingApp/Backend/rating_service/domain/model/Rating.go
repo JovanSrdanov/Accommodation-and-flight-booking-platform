@@ -7,7 +7,7 @@ import (
 
 type Rating struct {
 	AccommodationId primitive.ObjectID `json:"accommodationId,omitempty"`
-	GuestId         primitive.ObjectID `json:"guestId,omitempty"`
+	GuestId         string             `json:"guestId,omitempty"`
 	Rating          int32              `json:"rating"`
 	Date            time.Time          `json:"date"`
 }
