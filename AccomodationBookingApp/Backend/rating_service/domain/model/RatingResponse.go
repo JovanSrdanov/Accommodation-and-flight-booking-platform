@@ -1,6 +1,7 @@
 package model
 
 type RatingResponse struct {
-	AccommodationId string  `json:"accommodationId"`
-	Rating          float32 `json:"rating"`
+	AccommodationId string          `json:"accommodationId"`
+	AvgRating       float32         `json:"avgRating"`
+	Ratings         []*SingleRating `json:"ratings"`
 }

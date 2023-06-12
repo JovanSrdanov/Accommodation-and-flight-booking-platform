@@ -25,12 +25,26 @@ service RatingService{
       get: "/api-1/rating/recommended/{guestId}"
     };
   }
+
+  rpc DeleteRatingForAccommodation(RatingForAccommodationRequest) returns(EmptyResponse) {
+    option (google.api.http) = {
+      delete: "/api-1/rating/{accommodationId}"
+    };
+  }
+}
+
+message EmptyResponse {}
+
+//RecommendedAccommodations
+message RecommendedAccommodationsRequest {
+  string guestId = 1;
 }
 
 message RecommendedAccommodationsResponse {
   repeated string accommodationId = 1;
 }
 
+//RatingForAccommodation
 message RatingForAccommodationRequest {
   string accommodationId = 1;
 }
@@ -39,13 +53,23 @@ message RatingForAccommodationResponse {
     AccommodationRating rating = 1;
 }
 
-message RecommendedAccommodationsRequest {
-  string guestId = 1;
+//RateAccommodation
+message RateAccommodationRequest {
+  RateAccommodation rating = 1;
 }
 
+message RateAccommodationResponse {}
+
 message AccommodationRating {
-  float rating = 1;
+  float avgRating = 1;
   string accommodationId = 2;
+  repeated Rating ratings = 3;
+}
+
+message Rating {
+  string guestId = 1;
+  string Date = 2;
+  int32 rating = 3;
 }
 
 message RateAccommodation {
@@ -53,8 +77,5 @@ message RateAccommodation {
   string accommodationId = 2;
 }
 
-message RateAccommodationResponse {}
 
-message RateAccommodationRequest {
-  RateAccommodation rating = 1;
-}
+

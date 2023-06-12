@@ -22,6 +22,7 @@ const (
 	RatingService_RateAccommodation_FullMethodName            = "/rating.RatingService/RateAccommodation"
 	RatingService_GetRatingForAccommodation_FullMethodName    = "/rating.RatingService/GetRatingForAccommodation"
 	RatingService_GetRecommendedAccommodations_FullMethodName = "/rating.RatingService/GetRecommendedAccommodations"
+	RatingService_DeleteRatingForAccommodation_FullMethodName = "/rating.RatingService/DeleteRatingForAccommodation"
 )
 
 // RatingServiceClient is the client API for RatingService service.
@@ -31,6 +32,7 @@ type RatingServiceClient interface {
 	RateAccommodation(ctx context.Context, in *RateAccommodationRequest, opts ...grpc.CallOption) (*RateAccommodationResponse, error)
 	GetRatingForAccommodation(ctx context.Context, in *RatingForAccommodationRequest, opts ...grpc.CallOption) (*RatingForAccommodationResponse, error)
 	GetRecommendedAccommodations(ctx context.Context, in *RecommendedAccommodationsRequest, opts ...grpc.CallOption) (*RecommendedAccommodationsResponse, error)
+	DeleteRatingForAccommodation(ctx context.Context, in *RatingForAccommodationRequest, opts ...grpc.CallOption) (*EmptyResponse, error)
 }
 
 type ratingServiceClient struct {
@@ -68,6 +70,15 @@ func (c *ratingServiceClient) GetRecommendedAccommodations(ctx context.Context, 
 	return out, nil
 }
 
+func (c *ratingServiceClient) DeleteRatingForAccommodation(ctx context.Context, in *RatingForAccommodationRequest, opts ...grpc.CallOption) (*EmptyResponse, error) {
+	out := new(EmptyResponse)
+	err := c.cc.Invoke(ctx, RatingService_DeleteRatingForAccommodation_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RatingServiceServer is the server API for RatingService service.
 // All implementations must embed UnimplementedRatingServiceServer
 // for forward compatibility
@@ -75,6 +86,7 @@ type RatingServiceServer interface {
 	RateAccommodation(context.Context, *RateAccommodationRequest) (*RateAccommodationResponse, error)
 	GetRatingForAccommodation(context.Context, *RatingForAccommodationRequest) (*RatingForAccommodationResponse, error)
 	GetRecommendedAccommodations(context.Context, *RecommendedAccommodationsRequest) (*RecommendedAccommodationsResponse, error)
+	DeleteRatingForAccommodation(context.Context, *RatingForAccommodationRequest) (*EmptyResponse, error)
 	mustEmbedUnimplementedRatingServiceServer()
 }
 
@@ -90,6 +102,9 @@ func (UnimplementedRatingServiceServer) GetRatingForAccommodation(context.Contex
 }
 func (UnimplementedRatingServiceServer) GetRecommendedAccommodations(context.Context, *RecommendedAccommodationsRequest) (*RecommendedAccommodationsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRecommendedAccommodations not implemented")
+}
+func (UnimplementedRatingServiceServer) DeleteRatingForAccommodation(context.Context, *RatingForAccommodationRequest) (*EmptyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteRatingForAccommodation not implemented")
 }
 func (UnimplementedRatingServiceServer) mustEmbedUnimplementedRatingServiceServer() {}
 
@@ -158,6 +173,24 @@ func _RatingService_GetRecommendedAccommodations_Handler(srv interface{}, ctx co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RatingService_DeleteRatingForAccommodation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RatingForAccommodationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RatingServiceServer).DeleteRatingForAccommodation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RatingService_DeleteRatingForAccommodation_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RatingServiceServer).DeleteRatingForAccommodation(ctx, req.(*RatingForAccommodationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RatingService_ServiceDesc is the grpc.ServiceDesc for RatingService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -176,6 +209,10 @@ var RatingService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetRecommendedAccommodations",
 			Handler:    _RatingService_GetRecommendedAccommodations_Handler,
+		},
+		{
+			MethodName: "DeleteRatingForAccommodation",
+			Handler:    _RatingService_DeleteRatingForAccommodation_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

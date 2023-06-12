@@ -26,9 +26,20 @@ func (mapper RatingMapper) mapFromRateAccommodationRequest(request *rating.RateA
 }
 
 func (mapper RatingMapper) mapToRatingForAccommodationResponse(in *model.RatingResponse) *rating.RatingForAccommodationResponse {
+	ratingsProto := make([]*rating.Rating, 0)
+
+	for _, val := range in.Ratings {
+		ratingsProto = append(ratingsProto, &rating.Rating{
+			GuestId: val.GuestId,
+			Date:    val.Date.Format("2006-01-02"),
+			Rating:  val.Rating,
+		})
+	}
+
 	return &rating.RatingForAccommodationResponse{Rating: &rating.AccommodationRating{
-		Rating:          in.Rating,
+		AvgRating:       in.AvgRating,
 		AccommodationId: in.AccommodationId,
+		Ratings:         ratingsProto,
 	}}
 }
 

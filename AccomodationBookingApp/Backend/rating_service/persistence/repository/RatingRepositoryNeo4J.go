@@ -5,6 +5,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"log"
 	"rating_service/domain/model"
+	"time"
 )
 
 type RatingRepositoryNeo4J struct {
@@ -24,7 +25,7 @@ func (repo RatingRepositoryNeo4J) RateAccommodation(guestId string, ratingDto *m
 	guestID := guestId
 	accommodationID := ratingDto.AccommodationId.Hex()
 	rating := ratingDto.Rating
-	date := ratingDto.Date.String()
+	date := ratingDto.Date.Format("2006-01-02")
 
 	_, err := session.WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
 		// Check if Accommodation exists
@@ -77,11 +78,10 @@ func (repo RatingRepositoryNeo4J) RateAccommodation(guestId string, ratingDto *m
 
 		// Check if relationship exists
 		result, err = tx.Run(
-			"MATCH (g:Guest {guestId: $guestID})-[r:RATED]->(a:Accommodation {accommodationId: $accommodationID}) WHERE r.date <> $date RETURN r",
+			"MATCH (g:Guest {guestId: $guestID})-[r:RATED]->(a:Accommodation {accommodationId: $accommodationID}) RETURN r",
 			map[string]interface{}{
 				"guestID":         guestID,
 				"accommodationID": accommodationID,
-				"date":            date,
 			},
 		)
 		if err != nil {
@@ -137,7 +137,7 @@ func (repo RatingRepositoryNeo4J) GetRatingForAccommodation(id primitive.ObjectI
 	result, err := session.ReadTransaction(func(tx neo4j.Transaction) (interface{}, error) {
 		// Retrieve ratings for the accommodation
 		result, err := tx.Run(
-			"MATCH (:Guest)-[r:RATED]->(a:Accommodation {accommodationId: $accommodationID}) RETURN r.rating",
+			"MATCH (g:Guest)-[r:RATED]->(a:Accommodation {accommodationId: $accommodationID}) RETURN r.rating, g.guestId, r.date",
 			map[string]interface{}{
 				"accommodationID": accommodationID,
 			},
@@ -148,19 +148,36 @@ func (repo RatingRepositoryNeo4J) GetRatingForAccommodation(id primitive.ObjectI
 
 		ratingSum := int64(0)
 		count := int64(0)
+		singleRatings := make([]*model.SingleRating, 0)
+
 		for result.Next() {
 			record := result.Record()
 			ratingValue, ok := record.Get("r.rating")
+			guestId, ok := record.Get("g.guestId")
+			dateStr, ok := record.Get("r.date")
 			if ok {
 				rating := ratingValue.(int64)
 				ratingSum += rating
 				count++
+				date, _ := time.Parse("2006-01-02", dateStr.(string))
+				singleRatings = append(singleRatings, &model.SingleRating{
+					GuestId: guestId.(string),
+					Rating:  int32(ratingValue.(int64)),
+					Date:    date,
+				})
 			}
 		}
 
 		if count > 0 {
 			ratingAverage := float64(ratingSum) / float64(count)
-			return ratingAverage, nil
+
+			res := model.RatingResponse{
+				AccommodationId: accommodationID,
+				AvgRating:       float32(ratingAverage),
+				Ratings:         singleRatings,
+			}
+
+			return res, nil
 		}
 
 		return nil, nil
@@ -169,19 +186,12 @@ func (repo RatingRepositoryNeo4J) GetRatingForAccommodation(id primitive.ObjectI
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	ratingAverage := float64(0)
-
+	res := model.RatingResponse{}
 	if result != nil {
-		ratingAverage = result.(float64)
-	} else {
-		ratingAverage = -1
+		res = result.(model.RatingResponse)
 	}
 
-	return model.RatingResponse{
-		AccommodationId: id.Hex(),
-		Rating:          float32(ratingAverage),
-	}, nil
+	return res, nil
 }
 
 func (repo RatingRepositoryNeo4J) GetRecommendedAccommodations(guestId string) (model.RecommendedAccommodations, error) {
