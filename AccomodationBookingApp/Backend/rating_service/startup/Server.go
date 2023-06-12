@@ -6,7 +6,7 @@ import (
 	"authorization_service/interceptor"
 	rating "common/proto/rating_service/generated"
 	"fmt"
-	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
+	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
 	"google.golang.org/grpc"
 	"log"
 	"net"
@@ -31,15 +31,15 @@ func (server Server) Start() {
 	server.startGrpcServer(ratingHandler)
 }
 
-func (server Server) initNeo4jClient() *neo4j.DriverWithContext {
+func (server Server) initNeo4jClient() neo4j.Driver {
 	client, err := repository.GetClient(server.config.DbUri, server.config.DbUser, server.config.DbPass)
 	if err != nil {
 		log.Fatal(err)
 	}
-	return &client
+	return client
 }
 
-func initRatingRepo(neo4jClient *neo4j.DriverWithContext) *repository.RatingRepositoryNeo4J {
+func initRatingRepo(neo4jClient neo4j.Driver) *repository.RatingRepositoryNeo4J {
 	repo, err := repository.NewRatingRepositoryNeo4J(neo4jClient)
 	if err != nil {
 		log.Fatal(err)

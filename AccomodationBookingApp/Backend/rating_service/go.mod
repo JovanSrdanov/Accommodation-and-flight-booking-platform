@@ -5,6 +5,7 @@ go 1.20
 require (
 	authorization_service v0.0.0-00010101000000-000000000000
 	common v0.0.0-00010101000000-000000000000
+	github.com/neo4j/neo4j-go-driver/v4 v4.4.7
 	github.com/neo4j/neo4j-go-driver/v5 v5.9.0
 	go.mongodb.org/mongo-driver v1.11.7
 	google.golang.org/grpc v1.54.0
