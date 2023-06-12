@@ -131,7 +131,7 @@ func RegisterRatingServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/reservation.RatingService/RateAccommodation", runtime.WithHTTPPathPattern("/api-1/rating/accommodation"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/rating.RatingService/RateAccommodation", runtime.WithHTTPPathPattern("/api-1/rating/accommodation"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -156,7 +156,7 @@ func RegisterRatingServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/reservation.RatingService/GetRatingForAccommodation", runtime.WithHTTPPathPattern("/api-1/rating/{accommodationId}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/rating.RatingService/GetRatingForAccommodation", runtime.WithHTTPPathPattern("/api-1/rating/{accommodationId}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -220,7 +220,7 @@ func RegisterRatingServiceHandlerClient(ctx context.Context, mux *runtime.ServeM
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/reservation.RatingService/RateAccommodation", runtime.WithHTTPPathPattern("/api-1/rating/accommodation"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/rating.RatingService/RateAccommodation", runtime.WithHTTPPathPattern("/api-1/rating/accommodation"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -242,7 +242,7 @@ func RegisterRatingServiceHandlerClient(ctx context.Context, mux *runtime.ServeM
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/reservation.RatingService/GetRatingForAccommodation", runtime.WithHTTPPathPattern("/api-1/rating/{accommodationId}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/rating.RatingService/GetRatingForAccommodation", runtime.WithHTTPPathPattern("/api-1/rating/{accommodationId}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return

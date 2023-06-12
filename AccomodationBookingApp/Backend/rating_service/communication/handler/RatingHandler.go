@@ -3,6 +3,7 @@ package handler
 import (
 	rating "common/proto/rating_service/generated"
 	"context"
+	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"rating_service/domain/service"
 )
@@ -17,8 +18,10 @@ func NewRatingHandler(ratingService service.RatingService) *RatingHandler {
 }
 
 func (handler RatingHandler) RateAccommodation(ctx context.Context, in *rating.RateAccommodationRequest) (*rating.RateAccommodationResponse, error) {
+	loggedInId := ctx.Value("id")
+
 	mapper := NewRatingMapper()
-	err := handler.ratingService.RateAccommodation(mapper.mapFromRateAccommodationRequest(in))
+	err := handler.ratingService.RateAccommodation(loggedInId.(uuid.UUID).String(), mapper.mapFromRateAccommodationRequest(in))
 	if err != nil {
 		return &rating.RateAccommodationResponse{}, err
 	}

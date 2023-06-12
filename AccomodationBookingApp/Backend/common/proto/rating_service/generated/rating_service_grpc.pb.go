@@ -19,8 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	RatingService_RateAccommodation_FullMethodName         = "/reservation.RatingService/RateAccommodation"
-	RatingService_GetRatingForAccommodation_FullMethodName = "/reservation.RatingService/GetRatingForAccommodation"
+	RatingService_RateAccommodation_FullMethodName         = "/rating.RatingService/RateAccommodation"
+	RatingService_GetRatingForAccommodation_FullMethodName = "/rating.RatingService/GetRatingForAccommodation"
 )
 
 // RatingServiceClient is the client API for RatingService service.
@@ -129,7 +129,7 @@ func _RatingService_GetRatingForAccommodation_Handler(srv interface{}, ctx conte
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var RatingService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "reservation.RatingService",
+	ServiceName: "rating.RatingService",
 	HandlerType: (*RatingServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

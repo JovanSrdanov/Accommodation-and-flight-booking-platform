@@ -2,7 +2,7 @@ syntax = "proto3";
 
 option go_package = "common/rating";
 
-package reservation;
+package rating;
 
 import "google/api/annotations.proto";
 

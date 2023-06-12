@@ -6,6 +6,6 @@ import (
 )
 
 type IRatingService interface {
-	RateAccommodation(rating *model.Rating) error
+	RateAccommodation(guestId string, rating *model.Rating) error
 	GetRatingForAccommodation(id primitive.ObjectID) (model.RatingResponse, error)
 }

@@ -15,16 +15,16 @@ func NewRatingRepositoryNeo4J(dbClient neo4j.Driver) (*RatingRepositoryNeo4J, er
 	return &RatingRepositoryNeo4J{dbClient: dbClient}, nil
 }
 
-func (repo RatingRepositoryNeo4J) RateAccommodation(ratingg *model.Rating) error {
+func (repo RatingRepositoryNeo4J) RateAccommodation(guestId string, ratingDto *model.Rating) error {
 	//ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	//defer cancel()
 	session := repo.dbClient.NewSession(neo4j.SessionConfig{})
 	defer session.Close()
 
-	guestID := "guest123"
-	accommodationID := ratingg.AccommodationId.Hex()
-	rating := ratingg.Rating
-	date := ratingg.Date.String()
+	guestID := guestId
+	accommodationID := ratingDto.AccommodationId.Hex()
+	rating := ratingDto.Rating
+	date := ratingDto.Date.String()
 
 	_, err := session.WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
 		// Check if Accommodation exists
