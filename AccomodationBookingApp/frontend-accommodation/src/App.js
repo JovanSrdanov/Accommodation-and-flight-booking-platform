@@ -46,20 +46,20 @@ function App() {
     const navigate = useNavigate();
     const [notificationSnackBar, setNotificationSnackBar] = useState(false);
     const [message, setMessage] = useState('');
-    const openWebSocket = () => {
+    const openWebSocket = (id) => {
         const paseto = localStorage.getItem('paseto');
         if (!paseto) {
             localStorage.removeItem('paseto');
             return null
         }
-        const ws = new WebSocket('ws://localhost:8000/ws');
+        const ws = new WebSocket('ws://localhost:8000/ws?id=' + id);
 
         ws.onopen = () => {
             console.log('WEBSOCKET CONNECTION ESTABLISHED');
-        };
 
+        };
         ws.onmessage = (event) => {
-  
+
             setMessage(event.data.toUpperCase());
             setNotificationSnackBar(true)
         };
@@ -182,7 +182,7 @@ function App() {
     };
 
     useEffect(() => {
-        openWebSocket()
+        openWebSocket("mjau")
     }, []);
 
     useEffect(() => {
