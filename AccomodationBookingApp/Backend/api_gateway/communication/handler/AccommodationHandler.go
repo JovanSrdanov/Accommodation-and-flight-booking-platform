@@ -55,6 +55,8 @@ func (handler AccommodationHandler) Init(router *gin.RouterGroup) {
 }
 
 func (handler AccommodationHandler) SearchAccommodation(ctx *gin.Context) {
+	//ctxGrpc := createGrpcContextFromGinContext(ctx)
+
 	var searchDto dto.SearchAccommodationDto
 
 	err := ctx.ShouldBindJSON(&searchDto)
@@ -72,7 +74,13 @@ func (handler AccommodationHandler) SearchAccommodation(ctx *gin.Context) {
 
 	log.Println(firstRoundDto)
 
-	finalDto, err := handler.FindReservations(searchDto, firstRoundDto)
+	secondRound, err := handler.FindReservations(searchDto, firstRoundDto)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, communication.NewErrorResponse(err.Error()))
+		return
+	}
+
+	finalDto, err := handler.FindRating(searchDto, secondRound, context.TODO())
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, communication.NewErrorResponse(err.Error()))
 		return
@@ -164,6 +172,25 @@ func (handler AccommodationHandler) FindReservations(searchDto dto.SearchAccommo
 	}
 
 	return finalDto, nil
+}
+
+func (handler AccommodationHandler) FindRating(searchDto dto.SearchAccommodationDto, secondRoundDto dto.SearchResponseDto, ctx context.Context) (dto.SearchResponseDto, error) {
+	ratingClient := communication.NewRatingClient(handler.ratingServiceAddress)
+
+	responseSlice := make([]*dto.Accommodation, 0)
+	for _, val := range secondRoundDto {
+		ratingForAccommodation, err := ratingClient.CalculateRatingForAccommodation(ctx, &rating.RatingForAccommodationRequest{AccommodationId: val.ID.Hex()})
+		if err != nil {
+			return nil, err
+		}
+
+		if ratingForAccommodation.Rating.AvgRating >= searchDto.MinRating {
+			val.Rating = ratingForAccommodation.Rating.AvgRating
+			responseSlice = append(responseSlice, val)
+		}
+	}
+
+	return responseSlice, nil
 }
 
 func (handler AccommodationHandler) GetRatableAccommodations(ctx *gin.Context) {

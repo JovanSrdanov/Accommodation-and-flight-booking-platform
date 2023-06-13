@@ -172,27 +172,6 @@ services:
     networks:
       - network
 
-  rating_service:
-    image: rating_service
-    container_name: rating_service
-    build:
-      context: .
-      dockerfile: ./rating_service/Dockerfile
-    restart: always
-    environment:
-      RATING_SERVICE_HOST: ${RATING_SERVICE_HOST}
-      RATING_SERVICE_PORT: ${RATING_SERVICE_PORT}
-      NEO4J_DB: ${NEO4J_DB}
-      NEO4J_USERNAME: ${NEO4J_USERNAME}
-      NEO4J_PASS: ${NEO4J_PASS}
-    networks:
-      - network
-    depends_on:
-      neo4j:
-        condition: service_healthy
-    ports:
-      - "8005:8005"
-
   neo4j:
     image: neo4j
     restart: always
