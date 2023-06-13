@@ -14,14 +14,13 @@ func _() {
 	_ = x[RollbackHostProfile-3]
 	_ = x[DeleteGuestAccountCredentials-4]
 	_ = x[DeleteHostAccountCredentials-5]
-	_ = x[CancelDeletion-6]
-	_ = x[FinishDeletion-7]
-	_ = x[UnknownCommand-8]
+	_ = x[FinishDeletion-6]
+	_ = x[UnknownCommand-7]
 }
 
-const _DeleteUserCommandType_name = "DeleteGuestProfileDeleteHostProfileRollbackGuestProfileRollbackHostProfileDeleteGuestAccountCredentialsDeleteHostAccountCredentialsCancelDeletionFinishDeletionUnknownCommand"
+const _DeleteUserCommandType_name = "DeleteGuestProfileDeleteHostProfileRollbackGuestProfileRollbackHostProfileDeleteGuestAccountCredentialsDeleteHostAccountCredentialsFinishDeletionUnknownCommand"
 
-var _DeleteUserCommandType_index = [...]uint8{0, 18, 35, 55, 74, 103, 131, 145, 159, 173}
+var _DeleteUserCommandType_index = [...]uint8{0, 18, 35, 55, 74, 103, 131, 145, 159}
 
 func (i DeleteUserCommandType) String() string {
 	if i < 0 || i >= DeleteUserCommandType(len(_DeleteUserCommandType_index)-1) {
