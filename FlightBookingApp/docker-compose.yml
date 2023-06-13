@@ -4,7 +4,7 @@ services:
   flights-app:
     image: flights-app
     build:
-        context: FlightBookingApp/Backend
+        context: ./Backend
         dockerfile: Dockerfile
     restart: always
     container_name: "flights-app"
@@ -25,6 +25,8 @@ services:
     depends_on:
         mongo:
             condition: service_healthy
+    networks:
+      - network
          
   # NoSQL: MongoDB
   mongo:
@@ -43,15 +45,19 @@ services:
       retries: 10
     volumes:
       - flightsAppDB:/data/db
+    networks:
+      - network
   #MongoDB seeding container
   mongo-seed:
     image: "mongo-seed"
     container_name: "mongo-seed"
     build:
-      context: ./FlightBookingApp/MongoSeed
+      context: ./MongoSeed
       dockerfile: Dockerfile
     depends_on:
       - mongo
+    networks:
+      - network
 
   # NoSQL: MongoExpress
   mongo-express:
@@ -72,7 +78,16 @@ services:
       - "8081:8081"
     volumes:
       - flightsAppDB_express_data:/data/db
+    networks:
+      - network
 
 volumes:
   flightsAppDB:
   flightsAppDB_express_data:
+
+networks:
+  network:
+    external: true
+    driver: bridge
+
+

@@ -29,7 +29,9 @@ type Server struct {
 }
 
 func NewServer(config *Configuration) *Server {
-	return &Server{config: config}
+	return &Server{
+		config: config,
+	}
 }
 
 func (server *Server) Start() {
@@ -132,11 +134,17 @@ func (server *Server) initDeletePublisher(subject string) messaging.Publisher {
 }
 
 func (server *Server) initDeleteUserOrchestrator(publisher messaging.Publisher, subscriber messaging.Subscriber) *orchestrator.DeleteUserOrchestrator {
-	orchestrator, err := orchestrator.NewDeleteUserOrchestrator(publisher, subscriber)
+	orch, err := orchestrator.NewDeleteUserOrchestrator(publisher, subscriber, orchestrator.NatsInfo{
+		NatsHost: server.config.NatsHost,
+		NatsPort: server.config.NatsPort,
+		NatsUser: server.config.NatsUser,
+		NatsPass: server.config.NatsPass,
+		Subject:  server.config.DeleteUserCommandSubject,
+	})
 	if err != nil {
 		log.Fatal(err)
 	}
-	return orchestrator
+	return orch
 }
 
 func (server *Server) initDeleteUserHandler(userProfileService *service.UserProfileService, reservationServiceAddress, accommodationServiceAddress string, eventService *event_sourcing.EventService, publisher messaging.Publisher, subscriber messaging.Subscriber) {

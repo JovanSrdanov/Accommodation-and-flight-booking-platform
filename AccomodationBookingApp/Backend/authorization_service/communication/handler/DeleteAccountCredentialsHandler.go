@@ -30,8 +30,11 @@ func (handler *DeleteAccountCredentialsHandler) handle(command *events.DeleteUse
 		SagaId:        command.SagaId,
 		AccCredId:     command.AccCredId,
 		UserProfileId: command.UserProfileId,
-		ErrorMessage:  "",
-		Type:          events.UnknownReply,
+		Response: events.Response{
+			ErrorHappened: false,
+			Message:       "",
+		},
+		Type: events.UnknownReply,
 	}
 
 	switch command.Type {
@@ -39,21 +42,25 @@ func (handler *DeleteAccountCredentialsHandler) handle(command *events.DeleteUse
 		err := handler.accountCredentialsService.Delete(command.UserProfileId)
 		if err != nil {
 			reply.Type = events.GuestAccountCredentialsDeletionFailed
-			reply.ErrorMessage = err.Error()
+			reply.Response.ErrorHappened = true
+			reply.Response.Message = err.Error()
 			break
 		}
 
 		reply.Type = events.DeletedGuestAccountCredentials
+		reply.Response.Message = "Deleted guest account credentials"
 		break
 	case events.DeleteHostAccountCredentials:
 		err := handler.accountCredentialsService.Delete(command.UserProfileId)
 		if err != nil {
 			reply.Type = events.HostAccountCredentialsDeletionFailed
-			reply.ErrorMessage = err.Error()
+			reply.Response.ErrorHappened = true
+			reply.Response.Message = err.Error()
 			break
 		}
 
 		reply.Type = events.DeletedHostAccountCredentials
+		reply.Response.Message = "Deleted host account credentials"
 		break
 	}
 
