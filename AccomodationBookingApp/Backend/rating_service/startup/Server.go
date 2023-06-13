@@ -72,6 +72,9 @@ func getProtectedMethodsWithAllowedRoles() map[string][]model.Role {
 	const authServicePath = "/rating.RatingService/"
 
 	return map[string][]model.Role{
-		authServicePath + "RateAccommodation": {model.Guest},
+		authServicePath + "RateAccommodation":            {model.Guest},
+		authServicePath + "RateHost":                     {model.Guest},
+		authServicePath + "DeleteRatingForAccommodation": {model.Guest},
+		authServicePath + "DeleteRatingForHost":          {model.Guest},
 	}
 }

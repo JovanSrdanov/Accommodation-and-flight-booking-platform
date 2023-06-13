@@ -17,8 +17,6 @@ func NewRatingRepositoryNeo4J(dbClient neo4j.Driver) (*RatingRepositoryNeo4J, er
 }
 
 func (repo RatingRepositoryNeo4J) RateAccommodation(guestId string, ratingDto *model.Rating) error {
-	//ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	//defer cancel()
 	session := repo.dbClient.NewSession(neo4j.SessionConfig{})
 	defer session.Close()
 
@@ -271,4 +269,232 @@ func (repo RatingRepositoryNeo4J) GetRecommendedAccommodations(guestId string) (
 	}
 
 	return model.RecommendedAccommodations{AccommodationsIds: recommendationsOid}, nil
+}
+
+func (repo RatingRepositoryNeo4J) DeleteRatingForAccommodation(accommodationId string, guestId string) (string, error) {
+	session := repo.dbClient.NewSession(neo4j.SessionConfig{})
+	defer session.Close()
+
+	_, err := session.WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
+		result, err := tx.Run(
+			"MATCH (:Guest {guestId: $guestID})-[r:RATED]->(:Accommodation {accommodationId: $accommodationID}) "+
+				"DELETE r",
+			map[string]interface{}{
+				"guestID":         guestId,
+				"accommodationID": accommodationId,
+			},
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		return result.Consume()
+	})
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return "Rating deleted", nil
+}
+
+func (repo RatingRepositoryNeo4J) RateHost(ratingDto *model.RateHostDto) error {
+	session := repo.dbClient.NewSession(neo4j.SessionConfig{})
+	defer session.Close()
+
+	guestID := ratingDto.GuestId
+	hostID := ratingDto.HostId
+	rating := ratingDto.Rating
+	date := ratingDto.Date.Format("2006-01-02")
+
+	_, err := session.WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
+		// Check if Accommodation exists
+		result, err := tx.Run(
+			"MATCH (a:Host {hostId: $hostID}) RETURN a",
+			map[string]interface{}{
+				"hostID": hostID,
+			},
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		if !result.Next() {
+			// Accommodation doesn't exist, create it
+			_, err = tx.Run(
+				"CREATE (a:Host {hostId: $hostID})",
+				map[string]interface{}{
+					"hostID": hostID,
+				},
+			)
+			if err != nil {
+				return nil, err
+			}
+		}
+
+		// Check if Guest exists
+		result, err = tx.Run(
+			"MATCH (g:Guest {guestId: $guestID}) RETURN g",
+			map[string]interface{}{
+				"guestID": guestID,
+			},
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		if !result.Next() {
+			// Guest doesn't exist, create it
+			_, err = tx.Run(
+				"CREATE (g:Guest {guestId: $guestID})",
+				map[string]interface{}{
+					"guestID": guestID,
+				},
+			)
+			if err != nil {
+				return nil, err
+			}
+		}
+
+		// Check if relationship exists
+		result, err = tx.Run(
+			"MATCH (g:Guest {guestId: $guestID})-[r:RATED_HOST]->(a:Host {hostId: $hostID}) RETURN r",
+			map[string]interface{}{
+				"guestID": guestID,
+				"hostID":  hostID,
+			},
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		if result.Next() {
+			// Relationship exists, update it
+			_, err = tx.Run(
+				"MATCH (g:Guest {guestId: $guestID})-[r:RATED_HOST]->(a:Host {hostId: $hostID}) SET r.rating = $rating, r.date = $date",
+				map[string]interface{}{
+					"guestID": guestID,
+					"hostID":  hostID,
+					"rating":  rating,
+					"date":    date,
+				},
+			)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			// Relationship doesn't exist, create it
+			_, err = tx.Run(
+				"MATCH (g:Guest {guestId: $guestID}), (a:Host {hostId: $hostID}) CREATE (g)-[r:RATED_HOST {rating: $rating, date: $date}]->(a)",
+				map[string]interface{}{
+					"guestID": guestID,
+					"hostID":  hostID,
+					"rating":  rating,
+					"date":    date,
+				},
+			)
+			if err != nil {
+				return nil, err
+			}
+		}
+
+		return nil, nil
+	})
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return nil
+}
+
+func (repo RatingRepositoryNeo4J) GetRatingForHost(hostID string) (model.HostRatingResponse, error) {
+	session := repo.dbClient.NewSession(neo4j.SessionConfig{})
+	defer session.Close()
+
+	result, err := session.ReadTransaction(func(tx neo4j.Transaction) (interface{}, error) {
+		// Retrieve ratings for the accommodation
+		result, err := tx.Run(
+			"MATCH (g:Guest)-[r:RATED_HOST]->(a:Host {hostId: $hostID}) RETURN r.rating, g.guestId, r.date",
+			map[string]interface{}{
+				"hostID": hostID,
+			},
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		ratingSum := int64(0)
+		count := int64(0)
+		singleRatings := make([]*model.SingleRating, 0)
+
+		for result.Next() {
+			record := result.Record()
+			ratingValue, ok := record.Get("r.rating")
+			guestId, ok := record.Get("g.guestId")
+			dateStr, ok := record.Get("r.date")
+			if ok {
+				rating := ratingValue.(int64)
+				ratingSum += rating
+				count++
+				date, _ := time.Parse("2006-01-02", dateStr.(string))
+				singleRatings = append(singleRatings, &model.SingleRating{
+					GuestId: guestId.(string),
+					Rating:  int32(ratingValue.(int64)),
+					Date:    date,
+				})
+			}
+		}
+
+		if count > 0 {
+			ratingAverage := float64(ratingSum) / float64(count)
+
+			res := model.HostRatingResponse{
+				HostId:    hostID,
+				AvgRating: float32(ratingAverage),
+				Ratings:   singleRatings,
+			}
+
+			return res, nil
+		}
+
+		return nil, nil
+	})
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	res := model.HostRatingResponse{}
+	if result != nil {
+		res = result.(model.HostRatingResponse)
+	}
+
+	return res, nil
+}
+
+func (repo RatingRepositoryNeo4J) DeleteRatingForHost(hostId string, guestId string) (string, error) {
+	session := repo.dbClient.NewSession(neo4j.SessionConfig{})
+	defer session.Close()
+
+	_, err := session.WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
+		result, err := tx.Run(
+			"MATCH (:Guest {guestId: $guestID})-[r:RATED_HOST]->(:Host {hostId: $hostID}) "+
+				"DELETE r",
+			map[string]interface{}{
+				"guestID": guestId,
+				"hostID":  hostId,
+			},
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		return result.Consume()
+	})
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return "Rating for host deleted", nil
 }

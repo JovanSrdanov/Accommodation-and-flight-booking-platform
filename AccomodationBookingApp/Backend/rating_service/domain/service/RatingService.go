@@ -26,3 +26,19 @@ func (service RatingService) GetRatingForAccommodation(id primitive.ObjectID) (m
 func (service RatingService) GetRecommendedAccommodations(guestId string) (model.RecommendedAccommodations, error) {
 	return service.ratingRepo.GetRecommendedAccommodations(guestId)
 }
+
+func (service RatingService) DeleteRatingForAccommodation(accommodationId string, guestId string) (string, error) {
+	return service.ratingRepo.DeleteRatingForAccommodation(accommodationId, guestId)
+}
+
+func (service RatingService) RateHost(rating *model.RateHostDto) error {
+	return service.ratingRepo.RateHost(rating)
+}
+
+func (service RatingService) GetRatingForHost(hostId string) (model.HostRatingResponse, error) {
+	return service.ratingRepo.GetRatingForHost(hostId)
+}
+
+func (service RatingService) DeleteRatingForHost(hostId string, guestId string) (string, error) {
+	return service.ratingRepo.DeleteRatingForHost(hostId, guestId)
+}

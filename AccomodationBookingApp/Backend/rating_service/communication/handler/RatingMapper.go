@@ -43,6 +43,24 @@ func (mapper RatingMapper) mapToRatingForAccommodationResponse(in *model.RatingR
 	}}
 }
 
+func (mapper RatingMapper) mapToRatingForHostResponse(in *model.HostRatingResponse) *rating.RatingForHostResponse {
+	ratingsProto := make([]*rating.Rating, 0)
+
+	for _, val := range in.Ratings {
+		ratingsProto = append(ratingsProto, &rating.Rating{
+			GuestId: val.GuestId,
+			Date:    val.Date.Format("2006-01-02"),
+			Rating:  val.Rating,
+		})
+	}
+
+	return &rating.RatingForHostResponse{Rating: &rating.HostRating{
+		AvgRating: in.AvgRating,
+		HostId:    in.HostId,
+		Ratings:   ratingsProto,
+	}}
+}
+
 func (mapper RatingMapper) mapToRecommendedAccommodationsResponse(in *model.RecommendedAccommodations) *rating.RecommendedAccommodationsResponse {
 	slice := make([]string, 0)
 
