@@ -157,26 +157,6 @@ services:
     networks:
       - network
 
-  reservation_service:
-    image: reservation_service
-    container_name: reservation_service
-    build:
-      context: .
-      dockerfile: ./reservation_service/Dockerfile
-    restart: on-failure
-    environment:
-      RESERVATION_SERVICE_HOST: ${RESERVATION_SERVICE_HOST}
-      RESERVATION_SERVICE_PORT: ${RESERVATION_SERVICE_PORT}
-      RESERVATION_SERVICE_DB_NAME: ${RESERVATION_SERVICE_DB_NAME}
-      RESERVATION_SERVICE_DB_PORT: ${RESERVATION_SERVICE_DB_PORT}
-    networks:
-      - network
-    depends_on:
-      reservation_db:
-        condition: service_healthy
-    ports:
-      - "8004:8004"
-
   reservation_db:
     image: mongo
     container_name: ${RESERVATION_SERVICE_DB_NAME}
