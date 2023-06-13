@@ -15,6 +15,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"io/ioutil"
 	"log"
 	"net/http"
 )
@@ -184,13 +185,71 @@ func (handler AccommodationHandler) FindRating(searchDto dto.SearchAccommodation
 			return nil, err
 		}
 
-		if ratingForAccommodation.Rating.AvgRating >= searchDto.MinRating {
+		isProminent := false
+
+		if searchDto.ProminentHost {
+			body, err2 := prominentHostHttp(err, val)
+			if err2 != nil {
+				return nil, err2
+			}
+
+			if string(body) == "true" {
+				isProminent = true
+			}
+		}
+
+		if ratingForAccommodation.Rating.AvgRating >= searchDto.MinRating &&
+			val.Price <= searchDto.MaxPrice &&
+			val.Price >= searchDto.MinPrice &&
+			containsAll(val.Amenities, searchDto.Amenities) &&
+			(!searchDto.ProminentHost || isProminent) {
 			val.Rating = ratingForAccommodation.Rating.AvgRating
 			responseSlice = append(responseSlice, val)
 		}
 	}
 
 	return responseSlice, nil
+}
+
+func prominentHostHttp(err error, val *dto.Accommodation) ([]byte, error) {
+	client := &http.Client{}
+
+	req, err := http.NewRequest("GET", "http://localhost:8000/api-2/accommodation/prominent-host/"+val.HostId, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	return body, nil
+}
+
+func containsAll(slice1, slice2 []string) bool {
+	if len(slice2) == 0 {
+		return true
+	}
+
+	for _, value := range slice2 {
+		found := false
+		for _, item := range slice1 {
+			if item == value {
+				found = true
+				break
+			}
+		}
+		if !found {
+			return false
+		}
+	}
+	return true
 }
 
 func (handler AccommodationHandler) GetRatableAccommodations(ctx *gin.Context) {
@@ -276,11 +335,11 @@ func (handler AccommodationHandler) GetRatableHosts(ctx *gin.Context) {
 
 func (handler AccommodationHandler) IsHostProminent(ctx *gin.Context) {
 	hostId := ctx.Param("hostId")
-	ctxGrpc := createGrpcContextFromGinContext(ctx)
+	//ctxGrpc := createGrpcContextFromGinContext(ctx)
 
 	ratingClient := communication.NewRatingClient(handler.ratingServiceAddress)
 
-	ratingProto, err := ratingClient.CalculateRatingForHost(ctxGrpc, &rating.RatingForHostRequest{HostId: hostId})
+	ratingProto, err := ratingClient.CalculateRatingForHost(context.TODO(), &rating.RatingForHostRequest{HostId: hostId})
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -288,5 +347,10 @@ func (handler AccommodationHandler) IsHostProminent(ctx *gin.Context) {
 
 	log.Println(ratingProto.Rating)
 
-	ctx.JSON(http.StatusOK, ratingProto.Rating.AvgRating)
+	res := false
+	if ratingProto.Rating.AvgRating > 2 {
+		res = true
+	}
+
+	ctx.JSON(http.StatusOK, res)
 }

@@ -28,6 +28,8 @@ func (handler RatingHandler) RateAccommodation(ctx context.Context, in *rating.R
 		return &rating.EmptyResponse{}, err
 	}
 
+	//GRPC da vidis ciji je smestaj
+
 	return &rating.EmptyResponse{}, nil
 }
 
