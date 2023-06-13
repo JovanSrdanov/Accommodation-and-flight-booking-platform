@@ -28,6 +28,8 @@ type Server struct {
 	server *gin.Engine
 }
 
+var wsConn *websocket.Conn // Global variable to hold WebSocket connection
+
 func NewServer(config *Configuration) *Server {
 	server := &Server{
 		config: config,
@@ -57,6 +59,20 @@ func NewServer(config *Configuration) *Server {
 
 	server.server.GET("/ws", server.handleWebSocket)
 
+	server.server.GET("/test", func(c *gin.Context) {
+		if wsConn != nil {
+			err := wsConn.WriteMessage(websocket.TextMessage, []byte("websockettest"))
+			if err != nil {
+				log.Println("Failed to send message through WebSocket connection:", err)
+				c.String(http.StatusInternalServerError, "Internal Server Error")
+				return
+			}
+			c.String(http.StatusOK, "Message sent")
+		} else {
+			c.String(http.StatusBadRequest, "WebSocket connection not established")
+		}
+	})
+
 	return server
 }
 
@@ -72,18 +88,12 @@ func (server *Server) handleWebSocket(c *gin.Context) {
 	}
 	defer conn.Close()
 
-	// Send "hello" to the client
-	err = conn.WriteMessage(websocket.TextMessage, []byte("hello"))
-	if err != nil {
-		log.Println("Failed to send message to WebSocket client:", err)
-		return
-	}
-
+	wsConn = conn // Assign the WebSocket connection to the global variable
 	// Wait for client to close connection
 	for {
-		_, _, err := conn.ReadMessage()
-		if err != nil {
-			log.Println("WebSocket connection closed by client:", err)
+		_, _, readErr := conn.ReadMessage()
+		if readErr != nil {
+			log.Println("WebSocket connection closed by client:", readErr)
 			break
 		}
 	}

@@ -55,15 +55,17 @@ function App() {
         const ws = new WebSocket('ws://localhost:8000/ws');
 
         ws.onopen = () => {
-            console.log('WebSocket connection established');
+            console.log('WEBSOCKET CONNECTION ESTABLISHED');
         };
 
         ws.onmessage = (event) => {
-            setMessage(event.data);
+  
+            setMessage(event.data.toUpperCase());
+            setNotificationSnackBar(true)
         };
 
         ws.onclose = () => {
-            console.log('WebSocket connection closed');
+            console.log('WEBSOCKET CONNECTION CLOSED');
         };
 
         return () => {
@@ -114,7 +116,7 @@ function App() {
                 return null;
 
             } else {
-           
+
                 if (role === "0") {
 
                     return "Host";
@@ -179,9 +181,9 @@ function App() {
             });
     };
 
-    // useEffect(() => {
-    //
-    // }, []);
+    useEffect(() => {
+        openWebSocket()
+    }, []);
 
     useEffect(() => {
 
@@ -214,7 +216,7 @@ function App() {
                 onClose={() => setNotificationSnackBar(false)}
                 message={message}
             >
-                <Alert onClose={handleClose} severity="info" sx={{width: '100%'}}>
+                <Alert onClose={handleClose} severity="success" sx={{width: '100%'}}>
                     {message}
                 </Alert>
             </Snackbar>
