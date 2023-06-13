@@ -5,6 +5,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"log"
 	"rating_service/domain/model"
+	"sort"
 	"time"
 )
 
@@ -192,16 +193,16 @@ func (repo RatingRepositoryNeo4J) GetRatingForAccommodation(id primitive.ObjectI
 	return res, nil
 }
 
-func (repo RatingRepositoryNeo4J) GetRecommendedAccommodations(guestId string) (model.RecommendedAccommodations, error) {
+func (repo RatingRepositoryNeo4J) GetRecommendedAccommodations(guestId string) ([]model.RecommendedAccommodation, error) {
 	/*slice := make([]primitive.ObjectID, 0)
 	slice = append(slice, primitive.NewObjectID())
 	slice = append(slice, primitive.NewObjectID())
-	return model.RecommendedAccommodations{AccommodationsIds: slice}, nil*/
+	return model.RecommendedAccommodation{AccommodationsIds: slice}, nil*/
 
 	session := repo.dbClient.NewSession(neo4j.SessionConfig{})
 	defer session.Close()
 
-	guestID := "guest123"
+	guestID := guestId
 
 	result, err := session.ReadTransaction(func(tx neo4j.Transaction) (interface{}, error) {
 		// Find similar guests
@@ -251,24 +252,56 @@ func (repo RatingRepositoryNeo4J) GetRecommendedAccommodations(guestId string) (
 			}
 		}
 
-		return recommendations, nil
+		result, err = tx.Run(
+			"MATCH (a:Accommodation) "+
+				"WHERE a.accommodationId IN $accommodationIDs "+
+				"WITH a, SIZE([(a)<-[r:RATED]-() WHERE r.rating <= 3 | r]) AS ratedCount "+
+				"WHERE ratedCount < 3 "+
+				"RETURN a.accommodationId",
+			map[string]interface{}{
+				"accommodationIDs": recommendations,
+			},
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		accommodations := make([]string, 0)
+		for result.Next() {
+			record := result.Record()
+			accommodation, ok := record.Get("a.accommodationId")
+			if ok {
+				accommodations = append(accommodations, accommodation.(string))
+			}
+		}
+
+		//Calculate rating for each accommodation
+		unsortedResponse := make([]model.RecommendedAccommodation, 0)
+		for _, val := range accommodations {
+			avgRat, _ := repo.CalculateRatingForAccommodation(val)
+			unsortedResponse = append(unsortedResponse, model.RecommendedAccommodation{
+				AccommodationsId: val,
+				AvgRating:        float32(avgRat),
+			})
+		}
+
+		sort.Slice(unsortedResponse, func(i, j int) bool {
+			return unsortedResponse[i].AvgRating > unsortedResponse[j].AvgRating
+		})
+
+		// Limit the result to the first ten elements if the slice is larger
+		if len(unsortedResponse) > 5 {
+			unsortedResponse = unsortedResponse[:5]
+		}
+
+		return unsortedResponse, nil
 	})
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	recommendationsOid := make([]primitive.ObjectID, 0)
-	if result != nil {
-		recommendations := result.([]string)
-
-		for _, accommodationID := range recommendations {
-			oid, _ := primitive.ObjectIDFromHex(accommodationID)
-			recommendationsOid = append(recommendationsOid, oid)
-		}
-	}
-
-	return model.RecommendedAccommodations{AccommodationsIds: recommendationsOid}, nil
+	return result.([]model.RecommendedAccommodation), nil
 }
 
 func (repo RatingRepositoryNeo4J) DeleteRatingForAccommodation(accommodationId string, guestId string) (string, error) {
@@ -497,4 +530,38 @@ func (repo RatingRepositoryNeo4J) DeleteRatingForHost(hostId string, guestId str
 	}
 
 	return "Rating for host deleted", nil
+}
+
+func (repo RatingRepositoryNeo4J) CalculateRatingForAccommodation(accommodationID string) (float64, error) {
+	session := repo.dbClient.NewSession(neo4j.SessionConfig{})
+	defer session.Close()
+
+	result, err := session.ReadTransaction(func(tx neo4j.Transaction) (interface{}, error) {
+		result, err := tx.Run(
+			"MATCH (:Accommodation {accommodationId: $accommodationID})<-[r:RATED]-(g:Guest) "+
+				"RETURN toFloat(SUM(r.rating)) / count(r) AS avgRating",
+			map[string]interface{}{
+				"accommodationID": accommodationID,
+			},
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		if result.Next() {
+			record := result.Record()
+			avgRating, ok := record.Get("avgRating")
+			if ok {
+				return avgRating, nil
+			}
+		}
+
+		return 0.0, nil
+	})
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return result.(float64), nil
 }

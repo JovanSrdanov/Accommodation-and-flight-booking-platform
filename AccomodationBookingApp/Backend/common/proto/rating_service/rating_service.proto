@@ -94,7 +94,12 @@ message RecommendedAccommodationsRequest {
 }
 
 message RecommendedAccommodationsResponse {
-  repeated string accommodationId = 1;
+  repeated Recommendation recommendation = 1;
+}
+
+message Recommendation {
+  string accommodationId = 1;
+  float rating = 2;
 }
 
 //RatingForAccommodation

@@ -1,7 +1,6 @@
 package model
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
-
-type RecommendedAccommodations struct {
-	AccommodationsIds []primitive.ObjectID `json:"accommodationsIds"`
+type RecommendedAccommodation struct {
+	AccommodationsId string  `json:"accommodationsId"`
+	AvgRating        float32 `json:"avgRating"`
 }

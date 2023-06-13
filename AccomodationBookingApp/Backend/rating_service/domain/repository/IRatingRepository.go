@@ -6,7 +6,7 @@ import (
 )
 
 type IRatingRepository interface {
-	GetRecommendedAccommodations(guestId string) (model.RecommendedAccommodations, error)
+	GetRecommendedAccommodations(guestId string) ([]model.RecommendedAccommodation, error)
 
 	RateAccommodation(guestId string, rating *model.Rating) error
 	GetRatingForAccommodation(id primitive.ObjectID) (model.RatingResponse, error)

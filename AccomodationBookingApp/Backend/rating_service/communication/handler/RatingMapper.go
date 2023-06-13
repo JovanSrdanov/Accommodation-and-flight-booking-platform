@@ -61,12 +61,15 @@ func (mapper RatingMapper) mapToRatingForHostResponse(in *model.HostRatingRespon
 	}}
 }
 
-func (mapper RatingMapper) mapToRecommendedAccommodationsResponse(in *model.RecommendedAccommodations) *rating.RecommendedAccommodationsResponse {
-	slice := make([]string, 0)
+func (mapper RatingMapper) mapToRecommendedAccommodationsResponse(in []model.RecommendedAccommodation) *rating.RecommendedAccommodationsResponse {
+	slice := make([]*rating.Recommendation, 0)
 
-	for _, val := range in.AccommodationsIds {
-		slice = append(slice, val.Hex())
+	for _, val := range in {
+		slice = append(slice, &rating.Recommendation{
+			AccommodationId: val.AccommodationsId,
+			Rating:          val.AvgRating,
+		})
 	}
 
-	return &rating.RecommendedAccommodationsResponse{AccommodationId: slice}
+	return &rating.RecommendedAccommodationsResponse{Recommendation: slice}
 }

@@ -50,7 +50,7 @@ func (handler RatingHandler) GetRecommendedAccommodations(ctx context.Context, i
 		return &rating.RecommendedAccommodationsResponse{}, err
 	}
 
-	return mapper.mapToRecommendedAccommodationsResponse(&res), nil
+	return mapper.mapToRecommendedAccommodationsResponse(res), nil
 }
 
 func (handler RatingHandler) DeleteRatingForAccommodation(ctx context.Context, in *rating.RatingForAccommodationRequest) (*rating.SimpleResponse, error) {
