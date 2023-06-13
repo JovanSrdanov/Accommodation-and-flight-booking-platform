@@ -47,12 +47,13 @@ function App() {
     const [notificationSnackBar, setNotificationSnackBar] = useState(false);
     const [message, setMessage] = useState('');
     const openWebSocket = (id) => {
+
         const paseto = localStorage.getItem('paseto');
         if (!paseto) {
             localStorage.removeItem('paseto');
             return null
         }
-        const ws = new WebSocket('ws://localhost:8000/ws?id=' + id);
+        const ws = new WebSocket(`ws://localhost:8000/ws?authorization=${encodeURIComponent(paseto)}`);
 
         ws.onopen = () => {
             console.log('WEBSOCKET CONNECTION ESTABLISHED');

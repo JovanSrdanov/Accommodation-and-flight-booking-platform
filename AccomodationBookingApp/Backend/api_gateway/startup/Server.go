@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
@@ -27,7 +28,7 @@ type Server struct {
 	server *gin.Engine
 }
 
-var wsConnections = make(map[string]*websocket.Conn) // Map to store websocket connections by user ID
+var wsConnections = make(map[uuid.UUID]*websocket.Conn) // Map to store websocket connections by user ID
 
 func NewServer(config *Configuration) *Server {
 	server := &Server{
@@ -59,17 +60,20 @@ func NewServer(config *Configuration) *Server {
 	server.server.GET("/ws", server.handleWebSocket)
 
 	server.server.GET("/test", func(c *gin.Context) {
-		userID := c.Query("id")
-		if userID == "" {
-			c.String(http.StatusBadRequest, "User ID not provided")
+		uuidStr := "5fa599f7-ef60-11ed-895f-0242ac1c0006"
+		userID, err := uuid.Parse(uuidStr)
+		if err != nil {
+			fmt.Printf("Failed to parse UUID: %v\n", err)
 			return
 		}
+
 		conn, ok := wsConnections[userID]
 		if !ok {
 			c.String(http.StatusBadRequest, "WebSocket connection not found for user ID")
 			return
 		}
-		err := conn.WriteMessage(websocket.TextMessage, []byte("websockettest"))
+
+		err = conn.WriteMessage(websocket.TextMessage, []byte("websockettest"))
 		if err != nil {
 			log.Println("Failed to send message through WebSocket connection:", err)
 			c.String(http.StatusInternalServerError, "Internal Server Error")
@@ -85,18 +89,29 @@ func (server *Server) handleWebSocket(c *gin.Context) {
 	upgrader := websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool { return true },
 	}
+	// Extract the PASETO token from the Authorization header
+	pasetoToken := c.Query("authorization")
+	tokenMaker, _ := token.NewPasetoMaker("12345678901234567890123456789012")
+	tokenPayload, err := tokenMaker.VerifyToken(pasetoToken)
+
+	userID := tokenPayload.ID
+	log.Println("UserID: ", userID)
+	if err != nil {
+		c.Status(http.StatusUnauthorized)
+		return
+	}
+
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		log.Println("Failed to upgrade WebSocket connection:", err)
+		c.Status(http.StatusInternalServerError)
 		return
 	}
 	defer conn.Close()
-	userID := c.Query("id")
-	if userID == "" {
-		log.Println("User ID not provided in the query string")
-		return
-	}
+
+	// Store the WebSocket connection in the map using the user ID as the key
 	wsConnections[userID] = conn
+
 	for {
 		_, _, readErr := conn.ReadMessage()
 		if readErr != nil {
@@ -104,6 +119,8 @@ func (server *Server) handleWebSocket(c *gin.Context) {
 			break
 		}
 	}
+
+	// Remove the WebSocket connection from the map when the connection is closed
 	delete(wsConnections, userID)
 }
 
