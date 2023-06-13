@@ -1,5 +1,10 @@
 version: "3.8"
 
+x-logging: &fluent-bit
+  driver: fluentd
+  options:
+    fluentd-address: ${FLUENT_BIT_ADDRESS}:24224
+
 services:
 
   api_gateway:
@@ -23,6 +28,8 @@ services:
       RESERVATION_SERVICE_PORT: ${RESERVATION_SERVICE_PORT}
     networks:
       - network
+      - monitoring
+    logging: *fluent-bit
 
   authorization_service:
     image: authorization_service
@@ -49,6 +56,8 @@ services:
           condition: service_healthy
     networks:
       - network
+      - monitoring
+    logging: *fluent-bit
 
   authorization_db:
     image: authorization_db
@@ -68,9 +77,10 @@ services:
       retries: 5
     networks:
       - network
+      - monitoring
     ports:
       - 5001:5432
-
+    logging: *fluent-bit
 
   user_profile_service:
     image: user_profile_service
@@ -109,6 +119,8 @@ services:
         condition: service_healthy
     networks:
       - network
+      - monitoring
+    logging: *fluent-bit
 
 
 
@@ -130,8 +142,10 @@ services:
       retries: 5
     networks:
       - network
+      - monitoring
     ports:
       - 5002:5432
+    logging: *fluent-bit
 
   user_profile_event_db:
     image: mongo
@@ -143,8 +157,10 @@ services:
       retries: 10
     networks:
       - network
+      - monitoring
     ports:
       - 5003:27017
+    logging: *fluent-bit
 
 
   accommodation_service:
@@ -163,9 +179,11 @@ services:
       RESERVATION_SERVICE_PORT: ${RESERVATION_SERVICE_PORT}
     networks:
       - network
+      - monitoring
     depends_on:
       accommodation_db:
         condition: service_healthy
+    logging: *fluent-bit
 
   accommodation_db:
     image: mongo
@@ -181,6 +199,8 @@ services:
       - 6969:27017
     networks:
       - network
+      - monitoring
+    logging: *fluent-bit
 
   reservation_service:
     image: reservation_service
@@ -196,10 +216,11 @@ services:
       RESERVATION_SERVICE_DB_PORT: ${RESERVATION_SERVICE_DB_PORT}
     networks:
       - network
+      - monitoring
     depends_on:
       reservation_db:
         condition: service_healthy
-   
+    logging: *fluent-bit
 
   reservation_db:
     image: mongo
@@ -215,6 +236,8 @@ services:
       - 6968:27017
     networks:
       - network
+      - monitoring
+    logging: *fluent-bit
 
   nats:
     image: nats
@@ -222,6 +245,8 @@ services:
     restart: on-failure
     networks:
       - network
+      - monitoring
+    logging: *fluent-bit
 
 volumes:
   accommodationDb:
@@ -230,4 +255,5 @@ volumes:
 networks:
   network:
     driver: bridge
-
+  monitoring:
+    external: true
