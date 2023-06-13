@@ -277,5 +277,6 @@ volumes:
 
 networks:
   network:
+    external: true
     driver: bridge
 

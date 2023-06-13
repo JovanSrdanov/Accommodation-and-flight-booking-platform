@@ -14,16 +14,21 @@ const (
 	RollbackHostProfile
 	DeleteGuestAccountCredentials
 	DeleteHostAccountCredentials
-	CancelDeletion
 	FinishDeletion
 	UnknownCommand
 )
+
+type Response struct {
+	ErrorHappened bool
+	Message       string
+}
 
 type DeleteUserCommand struct {
 	Type          DeleteUserCommandType
 	SagaId        uuid.UUID
 	AccCredId     string
 	UserProfileId uuid.UUID
+	LastResponse  Response
 }
 
 type DeleteUserReplyType int8
@@ -47,5 +52,5 @@ type DeleteUserReply struct {
 	AccCredId     string
 	SagaId        uuid.UUID
 	UserProfileId uuid.UUID
-	ErrorMessage  string
+	Response      Response
 }
