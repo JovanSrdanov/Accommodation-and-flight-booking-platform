@@ -8,6 +8,7 @@ import (
 	"authorization_service/domain/token"
 	accommodation "common/proto/accommodation_service/generated"
 	authorization "common/proto/authorization_service/generated"
+	rating "common/proto/rating_service/generated"
 	reservation "common/proto/reservation_service/generated"
 	user_profile "common/proto/user_profile_service/generated"
 	"context"
@@ -23,16 +24,18 @@ type AccommodationHandler struct {
 	reservationServiceAddress   string
 	authorizationServiceAddress string
 	userProfileServiceAddress   string
+	ratingServiceAddress        string
 	tokenMaker                  token.Maker
 }
 
 func NewAccommodationHandler(accommodationServiceAddress string, reservationServiceAddress string,
-	authorizationServiceAddress string, userProfileServiceAddress string, tokenMaker token.Maker) *AccommodationHandler {
+	authorizationServiceAddress string, userProfileServiceAddress string, ratingServiceAddress string, tokenMaker token.Maker) *AccommodationHandler {
 	return &AccommodationHandler{
 		accommodationServiceAddress: accommodationServiceAddress,
 		reservationServiceAddress:   reservationServiceAddress,
 		authorizationServiceAddress: authorizationServiceAddress,
 		userProfileServiceAddress:   userProfileServiceAddress,
+		ratingServiceAddress:        ratingServiceAddress,
 		tokenMaker:                  tokenMaker,
 	}
 }
@@ -48,6 +51,7 @@ func (handler AccommodationHandler) Init(router *gin.RouterGroup) {
 		middleware.ValidateToken(handler.tokenMaker),
 		middleware.Authorization([]model.Role{model.Guest}),
 		handler.GetRatableHosts)
+	userGroup.GET("/prominent-host/:hostId", handler.IsHostProminent)
 }
 
 func (handler AccommodationHandler) SearchAccommodation(ctx *gin.Context) {
@@ -241,4 +245,21 @@ func (handler AccommodationHandler) GetRatableHosts(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, dtoSlice)
+}
+
+func (handler AccommodationHandler) IsHostProminent(ctx *gin.Context) {
+	hostId := ctx.Param("hostId")
+	ctxGrpc := createGrpcContextFromGinContext(ctx)
+
+	ratingClient := communication.NewRatingClient(handler.ratingServiceAddress)
+
+	ratingProto, err := ratingClient.CalculateRatingForHost(ctxGrpc, &rating.RatingForHostRequest{HostId: hostId})
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	log.Println(ratingProto.Rating)
+
+	ctx.JSON(http.StatusOK, ratingProto.Rating.AvgRating)
 }

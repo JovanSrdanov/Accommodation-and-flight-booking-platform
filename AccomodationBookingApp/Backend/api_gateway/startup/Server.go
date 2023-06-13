@@ -95,11 +95,12 @@ func (server *Server) initCustomHandlers(routerGroup *gin.RouterGroup) {
 	userProfileEndpoint := fmt.Sprintf("%s:%s", server.config.UserProfileHost, server.config.UserProfilePort)
 	accommodationEndpoint := fmt.Sprintf("%s:%s", server.config.AccommodationHost, server.config.AccommodationPort)
 	reservationEndpoint := fmt.Sprintf("%s:%s", server.config.ReservationHost, server.config.ReservationPort)
+	ratingEndpoint := fmt.Sprintf("%s:%s", server.config.RatingHost, server.config.RatingPort)
 
 	userInfoHandler := handler.NewUserHandler(authorizationEndpoint, userProfileEndpoint, tokenMaker)
 	userInfoHandler.Init(routerGroup)
 
-	accommodationHandler := handler.NewAccommodationHandler(accommodationEndpoint, reservationEndpoint, authorizationEndpoint, userProfileEndpoint, tokenMaker)
+	accommodationHandler := handler.NewAccommodationHandler(accommodationEndpoint, reservationEndpoint, authorizationEndpoint, userProfileEndpoint, ratingEndpoint, tokenMaker)
 	accommodationHandler.Init(routerGroup)
 }
 

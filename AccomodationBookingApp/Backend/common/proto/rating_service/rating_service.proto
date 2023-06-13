@@ -53,7 +53,8 @@ service RatingService{
     };
   }
 
-
+  rpc CalculateRatingForHost(RatingForHostRequest) returns(CalculateRatingForHostResponse) {}
+  rpc CalculateRatingForAccommodation(RatingForAccommodationRequest) returns(CalculateRatingForAccommodationResponse) {}
 }
 
 message EmptyResponse {}
@@ -69,6 +70,15 @@ message RatingForHostRequest {
 
 message RatingForHostResponse {
   HostRating rating = 1;
+}
+
+message CalculateRatingForHostResponse {
+  SimpleHostRating rating = 1;
+}
+
+message SimpleHostRating {
+  float avgRating = 1;
+  string hostId = 2;
 }
 
 message HostRating {
@@ -109,6 +119,15 @@ message RatingForAccommodationRequest {
 
 message RatingForAccommodationResponse {
     AccommodationRating rating = 1;
+}
+
+message CalculateRatingForAccommodationResponse {
+  SimpleAccommodationRating rating = 1;
+}
+
+message SimpleAccommodationRating {
+  float avgRating = 1;
+  string accommodationId = 2;
 }
 
 //RateAccommodation

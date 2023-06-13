@@ -5,3 +5,8 @@ type RatingResponse struct {
 	AvgRating       float32         `json:"avgRating"`
 	Ratings         []*SingleRating `json:"ratings"`
 }
+
+type SimpleRatingResponse struct {
+	AccommodationId string  `json:"accommodationId"`
+	AvgRating       float32 `json:"avgRating"`
+}

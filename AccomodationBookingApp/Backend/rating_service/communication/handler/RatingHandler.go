@@ -98,3 +98,27 @@ func (handler RatingHandler) DeleteRatingForHost(ctx context.Context, in *rating
 
 	return &rating.SimpleResponse{Message: message}, nil
 }
+
+func (handler RatingHandler) CalculateRatingForHost(ctx context.Context, in *rating.RatingForHostRequest) (*rating.CalculateRatingForHostResponse, error) {
+	hostRating, err := handler.ratingService.CalculateRatingForHost(in.HostId)
+	if err != nil {
+		return nil, err
+	}
+
+	return &rating.CalculateRatingForHostResponse{Rating: &rating.SimpleHostRating{
+		AvgRating: hostRating.AvgRating,
+		HostId:    hostRating.HostId,
+	}}, nil
+}
+
+func (handler RatingHandler) CalculateRatingForAccommodation(ctx context.Context, in *rating.RatingForAccommodationRequest) (*rating.CalculateRatingForAccommodationResponse, error) {
+	accommodationRating, err := handler.ratingService.CalculateRatingForAccommodation(in.AccommodationId)
+	if err != nil {
+		return nil, err
+	}
+
+	return &rating.CalculateRatingForAccommodationResponse{Rating: &rating.SimpleAccommodationRating{
+		AvgRating:       accommodationRating.AvgRating,
+		AccommodationId: accommodationRating.AccommodationId,
+	}}, nil
+}

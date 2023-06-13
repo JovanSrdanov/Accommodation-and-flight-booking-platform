@@ -15,4 +15,7 @@ type IRatingRepository interface {
 	RateHost(rating *model.RateHostDto) error
 	GetRatingForHost(hostId string) (model.HostRatingResponse, error)
 	DeleteRatingForHost(hostId string, guestId string) (string, error)
+
+	CalculateRatingForAccommodation(accommodationId string) (model.SimpleRatingResponse, error)
+	CalculateRatingForHost(hostId string) (model.SimpleHostRatingResponse, error)
 }

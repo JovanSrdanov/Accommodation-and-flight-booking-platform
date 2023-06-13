@@ -278,7 +278,7 @@ func (repo RatingRepositoryNeo4J) GetRecommendedAccommodations(guestId string) (
 		//Calculate rating for each accommodation
 		unsortedResponse := make([]model.RecommendedAccommodation, 0)
 		for _, val := range accommodations {
-			avgRat, _ := repo.CalculateRatingForAccommodation(val)
+			avgRat, _ := repo.CalculateRatingForAccommodationLocal(val)
 			unsortedResponse = append(unsortedResponse, model.RecommendedAccommodation{
 				AccommodationsId: val,
 				AvgRating:        float32(avgRat),
@@ -532,7 +532,7 @@ func (repo RatingRepositoryNeo4J) DeleteRatingForHost(hostId string, guestId str
 	return "Rating for host deleted", nil
 }
 
-func (repo RatingRepositoryNeo4J) CalculateRatingForAccommodation(accommodationID string) (float64, error) {
+func (repo RatingRepositoryNeo4J) CalculateRatingForAccommodationLocal(accommodationID string) (float64, error) {
 	session := repo.dbClient.NewSession(neo4j.SessionConfig{})
 	defer session.Close()
 
@@ -564,4 +564,52 @@ func (repo RatingRepositoryNeo4J) CalculateRatingForAccommodation(accommodationI
 	}
 
 	return result.(float64), nil
+}
+
+func (repo RatingRepositoryNeo4J) CalculateRatingForAccommodation(accommodationId string) (model.SimpleRatingResponse, error) {
+	rating, err := repo.CalculateRatingForAccommodationLocal(accommodationId)
+	if err != nil {
+		return model.SimpleRatingResponse{}, err
+	}
+	return model.SimpleRatingResponse{
+		AccommodationId: accommodationId,
+		AvgRating:       float32(rating),
+	}, nil
+}
+
+func (repo RatingRepositoryNeo4J) CalculateRatingForHost(hostId string) (model.SimpleHostRatingResponse, error) {
+	session := repo.dbClient.NewSession(neo4j.SessionConfig{})
+	defer session.Close()
+
+	result, err := session.ReadTransaction(func(tx neo4j.Transaction) (interface{}, error) {
+		result, err := tx.Run(
+			"MATCH (:Host {hostId: $hostID})<-[r:RATED_HOST]-(g:Guest) "+
+				"RETURN toFloat(SUM(r.rating)) / count(r) AS avgRating",
+			map[string]interface{}{
+				"hostID": hostId,
+			},
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		if result.Next() {
+			record := result.Record()
+			avgRating, ok := record.Get("avgRating")
+			if ok {
+				return avgRating, nil
+			}
+		}
+
+		return 0.0, nil
+	})
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return model.SimpleHostRatingResponse{
+		HostId:    hostId,
+		AvgRating: float32(result.(float64)),
+	}, nil
 }

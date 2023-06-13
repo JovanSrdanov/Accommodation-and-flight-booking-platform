@@ -3,6 +3,7 @@ package communication
 import (
 	accommodation "common/proto/accommodation_service/generated"
 	authorization "common/proto/authorization_service/generated"
+	rating "common/proto/rating_service/generated"
 	reservation "common/proto/reservation_service/generated"
 	user_profile "common/proto/user_profile_service/generated"
 	"google.golang.org/grpc"
@@ -44,4 +45,12 @@ func NewReservationClient(address string) reservation.ReservationServiceClient {
 		log.Fatalf("Failed to start gRPC connection to UserProfile service: %v", err)
 	}
 	return reservation.NewReservationServiceClient(conn)
+}
+
+func NewRatingClient(address string) rating.RatingServiceClient {
+	conn, err := getConnection(address)
+	if err != nil {
+		log.Fatalf("Failed to start gRPC connection to UserProfile service: %v", err)
+	}
+	return rating.NewRatingServiceClient(conn)
 }

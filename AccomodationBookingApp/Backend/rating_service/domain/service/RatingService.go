@@ -42,3 +42,11 @@ func (service RatingService) GetRatingForHost(hostId string) (model.HostRatingRe
 func (service RatingService) DeleteRatingForHost(hostId string, guestId string) (string, error) {
 	return service.ratingRepo.DeleteRatingForHost(hostId, guestId)
 }
+
+func (service RatingService) CalculateRatingForAccommodation(accommodationId string) (model.SimpleRatingResponse, error) {
+	return service.ratingRepo.CalculateRatingForAccommodation(accommodationId)
+}
+
+func (service RatingService) CalculateRatingForHost(hostId string) (model.SimpleHostRatingResponse, error) {
+	return service.ratingRepo.CalculateRatingForHost(hostId)
+}
