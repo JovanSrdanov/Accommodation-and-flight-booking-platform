@@ -99,7 +99,7 @@ func (server *Server) initCustomHandlers(routerGroup *gin.RouterGroup) {
 	userInfoHandler := handler.NewUserHandler(authorizationEndpoint, userProfileEndpoint, tokenMaker)
 	userInfoHandler.Init(routerGroup)
 
-	accommodationHandler := handler.NewAccommodationHandler(accommodationEndpoint, reservationEndpoint)
+	accommodationHandler := handler.NewAccommodationHandler(accommodationEndpoint, reservationEndpoint, authorizationEndpoint, userProfileEndpoint, tokenMaker)
 	accommodationHandler.Init(routerGroup)
 }
 
