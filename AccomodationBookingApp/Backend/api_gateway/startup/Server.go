@@ -59,29 +59,6 @@ func NewServer(config *Configuration) *Server {
 
 	server.server.GET("/ws", server.handleWebSocket)
 
-	server.server.GET("/test", func(c *gin.Context) {
-		uuidStr := "5fa599f7-ef60-11ed-895f-0242ac1c0006"
-		userID, err := uuid.Parse(uuidStr)
-		if err != nil {
-			fmt.Printf("Failed to parse UUID: %v\n", err)
-			return
-		}
-
-		conn, ok := wsConnections[userID]
-		if !ok {
-			c.String(http.StatusBadRequest, "WebSocket connection not found for user ID")
-			return
-		}
-
-		err = conn.WriteMessage(websocket.TextMessage, []byte("websockettest"))
-		if err != nil {
-			log.Println("Failed to send message through WebSocket connection:", err)
-			c.String(http.StatusInternalServerError, "Internal Server Error")
-			return
-		}
-		c.String(http.StatusOK, "Message sent")
-	})
-
 	return server
 }
 
@@ -89,18 +66,15 @@ func (server *Server) handleWebSocket(c *gin.Context) {
 	upgrader := websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool { return true },
 	}
-	// Extract the PASETO token from the Authorization header
 	pasetoToken := c.Query("authorization")
 	tokenMaker, _ := token.NewPasetoMaker("12345678901234567890123456789012")
 	tokenPayload, err := tokenMaker.VerifyToken(pasetoToken)
-
 	userID := tokenPayload.ID
 	log.Println("UserID: ", userID)
 	if err != nil {
 		c.Status(http.StatusUnauthorized)
 		return
 	}
-
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		log.Println("Failed to upgrade WebSocket connection:", err)
@@ -108,10 +82,7 @@ func (server *Server) handleWebSocket(c *gin.Context) {
 		return
 	}
 	defer conn.Close()
-
-	// Store the WebSocket connection in the map using the user ID as the key
 	wsConnections[userID] = conn
-
 	for {
 		_, _, readErr := conn.ReadMessage()
 		if readErr != nil {
@@ -119,8 +90,6 @@ func (server *Server) handleWebSocket(c *gin.Context) {
 			break
 		}
 	}
-
-	// Remove the WebSocket connection from the map when the connection is closed
 	delete(wsConnections, userID)
 }
 

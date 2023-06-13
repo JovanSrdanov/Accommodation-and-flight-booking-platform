@@ -46,13 +46,20 @@ function App() {
     const navigate = useNavigate();
     const [notificationSnackBar, setNotificationSnackBar] = useState(false);
     const [message, setMessage] = useState('');
-    const openWebSocket = (id) => {
+    const openWebSocket = () => {
 
         const paseto = localStorage.getItem('paseto');
         if (!paseto) {
             localStorage.removeItem('paseto');
             return null
         }
+
+        if (websocketOpen) {
+            return
+         
+        }
+        setWebsocketOpen(true);
+
         const ws = new WebSocket(`ws://localhost:8000/ws?authorization=${encodeURIComponent(paseto)}`);
 
         ws.onopen = () => {
@@ -67,6 +74,7 @@ function App() {
 
         ws.onclose = () => {
             console.log('WEBSOCKET CONNECTION CLOSED');
+            setWebsocketOpen(false);
         };
 
         return () => {
@@ -181,10 +189,14 @@ function App() {
                 console.log(err);
             });
     };
-
+    const [websocketOpen, setWebsocketOpen] = useState(false);
     useEffect(() => {
-        openWebSocket("mjau")
-    }, []);
+
+        openWebSocket();
+
+
+    }, [navigate]);
+
 
     useEffect(() => {
 
