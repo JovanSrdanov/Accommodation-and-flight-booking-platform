@@ -1,7 +1,7 @@
 package handler
 
 import (
-	accommodation "common/proto/accommodation_service/generated"
+	"common/event_sourcing"
 	reservation "common/proto/reservation_service/generated"
 	events "common/saga/delete_user"
 	"common/saga/messaging"
@@ -10,7 +10,6 @@ import (
 	"user_profile_service/communication"
 	"user_profile_service/domain/model"
 	"user_profile_service/domain/service"
-	"user_profile_service/event_sourcing"
 )
 
 type DeleteUserProfileHandler struct {
@@ -86,7 +85,7 @@ func (handler *DeleteUserProfileHandler) RollbackProfile(deleteAction string, co
 	deleteEvent, _ := handler.eventService.Read(command.SagaId, deleteAction)
 
 	var userProfile model.UserProfile
-	handler.eventService.GetEventEntity(deleteEvent, &userProfile)
+	handler.eventService.ResolveEventEntity(deleteEvent.Entity, &userProfile)
 	handler.userProfileService.Create(&userProfile)
 }
 
@@ -95,11 +94,8 @@ func (handler *DeleteUserProfileHandler) handle(command *events.DeleteUserComman
 		SagaId:        command.SagaId,
 		AccCredId:     command.AccCredId,
 		UserProfileId: command.UserProfileId,
-		Response: events.Response{
-			ErrorHappened: false,
-			Message:       "",
-		},
-		Type: events.UnknownReply,
+		Response:      command.LastResponse,
+		Type:          events.UnknownReply,
 	}
 
 	switch command.Type {
@@ -149,24 +145,6 @@ func (handler *DeleteUserProfileHandler) handle(command *events.DeleteUserComman
 			reply.Type = events.HostProfileDeletionFailed
 			reply.Response.ErrorHappened = true
 			reply.Response.Message = err.Error()
-			break
-		}
-		// TODO prebaci u asinhrono
-		//Delete accommodations
-		accommodationClient := communication.NewAccommodationClient(handler.accommodationServiceAddress)
-		result, err := accommodationClient.DeleteAllByHostId(context.TODO(), &accommodation.DeleteAllByHostIdRequest{HostId: command.AccCredId})
-		if err != nil {
-			reply.Type = events.HostProfileDeletionFailed
-			break
-		}
-
-		accommodationIds := result.AccommodationIds
-
-		//Delete reservations and availabilities
-		reservationClient := communication.NewReservationClient(handler.reservationServiceAddress)
-		accommodationServiceResult, err := reservationClient.DeleteAvailabilitiesAndReservationsByAccommodationIds(context.TODO(), &reservation.DeleteAvailabilitiesAndReservationsByAccommodationIdsRequest{AccommodationIds: accommodationIds})
-		if err != nil || !accommodationServiceResult.Success {
-			reply.Type = events.HostProfileDeletionFailed
 			break
 		}
 

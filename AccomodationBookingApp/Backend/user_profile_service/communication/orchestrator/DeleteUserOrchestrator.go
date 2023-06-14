@@ -40,45 +40,20 @@ func NewDeleteUserOrchestrator(commandPublisher messaging.Publisher, replySubscr
 
 func (orchestrator *DeleteUserOrchestrator) handle(reply *events.DeleteUserReply) {
 	command := events.DeleteUserCommand{
-		SagaId:        reply.SagaId,
-		UserProfileId: reply.UserProfileId,
-		Type:          events.UnknownCommand,
+		SagaId:         reply.SagaId,
+		UserProfileId:  reply.UserProfileId,
+		AccCredId:      reply.AccCredId,
+		Type:           events.UnknownCommand,
+		AdditionalData: reply.AdditionalData,
+		LastResponse:   reply.Response,
 	}
 
 	command.Type = orchestrator.nextCommandType(reply.Type)
 	if command.Type != events.UnknownCommand {
-		command.LastResponse = reply.Response
 		err := orchestrator.commandPublisher.Publish(command)
 		if err != nil {
 			log.Printf(err.Error())
 		}
-	}
-}
-
-func (orchestrator *DeleteUserOrchestrator) nextCommandType(reply events.DeleteUserReplyType) events.DeleteUserCommandType {
-	switch reply {
-	case events.DeletedGuestProfile:
-		return events.DeleteGuestAccountCredentials
-	case events.DeletedHostProfile:
-		return events.DeleteHostAccountCredentials
-	case events.DeletedGuestAccountCredentials:
-		return events.FinishDeletion
-	case events.DeletedHostAccountCredentials:
-		return events.FinishDeletion
-	case events.GuestProfileDeletionFailed:
-		return events.FinishDeletion
-	case events.HostProfileDeletionFailed:
-		return events.FinishDeletion
-	case events.GuestAccountCredentialsDeletionFailed:
-		return events.RollbackGuestProfile
-	case events.HostAccountCredentialsDeletionFailed:
-		return events.RollbackHostProfile
-	case events.RolledbackGuestProfile:
-		return events.FinishDeletion
-	case events.RolledbackHostProfile:
-		return events.FinishDeletion
-	default:
-		return events.UnknownCommand
 	}
 }
 
@@ -105,7 +80,7 @@ func (orchestrator *DeleteUserOrchestrator) Start(accCredId string, userProfileI
 		return events.Response{}, err
 	}
 
-	//Waiting for saga to finish so we can send response back
+	//Waiting for saga to finish, so we can send response back
 
 	finishChan := make(chan events.Response)
 
@@ -113,15 +88,15 @@ func (orchestrator *DeleteUserOrchestrator) Start(accCredId string, userProfileI
 		orchestrator.natsInfo.NatsHost, orchestrator.natsInfo.NatsPort,
 		orchestrator.natsInfo.NatsUser, orchestrator.natsInfo.NatsPass,
 		orchestrator.natsInfo.Subject, sagaId.String())
-	//Every subscriber must different queue group so it can handle
+	//Every subscriber must be in different queue group, so it can handle
 	//message with appropriate sagaId
 
-	go func() {
-		err := finishSubscriber.Subscribe(GenFinishHandler(sagaId, finishChan))
-		if err != nil {
-			log.Println(err.Error())
-		}
-	}()
+	//go func() {
+	err = finishSubscriber.Subscribe(GenFinishHandler(sagaId, finishChan))
+	if err != nil {
+		log.Println(err.Error())
+	}
+	//}()
 
 	response := <-finishChan
 
@@ -133,5 +108,78 @@ func GenFinishHandler(sagaId uuid.UUID, finishChan chan<- events.Response) func(
 		if command.Type == events.FinishDeletion && command.SagaId == sagaId {
 			finishChan <- command.LastResponse
 		}
+	}
+}
+
+func (orchestrator *DeleteUserOrchestrator) nextCommandType(reply events.DeleteUserReplyType) events.DeleteUserCommandType {
+	switch reply {
+	//DELETION PATH
+	case events.DeletedGuestProfile:
+		return events.DeleteGuestAccountCredentials
+
+	//case events.DeletedGuestAccountCredentials:
+	//	return events.DeleteGuestNotifications
+	case events.DeletedGuestAccountCredentials:
+		return events.FinishDeletion
+
+	case events.DeletedGuestNotifications:
+		return events.FinishDeletion
+
+	case events.DeletedHostProfile:
+		return events.DeleteHostAccountCredentials
+	case events.DeletedHostAccountCredentials:
+		return events.DeleteHostAccommodations
+	case events.DeletedHostAccommodations:
+		return events.DeleteHostReservations
+
+	//case events.DeletedHostReservations:
+	//	return events.DeleteHostNotifications
+	case events.DeletedHostReservations:
+		return events.FinishDeletion
+
+	case events.DeletedHostNotifications:
+		return events.FinishDeletion
+	// FAIL PATH
+
+	case events.GuestProfileDeletionFailed:
+		return events.FinishDeletion
+	case events.HostProfileDeletionFailed:
+		return events.FinishDeletion
+
+	case events.GuestAccountCredentialsDeletionFailed:
+		return events.RollbackGuestProfile
+	case events.HostAccountCredentialsDeletionFailed:
+		return events.RollbackHostProfile
+
+	case events.HostAccommodationsDeletionFailed:
+		return events.RollbackHostAccountCredentials
+
+	case events.HostReservationsDeletionFailed:
+		return events.RollbackHostAccommodations
+
+	case events.HostNotificationsDeletionFailed:
+		return events.RollbackHostReservations
+	case events.GuestNotificationsDeletionFailed:
+		return events.RollbackGuestAccountCredentials
+
+	//ROLLBACK PATH
+	case events.RolledbackGuestProfile:
+		return events.FinishDeletion
+	case events.RolledbackHostProfile:
+		return events.FinishDeletion
+
+	case events.RolledbackGuestAccountCredentials:
+		return events.RollbackGuestProfile
+	case events.RolledbackHostAccountCredentials:
+		return events.RollbackHostProfile
+
+	case events.RolledbackHostAccommodations:
+		return events.RollbackHostAccountCredentials
+
+	case events.RolledbackHostReservations:
+		return events.RollbackHostAccommodations
+
+	default:
+		return events.UnknownCommand
 	}
 }

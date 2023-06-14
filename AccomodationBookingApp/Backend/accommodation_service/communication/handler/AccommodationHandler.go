@@ -106,7 +106,7 @@ func (handler AccommodationHandler) Delete(ctx context.Context, in *accommodatio
 	if err != nil {
 		return nil, err
 	}
-	err = handler.accommodationService.Delete(id)
+	err = handler.accommodationService.DeleteUserProfile(id)
 	*/
 	return &accommodation.DeleteResponse{}, nil
 }
@@ -152,15 +152,6 @@ func (handler AccommodationHandler) GetAmenities(ctx context.Context, in *accomm
 	return &accommodation.GetAmenitiesResponse{
 		Amenities: amenities,
 	}, nil
-}
-
-func (handler AccommodationHandler) DeleteAllByHostId(ctx context.Context, in *accommodation.DeleteAllByHostIdRequest) (*accommodation.DeleteAllByHostIdResponse, error) {
-	accommodationIds, err := handler.accommodationService.DeleteAllByHostId(in.HostId)
-	if err != nil {
-		return nil, err
-	}
-
-	return &accommodation.DeleteAllByHostIdResponse{AccommodationIds: accommodationIds}, nil
 }
 
 func (handler AccommodationHandler) SearchAccommodation(ctx context.Context, in *accommodation.SearchRequest) (*accommodation.GetAllResponse, error) {

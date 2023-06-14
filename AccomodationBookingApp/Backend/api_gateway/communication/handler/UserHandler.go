@@ -161,7 +161,7 @@ func (handler UserHandler) CreateUserProfile(user *dto.CreateUser) (uuid.UUID, e
 
 func (handler UserHandler) DeleteUserProfile(id uuid.UUID) error {
 	client := communication.NewUserProfileClient(handler.userProfileServiceAddress)
-	_, err := client.Delete(context.TODO(), &user_profile.DeleteRequest{Id: id.String()})
+	_, err := client.DeleteUserProfile(context.TODO(), &user_profile.DeleteRequest{Id: id.String()})
 
 	return err
 }

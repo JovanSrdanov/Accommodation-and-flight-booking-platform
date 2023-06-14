@@ -182,17 +182,3 @@ func (handler ReservationHandler) HostHasActiveReservations(ctx context.Context,
 	}
 	return &reservation.HostHasActiveReservationsResponse{HasActiveReservations: true}, nil
 }
-func (handler ReservationHandler) DeleteAvailabilitiesAndReservationsByAccommodationIds(ctx context.Context, in *reservation.DeleteAvailabilitiesAndReservationsByAccommodationIdsRequest) (*reservation.DeleteAvailabilitiesAndReservationsByAccommodationIdsResponse, error) {
-	for _, accomodationId := range in.AccommodationIds {
-		accommodationIdObj, err := primitive.ObjectIDFromHex(accomodationId)
-		if err != nil {
-			return &reservation.DeleteAvailabilitiesAndReservationsByAccommodationIdsResponse{Success: false}, err
-		}
-
-		err = handler.reservationService.DeleteAvailabilitiesAndReservationsByAccommodationId(accommodationIdObj)
-		if err != nil {
-			return &reservation.DeleteAvailabilitiesAndReservationsByAccommodationIdsResponse{Success: false}, err
-		}
-	}
-	return &reservation.DeleteAvailabilitiesAndReservationsByAccommodationIdsResponse{Success: true}, nil
-}

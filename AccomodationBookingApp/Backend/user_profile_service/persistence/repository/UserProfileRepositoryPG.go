@@ -21,8 +21,13 @@ func NewUserProfileRepositoryPG(dbClient *gorm.DB) (*UserProfileRepositoryPG, er
 }
 
 func (repo UserProfileRepositoryPG) Create(userProf *model.UserProfile) (uuid.UUID, error) {
-	userProf.ID, _ = uuid.NewUUID()
-	userProf.Address.ID, _ = uuid.NewUUID()
+	if userProf.ID == uuid.Nil {
+		userProf.ID, _ = uuid.NewUUID()
+	}
+
+	if userProf.Address.ID == uuid.Nil {
+		userProf.Address.ID, _ = uuid.NewUUID()
+	}
 
 	result := repo.dbClient.Create(userProf)
 	if result.Error != nil {
@@ -71,7 +76,7 @@ func (repo UserProfileRepositoryPG) Delete(id uuid.UUID) error {
 		return result.Error
 	}
 
-	// Delete the user profile and its associated address
+	// DeleteUserProfile the user profile and its associated address
 	result = transaction.Delete(&userProfile)
 	if result.Error != nil {
 		transaction.Rollback()
