@@ -195,13 +195,9 @@ func (handler AccommodationHandler) FindRating(searchDto dto.SearchAccommodation
 		isProminent := false
 
 		if searchDto.ProminentHost {
-			body, err2 := prominentHostHttp(err, val)
-			if err2 != nil {
-				return nil, err2
-			}
-
-			if string(body) == "true" {
-				isProminent = true
+			isProminent, err = prominentHostHttp(val)
+			if err != nil {
+				return nil, err
 			}
 		}
 
@@ -218,25 +214,30 @@ func (handler AccommodationHandler) FindRating(searchDto dto.SearchAccommodation
 	return responseSlice, nil
 }
 
-func prominentHostHttp(err error, val *dto.Accommodation) ([]byte, error) {
+func prominentHostHttp(val *dto.Accommodation) (bool, error) {
 	client := &http.Client{}
 
 	req, err := http.NewRequest("GET", "http://localhost:8000/api-2/accommodation/prominent-host/"+val.HostId, nil)
 	if err != nil {
-		return nil, err
+		return false, err
 	}
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		return false, err
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return false, err
 	}
-	return body, nil
+
+	if string(body) == "true" {
+		return true, nil
+	} else {
+		return false, nil
+	}
 }
 
 func containsAll(slice1, slice2 []string) bool {
