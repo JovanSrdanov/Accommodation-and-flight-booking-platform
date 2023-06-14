@@ -58,7 +58,7 @@ type ReservationServiceClient interface {
 	GuestHasActiveReservations(ctx context.Context, in *GuestHasActiveReservationsRequest, opts ...grpc.CallOption) (*GuestHasActiveReservationsResponse, error)
 	HostHasActiveReservations(ctx context.Context, in *HostHasActiveReservationsRequest, opts ...grpc.CallOption) (*HostHasActiveReservationsResponse, error)
 	DeleteAvailabilitiesAndReservationsByAccommodationIds(ctx context.Context, in *DeleteAvailabilitiesAndReservationsByAccommodationIdsRequest, opts ...grpc.CallOption) (*DeleteAvailabilitiesAndReservationsByAccommodationIdsResponse, error)
-	GetAllReservationsForHost(ctx context.Context, in *HostIdRequest, opts ...grpc.CallOption) (*GetAllAcceptedReservationsResponse, error)
+	GetAllReservationsForHost(ctx context.Context, in *HostIdRequest, opts ...grpc.CallOption) (*GetAllReservationsResponse, error)
 	GetAllRatableAccommodationsForGuest(ctx context.Context, in *GuestIdRequest, opts ...grpc.CallOption) (*AccommodationsIdsResponse, error)
 	GetAllRatableHostsForGuest(ctx context.Context, in *GuestIdRequest, opts ...grpc.CallOption) (*HostIdsResponse, error)
 }
@@ -206,8 +206,8 @@ func (c *reservationServiceClient) DeleteAvailabilitiesAndReservationsByAccommod
 	return out, nil
 }
 
-func (c *reservationServiceClient) GetAllReservationsForHost(ctx context.Context, in *HostIdRequest, opts ...grpc.CallOption) (*GetAllAcceptedReservationsResponse, error) {
-	out := new(GetAllAcceptedReservationsResponse)
+func (c *reservationServiceClient) GetAllReservationsForHost(ctx context.Context, in *HostIdRequest, opts ...grpc.CallOption) (*GetAllReservationsResponse, error) {
+	out := new(GetAllReservationsResponse)
 	err := c.cc.Invoke(ctx, ReservationService_GetAllReservationsForHost_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -252,7 +252,7 @@ type ReservationServiceServer interface {
 	GuestHasActiveReservations(context.Context, *GuestHasActiveReservationsRequest) (*GuestHasActiveReservationsResponse, error)
 	HostHasActiveReservations(context.Context, *HostHasActiveReservationsRequest) (*HostHasActiveReservationsResponse, error)
 	DeleteAvailabilitiesAndReservationsByAccommodationIds(context.Context, *DeleteAvailabilitiesAndReservationsByAccommodationIdsRequest) (*DeleteAvailabilitiesAndReservationsByAccommodationIdsResponse, error)
-	GetAllReservationsForHost(context.Context, *HostIdRequest) (*GetAllAcceptedReservationsResponse, error)
+	GetAllReservationsForHost(context.Context, *HostIdRequest) (*GetAllReservationsResponse, error)
 	GetAllRatableAccommodationsForGuest(context.Context, *GuestIdRequest) (*AccommodationsIdsResponse, error)
 	GetAllRatableHostsForGuest(context.Context, *GuestIdRequest) (*HostIdsResponse, error)
 	mustEmbedUnimplementedReservationServiceServer()
@@ -307,7 +307,7 @@ func (UnimplementedReservationServiceServer) HostHasActiveReservations(context.C
 func (UnimplementedReservationServiceServer) DeleteAvailabilitiesAndReservationsByAccommodationIds(context.Context, *DeleteAvailabilitiesAndReservationsByAccommodationIdsRequest) (*DeleteAvailabilitiesAndReservationsByAccommodationIdsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteAvailabilitiesAndReservationsByAccommodationIds not implemented")
 }
-func (UnimplementedReservationServiceServer) GetAllReservationsForHost(context.Context, *HostIdRequest) (*GetAllAcceptedReservationsResponse, error) {
+func (UnimplementedReservationServiceServer) GetAllReservationsForHost(context.Context, *HostIdRequest) (*GetAllReservationsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllReservationsForHost not implemented")
 }
 func (UnimplementedReservationServiceServer) GetAllRatableAccommodationsForGuest(context.Context, *GuestIdRequest) (*AccommodationsIdsResponse, error) {

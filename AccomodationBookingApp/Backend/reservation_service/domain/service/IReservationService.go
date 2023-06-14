@@ -18,4 +18,5 @@ type IAvailabilityService interface {
 	CreateAvailabilityBase(base *model.Availability) (primitive.ObjectID, error)
 	GetAllReservationsForGuest(guestId string) (model.Reservations, error)
 	SearchAccommodation(accommodationIds []*primitive.ObjectID, dateRange model.DateRange, numberOfGuests int32) ([]*model.SearchResponseDto, error)
+	GetAllReservationsForHost(hostId string) (model.Reservations, error)
 }

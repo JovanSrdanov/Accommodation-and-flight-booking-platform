@@ -91,7 +91,7 @@ service ReservationService{
   rpc HostHasActiveReservations(HostHasActiveReservationsRequest) returns(HostHasActiveReservationsResponse) { }
   rpc DeleteAvailabilitiesAndReservationsByAccommodationIds(DeleteAvailabilitiesAndReservationsByAccommodationIdsRequest) returns(DeleteAvailabilitiesAndReservationsByAccommodationIdsResponse) { }
 
-  rpc GetAllReservationsForHost(HostIdRequest) returns(GetAllAcceptedReservationsResponse) {}
+  rpc GetAllReservationsForHost(HostIdRequest) returns(GetAllReservationsResponse) {}
   rpc GetAllRatableAccommodationsForGuest(GuestIdRequest) returns(AccommodationsIdsResponse) {}
   rpc GetAllRatableHostsForGuest(GuestIdRequest) returns(HostIdsResponse) {}
 }
@@ -168,6 +168,10 @@ message GetAllPendingReservationsResponse {
 }
 
 message GetAllAcceptedReservationsResponse {
+  repeated Reservation reservation = 1;
+}
+
+message GetAllReservationsResponse {
   repeated Reservation reservation = 1;
 }
 
