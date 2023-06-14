@@ -90,8 +90,31 @@ service ReservationService{
   rpc GuestHasActiveReservations(GuestHasActiveReservationsRequest) returns(GuestHasActiveReservationsResponse) { }
   rpc HostHasActiveReservations(HostHasActiveReservationsRequest) returns(HostHasActiveReservationsResponse) { }
   rpc DeleteAvailabilitiesAndReservationsByAccommodationIds(DeleteAvailabilitiesAndReservationsByAccommodationIdsRequest) returns(DeleteAvailabilitiesAndReservationsByAccommodationIdsResponse) { }
+
+  rpc GetAllReservationsForHost(HostIdRequest) returns(GetAllAcceptedReservationsResponse) {}
+  rpc GetAllRatableAccommodationsForGuest(GuestIdRequest) returns(AccommodationsIdsResponse) {}
+  rpc GetAllRatableHostsForGuest(GuestIdRequest) returns(HostIdsResponse) {}
 }
 message EmptyRequest {}
+
+//Non http
+message HostIdRequest {
+  string hostId = 1;
+}
+
+message GuestIdRequest {
+  string guestId = 1;
+}
+
+message AccommodationsIdsResponse {
+  repeated string accommodationIds = 1;
+}
+
+message HostIdsResponse {
+  repeated string hostIds = 1;
+}
+
+//---------
 
 message SearchRequest {
   Filter filter = 1;
