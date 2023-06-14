@@ -6,6 +6,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/google/uuid"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"user_profile_service/communication"
 	"user_profile_service/domain/service"
 )
@@ -107,11 +109,14 @@ func (handler UserProfileHandler) DeleteUser(ctx context.Context, in *user_profi
 		return nil, err
 	}
 
-	err = handler.userProfileService.DeleteUser(loggedInId.String(), userProfileId, accCred.AccountCredentials.Role)
+	response, err := handler.userProfileService.DeleteUser(loggedInId.String(), userProfileId, accCred.AccountCredentials.Role)
 	if err != nil {
 		return &user_profile.DeleteResponse{Message: err.Error()}, err
 	}
 
-	message := fmt.Sprintf("Request accepted; AccountCredentialsId:%s; Role:%s", loggedInId.String(), accCred.AccountCredentials.Role.String())
-	return &user_profile.DeleteResponse{Message: message}, err
+	if response.ErrorHappened {
+		return nil, status.Errorf(codes.FailedPrecondition, response.Message)
+	}
+
+	return &user_profile.DeleteResponse{Message: "Account deleted"}, err
 }

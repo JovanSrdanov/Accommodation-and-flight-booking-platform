@@ -95,8 +95,11 @@ func (handler *DeleteUserProfileHandler) handle(command *events.DeleteUserComman
 		SagaId:        command.SagaId,
 		AccCredId:     command.AccCredId,
 		UserProfileId: command.UserProfileId,
-		ErrorMessage:  "",
-		Type:          events.UnknownReply,
+		Response: events.Response{
+			ErrorHappened: false,
+			Message:       "",
+		},
+		Type: events.UnknownReply,
 	}
 
 	switch command.Type {
@@ -104,18 +107,22 @@ func (handler *DeleteUserProfileHandler) handle(command *events.DeleteUserComman
 		guestHasActiveReservations, err := handler.GuestHasActiveReservations(command)
 		if err != nil {
 			reply.Type = events.GuestProfileDeletionFailed
-			reply.ErrorMessage = err.Error()
+			reply.Response.ErrorHappened = true
+			reply.Response.Message = err.Error()
 			break
 		}
 		if guestHasActiveReservations {
 			reply.Type = events.GuestProfileDeletionFailed
-			reply.ErrorMessage = "Guest has active reservations"
+			reply.Response.ErrorHappened = true
+			reply.Response.Message = "Guest has active reservations"
 			break
 		}
 
 		err = handler.DeleteUserProfile(command)
 		if err != nil {
 			reply.Type = events.GuestProfileDeletionFailed
+			reply.Response.ErrorHappened = true
+			reply.Response.Message = err.Error()
 			break
 		}
 
@@ -125,21 +132,26 @@ func (handler *DeleteUserProfileHandler) handle(command *events.DeleteUserComman
 		hostHasActiveReservations, err := handler.HostHasActiveReservations(command)
 		if err != nil {
 			reply.Type = events.HostProfileDeletionFailed
+			reply.Response.ErrorHappened = true
+			reply.Response.Message = err.Error()
 			break
 		}
 
 		if hostHasActiveReservations {
 			reply.Type = events.HostProfileDeletionFailed
-			reply.ErrorMessage = "Host has active reservations"
+			reply.Response.ErrorHappened = true
+			reply.Response.Message = "Host has active reservations"
 			break
 		}
 
 		err = handler.DeleteUserProfile(command)
 		if err != nil {
 			reply.Type = events.HostProfileDeletionFailed
+			reply.Response.ErrorHappened = true
+			reply.Response.Message = err.Error()
 			break
 		}
-
+		// TODO prebaci u asinhrono
 		//Delete accommodations
 		accommodationClient := communication.NewAccommodationClient(handler.accommodationServiceAddress)
 		result, err := accommodationClient.DeleteAllByHostId(context.TODO(), &accommodation.DeleteAllByHostIdRequest{HostId: command.AccCredId})
