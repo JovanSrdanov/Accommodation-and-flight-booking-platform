@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"rating_service/domain/model"
 	"rating_service/domain/service"
 	"time"
@@ -164,7 +165,8 @@ func (handler RatingHandler) GetRatingGuestGaveAccommodation(ctx context.Context
 func prominentHostHttp(hostId string) (bool, error) {
 	client := &http.Client{}
 
-	req, err := http.NewRequest("GET", "http://localhost:8000/api-2/accommodation/prominent-host/"+hostId, nil)
+	apiHost := os.Getenv("API_GATEWAY_HOST")
+	req, err := http.NewRequest("GET", "http://"+apiHost+":8000/api-2/accommodation/prominent-host/"+hostId, nil)
 	if err != nil {
 		return false, err
 	}
