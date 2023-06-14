@@ -77,3 +77,7 @@ func (service ReservationService) GetAllRatableHostsForGuest(guestId string) ([]
 func (service ReservationService) GetAllRatableAccommodationsForGuest(guestId string) ([]string, error) {
 	return service.reservationRepo.GetAllRatableAccommodationsForGuest(guestId)
 }
+
+func (service ReservationService) GetAllReservationsForHost(hostId string) (model.Reservations, error) {
+	return service.reservationRepo.GetAllReservationsForHost(hostId)
+}

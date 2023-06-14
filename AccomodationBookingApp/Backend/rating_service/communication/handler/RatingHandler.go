@@ -5,6 +5,10 @@ import (
 	"context"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"os"
 	"rating_service/domain/model"
 	"rating_service/domain/service"
 	"time"
@@ -66,8 +70,13 @@ func (handler RatingHandler) DeleteRatingForAccommodation(ctx context.Context, i
 }
 
 func (handler RatingHandler) RateHost(ctx context.Context, in *rating.RateHostRequest) (*rating.EmptyResponse, error) {
+	oldProminenet, err := prominentHostHttp(in.Rating.HostId)
+	if err != nil {
+		return nil, err
+	}
+
 	loggedInId := ctx.Value("id").(uuid.UUID).String()
-	err := handler.ratingService.RateHost(&model.RateHostDto{
+	err = handler.ratingService.RateHost(&model.RateHostDto{
 		HostId:  in.Rating.HostId,
 		GuestId: loggedInId,
 		Rating:  in.Rating.Rating,
@@ -75,6 +84,16 @@ func (handler RatingHandler) RateHost(ctx context.Context, in *rating.RateHostRe
 	})
 	if err != nil {
 		return nil, err
+	}
+
+	newProminent, err := prominentHostHttp(in.Rating.HostId)
+	if err != nil {
+		return nil, err
+	}
+
+	if oldProminenet != newProminent {
+		//TODO Jovan+Strahinja: Ovde da se objavi poruka u message queue (kad ovo proradi onda cu dodati i kad mu neko otkaze rezervaciju)
+		log.Println("Promenulo se alo")
 	}
 
 	return &rating.EmptyResponse{}, nil
@@ -141,4 +160,31 @@ func (handler RatingHandler) GetRatingGuestGaveAccommodation(ctx context.Context
 	}
 
 	return &rating.GetRatingGuestGaveAccommodationResponse{Rating: hostRating}, nil
+}
+
+func prominentHostHttp(hostId string) (bool, error) {
+	client := &http.Client{}
+
+	apiHost := os.Getenv("API_GATEWAY_HOST")
+	req, err := http.NewRequest("GET", "http://"+apiHost+":8000/api-2/accommodation/prominent-host/"+hostId, nil)
+	if err != nil {
+		return false, err
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return false, err
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return false, err
+	}
+
+	if string(body) == "true" {
+		return true, nil
+	} else {
+		return false, nil
+	}
 }

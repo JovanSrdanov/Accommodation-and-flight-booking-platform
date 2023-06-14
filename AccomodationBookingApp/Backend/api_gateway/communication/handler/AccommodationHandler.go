@@ -18,6 +18,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"time"
 )
 
 type AccommodationHandler struct {
@@ -194,13 +195,9 @@ func (handler AccommodationHandler) FindRating(searchDto dto.SearchAccommodation
 		isProminent := false
 
 		if searchDto.ProminentHost {
-			body, err2 := prominentHostHttp(err, val)
-			if err2 != nil {
-				return nil, err2
-			}
-
-			if string(body) == "true" {
-				isProminent = true
+			isProminent, err = prominentHostHttp(val)
+			if err != nil {
+				return nil, err
 			}
 		}
 
@@ -217,25 +214,30 @@ func (handler AccommodationHandler) FindRating(searchDto dto.SearchAccommodation
 	return responseSlice, nil
 }
 
-func prominentHostHttp(err error, val *dto.Accommodation) ([]byte, error) {
+func prominentHostHttp(val *dto.Accommodation) (bool, error) {
 	client := &http.Client{}
 
 	req, err := http.NewRequest("GET", "http://localhost:8000/api-2/accommodation/prominent-host/"+val.HostId, nil)
 	if err != nil {
-		return nil, err
+		return false, err
 	}
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		return false, err
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return false, err
 	}
-	return body, nil
+
+	if string(body) == "true" {
+		return true, nil
+	} else {
+		return false, nil
+	}
 }
 
 func containsAll(slice1, slice2 []string) bool {
@@ -367,9 +369,9 @@ func (handler AccommodationHandler) GetRatableHosts(ctx *gin.Context) {
 
 func (handler AccommodationHandler) IsHostProminent(ctx *gin.Context) {
 	hostId := ctx.Param("hostId")
-	//ctxGrpc := createGrpcContextFromGinContext(ctx)
 
 	ratingClient := communication.NewRatingClient(handler.ratingServiceAddress)
+	reservationClient := communication.NewReservationClient(handler.reservationServiceAddress)
 
 	ratingProto, err := ratingClient.CalculateRatingForHost(context.TODO(), &rating.RatingForHostRequest{HostId: hostId})
 	if err != nil {
@@ -379,12 +381,46 @@ func (handler AccommodationHandler) IsHostProminent(ctx *gin.Context) {
 
 	log.Println(ratingProto.Rating)
 
-	res := false
-	if ratingProto.Rating.AvgRating > 2 {
-		res = true
+	if ratingProto.Rating.AvgRating <= 4.7 {
+		ctx.JSON(http.StatusOK, false)
+		return
 	}
 
-	ctx.JSON(http.StatusOK, res)
+	protoAllReservations, err := reservationClient.GetAllReservationsForHost(ctx, &reservation.HostIdRequest{HostId: hostId})
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	numberOfAccepted := 0
+	numberOfCanceled := 0
+	durationOfReservedDays := 0
+
+	for _, protoReservation := range protoAllReservations.Reservation {
+		if protoReservation.Status == "accepted" {
+			numberOfAccepted++
+
+			startDate := time.Unix(protoReservation.DateRange.From, 0)
+			endDate := time.Unix(protoReservation.DateRange.To, 0)
+
+			duration := endDate.Sub(startDate)
+			days := int(duration.Hours()/24) + 1
+			durationOfReservedDays += days
+		} else if protoReservation.Status == "canceled" {
+			numberOfCanceled++
+		}
+	}
+	cancelRate := 0.0
+	if numberOfCanceled != 0 {
+		cancelRate = float64(numberOfAccepted+numberOfCanceled) / float64(numberOfCanceled) * 100.0
+	}
+
+	if cancelRate > 5.0 || durationOfReservedDays < 50 {
+		ctx.JSON(http.StatusOK, false)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, true)
 }
 
 func (handler AccommodationHandler) GetRatingDetailForAccommodation(ctx *gin.Context) {
