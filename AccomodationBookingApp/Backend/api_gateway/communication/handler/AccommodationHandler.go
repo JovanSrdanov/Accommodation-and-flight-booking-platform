@@ -55,6 +55,10 @@ func (handler AccommodationHandler) Init(router *gin.RouterGroup) {
 	userGroup.GET("/prominent-host/:hostId", handler.IsHostProminent)
 	userGroup.GET("/rating/:accommodationId", handler.GetRatingDetailForAccommodation)
 	userGroup.GET("/rating/host/:hostId", handler.GetRatingDetailForHost)
+	userGroup.GET("/recommend",
+		middleware.ValidateToken(handler.tokenMaker),
+		middleware.Authorization([]model.Role{model.Guest}),
+		handler.GetRecommendedAccommodations)
 }
 
 func (handler AccommodationHandler) SearchAccommodation(ctx *gin.Context) {
@@ -471,4 +475,46 @@ func (handler AccommodationHandler) GetRatingDetailForHost(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, response)
+}
+
+func (handler AccommodationHandler) GetRecommendedAccommodations(ctx *gin.Context) {
+	accommodationClient := communication.NewAccommodationClient(handler.accommodationServiceAddress)
+	ratingClient := communication.NewRatingClient(handler.ratingServiceAddress)
+
+	loggedInAccCredIdFromCtx := ctx.Keys["id"].(uuid.UUID).String()
+	ctxGrpc := createGrpcContextFromGinContext(ctx)
+
+	protoRecommendations, err := ratingClient.GetRecommendedAccommodations(ctxGrpc, &rating.RecommendedAccommodationsRequest{GuestId: loggedInAccCredIdFromCtx})
+	if err != nil {
+		return
+	}
+
+	recommendations := make([]*dto.Recommendation, 0)
+
+	for _, protoRecommendation := range protoRecommendations.Recommendation {
+		accommodationInfoProto, err2 := accommodationClient.GetById(ctxGrpc, &accommodation.GetByIdRequest{Id: protoRecommendation.AccommodationId})
+		if err2 != nil {
+			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err2.Error()})
+			return
+		}
+
+		recommendations = append(recommendations, &dto.Recommendation{
+			AccommodationID: protoRecommendation.AccommodationId,
+			Rating:          protoRecommendation.Rating,
+			Name:            accommodationInfoProto.Accommodation.Name,
+			Address: dto.Address{
+				Country:      accommodationInfoProto.Accommodation.Address.Country,
+				City:         accommodationInfoProto.Accommodation.Address.City,
+				Street:       accommodationInfoProto.Accommodation.Address.Street,
+				StreetNumber: accommodationInfoProto.Accommodation.Address.StreetNumber,
+			},
+			MinGuests: accommodationInfoProto.Accommodation.MinGuests,
+			MaxGuests: accommodationInfoProto.Accommodation.MaxGuests,
+			Amenities: accommodationInfoProto.Accommodation.Amenities,
+			Images:    accommodationInfoProto.Accommodation.Images,
+			HostId:    accommodationInfoProto.Accommodation.HostId,
+		})
+	}
+
+	ctx.JSON(http.StatusOK, recommendations)
 }
