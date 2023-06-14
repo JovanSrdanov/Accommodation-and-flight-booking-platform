@@ -55,6 +55,8 @@ service RatingService{
 
   rpc CalculateRatingForHost(RatingForHostRequest) returns(CalculateRatingForHostResponse) {}
   rpc CalculateRatingForAccommodation(RatingForAccommodationRequest) returns(CalculateRatingForAccommodationResponse) {}
+  rpc GetRatingGuestGaveHost(GetRatingGuestGaveHostRequest) returns(GetRatingGuestGaveHostResponse) {}
+  rpc GetRatingGuestGaveAccommodation(GetRatingGuestGaveAccommodationRequest) returns(GetRatingGuestGaveAccommodationResponse) {}
 }
 
 message EmptyResponse {}
@@ -96,7 +98,24 @@ message RateHost {
   string hostId = 2;
 }
 
+//Za ratable host i accommodation
+message GetRatingGuestGaveHostRequest {
+  string hostId = 1;
+  string guestId = 2;
+}
 
+message GetRatingGuestGaveHostResponse {
+  float rating = 1;
+}
+
+message GetRatingGuestGaveAccommodationRequest {
+  string accommodationId = 1;
+  string guestId = 2;
+}
+
+message GetRatingGuestGaveAccommodationResponse {
+  float rating = 1;
+}
 
 //RecommendedAccommodations
 message RecommendedAccommodationsRequest {

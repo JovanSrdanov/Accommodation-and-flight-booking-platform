@@ -28,6 +28,8 @@ const (
 	RatingService_GetRecommendedAccommodations_FullMethodName    = "/rating.RatingService/GetRecommendedAccommodations"
 	RatingService_CalculateRatingForHost_FullMethodName          = "/rating.RatingService/CalculateRatingForHost"
 	RatingService_CalculateRatingForAccommodation_FullMethodName = "/rating.RatingService/CalculateRatingForAccommodation"
+	RatingService_GetRatingGuestGaveHost_FullMethodName          = "/rating.RatingService/GetRatingGuestGaveHost"
+	RatingService_GetRatingGuestGaveAccommodation_FullMethodName = "/rating.RatingService/GetRatingGuestGaveAccommodation"
 )
 
 // RatingServiceClient is the client API for RatingService service.
@@ -43,6 +45,8 @@ type RatingServiceClient interface {
 	GetRecommendedAccommodations(ctx context.Context, in *RecommendedAccommodationsRequest, opts ...grpc.CallOption) (*RecommendedAccommodationsResponse, error)
 	CalculateRatingForHost(ctx context.Context, in *RatingForHostRequest, opts ...grpc.CallOption) (*CalculateRatingForHostResponse, error)
 	CalculateRatingForAccommodation(ctx context.Context, in *RatingForAccommodationRequest, opts ...grpc.CallOption) (*CalculateRatingForAccommodationResponse, error)
+	GetRatingGuestGaveHost(ctx context.Context, in *GetRatingGuestGaveHostRequest, opts ...grpc.CallOption) (*GetRatingGuestGaveHostResponse, error)
+	GetRatingGuestGaveAccommodation(ctx context.Context, in *GetRatingGuestGaveAccommodationRequest, opts ...grpc.CallOption) (*GetRatingGuestGaveAccommodationResponse, error)
 }
 
 type ratingServiceClient struct {
@@ -134,6 +138,24 @@ func (c *ratingServiceClient) CalculateRatingForAccommodation(ctx context.Contex
 	return out, nil
 }
 
+func (c *ratingServiceClient) GetRatingGuestGaveHost(ctx context.Context, in *GetRatingGuestGaveHostRequest, opts ...grpc.CallOption) (*GetRatingGuestGaveHostResponse, error) {
+	out := new(GetRatingGuestGaveHostResponse)
+	err := c.cc.Invoke(ctx, RatingService_GetRatingGuestGaveHost_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ratingServiceClient) GetRatingGuestGaveAccommodation(ctx context.Context, in *GetRatingGuestGaveAccommodationRequest, opts ...grpc.CallOption) (*GetRatingGuestGaveAccommodationResponse, error) {
+	out := new(GetRatingGuestGaveAccommodationResponse)
+	err := c.cc.Invoke(ctx, RatingService_GetRatingGuestGaveAccommodation_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RatingServiceServer is the server API for RatingService service.
 // All implementations must embed UnimplementedRatingServiceServer
 // for forward compatibility
@@ -147,6 +169,8 @@ type RatingServiceServer interface {
 	GetRecommendedAccommodations(context.Context, *RecommendedAccommodationsRequest) (*RecommendedAccommodationsResponse, error)
 	CalculateRatingForHost(context.Context, *RatingForHostRequest) (*CalculateRatingForHostResponse, error)
 	CalculateRatingForAccommodation(context.Context, *RatingForAccommodationRequest) (*CalculateRatingForAccommodationResponse, error)
+	GetRatingGuestGaveHost(context.Context, *GetRatingGuestGaveHostRequest) (*GetRatingGuestGaveHostResponse, error)
+	GetRatingGuestGaveAccommodation(context.Context, *GetRatingGuestGaveAccommodationRequest) (*GetRatingGuestGaveAccommodationResponse, error)
 	mustEmbedUnimplementedRatingServiceServer()
 }
 
@@ -180,6 +204,12 @@ func (UnimplementedRatingServiceServer) CalculateRatingForHost(context.Context, 
 }
 func (UnimplementedRatingServiceServer) CalculateRatingForAccommodation(context.Context, *RatingForAccommodationRequest) (*CalculateRatingForAccommodationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CalculateRatingForAccommodation not implemented")
+}
+func (UnimplementedRatingServiceServer) GetRatingGuestGaveHost(context.Context, *GetRatingGuestGaveHostRequest) (*GetRatingGuestGaveHostResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetRatingGuestGaveHost not implemented")
+}
+func (UnimplementedRatingServiceServer) GetRatingGuestGaveAccommodation(context.Context, *GetRatingGuestGaveAccommodationRequest) (*GetRatingGuestGaveAccommodationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetRatingGuestGaveAccommodation not implemented")
 }
 func (UnimplementedRatingServiceServer) mustEmbedUnimplementedRatingServiceServer() {}
 
@@ -356,6 +386,42 @@ func _RatingService_CalculateRatingForAccommodation_Handler(srv interface{}, ctx
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RatingService_GetRatingGuestGaveHost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetRatingGuestGaveHostRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RatingServiceServer).GetRatingGuestGaveHost(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RatingService_GetRatingGuestGaveHost_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RatingServiceServer).GetRatingGuestGaveHost(ctx, req.(*GetRatingGuestGaveHostRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RatingService_GetRatingGuestGaveAccommodation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetRatingGuestGaveAccommodationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RatingServiceServer).GetRatingGuestGaveAccommodation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RatingService_GetRatingGuestGaveAccommodation_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RatingServiceServer).GetRatingGuestGaveAccommodation(ctx, req.(*GetRatingGuestGaveAccommodationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RatingService_ServiceDesc is the grpc.ServiceDesc for RatingService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -398,6 +464,14 @@ var RatingService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CalculateRatingForAccommodation",
 			Handler:    _RatingService_CalculateRatingForAccommodation_Handler,
+		},
+		{
+			MethodName: "GetRatingGuestGaveHost",
+			Handler:    _RatingService_GetRatingGuestGaveHost_Handler,
+		},
+		{
+			MethodName: "GetRatingGuestGaveAccommodation",
+			Handler:    _RatingService_GetRatingGuestGaveAccommodation_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

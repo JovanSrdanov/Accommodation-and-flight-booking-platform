@@ -255,6 +255,7 @@ func containsAll(slice1, slice2 []string) bool {
 func (handler AccommodationHandler) GetRatableAccommodations(ctx *gin.Context) {
 	reservationClient := communication.NewReservationClient(handler.reservationServiceAddress)
 	accommodationClient := communication.NewAccommodationClient(handler.accommodationServiceAddress)
+	ratingClient := communication.NewRatingClient(handler.ratingServiceAddress)
 
 	loggedInAccCredIdFromCtx := ctx.Keys["id"].(uuid.UUID).String()
 	ctxGrpc := createGrpcContextFromGinContext(ctx)
@@ -272,6 +273,17 @@ func (handler AccommodationHandler) GetRatableAccommodations(ctx *gin.Context) {
 			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Big puc kod get ratable accommodations?"})
 			return
 		}
+
+		protoAccommodationRating, err2 := ratingClient.GetRatingGuestGaveAccommodation(ctxGrpc, &rating.GetRatingGuestGaveAccommodationRequest{
+			AccommodationId: accId,
+			GuestId:         loggedInAccCredIdFromCtx,
+		})
+
+		if err2 != nil {
+			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err2.Error()})
+			return
+		}
+
 		id, _ := primitive.ObjectIDFromHex(accId)
 		dtoSlice = append(dtoSlice, &dto.Accommodation{
 			ID:   id,
@@ -288,6 +300,7 @@ func (handler AccommodationHandler) GetRatableAccommodations(ctx *gin.Context) {
 			Images:    accommodationProto.Accommodation.Images,
 			HostId:    accommodationProto.Accommodation.HostId,
 			Price:     -1,
+			Rating:    protoAccommodationRating.Rating,
 		})
 	}
 
@@ -297,6 +310,7 @@ func (handler AccommodationHandler) GetRatableAccommodations(ctx *gin.Context) {
 func (handler AccommodationHandler) GetRatableHosts(ctx *gin.Context) {
 	reservationClient := communication.NewReservationClient(handler.reservationServiceAddress)
 	authorizationClient := communication.NewAuthorizationClient(handler.authorizationServiceAddress)
+	ratingClient := communication.NewRatingClient(handler.ratingServiceAddress)
 	userProfileClient := communication.NewUserProfileClient(handler.userProfileServiceAddress)
 
 	loggedInAccCredIdFromCtx := ctx.Keys["id"].(uuid.UUID).String()
@@ -308,7 +322,7 @@ func (handler AccommodationHandler) GetRatableHosts(ctx *gin.Context) {
 		return
 	}
 
-	dtoSlice := make([]*dto.BasicUserInfo, 0)
+	dtoSlice := make([]*dto.BasicHostInfo, 0)
 	for _, hostId := range protoHostIds.HostIds {
 		protoAccInfo, err2 := authorizationClient.GetById(ctxGrpc, &authorization.GetByIdRequest{Id: hostId})
 		if err2 != nil {
@@ -318,15 +332,27 @@ func (handler AccommodationHandler) GetRatableHosts(ctx *gin.Context) {
 
 		protoUserInfo, err2 := userProfileClient.GetById(ctxGrpc, &user_profile.GetByIdRequest{Id: protoAccInfo.AccountCredentials.UserProfileId})
 		if err2 != nil {
+			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err2.Error()})
 			return
 		}
 
-		dtoSlice = append(dtoSlice, &dto.BasicUserInfo{
+		protoHostRating, err2 := ratingClient.GetRatingGuestGaveHost(ctxGrpc, &rating.GetRatingGuestGaveHostRequest{
+			HostId:  hostId,
+			GuestId: loggedInAccCredIdFromCtx,
+		})
+
+		if err2 != nil {
+			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err2.Error()})
+			return
+		}
+
+		dtoSlice = append(dtoSlice, &dto.BasicHostInfo{
 			Username: protoAccInfo.AccountCredentials.Username,
 			Name:     protoUserInfo.UserProfile.Name,
 			Surname:  protoUserInfo.UserProfile.Surname,
 			Email:    protoUserInfo.UserProfile.Email,
 			HostId:   hostId,
+			Rating:   protoHostRating.Rating,
 		})
 	}
 

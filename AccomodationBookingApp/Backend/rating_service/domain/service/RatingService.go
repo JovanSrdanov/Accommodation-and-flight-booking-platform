@@ -50,3 +50,11 @@ func (service RatingService) CalculateRatingForAccommodation(accommodationId str
 func (service RatingService) CalculateRatingForHost(hostId string) (model.SimpleHostRatingResponse, error) {
 	return service.ratingRepo.CalculateRatingForHost(hostId)
 }
+
+func (service RatingService) GetRatingGuestGaveHost(hostID, guestID string) (float32, error) {
+	return service.ratingRepo.GetRatingGuestGaveHost(hostID, guestID)
+}
+
+func (service RatingService) GetRatingGuestGaveAccommodation(accommodationID, guestID string) (float32, error) {
+	return service.ratingRepo.GetRatingGuestGaveAccommodation(accommodationID, guestID)
+}

@@ -614,3 +614,81 @@ func (repo RatingRepositoryNeo4J) CalculateRatingForHost(hostId string) (model.S
 		AvgRating: float32(result.(float64)),
 	}, nil
 }
+
+func (repo RatingRepositoryNeo4J) GetRatingGuestGaveHost(hostID, guestID string) (float32, error) {
+	session := repo.dbClient.NewSession(neo4j.SessionConfig{})
+	defer session.Close()
+
+	result, err := session.ReadTransaction(func(tx neo4j.Transaction) (interface{}, error) {
+		result, err := tx.Run(
+			"MATCH (:Guest {guestId: $guestId})-[r:RATED_HOST]->(host:Host {hostId: $hostId}) "+
+				"RETURN r.rating",
+			map[string]interface{}{
+				"guestId": guestID,
+				"hostId":  hostID,
+			},
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		// Retrieve the rating from the result
+		if result.Next() {
+			record := result.Record()
+			rating, ok := record.Get("r.rating")
+			if ok {
+				return rating, nil
+			}
+		}
+
+		// Return a default value if the rating is not found
+		return int64(0), nil
+	})
+
+	if err != nil {
+		return 0, nil
+	}
+
+	rating := float32(result.(int64))
+
+	return rating, nil
+}
+
+func (repo RatingRepositoryNeo4J) GetRatingGuestGaveAccommodation(accommodationID, guestID string) (float32, error) {
+	session := repo.dbClient.NewSession(neo4j.SessionConfig{})
+	defer session.Close()
+
+	result, err := session.ReadTransaction(func(tx neo4j.Transaction) (interface{}, error) {
+		result, err := tx.Run(
+			"MATCH (:Guest {guestId: $guestId})-[r:RATED]->(a:Accommodation {accommodationId: $accommodationId}) "+
+				"RETURN r.rating",
+			map[string]interface{}{
+				"guestId":         guestID,
+				"accommodationId": accommodationID,
+			},
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		// Retrieve the rating from the result
+		if result.Next() {
+			record := result.Record()
+			rating, ok := record.Get("r.rating")
+			if ok {
+				return rating, nil
+			}
+		}
+
+		// Return a default value if the rating is not found
+		return int64(0), nil
+	})
+
+	if err != nil {
+		return 0, nil
+	}
+
+	rating := float32(result.(int64))
+
+	return rating, nil
+}

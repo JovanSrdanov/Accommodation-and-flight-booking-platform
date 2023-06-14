@@ -18,4 +18,7 @@ type IRatingRepository interface {
 
 	CalculateRatingForAccommodation(accommodationId string) (model.SimpleRatingResponse, error)
 	CalculateRatingForHost(hostId string) (model.SimpleHostRatingResponse, error)
+
+	GetRatingGuestGaveHost(hostID, guestID string) (float32, error)
+	GetRatingGuestGaveAccommodation(accommodationID, guestID string) (float32, error)
 }

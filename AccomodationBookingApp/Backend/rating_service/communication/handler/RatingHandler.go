@@ -124,3 +124,21 @@ func (handler RatingHandler) CalculateRatingForAccommodation(ctx context.Context
 		AccommodationId: accommodationRating.AccommodationId,
 	}}, nil
 }
+
+func (handler RatingHandler) GetRatingGuestGaveHost(ctx context.Context, in *rating.GetRatingGuestGaveHostRequest) (*rating.GetRatingGuestGaveHostResponse, error) {
+	hostRating, err := handler.ratingService.GetRatingGuestGaveHost(in.HostId, in.GuestId)
+	if err != nil {
+		return nil, err
+	}
+
+	return &rating.GetRatingGuestGaveHostResponse{Rating: hostRating}, nil
+}
+
+func (handler RatingHandler) GetRatingGuestGaveAccommodation(ctx context.Context, in *rating.GetRatingGuestGaveAccommodationRequest) (*rating.GetRatingGuestGaveAccommodationResponse, error) {
+	hostRating, err := handler.ratingService.GetRatingGuestGaveAccommodation(in.AccommodationId, in.GuestId)
+	if err != nil {
+		return nil, err
+	}
+
+	return &rating.GetRatingGuestGaveAccommodationResponse{Rating: hostRating}, nil
+}
