@@ -53,6 +53,8 @@ func (handler AccommodationHandler) Init(router *gin.RouterGroup) {
 		middleware.Authorization([]model.Role{model.Guest}),
 		handler.GetRatableHosts)
 	userGroup.GET("/prominent-host/:hostId", handler.IsHostProminent)
+	userGroup.GET("/rating/:accommodationId", handler.GetRatingDetailForAccommodation)
+	userGroup.GET("/rating/host/:hostId", handler.GetRatingDetailForHost)
 }
 
 func (handler AccommodationHandler) SearchAccommodation(ctx *gin.Context) {
@@ -379,4 +381,94 @@ func (handler AccommodationHandler) IsHostProminent(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, res)
+}
+
+func (handler AccommodationHandler) GetRatingDetailForAccommodation(ctx *gin.Context) {
+	ratingClient := communication.NewRatingClient(handler.ratingServiceAddress)
+	authorizationClient := communication.NewAuthorizationClient(handler.authorizationServiceAddress)
+	userProfileClient := communication.NewUserProfileClient(handler.userProfileServiceAddress)
+
+	accommodationId := ctx.Param("accommodationId")
+
+	protoRatingDetails, err := ratingClient.GetRatingForAccommodation(ctx, &rating.RatingForAccommodationRequest{AccommodationId: accommodationId})
+	if err != nil {
+		return
+	}
+
+	guestsInfo := make([]*dto.AccommodationRatingRating, 0)
+
+	for _, protoGuestInfo := range protoRatingDetails.Rating.Ratings {
+		protoAccInfo, err2 := authorizationClient.GetById(ctx, &authorization.GetByIdRequest{Id: protoGuestInfo.GuestId})
+		if err2 != nil {
+			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Big puc kod get ratable host?"})
+			return
+		}
+
+		protoUserInfo, err2 := userProfileClient.GetById(ctx, &user_profile.GetByIdRequest{Id: protoAccInfo.AccountCredentials.UserProfileId})
+		if err2 != nil {
+			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err2.Error()})
+			return
+		}
+
+		guestsInfo = append(guestsInfo, &dto.AccommodationRatingRating{
+			GuestID: protoGuestInfo.GuestId,
+			Date:    protoGuestInfo.Date,
+			Rating:  protoGuestInfo.Rating,
+			Name:    protoUserInfo.UserProfile.Name,
+			Surname: protoUserInfo.UserProfile.Surname,
+		})
+	}
+
+	response := dto.AccommodationRating{
+		AvgRating:       protoRatingDetails.Rating.AvgRating,
+		AccommodationID: protoRatingDetails.Rating.AccommodationId,
+		Ratings:         guestsInfo,
+	}
+
+	ctx.JSON(http.StatusOK, response)
+}
+
+func (handler AccommodationHandler) GetRatingDetailForHost(ctx *gin.Context) {
+	ratingClient := communication.NewRatingClient(handler.ratingServiceAddress)
+	authorizationClient := communication.NewAuthorizationClient(handler.authorizationServiceAddress)
+	userProfileClient := communication.NewUserProfileClient(handler.userProfileServiceAddress)
+
+	hostId := ctx.Param("hostId")
+
+	protoRatingDetails, err := ratingClient.GetRatingForHost(ctx, &rating.RatingForHostRequest{HostId: hostId})
+	if err != nil {
+		return
+	}
+
+	guestsInfo := make([]*dto.HostRatingRating, 0)
+
+	for _, protoGuestInfo := range protoRatingDetails.Rating.Ratings {
+		protoAccInfo, err2 := authorizationClient.GetById(ctx, &authorization.GetByIdRequest{Id: protoGuestInfo.GuestId})
+		if err2 != nil {
+			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Big puc kod get ratable host?"})
+			return
+		}
+
+		protoUserInfo, err2 := userProfileClient.GetById(ctx, &user_profile.GetByIdRequest{Id: protoAccInfo.AccountCredentials.UserProfileId})
+		if err2 != nil {
+			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err2.Error()})
+			return
+		}
+
+		guestsInfo = append(guestsInfo, &dto.HostRatingRating{
+			GuestID: protoGuestInfo.GuestId,
+			Date:    protoGuestInfo.Date,
+			Rating:  protoGuestInfo.Rating,
+			Name:    protoUserInfo.UserProfile.Name,
+			Surname: protoUserInfo.UserProfile.Surname,
+		})
+	}
+
+	response := dto.HostRating{
+		AvgRating: protoRatingDetails.Rating.AvgRating,
+		HostID:    protoRatingDetails.Rating.HostId,
+		Ratings:   guestsInfo,
+	}
+
+	ctx.JSON(http.StatusOK, response)
 }
