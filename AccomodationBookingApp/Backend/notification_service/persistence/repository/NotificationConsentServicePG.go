@@ -10,6 +10,14 @@ type NotificationConsentRepositoryPG struct {
 	dbClient *gorm.DB
 }
 
+func (repo NotificationConsentRepositoryPG) Delete(id uuid.UUID) error {
+	result := repo.dbClient.Delete(&model.NotificationConsent{}, "user_profile_id = ?", id)
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
+}
+
 func NewNotificationConsentServicePG(dbClient *gorm.DB) (*NotificationConsentRepositoryPG, error) {
 	err := dbClient.AutoMigrate(&model.NotificationConsent{})
 	if err != nil {
@@ -38,9 +46,4 @@ func (repo NotificationConsentRepositoryPG) GetById(id uuid.UUID) (*model.Notifi
 func (repo NotificationConsentRepositoryPG) Update(notificationConsent *model.NotificationConsent) (*model.NotificationConsent, error) {
 	repo.dbClient.Save(&notificationConsent)
 	return nil, nil
-}
-
-func (repo NotificationConsentRepositoryPG) Delete(id uuid.UUID) error {
-	//TODO implement me
-	panic("implement me")
 }

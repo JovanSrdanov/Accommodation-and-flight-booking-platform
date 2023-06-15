@@ -30,3 +30,7 @@ func (service NotificationConsentService) GetById(id uuid.UUID) (*model.Notifica
 func (service NotificationConsentService) UpdateMyNotificationConsent(notificationConsent *model.NotificationConsent) (*model.NotificationConsent, error) {
 	return service.notificationConsentRepository.Update(notificationConsent)
 }
+
+func (service NotificationConsentService) Delete(id uuid.UUID) error {
+	return service.notificationConsentRepository.Delete(id)
+}
