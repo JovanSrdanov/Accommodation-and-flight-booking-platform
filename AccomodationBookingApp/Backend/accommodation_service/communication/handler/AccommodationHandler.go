@@ -7,6 +7,7 @@ import (
 	reservation "common/proto/reservation_service/generated"
 	"context"
 	"fmt"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"log"
 
 	"github.com/google/uuid"
@@ -97,8 +98,15 @@ func (handler AccommodationHandler) GetById(ctx context.Context, in *accommodati
 
 	mapper := NewUserProfileMapper()
 	*/
+	mapper := NewAccommodationMapper()
+	id, _ := primitive.ObjectIDFromHex(in.Id)
 
-	return &accommodation.GetByIdResponse{}, nil
+	res, err := handler.accommodationService.GetById(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return mapper.mapToGetByIdResponse(res), nil
 }
 
 func (handler AccommodationHandler) Delete(ctx context.Context, in *accommodation.DeleteRequest) (*accommodation.DeleteResponse, error) {

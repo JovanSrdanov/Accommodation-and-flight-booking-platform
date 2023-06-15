@@ -6,6 +6,7 @@ import (
 	"authorization_service/domain/token"
 	accommodation "common/proto/accommodation_service/generated"
 	authorization "common/proto/authorization_service/generated"
+	rating "common/proto/rating_service/generated"
 	reservation "common/proto/reservation_service/generated"
 	user_profile "common/proto/user_profile_service/generated"
 	"context"
@@ -79,6 +80,12 @@ func (server *Server) initGrpcHandlers(mux *runtime.ServeMux) {
 	if err != nil {
 		panic(err)
 	}
+
+	ratingEndpoint := fmt.Sprintf("%s:%s", server.config.RatingHost, server.config.RatingPort)
+	err = rating.RegisterRatingServiceHandlerFromEndpoint(context.TODO(), mux, ratingEndpoint, opts)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func (server *Server) initCustomHandlers(routerGroup *gin.RouterGroup) {
@@ -88,11 +95,12 @@ func (server *Server) initCustomHandlers(routerGroup *gin.RouterGroup) {
 	userProfileEndpoint := fmt.Sprintf("%s:%s", server.config.UserProfileHost, server.config.UserProfilePort)
 	accommodationEndpoint := fmt.Sprintf("%s:%s", server.config.AccommodationHost, server.config.AccommodationPort)
 	reservationEndpoint := fmt.Sprintf("%s:%s", server.config.ReservationHost, server.config.ReservationPort)
+	ratingEndpoint := fmt.Sprintf("%s:%s", server.config.RatingHost, server.config.RatingPort)
 
 	userInfoHandler := handler.NewUserHandler(authorizationEndpoint, userProfileEndpoint, tokenMaker)
 	userInfoHandler.Init(routerGroup)
 
-	accommodationHandler := handler.NewAccommodationHandler(accommodationEndpoint, reservationEndpoint)
+	accommodationHandler := handler.NewAccommodationHandler(accommodationEndpoint, reservationEndpoint, authorizationEndpoint, userProfileEndpoint, ratingEndpoint, tokenMaker)
 	accommodationHandler.Init(routerGroup)
 }
 

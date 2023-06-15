@@ -182,3 +182,28 @@ func (handler ReservationHandler) HostHasActiveReservations(ctx context.Context,
 	}
 	return &reservation.HostHasActiveReservationsResponse{HasActiveReservations: true}, nil
 }
+func (handler ReservationHandler) GetAllRatableAccommodationsForGuest(ctx context.Context, in *reservation.GuestIdRequest) (*reservation.AccommodationsIdsResponse, error) {
+	res, err := handler.reservationService.GetAllRatableAccommodationsForGuest(in.GuestId)
+	if err != nil {
+		return nil, err
+	}
+	return &reservation.AccommodationsIdsResponse{AccommodationIds: res}, nil
+}
+func (handler ReservationHandler) GetAllRatableHostsForGuest(ctx context.Context, in *reservation.GuestIdRequest) (*reservation.HostIdsResponse, error) {
+	res, err := handler.reservationService.GetAllRatableHostsForGuest(in.GuestId)
+	if err != nil {
+		return nil, err
+	}
+	return &reservation.HostIdsResponse{HostIds: res}, nil
+}
+func (handler ReservationHandler) GetAllReservationsForHost(ctx context.Context, in *reservation.HostIdRequest) (*reservation.GetAllReservationsResponse, error) {
+	mapper := NewReservationMapper()
+	protoReservations, err := handler.reservationService.GetAllReservationsForHost(in.HostId)
+	if err != nil {
+		return nil, err
+	}
+
+	return &reservation.GetAllReservationsResponse{
+		Reservation: mapper.mapToReservationsProto(protoReservations),
+	}, nil
+}

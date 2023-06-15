@@ -21,6 +21,8 @@ services:
       ACCOMMODATION_SERVICE_PORT: ${ACCOMMODATION_SERVICE_PORT}
       RESERVATION_SERVICE_HOST: ${RESERVATION_SERVICE_HOST}
       RESERVATION_SERVICE_PORT: ${RESERVATION_SERVICE_PORT}
+      RATING_SERVICE_HOST: ${RATING_SERVICE_HOST}
+      RATING_SERVICE_PORT: ${RATING_SERVICE_PORT}
     networks:
       - network
 
@@ -30,7 +32,7 @@ services:
     build:
       context: .
       dockerfile: ./authorization_service/Dockerfile
-    restart: on-failure
+    restart: always
     environment:
       AUTHORIZATION_DB_HOST: ${AUTHORIZATION_DB_HOST}
       AUTHORIZATION_DB_PORT: ${AUTHORIZATION_DB_PORT}
@@ -70,8 +72,8 @@ services:
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready" ]
       interval: 10s
-      timeout: 5s
-      retries: 5
+      timeout: 10s
+      retries: 10
     networks:
       - network
     ports:
@@ -97,7 +99,7 @@ services:
     build:
       context: .
       dockerfile: ./user_profile_service/Dockerfile
-    restart: on-failure
+    restart: always
     environment:
       USER_PROFILE_DB_HOST: ${USER_PROFILE_DB_HOST}
       USER_PROFILE_DB_PORT: ${USER_PROFILE_DB_PORT}
@@ -144,9 +146,9 @@ services:
       POSTGRES_DB: ${USER_PROFILE_DB_NAME}
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      interval: 5s
+      timeout: 10s
+      retries: 10
     networks:
       - network
     ports:
@@ -265,10 +267,10 @@ services:
       interval: 10s
       timeout: 10s
       retries: 10
-    ports:
-      - 5004:27017
     networks:
       - network
+    ports:
+      - 5004:27017
 
   reservation_event_db:
     image: mongo
@@ -283,6 +285,51 @@ services:
     ports:
       - 6004:27017
 
+  rating_service:
+    image: rating_service
+    container_name: rating_service
+    build:
+      context: .
+      dockerfile: ./rating_service/Dockerfile
+    restart: always
+    environment:
+      RATING_SERVICE_HOST: ${RATING_SERVICE_HOST}
+      RATING_SERVICE_PORT: ${RATING_SERVICE_PORT}
+      NEO4J_DB: ${NEO4J_DB}
+      NEO4J_USERNAME: ${NEO4J_USERNAME}
+      NEO4J_PASS: ${NEO4J_PASS}
+      API_GATEWAY_HOST: ${API_GATEWAY_HOST}
+    networks:
+      - network
+    depends_on:
+      neo4j:
+        condition: service_healthy
+
+  neo4j:
+    image: neo4j
+    restart: always
+    container_name: rating_db
+    ports:
+      # bolt
+      - "7687:7687"
+      # http
+      - "7474:7474"
+      # https
+      - "7473:7473"
+    # Docker healtcheck - checks if database is "alive"
+    healthcheck:
+      # test: [ "CMD-SHELL", "echo RETURN 1 | cypher-shell -a <NEO4J_dbms_connector_bolt_listen__address> -u <user defined username> -p <user defined password> || exit 1" ]
+      test:
+        [
+          "CMD-SHELL",
+          "echo RETURN 1 | cypher-shell -a bolt://neo4j:7687 -u neo4j -p nekaSifra || exit 1",
+        ]
+      interval: 5s
+    environment:
+      - NEO4J_AUTH=neo4j/nekaSifra
+    volumes:
+      - ratingDb:/data
+
   nats:
     image: nats
     container_name: nats
@@ -293,6 +340,7 @@ services:
 volumes:
   accommodationDb:
   reservationDb:
+  ratingDb:
 
 networks:
   network:

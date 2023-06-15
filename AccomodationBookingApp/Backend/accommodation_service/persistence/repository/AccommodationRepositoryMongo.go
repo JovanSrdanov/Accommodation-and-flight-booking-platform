@@ -61,7 +61,18 @@ func (repo AccommodationRepositoryMongo) Update(accommodation *model.Accommodati
 }
 
 func (repo AccommodationRepositoryMongo) GetById(id primitive.ObjectID) (*model.Accommodation, error) {
-	return &model.Accommodation{}, nil
+	collection := repo.getCollection()
+
+	filter := bson.M{"_id": id}
+
+	// Find the document by ID
+	var result model.Accommodation
+	err := collection.FindOne(context.Background(), filter).Decode(&result)
+	if err != nil {
+		return nil, err
+	}
+
+	return &result, nil
 }
 
 func (repo AccommodationRepositoryMongo) GetAll() (model.Accommodations, error) {
