@@ -14,6 +14,7 @@ type Accommodation struct {
 	Images    []string           `json:"images,omitempty"`
 	HostId    string             `json:"hostId,omitempty"`
 	Price     int32              `json:"price,omitempty"`
+	Rating    float32            `json:"rating"`
 }
 
 type SearchResponseDto []*Accommodation

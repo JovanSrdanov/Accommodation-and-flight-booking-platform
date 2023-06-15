@@ -9,4 +9,5 @@ type SearchAccommodationDto struct {
 	MinGuests     int32    `json:"minGuests,omitempty"`
 	MinPrice      int32    `json:"minPrice,omitempty"`
 	ProminentHost bool     `json:"prominentHost,omitempty"`
+	MinRating     float32  `json:"minRating,omitempty"`
 }

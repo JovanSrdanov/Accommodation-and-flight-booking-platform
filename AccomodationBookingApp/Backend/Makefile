@@ -35,4 +35,11 @@ proto-notification:
 	--grpc-gateway_out ./common/proto/notification_service/generated --grpc-gateway_opt paths=source_relative \
 	./common/proto/notification_service/notification_service.proto
 
-proto-all: proto-authorization proto-user-profile proto-accommodation proto-reservation notification_service
+proto-rating:
+	protoc -I ./common/proto/rating_service -I ./common/proto \
+    	--go_out ./common/proto/rating_service/generated --go_opt paths=source_relative \
+    	--go-grpc_out ./common/proto/rating_service/generated --go-grpc_opt paths=source_relative \
+    	--grpc-gateway_out ./common/proto/rating_service/generated --grpc-gateway_opt paths=source_relative \
+    	./common/proto/rating_service/rating_service.proto
+
+proto-all: proto-authorization proto-user-profile proto-accommodation proto-reservation notification_service proto-rating

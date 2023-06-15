@@ -16,6 +16,15 @@ type UserInfo struct {
 	Address       Address   `json:"address"`
 }
 
+type BasicHostInfo struct {
+	HostId   string  `json:"hostId"`
+	Username string  `json:"username"`
+	Name     string  `json:"name"`
+	Surname  string  `json:"surname"`
+	Email    string  `json:"email"`
+	Rating   float32 `json:"rating"`
+}
+
 type Role int8
 
 const (

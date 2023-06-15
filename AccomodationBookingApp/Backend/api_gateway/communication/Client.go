@@ -4,11 +4,13 @@ import (
 	accommodation "common/proto/accommodation_service/generated"
 	authorization "common/proto/authorization_service/generated"
 	notification "common/proto/notification_service/generated"
+	rating "common/proto/rating_service/generated"
 	reservation "common/proto/reservation_service/generated"
 	user_profile "common/proto/user_profile_service/generated"
+	"log"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	"log"
 )
 
 func getConnection(address string) (*grpc.ClientConn, error) {
@@ -53,4 +55,12 @@ func NewNotificationClient(address string) notification.NotificationServiceClien
 		log.Fatalf("Failed to start gRPC connection to Notification service: %v", err)
 	}
 	return notification.NewNotificationServiceClient(conn)
+}
+func NewRatingClient(address string) rating.RatingServiceClient {
+	conn, err := getConnection(address)
+	if err != nil {
+		log.Fatalf("Failed to start gRPC connection to UserProfile service: %v", err)
+	}
+	return rating.NewRatingServiceClient(conn)
+
 }

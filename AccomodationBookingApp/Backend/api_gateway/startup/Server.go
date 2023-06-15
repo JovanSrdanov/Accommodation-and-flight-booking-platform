@@ -3,6 +3,9 @@ package startup
 import (
 	"context"
 	"fmt"
+	"log"
+	"net/http"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -10,8 +13,6 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	"log"
-	"net/http"
 
 	"api_gateway/communication/handler"
 	"api_gateway/communication/middleware"
@@ -19,6 +20,7 @@ import (
 	accommodation "common/proto/accommodation_service/generated"
 	authorization "common/proto/authorization_service/generated"
 	notification "common/proto/notification_service/generated"
+	rating "common/proto/rating_service/generated"
 	reservation "common/proto/reservation_service/generated"
 	user_profile "common/proto/user_profile_service/generated"
 )
@@ -125,6 +127,12 @@ func (server *Server) initGrpcHandlers(mux *runtime.ServeMux) {
 	if err != nil {
 		panic(err)
 	}
+
+	ratingEndpoint := fmt.Sprintf("%s:%s", server.config.RatingHost, server.config.RatingPort)
+	err = rating.RegisterRatingServiceHandlerFromEndpoint(context.TODO(), mux, ratingEndpoint, opts)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func (server *Server) initCustomHandlers(routerGroup *gin.RouterGroup) {
@@ -135,11 +143,12 @@ func (server *Server) initCustomHandlers(routerGroup *gin.RouterGroup) {
 	accommodationEndpoint := fmt.Sprintf("%s:%s", server.config.AccommodationHost, server.config.AccommodationPort)
 	reservationEndpoint := fmt.Sprintf("%s:%s", server.config.ReservationHost, server.config.ReservationPort)
 	notificationEndpoint := fmt.Sprintf("%s:%s", server.config.NotificationHost, server.config.NotificationPort)
+	ratingEndpoint := fmt.Sprintf("%s:%s", server.config.RatingHost, server.config.RatingPort)
 
 	userInfoHandler := handler.NewUserHandler(authorizationEndpoint, userProfileEndpoint, notificationEndpoint, tokenMaker)
 	userInfoHandler.Init(routerGroup)
 
-	accommodationHandler := handler.NewAccommodationHandler(accommodationEndpoint, reservationEndpoint)
+	accommodationHandler := handler.NewAccommodationHandler(accommodationEndpoint, reservationEndpoint, authorizationEndpoint, userProfileEndpoint, ratingEndpoint, tokenMaker)
 	accommodationHandler.Init(routerGroup)
 }
 
