@@ -178,7 +178,7 @@ function SearchAndFilterAccommodations(props) {
         startDate: dayjs(),
         endDate: dayjs(),
         minPrice: 1,
-        maxPrice: 2,
+        maxPrice: 10000,
         prominentHost: false,
         amenities: []
     });
@@ -209,6 +209,10 @@ function SearchAndFilterAccommodations(props) {
         searchAndFilterData.endDate = Math.round(utcEndDate.getTime() / 1000);
         searchAndFilterData.minGuests = parseInt(searchAndFilterData.minGuests)
 
+        searchAndFilterData.maxPrice = parseInt(searchAndFilterData.maxPrice)
+        searchAndFilterData.minPrice = parseInt(searchAndFilterData.minPrice)
+
+        console.log(searchAndFilterData)
 
         setResultDialogShow(true);
         interceptor.post("api-2/accommodation/search", searchAndFilterData).then(res => {

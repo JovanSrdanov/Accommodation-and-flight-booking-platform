@@ -5,7 +5,8 @@ import (
 	"authorization_service/domain/token"
 	"authorization_service/interceptor"
 	notification "common/proto/notification_service/generated"
-
+	"common/saga/messaging"
+	"common/saga/messaging/nats"
 	"fmt"
 	"google.golang.org/grpc"
 	"gorm.io/gorm"
@@ -14,6 +15,10 @@ import (
 	"notification_service/communication/handler"
 	"notification_service/domain/service"
 	"notification_service/persistence/repository"
+)
+
+const (
+	QueueGroup = "notification_service"
 )
 
 type Server struct {
@@ -25,12 +30,35 @@ func NewServer(config *Configuration) *Server {
 }
 
 func (server *Server) Start() {
+	sendEventSubscriber := server.initSendEventSubscriber(server.config.SendEventToNotificationServiceSubject, QueueGroup)
+	sendNotificationPublisher := server.initSendNotificationPublisher(server.config.SendNotificationToAPIGatewaySubject)
+
 	postgresClient := server.initPostgresClient()
 	notificationConsentRepo := initNotificationConsentRepo(postgresClient)
 	notificationConsentService := service.NewNotificationConsentService(*notificationConsentRepo)
-	notificationConsentHandler := handler.NewNotificationConsentHandler(*notificationConsentService)
+	notificationConsentHandler := handler.NewNotificationConsentHandler(*notificationConsentService, sendEventSubscriber, sendNotificationPublisher)
 
 	server.startGrpcServer(notificationConsentHandler)
+}
+
+func (server *Server) initSendEventSubscriber(subject string, queueGroup string) messaging.Subscriber {
+	subscriber, err := nats.NewNATSSubscriber(
+		server.config.NatsHost, server.config.NatsPort,
+		server.config.NatsUser, server.config.NatsPass, subject, queueGroup)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return subscriber
+}
+
+func (server *Server) initSendNotificationPublisher(subject string) messaging.Publisher {
+	publisher, err := nats.NewNATSPublisher(
+		server.config.NatsHost, server.config.NatsPort,
+		server.config.NatsUser, server.config.NatsPass, subject)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return publisher
 }
 
 func initNotificationConsentRepo(client *gorm.DB) *repository.NotificationConsentRepositoryPG {

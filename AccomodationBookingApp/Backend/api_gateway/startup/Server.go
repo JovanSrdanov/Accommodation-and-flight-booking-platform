@@ -1,6 +1,9 @@
 package startup
 
 import (
+	"common/NotificationMessaging"
+	"common/saga/messaging"
+	"common/saga/messaging/nats"
 	"context"
 	"fmt"
 	"log"
@@ -26,9 +29,14 @@ import (
 )
 
 type Server struct {
-	config *Configuration
-	server *gin.Engine
+	config     *Configuration
+	server     *gin.Engine
+	subscriber messaging.Subscriber
 }
+
+const (
+	QueueGroup = "api_gateway"
+)
 
 var wsConnections = make(map[uuid.UUID]*websocket.Conn) // Map to store websocket connections by user ID
 
@@ -61,7 +69,34 @@ func NewServer(config *Configuration) *Server {
 
 	server.server.GET("/ws", server.handleWebSocket)
 
+	sendEventSubscriber := server.initSendEventSubscriber(server.config.SendNotificationToAPIGatewaySubject, QueueGroup)
+
+	sendEventSubscriber.Subscribe(server.HandleMessages)
+
 	return server
+}
+
+func (server *Server) HandleMessages(message *NotificationMessaging.NotificationMessage) {
+	conn, ok := wsConnections[message.AccountID]
+	if !ok {
+		return
+	}
+
+	err := conn.WriteMessage(websocket.TextMessage, []byte(message.MessageForNotification))
+	if err != nil {
+		log.Println("Failed to send message through WebSocket connection:", err)
+		return
+	}
+}
+
+func (server *Server) initSendEventSubscriber(subject string, queueGroup string) messaging.Subscriber {
+	subscriber, err := nats.NewNATSSubscriber(
+		server.config.NatsHost, server.config.NatsPort,
+		server.config.NatsUser, server.config.NatsPass, subject, queueGroup)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return subscriber
 }
 
 func (server *Server) handleWebSocket(c *gin.Context) {

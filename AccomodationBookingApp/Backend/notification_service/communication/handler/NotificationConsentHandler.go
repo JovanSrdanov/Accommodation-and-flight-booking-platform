@@ -1,7 +1,9 @@
 package handler
 
 import (
+	"common/NotificationMessaging"
 	notification "common/proto/notification_service/generated"
+	"common/saga/messaging"
 	"context"
 	"fmt"
 	"github.com/google/uuid"
@@ -11,10 +13,24 @@ import (
 type NotificationConsentHandler struct {
 	notification.UnimplementedNotificationServiceServer
 	notificationConsentService service.NotificationConsentService
+	subscriber                 messaging.Subscriber
+	publisher                  messaging.Publisher
 }
 
-func NewNotificationConsentHandler(notificationConsentService service.NotificationConsentService) *NotificationConsentHandler {
-	return &NotificationConsentHandler{notificationConsentService: notificationConsentService}
+func NewNotificationConsentHandler(notificationConsentService service.NotificationConsentService, subscriber messaging.Subscriber, publisher messaging.Publisher) *NotificationConsentHandler {
+
+	handler := &NotificationConsentHandler{
+		notificationConsentService: notificationConsentService,
+		publisher:                  publisher,
+		subscriber:                 subscriber,
+	}
+	handler.subscriber.Subscribe(handler.HandleMessages)
+
+	return handler
+}
+
+func (handler *NotificationConsentHandler) HandleMessages(message *NotificationMessaging.NotificationMessage) {
+	handler.publisher.Publish(message)
 }
 
 func (handler *NotificationConsentHandler) Create(ctx context.Context, req *notification.CreateRequest) (*notification.CreateResponse, error) {

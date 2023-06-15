@@ -15,7 +15,9 @@ type ReservationHandler struct {
 }
 
 func NewReservationHandler(reservationService service.ReservationService) *ReservationHandler {
-	return &ReservationHandler{reservationService: reservationService}
+	return &ReservationHandler{
+		reservationService: reservationService,
+	}
 }
 
 func (handler ReservationHandler) CreateAvailability(ctx context.Context, in *reservation.CreateAvailabilityRequest) (*reservation.CreateAvailabilityResponse, error) {
@@ -59,9 +61,6 @@ func (handler ReservationHandler) CreateReservation(ctx context.Context, in *res
 	if err != nil {
 		return nil, err
 	}
-	/*
-		ovde salji poruku
-	*/
 
 	return &reservation.CreateReservationRequest{}, nil
 }
@@ -111,6 +110,7 @@ func (handler ReservationHandler) RejectReservation(ctx context.Context, in *res
 	if err != nil {
 		return nil, err
 	}
+
 	return &reservation.RejectReservationResponse{
 		Id: id.Hex(),
 	}, nil

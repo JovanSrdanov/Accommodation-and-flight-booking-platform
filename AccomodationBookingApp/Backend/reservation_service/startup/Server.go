@@ -31,7 +31,9 @@ func NewServer(config *Configuration) *Server {
 
 func (server *Server) Start() {
 	mongoClient := server.initMongoClient()
-	reservationRepo := initUserProfileRepo(mongoClient)
+
+	sendEventPublisher := server.initSendEventPublisher(server.config.SendEventToNotificationServiceSubject)
+	reservationRepo := initReservationRepo(mongoClient, sendEventPublisher)
 	reservationService := service.NewReservationService(*reservationRepo)
 	reservationHandler := handler.NewReservationHandler(*reservationService)
 
@@ -51,8 +53,8 @@ func (server *Server) initMongoClient() *mongo.Client {
 	return client
 }
 
-func initUserProfileRepo(mongoClient *mongo.Client) *repository.ReservationRepositoryMongo {
-	repo, err := repository.NewReservationRepositoryMongo(mongoClient)
+func initReservationRepo(mongoClient *mongo.Client, publisher messaging.Publisher) *repository.ReservationRepositoryMongo {
+	repo, err := repository.NewReservationRepositoryMongo(mongoClient, publisher)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -120,4 +122,14 @@ func (server *Server) initDeleteHandler(service *service.ReservationService, pub
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func (server *Server) initSendEventPublisher(subject string) messaging.Publisher {
+	publisher, err := nats.NewNATSPublisher(
+		server.config.NatsHost, server.config.NatsPort,
+		server.config.NatsUser, server.config.NatsPass, subject)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return publisher
 }
