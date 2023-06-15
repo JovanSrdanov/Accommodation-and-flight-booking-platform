@@ -24,7 +24,7 @@ service UserProfileService{
     };
   }
 //Internal usage only
- rpc Delete(DeleteRequest) returns(DeleteResponse){ }
+ rpc DeleteUserProfile(DeleteRequest) returns(DeleteResponse){ }
 
   rpc DeleteUser(DeleteUserRequest) returns(DeleteResponse){
     option (google.api.http) = {

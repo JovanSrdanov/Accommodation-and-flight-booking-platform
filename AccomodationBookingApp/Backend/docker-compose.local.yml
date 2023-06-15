@@ -2,57 +2,6 @@ version: "3.8"
 
 services:
 
-  api_gateway:
-    image: api_gateway
-    container_name: api_gateway
-    build:
-      context: .
-      dockerfile: ./api_gateway/Dockerfile
-    restart: on-failure
-    ports:
-      - ${GATEWAY_PORT}:${GATEWAY_PORT}
-    environment:
-      GATEWAY_PORT: ${GATEWAY_PORT}
-      AUTHORIZATION_SERVICE_HOST: ${AUTHORIZATION_SERVICE_HOST}
-      AUTHORIZATION_SERVICE_PORT: ${AUTHORIZATION_SERVICE_PORT}
-      USER_PROFILE_SERVICE_HOST: ${USER_PROFILE_SERVICE_HOST}
-      USER_PROFILE_SERVICE_PORT: ${USER_PROFILE_SERVICE_PORT}
-      ACCOMMODATION_SERVICE_HOST: ${ACCOMMODATION_SERVICE_HOST}
-      ACCOMMODATION_SERVICE_PORT: ${ACCOMMODATION_SERVICE_PORT}
-      RESERVATION_SERVICE_HOST: ${RESERVATION_SERVICE_HOST}
-      RESERVATION_SERVICE_PORT: ${RESERVATION_SERVICE_PORT}
-    networks:
-      - network
-
-  authorization_service:
-    image: authorization_service
-    container_name: authorization_service
-    build:
-      context: .
-      dockerfile: ./authorization_service/Dockerfile
-    restart: on-failure
-    environment:
-      AUTHORIZATION_DB_HOST: ${AUTHORIZATION_DB_HOST}
-      AUTHORIZATION_DB_PORT: ${AUTHORIZATION_DB_PORT}
-      AUTHORIZATION_DB_USER: ${AUTHORIZATION_DB_USER}
-      AUTHORIZATION_DB_PASS: ${AUTHORIZATION_DB_PASS}
-      AUTHORIZATION_DB_NAME: ${AUTHORIZATION_DB_NAME}
-      AUTHORIZATION_SERVICE_PORT: ${AUTHORIZATION_SERVICE_PORT}
-      NATS_HOST: ${NATS_HOST}
-      NATS_PORT: ${NATS_PORT}
-      NATS_USER: ${NATS_USER}
-      NATS_PASS: ${NATS_PASS}
-      DELETE_USER_COMMAND_SUBJECT: ${DELETE_USER_COMMAND_SUBJECT}
-      DELETE_USER_REPLY_SUBJECT: ${DELETE_USER_REPLY_SUBJECT}
-    depends_on:
-      authorization_db:
-          condition: service_healthy
-    networks:
-      - network
-    ports:
-      - 8001:${AUTHORIZATION_SERVICE_PORT}
-
-
   authorization_db:
     image: authorization_db
     container_name: authorization_db
@@ -74,7 +23,18 @@ services:
     ports:
       - 5001:5432
 
-
+  authorization_event_db:
+    image: mongo
+    container_name: authorization_event_db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok'
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    networks:
+      - network
+    ports:
+      - 6001:27017
 
   user_profile_db:
     image: user_profile_db
@@ -108,30 +68,9 @@ services:
     networks:
       - network
     ports:
-      - 5005:27017
+      - 6002:27017
 
 
-  accommodation_service:
-    image: accommodation_service
-    container_name: accommodation_service
-    build:
-      context: .
-      dockerfile: ./accommodation_service/Dockerfile
-    restart: on-failure
-    environment:
-      ACCOMMODATION_SERVICE_HOST: ${ACCOMMODATION_SERVICE_HOST}
-      ACCOMMODATION_SERVICE_PORT: ${ACCOMMODATION_SERVICE_PORT}
-      ACCOMMODATION_SERVICE_DB_NAME: ${ACCOMMODATION_SERVICE_DB_NAME}
-      ACCOMMODATION_SERVICE_DB_PORT: ${ACCOMMODATION_SERVICE_DB_PORT}
-      RESERVATION_SERVICE_HOST: ${RESERVATION_SERVICE_HOST}
-      RESERVATION_SERVICE_PORT: ${RESERVATION_SERVICE_PORT}
-    networks:
-      - network
-    depends_on:
-      accommodation_db:
-        condition: service_healthy
-    ports:
-      - 8002:${ACCOMMODATION_SERVICE_PORT}
 
   accommodation_db:
     image: mongo
@@ -143,30 +82,23 @@ services:
       interval: 10s
       timeout: 10s
       retries: 10
-    networks:
-      - network
     ports:
       - 5003:27017
-
-  reservation_service:
-    image: reservation_service
-    container_name: reservation_service
-    build:
-      context: .
-      dockerfile: ./reservation_service/Dockerfile
-    restart: on-failure
-    environment:
-      RESERVATION_SERVICE_HOST: ${RESERVATION_SERVICE_HOST}
-      RESERVATION_SERVICE_PORT: ${RESERVATION_SERVICE_PORT}
-      RESERVATION_SERVICE_DB_NAME: ${RESERVATION_SERVICE_DB_NAME}
-      RESERVATION_SERVICE_DB_PORT: ${RESERVATION_SERVICE_DB_PORT}
     networks:
       - network
-    depends_on:
-      reservation_db:
-        condition: service_healthy
+
+  accomodation_event_db:
+    image: mongo
+    container_name: accomodation_event_db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok'
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    networks:
+      - network
     ports:
-      - 8003:${RESERVATION_SERVICE_PORT}
+      - 6003:27017
 
   reservation_db:
     image: mongo
@@ -178,10 +110,23 @@ services:
       interval: 10s
       timeout: 10s
       retries: 10
+    ports:
+      - 5004:27017
+    networks:
+      - network
+
+  reservation_event_db:
+    image: mongo
+    container_name: reservation_event_db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok'
+      interval: 10s
+      timeout: 10s
+      retries: 10
     networks:
       - network
     ports:
-      - 5004:27017
+      - 6004:27017
 
   nats:
     image: nats
