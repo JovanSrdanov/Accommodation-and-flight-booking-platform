@@ -21,8 +21,17 @@ services:
       ACCOMMODATION_SERVICE_PORT: ${ACCOMMODATION_SERVICE_PORT}
       RESERVATION_SERVICE_HOST: ${RESERVATION_SERVICE_HOST}
       RESERVATION_SERVICE_PORT: ${RESERVATION_SERVICE_PORT}
+      NOTIFICATION_SERVICE_HOST: ${NOTIFICATION_SERVICE_HOST}
+      NOTIFICATION_SERVICE_PORT: ${NOTIFICATION_SERVICE_PORT}
       RATING_SERVICE_HOST: ${RATING_SERVICE_HOST}
       RATING_SERVICE_PORT: ${RATING_SERVICE_PORT}
+      SEND_NOTIFICATION_TO_API_GATEWAY_SUBJECT: ${SEND_NOTIFICATION_TO_API_GATEWAY_SUBJECT}
+      SEND_EVENT_TO_NOTIFICATION_SERVICE_SUBJECT: ${SEND_EVENT_TO_NOTIFICATION_SERVICE_SUBJECT}
+
+      NATS_HOST: ${NATS_HOST}
+      NATS_PORT: ${NATS_PORT}
+      NATS_USER: ${NATS_USER}
+      NATS_PASS: ${NATS_PASS}
     networks:
       - network
 
@@ -245,6 +254,9 @@ services:
       RESERVATION_SERVICE_PORT: ${RESERVATION_SERVICE_PORT}
       RESERVATION_SERVICE_DB_NAME: ${RESERVATION_SERVICE_DB_NAME}
       RESERVATION_SERVICE_DB_PORT: ${RESERVATION_SERVICE_DB_PORT}
+      SEND_NOTIFICATION_TO_API_GATEWAY_SUBJECT: ${SEND_NOTIFICATION_TO_API_GATEWAY_SUBJECT}
+      SEND_EVENT_TO_NOTIFICATION_SERVICE_SUBJECT: ${SEND_EVENT_TO_NOTIFICATION_SERVICE_SUBJECT}
+
       NATS_HOST: ${NATS_HOST}
       NATS_PORT: ${NATS_PORT}
       NATS_USER: ${NATS_USER}
@@ -280,6 +292,53 @@ services:
       - 5004:27017
 
 
+  notification_service:
+    image: notification_service
+    container_name: notification_service
+    build:
+      context: .
+      dockerfile: ./notification_service/Dockerfile
+    restart: on-failure
+    environment:
+      NOTIFICATION_DB_HOST: ${NOTIFICATION_DB_HOST}
+      NOTIFICATION_DB_PORT: ${NOTIFICATION_DB_PORT}
+      NOTIFICATION_DB_NAME: ${NOTIFICATION_DB_NAME}
+      NOTIFICATION_DB_USER: ${NOTIFICATION_DB_USER}
+      NOTIFICATION_DB_PASS: ${NOTIFICATION_DB_PASS}
+      NOTIFICATION_SERVICE_PORT: ${NOTIFICATION_SERVICE_PORT}
+      SEND_NOTIFICATION_TO_API_GATEWAY_SUBJECT: ${SEND_NOTIFICATION_TO_API_GATEWAY_SUBJECT}
+      SEND_EVENT_TO_NOTIFICATION_SERVICE_SUBJECT: ${SEND_EVENT_TO_NOTIFICATION_SERVICE_SUBJECT}
+
+      NATS_HOST: ${NATS_HOST}
+      NATS_PORT: ${NATS_PORT}
+      NATS_USER: ${NATS_USER}
+      NATS_PASS: ${NATS_PASS}
+    depends_on:
+      notification_db:
+        condition: service_healthy
+    networks:
+      - network
+
+  notification_db:
+    image: notification_db
+    container_name: notification_db
+    restart: on-failure
+    build:
+      context: ../Database/Notification
+      dockerfile: Dockerfile
+    environment:
+      PGUSER: ${NOTIFICATION_DB_USER}
+      POSTGRES_PASSWORD: ${NOTIFICATION_DB_PASS}
+      POSTGRES_DB: ${NOTIFICATION_DB_NAME}
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - network
+    ports:
+      - 5005:5432
   rating_service:
     image: rating_service
     container_name: rating_service

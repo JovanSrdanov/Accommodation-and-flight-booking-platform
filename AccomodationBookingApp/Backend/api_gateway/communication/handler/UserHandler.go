@@ -7,6 +7,7 @@ import (
 	"authorization_service/domain/model"
 	"authorization_service/domain/token"
 	authorization "common/proto/authorization_service/generated"
+	notification "common/proto/notification_service/generated"
 	user_profile "common/proto/user_profile_service/generated"
 	"context"
 	"fmt"
@@ -20,14 +21,17 @@ import (
 type UserHandler struct {
 	authorizationServiceAddress string
 	userProfileServiceAddress   string
+	notificationServiceAddress  string
 	tokenMaker                  token.Maker
 }
 
-func NewUserHandler(authorizationServiceAddress string, userProfileServiceAddress string,
+func NewUserHandler(authorizationServiceAddress, userProfileServiceAddress, notificationServiceAddress string,
 	tokenMaker token.Maker) *UserHandler {
-	return &UserHandler{authorizationServiceAddress: authorizationServiceAddress,
-		userProfileServiceAddress: userProfileServiceAddress,
-		tokenMaker:                tokenMaker,
+	return &UserHandler{
+		authorizationServiceAddress: authorizationServiceAddress,
+		userProfileServiceAddress:   userProfileServiceAddress,
+		notificationServiceAddress:  notificationServiceAddress,
+		tokenMaker:                  tokenMaker,
 	}
 }
 
@@ -123,13 +127,20 @@ func (handler UserHandler) CreateUser(ctx *gin.Context) {
 		return
 	}
 
-	err = handler.CreateAccountCredentials(&user, userProfileId)
+	//_, err = handler.CreateAccountCredentials(&user, userProfileId)
+	accountID, err := handler.CreateAccountCredentials(&user, userProfileId)
 	if err != nil {
 		deleteErr := handler.DeleteUserProfile(userProfileId)
 		if deleteErr != nil {
 			ctx.JSON(http.StatusInternalServerError, communication.NewErrorResponse(deleteErr.Error()))
 			return
 		}
+		ctx.JSON(http.StatusBadRequest, communication.NewErrorResponse(err.Error()))
+		return
+	}
+
+	err = handler.CreateNotificationConsent(accountID)
+	if err != nil {
 		ctx.JSON(http.StatusBadRequest, communication.NewErrorResponse(err.Error()))
 		return
 	}
@@ -165,9 +176,9 @@ func (handler UserHandler) DeleteUserProfile(id uuid.UUID) error {
 
 	return err
 }
-func (handler UserHandler) CreateAccountCredentials(user *dto.CreateUser, userProfileId uuid.UUID) error {
+func (handler UserHandler) CreateAccountCredentials(user *dto.CreateUser, userProfileId uuid.UUID) (uuid.UUID, error) {
 	client := communication.NewAuthorizationClient(handler.authorizationServiceAddress)
-	_, err := client.Create(context.TODO(), &authorization.CreateRequest{AccountCredentials: &authorization.CreateAccountCredentials{
+	response, err := client.Create(context.TODO(), &authorization.CreateRequest{AccountCredentials: &authorization.CreateAccountCredentials{
 		Username:      user.Username,
 		Password:      user.Password,
 		Role:          authorization.Role(user.Role),
@@ -175,10 +186,14 @@ func (handler UserHandler) CreateAccountCredentials(user *dto.CreateUser, userPr
 	}})
 
 	if err != nil {
-		return err
+		return uuid.UUID{}, err
+	}
+	id, err := uuid.Parse(response.Id)
+	if err != nil {
+		return uuid.UUID{}, err
 	}
 
-	return nil
+	return id, err
 }
 
 func (handler UserHandler) GetLoggedInUserInfo(ctx *gin.Context) {
@@ -206,6 +221,25 @@ func (handler UserHandler) GetLoggedInUserInfo(ctx *gin.Context) {
 	handler.addUserProfileInfo(&userInfo, grpcCtx)
 
 	ctx.JSON(http.StatusOK, userInfo)
+}
+
+func (handler UserHandler) CreateNotificationConsent(id uuid.UUID) error {
+	client := communication.NewNotificationClient(handler.notificationServiceAddress)
+	_, err := client.Create(context.TODO(), &notification.CreateRequest{
+		UserProfileID:            id.String(),
+		RequestMade:              true,
+		ReservationCanceled:      true,
+		HostRatingGiven:          true,
+		AccommodationRatingGiven: true,
+		ProminentHost:            true,
+		HostResponded:            true,
+	})
+
+	if err != nil {
+		return err
+	}
+	return nil
+
 }
 
 func createGrpcContextFromGinContext(ctx *gin.Context) context.Context {

@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"common/NotificationMessaging"
+	"common/saga/messaging"
 	"context"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
@@ -14,11 +16,15 @@ import (
 )
 
 type ReservationRepositoryMongo struct {
-	dbClient *mongo.Client
+	dbClient  *mongo.Client
+	publisher messaging.Publisher
 }
 
-func NewReservationRepositoryMongo(dbClient *mongo.Client) (*ReservationRepositoryMongo, error) {
-	return &ReservationRepositoryMongo{dbClient: dbClient}, nil
+func NewReservationRepositoryMongo(dbClient *mongo.Client, publisher messaging.Publisher) (*ReservationRepositoryMongo, error) {
+	return &ReservationRepositoryMongo{
+		dbClient:  dbClient,
+		publisher: publisher,
+	}, nil
 }
 
 func (repo ReservationRepositoryMongo) CreateAvailability(newAvailability *model.AvailabilityRequest) (primitive.ObjectID, error) {
@@ -618,6 +624,20 @@ func (repo ReservationRepositoryMongo) AcceptReservation(id primitive.ObjectID) 
 		return primitive.ObjectID{}, err
 	}
 
+	// Find the reservation u want to change
+
+	accountID, err := uuid.Parse(reservation.GuestId)
+	if err != nil {
+		log.Fatal(err)
+		return primitive.ObjectID{}, err
+	}
+
+	message := NotificationMessaging.NotificationMessage{
+		MessageType:            "RequestMade",
+		MessageForNotification: "Reservation accepted",
+		AccountID:              accountID,
+	}
+	repo.publisher.Publish(message)
 	return reservation.ID, nil
 }
 
