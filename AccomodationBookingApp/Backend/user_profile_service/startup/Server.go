@@ -4,6 +4,7 @@ import (
 	"authorization_service/domain/model"
 	"authorization_service/domain/token"
 	"authorization_service/interceptor"
+	"common/event_sourcing"
 	user_profile "common/proto/user_profile_service/generated"
 	"common/saga/messaging"
 	"common/saga/messaging/nats"
@@ -16,7 +17,6 @@ import (
 	"user_profile_service/communication/handler"
 	"user_profile_service/communication/orchestrator"
 	"user_profile_service/domain/service"
-	"user_profile_service/event_sourcing"
 	"user_profile_service/persistence/repository"
 )
 
@@ -47,7 +47,7 @@ func (server *Server) Start() {
 	authServiceAddress := fmt.Sprintf("%s:%s", server.config.AuthServiceHost, server.config.AuthServicePort)
 	userProfileHandler := handler.NewUserProfileHandler(*userProfileService, authServiceAddress)
 
-	//Delete handler that listens orchestrator
+	//DeleteUserProfile handler that listens orchestrator
 	commandSubscriber := server.initDeleteSubscriber(server.config.DeleteUserCommandSubject, QueueGroup)
 	replyPublisher := server.initDeletePublisher(server.config.DeleteUserReplySubject)
 
@@ -69,8 +69,8 @@ func (server *Server) initMongoClient() *mongo.Client {
 	return client
 }
 
-func (server *Server) initEventRepo(client *mongo.Client) *repository.EventRepositoryMongo {
-	repo, err := repository.NewEventRepositoryMongo(client, server.config.UserProfileEventInnerDbName, server.config.UserProfileEventDbCollectionName)
+func (server *Server) initEventRepo(client *mongo.Client) *event_sourcing.EventRepositoryMongo {
+	repo, err := event_sourcing.NewEventRepositoryMongo(client, server.config.UserProfileEventInnerDbName, server.config.UserProfileEventDbCollectionName)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -46,6 +46,12 @@ services:
       NATS_PASS: ${NATS_PASS}
       DELETE_USER_COMMAND_SUBJECT: ${DELETE_USER_COMMAND_SUBJECT}
       DELETE_USER_REPLY_SUBJECT: ${DELETE_USER_REPLY_SUBJECT}
+
+      AUTHORIZATION_EVENT_DB_NAME: ${AUTHORIZATION_EVENT_DB_NAME}
+      AUTHORIZATION_EVENT_DB_PORT: ${AUTHORIZATION_EVENT_DB_PORT}
+      AUTHORIZATION_EVENT_INNER_DB_NAME: ${AUTHORIZATION_EVENT_INNER_DB_NAME}
+      AUTHORIZATION_EVENT_DB_COLLECTION_NAME: ${AUTHORIZATION_EVENT_DB_COLLECTION_NAME}
+
     depends_on:
       authorization_db:
           condition: service_healthy
@@ -65,14 +71,29 @@ services:
       POSTGRES_DB: ${AUTHORIZATION_DB_NAME}
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready" ]
-      interval: 10s
+      interval: 20s
       timeout: 10s
-      retries: 10
+      retries: 20
+      start_period: 10s 
     networks:
       - network
     ports:
       - 5001:5432
 
+
+  authorization_event_db:
+    image: mongo
+    container_name: authorization_event_db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok'
+      interval: 20s
+      timeout: 10s
+      retries: 20
+      start_period: 10s 
+    networks:
+      - network
+    ports:
+      - 6001:27017
 
   user_profile_service:
     image: user_profile_service
@@ -127,9 +148,10 @@ services:
       POSTGRES_DB: ${USER_PROFILE_DB_NAME}
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready" ]
-      interval: 5s
+      interval: 20s
       timeout: 10s
-      retries: 10
+      retries: 20
+      start_period: 10s 
     networks:
       - network
     ports:
@@ -140,14 +162,14 @@ services:
     container_name: user_profile_event_db
     healthcheck:
       test: echo 'db.runCommand("ping").ok'
-      interval: 10s
+      interval: 20s
       timeout: 10s
-      retries: 10
+      retries: 20
+      start_period: 10s 
     networks:
       - network
     ports:
-      - 5003:27017
-
+      - 6002:27017
 
   accommodation_service:
     image: accommodation_service
@@ -163,6 +185,17 @@ services:
       ACCOMMODATION_SERVICE_DB_PORT: ${ACCOMMODATION_SERVICE_DB_PORT}
       RESERVATION_SERVICE_HOST: ${RESERVATION_SERVICE_HOST}
       RESERVATION_SERVICE_PORT: ${RESERVATION_SERVICE_PORT}
+      NATS_HOST: ${NATS_HOST}
+      NATS_PORT: ${NATS_PORT}
+      NATS_USER: ${NATS_USER}
+      NATS_PASS: ${NATS_PASS}
+      DELETE_USER_COMMAND_SUBJECT: ${DELETE_USER_COMMAND_SUBJECT}
+      DELETE_USER_REPLY_SUBJECT: ${DELETE_USER_REPLY_SUBJECT}
+
+      ACCOMMODATION_EVENT_DB_NAME: ${ACCOMMODATION_EVENT_DB_NAME}
+      ACCOMMODATION_EVENT_DB_PORT: ${ACCOMMODATION_EVENT_DB_PORT}
+      ACCOMMODATION_EVENT_INNER_DB_NAME: ${ACCOMMODATION_EVENT_INNER_DB_NAME}
+      ACCOMMODATION_EVENT_DB_COLLECTION_NAME: ${ACCOMMODATION_EVENT_DB_COLLECTION_NAME}
     networks:
       - network
     depends_on:
@@ -176,13 +209,29 @@ services:
       - accommodationDb:/data/db
     healthcheck:
       test: echo 'db.runCommand("ping").ok'
-      interval: 10s
+      interval: 20s
       timeout: 10s
-      retries: 10
+      retries: 20
+      start_period: 10s 
     ports:
-      - 6969:27017
+      - 5003:27017
     networks:
       - network
+
+  accommodation_event_db:
+    image: mongo
+    container_name: accommodation_event_db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok'
+      interval: 20s
+      timeout: 10s
+      retries: 20
+      start_period: 10s 
+    networks:
+      - network
+    ports:
+      - 6003:27017
+
 
   reservation_service:
     image: reservation_service
@@ -196,6 +245,17 @@ services:
       RESERVATION_SERVICE_PORT: ${RESERVATION_SERVICE_PORT}
       RESERVATION_SERVICE_DB_NAME: ${RESERVATION_SERVICE_DB_NAME}
       RESERVATION_SERVICE_DB_PORT: ${RESERVATION_SERVICE_DB_PORT}
+      NATS_HOST: ${NATS_HOST}
+      NATS_PORT: ${NATS_PORT}
+      NATS_USER: ${NATS_USER}
+      NATS_PASS: ${NATS_PASS}
+      DELETE_USER_COMMAND_SUBJECT: ${DELETE_USER_COMMAND_SUBJECT}
+      DELETE_USER_REPLY_SUBJECT: ${DELETE_USER_REPLY_SUBJECT}
+
+      RESERVATION_EVENT_DB_NAME: ${RESERVATION_EVENT_DB_NAME}
+      RESERVATION_EVENT_DB_PORT: ${RESERVATION_EVENT_DB_PORT}
+      RESERVATION_EVENT_INNER_DB_NAME: ${RESERVATION_EVENT_INNER_DB_NAME}
+      RESERVATION_EVENT_DB_COLLECTION_NAME: ${RESERVATION_EVENT_DB_COLLECTION_NAME}
     networks:
       - network
     depends_on:
@@ -210,13 +270,15 @@ services:
       - reservationDb:/data/db
     healthcheck:
       test: echo 'db.runCommand("ping").ok'
-      interval: 10s
+      interval: 20s
       timeout: 10s
-      retries: 10
-    ports:
-      - 6968:27017
+      retries: 20
+      start_period: 10s 
     networks:
       - network
+    ports:
+      - 5004:27017
+
 
   rating_service:
     image: rating_service
@@ -239,33 +301,34 @@ services:
         condition: service_healthy
 
   neo4j:
-    image: neo4j
-    restart: always
-    container_name: rating_db
-    ports:
-      # bolt
-      - "7687:7687"
-      # http
-      - "7474:7474"
-      # https
-      - "7473:7473"
-    # Docker healtcheck - checks if database is "alive"
-    healthcheck:
-      # test: [ "CMD-SHELL", "echo RETURN 1 | cypher-shell -a <NEO4J_dbms_connector_bolt_listen__address> -u <user defined username> -p <user defined password> || exit 1" ]
-      test:
-        [
-          "CMD-SHELL",
-          "echo RETURN 1 | cypher-shell -a bolt://neo4j:7687 -u neo4j -p nekaSifra || exit 1",
-        ]
-      interval: 5s
-      timeout: 10s
-      retries: 10
-    networks:
-      - network
-    environment:
-      - NEO4J_AUTH=neo4j/nekaSifra
-    volumes:
-      - ratingDb:/data
+      image: neo4j
+      restart: always
+      container_name: rating_db
+      ports:
+        # bolt
+        - "7687:7687"
+        # http
+        - "7474:7474"
+        # https
+        - "7473:7473"
+      # Docker healtcheck - checks if database is "alive"
+      healthcheck:
+        # test: [ "CMD-SHELL", "echo RETURN 1 | cypher-shell -a <NEO4J_dbms_connector_bolt_listen__address> -u <user defined username> -p <user defined password> || exit 1" ]
+        test:
+          [
+            "CMD-SHELL",
+            "echo RETURN 1 | cypher-shell -a bolt://neo4j:7687 -u neo4j -p nekaSifra || exit 1",
+          ]
+        interval: 20s
+        timeout: 10s
+        retries: 20
+        start_period: 10s 
+      networks:
+        - network
+      environment:
+        - NEO4J_AUTH=neo4j/nekaSifra
+      volumes:
+        - ratingDb:/data
 
   nats:
     image: nats

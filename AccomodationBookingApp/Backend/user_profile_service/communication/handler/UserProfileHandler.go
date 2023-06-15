@@ -78,7 +78,8 @@ func (handler UserProfileHandler) GetById(ctx context.Context, in *user_profile.
 	return mapper.mapToGetByIdResponse(userProfile), nil
 }
 
-func (handler UserProfileHandler) Delete(ctx context.Context, in *user_profile.DeleteRequest) (*user_profile.DeleteResponse, error) {
+// Delete This function is part of saga
+func (handler UserProfileHandler) DeleteUserProfile(ctx context.Context, in *user_profile.DeleteRequest) (*user_profile.DeleteResponse, error) {
 	id, err := uuid.Parse(in.GetId())
 	if err != nil {
 		return nil, err
@@ -90,6 +91,8 @@ func (handler UserProfileHandler) Delete(ctx context.Context, in *user_profile.D
 
 	return &user_profile.DeleteResponse{Message: "User profile deleted"}, nil
 }
+
+// DeleteUser  This function starts saga
 func (handler UserProfileHandler) DeleteUser(ctx context.Context, in *user_profile.DeleteUserRequest) (*user_profile.DeleteResponse, error) {
 	loggedInId, ok := ctx.Value("id").(uuid.UUID)
 	if !ok {

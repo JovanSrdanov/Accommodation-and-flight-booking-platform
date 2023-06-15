@@ -1,4 +1,4 @@
-package repository
+package event_sourcing
 
 import (
 	"context"
@@ -6,7 +6,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"time"
-	"user_profile_service/event_sourcing"
 )
 
 type EventRepositoryMongo struct {
@@ -20,7 +19,7 @@ func NewEventRepositoryMongo(client *mongo.Client, dbName, collectionName string
 	}, nil
 }
 
-func (repo *EventRepositoryMongo) Save(event *event_sourcing.Event) error {
+func (repo *EventRepositoryMongo) Save(event *Event) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -31,7 +30,7 @@ func (repo *EventRepositoryMongo) Save(event *event_sourcing.Event) error {
 	return nil
 }
 
-func (repo *EventRepositoryMongo) Read(sagaId uuid.UUID, action string) (*event_sourcing.Event, error) {
+func (repo *EventRepositoryMongo) Read(sagaId uuid.UUID, action string) (*Event, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -39,7 +38,7 @@ func (repo *EventRepositoryMongo) Read(sagaId uuid.UUID, action string) (*event_
 		"sagaId": sagaId,
 		"action": action,
 	}
-	var result event_sourcing.Event
+	var result Event
 
 	err := repo.events.FindOne(ctx, filter).Decode(&result)
 

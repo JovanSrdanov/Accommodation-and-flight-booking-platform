@@ -23,7 +23,9 @@ func (repo AccommodationRepositoryMongo) Create(accommodation *model.Accommodati
 	defer cancel()
 
 	collection := repo.getCollection()
-	accommodation.ID = primitive.NewObjectID()
+	if primitive.ObjectID.IsZero(accommodation.ID) {
+		accommodation.ID = primitive.NewObjectID()
+	}
 
 	_, err := collection.InsertOne(ctx, &accommodation)
 	if err != nil {

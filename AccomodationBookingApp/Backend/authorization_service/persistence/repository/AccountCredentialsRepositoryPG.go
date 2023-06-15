@@ -27,7 +27,9 @@ func (repo AccountCredentialsRepositoryPG) Create(accCred *model.AccountCredenti
 		return uuid.Nil, fmt.Errorf("username taken")
 	}
 
-	accCred.ID, _ = uuid.NewUUID()
+	if accCred.ID == uuid.Nil {
+		accCred.ID, _ = uuid.NewUUID()
+	}
 
 	result := repo.dbClient.Create(accCred)
 	if result.Error != nil {
