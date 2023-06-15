@@ -59,6 +59,10 @@ func (handler ReservationHandler) CreateReservation(ctx context.Context, in *res
 	if err != nil {
 		return nil, err
 	}
+	/*
+		ovde salji poruku
+	*/
+
 	return &reservation.CreateReservationRequest{}, nil
 }
 func (handler ReservationHandler) GetAllPendingReservations(ctx context.Context, in *reservation.EmptyRequest) (*reservation.GetAllPendingReservationsResponse, error) {
