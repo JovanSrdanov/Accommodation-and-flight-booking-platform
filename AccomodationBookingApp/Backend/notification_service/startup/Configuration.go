@@ -17,6 +17,12 @@ type Configuration struct {
 	AuthServicePort                       string
 	SendEventToNotificationServiceSubject string
 	SendNotificationToAPIGatewaySubject   string
+	NotificationEventDbName               string
+	NotificationEventDbPort               string
+	NotificationEventInnerDbName          string
+	NotificationEventDbCollectionName     string
+	DeleteUserCommandSubject              string
+	DeleteUserReplySubject                string
 }
 
 func NewConfiguration() *Configuration {
@@ -35,5 +41,11 @@ func NewConfiguration() *Configuration {
 		AuthServicePort:                       os.Getenv("AUTHORIZATION_SERVICE_PORT"),
 		SendEventToNotificationServiceSubject: os.Getenv("SEND_EVENT_TO_NOTIFICATION_SERVICE_SUBJECT"),
 		SendNotificationToAPIGatewaySubject:   os.Getenv("SEND_NOTIFICATION_TO_API_GATEWAY_SUBJECT"),
+		NotificationEventDbName:               os.Getenv("NOTIFICATION_EVENT_DB_NAME"),
+		NotificationEventDbPort:               os.Getenv("NOTIFICATION_EVENT_DB_PORT"),
+		NotificationEventInnerDbName:          os.Getenv("NOTIFICATION_EVENT_INNER_DB_NAME"),
+		NotificationEventDbCollectionName:     os.Getenv("NOTIFICATION_EVENT_DB_COLLECTION_NAME"),
+		DeleteUserCommandSubject:              os.Getenv("DELETE_USER_COMMAND_SUBJECT"),
+		DeleteUserReplySubject:                os.Getenv("DELETE_USER_REPLY_SUBJECT"),
 	}
 }

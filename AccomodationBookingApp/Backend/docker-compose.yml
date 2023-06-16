@@ -263,11 +263,6 @@ services:
       NATS_PASS: ${NATS_PASS}
       DELETE_USER_COMMAND_SUBJECT: ${DELETE_USER_COMMAND_SUBJECT}
       DELETE_USER_REPLY_SUBJECT: ${DELETE_USER_REPLY_SUBJECT}
-
-      RESERVATION_EVENT_DB_NAME: ${RESERVATION_EVENT_DB_NAME}
-      RESERVATION_EVENT_DB_PORT: ${RESERVATION_EVENT_DB_PORT}
-      RESERVATION_EVENT_INNER_DB_NAME: ${RESERVATION_EVENT_INNER_DB_NAME}
-      RESERVATION_EVENT_DB_COLLECTION_NAME: ${RESERVATION_EVENT_DB_COLLECTION_NAME}
     networks:
       - network
     depends_on:
@@ -309,6 +304,14 @@ services:
       SEND_NOTIFICATION_TO_API_GATEWAY_SUBJECT: ${SEND_NOTIFICATION_TO_API_GATEWAY_SUBJECT}
       SEND_EVENT_TO_NOTIFICATION_SERVICE_SUBJECT: ${SEND_EVENT_TO_NOTIFICATION_SERVICE_SUBJECT}
 
+      NOTIFICATION_EVENT_DB_NAME: ${NOTIFICATION_EVENT_DB_NAME}
+      NOTIFICATION_EVENT_DB_PORT: ${NOTIFICATION_EVENT_DB_PORT}
+      NOTIFICATION_EVENT_INNER_DB_NAME: ${NOTIFICATION_EVENT_INNER_DB_NAME}
+      NOTIFICATION_EVENT_DB_COLLECTION_NAME: ${NOTIFICATION_EVENT_DB_COLLECTION_NAME}
+
+      DELETE_USER_COMMAND_SUBJECT: ${DELETE_USER_COMMAND_SUBJECT}
+      DELETE_USER_REPLY_SUBJECT: ${DELETE_USER_REPLY_SUBJECT}
+
       NATS_HOST: ${NATS_HOST}
       NATS_PORT: ${NATS_PORT}
       NATS_USER: ${NATS_USER}
@@ -339,6 +342,21 @@ services:
       - network
     ports:
       - 5005:5432
+
+  notification_event_db:
+    image: mongo
+    container_name: notification_event_db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok'
+      interval: 20s
+      timeout: 10s
+      retries: 20
+      start_period: 10s 
+    networks:
+      - network
+    ports:
+      - 6005:27017
+
   rating_service:
     image: rating_service
     container_name: rating_service

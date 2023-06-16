@@ -21,12 +21,13 @@ const (
 	DeleteHostAccommodations
 	RollbackHostAccommodations
 
-	DeleteHostReservations
-	RollbackHostReservations
-
 	//Last in chain so don't need rollback
+	DeleteHostReservations
+
 	DeleteHostNotifications
 	DeleteGuestNotifications
+	RollbackHostNotifications
+	RollbackGuestNotifications
 
 	FinishDeletion
 	UnknownCommand
@@ -69,12 +70,13 @@ const (
 
 	DeletedHostReservations
 	HostReservationsDeletionFailed
-	RolledbackHostReservations
 
 	DeletedHostNotifications
 	DeletedGuestNotifications
 	HostNotificationsDeletionFailed
 	GuestNotificationsDeletionFailed
+	RolledbackHostNotifications
+	RolledbackGuestNotifications
 
 	UnknownReply
 )

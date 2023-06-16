@@ -19,16 +19,17 @@ func _() {
 	_ = x[DeleteHostAccommodations-8]
 	_ = x[RollbackHostAccommodations-9]
 	_ = x[DeleteHostReservations-10]
-	_ = x[RollbackHostReservations-11]
-	_ = x[DeleteHostNotifications-12]
-	_ = x[DeleteGuestNotifications-13]
-	_ = x[FinishDeletion-14]
-	_ = x[UnknownCommand-15]
+	_ = x[DeleteHostNotifications-11]
+	_ = x[DeleteGuestNotifications-12]
+	_ = x[RollbackHostNotifications-13]
+	_ = x[RollbackGuestNotifications-14]
+	_ = x[FinishDeletion-15]
+	_ = x[UnknownCommand-16]
 }
 
-const _DeleteUserCommandType_name = "DeleteGuestProfileDeleteHostProfileRollbackGuestProfileRollbackHostProfileDeleteGuestAccountCredentialsDeleteHostAccountCredentialsRollbackGuestAccountCredentialsRollbackHostAccountCredentialsDeleteHostAccommodationsRollbackHostAccommodationsDeleteHostReservationsRollbackHostReservationsDeleteHostNotificationsDeleteGuestNotificationsFinishDeletionUnknownCommand"
+const _DeleteUserCommandType_name = "DeleteGuestProfileDeleteHostProfileRollbackGuestProfileRollbackHostProfileDeleteGuestAccountCredentialsDeleteHostAccountCredentialsRollbackGuestAccountCredentialsRollbackHostAccountCredentialsDeleteHostAccommodationsRollbackHostAccommodationsDeleteHostReservationsDeleteHostNotificationsDeleteGuestNotificationsRollbackHostNotificationsRollbackGuestNotificationsFinishDeletionUnknownCommand"
 
-var _DeleteUserCommandType_index = [...]uint16{0, 18, 35, 55, 74, 103, 131, 162, 192, 216, 242, 264, 288, 311, 335, 349, 363}
+var _DeleteUserCommandType_index = [...]uint16{0, 18, 35, 55, 74, 103, 131, 162, 192, 216, 242, 264, 287, 311, 336, 362, 376, 390}
 
 func (i DeleteUserCommandType) String() string {
 	if i < 0 || i >= DeleteUserCommandType(len(_DeleteUserCommandType_index)-1) {

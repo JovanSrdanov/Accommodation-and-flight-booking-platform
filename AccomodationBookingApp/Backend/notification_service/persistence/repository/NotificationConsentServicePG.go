@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"notification_service/domain/model"
@@ -11,10 +12,16 @@ type NotificationConsentRepositoryPG struct {
 }
 
 func (repo NotificationConsentRepositoryPG) Delete(id uuid.UUID) error {
-	result := repo.dbClient.Delete(&model.NotificationConsent{}, "user_profile_id = ?", id)
+	result := repo.dbClient.Where("user_profile_id = ?", id).Delete(&model.NotificationConsent{})
+
 	if result.Error != nil {
 		return result.Error
 	}
+
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("notification consent with given user profile id not found")
+	}
+
 	return nil
 }
 

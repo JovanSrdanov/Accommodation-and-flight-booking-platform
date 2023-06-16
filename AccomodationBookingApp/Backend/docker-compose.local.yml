@@ -87,9 +87,9 @@ services:
     networks:
       - network
 
-  accomodation_event_db:
+  accommodation_event_db:
     image: mongo
-    container_name: accomodation_event_db
+    container_name: accommodation_event_db
     healthcheck:
       test: echo 'db.runCommand("ping").ok'
       interval: 10s
@@ -115,18 +115,40 @@ services:
     networks:
       - network
 
-  reservation_event_db:
-    image: mongo
-    container_name: reservation_event_db
+  notification_db:
+    image: notification_db
+    container_name: notification_db
+    restart: on-failure
+    build:
+      context: ../Database/Notification
+      dockerfile: Dockerfile
+    environment:
+      PGUSER: ${NOTIFICATION_DB_USER}
+      POSTGRES_PASSWORD: ${NOTIFICATION_DB_PASS}
+      POSTGRES_DB: ${NOTIFICATION_DB_NAME}
     healthcheck:
-      test: echo 'db.runCommand("ping").ok'
+      test: [ "CMD-SHELL", "pg_isready" ]
       interval: 10s
-      timeout: 10s
-      retries: 10
+      timeout: 5s
+      retries: 5
     networks:
       - network
     ports:
-      - 6004:27017
+      - 5005:5432
+
+  notification_event_db:
+    image: mongo
+    container_name: notification_event_db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok'
+      interval: 20s
+      timeout: 10s
+      retries: 20
+      start_period: 10s 
+    networks:
+      - network
+    ports:
+      - 6005:27017
 
   nats:
     image: nats

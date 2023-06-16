@@ -116,29 +116,22 @@ func (orchestrator *DeleteUserOrchestrator) nextCommandType(reply events.DeleteU
 	//DELETION PATH
 	case events.DeletedGuestProfile:
 		return events.DeleteGuestAccountCredentials
-
-	//case events.DeletedGuestAccountCredentials:
-	//	return events.DeleteGuestNotifications
 	case events.DeletedGuestAccountCredentials:
-		return events.FinishDeletion
-
+		return events.DeleteGuestNotifications
 	case events.DeletedGuestNotifications:
 		return events.FinishDeletion
 
 	case events.DeletedHostProfile:
 		return events.DeleteHostAccountCredentials
 	case events.DeletedHostAccountCredentials:
+		return events.DeleteHostNotifications
+	case events.DeletedHostNotifications:
 		return events.DeleteHostAccommodations
 	case events.DeletedHostAccommodations:
 		return events.DeleteHostReservations
-
-	//case events.DeletedHostReservations:
-	//	return events.DeleteHostNotifications
 	case events.DeletedHostReservations:
 		return events.FinishDeletion
 
-	case events.DeletedHostNotifications:
-		return events.FinishDeletion
 	// FAIL PATH
 
 	case events.GuestProfileDeletionFailed:
@@ -151,14 +144,15 @@ func (orchestrator *DeleteUserOrchestrator) nextCommandType(reply events.DeleteU
 	case events.HostAccountCredentialsDeletionFailed:
 		return events.RollbackHostProfile
 
-	case events.HostAccommodationsDeletionFailed:
+	case events.HostNotificationsDeletionFailed:
 		return events.RollbackHostAccountCredentials
+
+	case events.HostAccommodationsDeletionFailed:
+		return events.RollbackHostNotifications
 
 	case events.HostReservationsDeletionFailed:
 		return events.RollbackHostAccommodations
 
-	case events.HostNotificationsDeletionFailed:
-		return events.RollbackHostReservations
 	case events.GuestNotificationsDeletionFailed:
 		return events.RollbackGuestAccountCredentials
 
@@ -173,11 +167,13 @@ func (orchestrator *DeleteUserOrchestrator) nextCommandType(reply events.DeleteU
 	case events.RolledbackHostAccountCredentials:
 		return events.RollbackHostProfile
 
-	case events.RolledbackHostAccommodations:
+	case events.RolledbackHostNotifications:
 		return events.RollbackHostAccountCredentials
+	case events.RolledbackGuestNotifications:
+		return events.RollbackGuestAccountCredentials
 
-	case events.RolledbackHostReservations:
-		return events.RollbackHostAccommodations
+	case events.RolledbackHostAccommodations:
+		return events.RollbackHostNotifications
 
 	default:
 		return events.UnknownCommand

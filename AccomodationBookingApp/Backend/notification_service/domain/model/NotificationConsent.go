@@ -3,6 +3,7 @@ package model
 import "github.com/google/uuid"
 
 type NotificationConsent struct {
+	//Ovo je ustv accountCredId
 	UserProfileID            uuid.UUID `json:"userProfileID"  gorm:"primaryKey"`
 	RequestMade              bool      `json:"requestMade"`
 	ReservationCanceled      bool      `json:"ReservationCanceled"`
