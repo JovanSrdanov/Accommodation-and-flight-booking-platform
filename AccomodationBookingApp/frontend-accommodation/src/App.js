@@ -56,7 +56,7 @@ function App() {
 
         if (websocketOpen) {
             return
-         
+
         }
         setWebsocketOpen(true);
 
@@ -229,9 +229,10 @@ function App() {
                 onClose={() => setNotificationSnackBar(false)}
                 message={message}
             >
-                <Alert onClose={handleClose} severity="success" sx={{width: '100%'}}>
+                <Alert onClose={handleClose} severity="info">
                     {message}
                 </Alert>
+
             </Snackbar>
 
             <Dialog open={open} onClose={handleClose}>

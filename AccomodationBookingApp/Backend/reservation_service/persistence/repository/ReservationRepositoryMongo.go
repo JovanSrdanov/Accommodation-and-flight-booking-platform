@@ -248,6 +248,20 @@ func (repo ReservationRepositoryMongo) CreateReservation(reservation *model.Rese
 		log.Println(err)
 		return &model.Reservation{}, err
 	}
+	if availability.IsAutomaticReservation {
+		accountID, err := uuid.Parse(reservation.GuestId)
+		if err != nil {
+			log.Fatal(err)
+			return &model.Reservation{}, err
+		}
+
+		message := NotificationMessaging.NotificationMessage{
+			MessageType:            "HostResponded",
+			MessageForNotification: "The host has accepted your reservation request automatically",
+			AccountID:              accountID,
+		}
+		repo.publisher.Publish(message)
+	}
 
 	return reservation, nil
 }
@@ -593,6 +607,19 @@ func (repo ReservationRepositoryMongo) AcceptReservation(id primitive.ObjectID) 
 		}
 		if reservationValue.ID != reservation.ID && reservationValue.Status == "pending" && reservationValue.DateRange.Overlaps(reservation.DateRange) {
 			pendingIds = append(pendingIds, reservationValue.ID)
+			accountID, err := uuid.Parse(reservationValue.GuestId)
+			if err != nil {
+				log.Fatal(err)
+				return primitive.ObjectID{}, err
+			}
+
+			message := NotificationMessaging.NotificationMessage{
+				MessageType:            "HostResponded",
+				MessageForNotification: "Your reservation request has been rejected",
+				AccountID:              accountID,
+			}
+			repo.publisher.Publish(message)
+
 		}
 	}
 
@@ -624,7 +651,7 @@ func (repo ReservationRepositoryMongo) AcceptReservation(id primitive.ObjectID) 
 		return primitive.ObjectID{}, err
 	}
 
-	// Find the reservation u want to change
+	/////////////////////
 
 	accountID, err := uuid.Parse(reservation.GuestId)
 	if err != nil {
@@ -633,8 +660,8 @@ func (repo ReservationRepositoryMongo) AcceptReservation(id primitive.ObjectID) 
 	}
 
 	message := NotificationMessaging.NotificationMessage{
-		MessageType:            "RequestMade",
-		MessageForNotification: "Reservation accepted",
+		MessageType:            "HostResponded",
+		MessageForNotification: "The host has accepted your reservation request",
 		AccountID:              accountID,
 	}
 	repo.publisher.Publish(message)
@@ -663,6 +690,25 @@ func (repo ReservationRepositoryMongo) RejectReservation(id primitive.ObjectID) 
 	if result.MatchedCount == 0 {
 		return primitive.ObjectID{}, status.Errorf(codes.Unimplemented, "Not updated")
 	}
+
+	var reservation model.Reservation
+	err = collection.FindOne(ctx, filter).Decode(&reservation)
+	if err != nil {
+		log.Fatal(err)
+		return primitive.ObjectID{}, err
+	}
+	accountID, err := uuid.Parse(reservation.GuestId)
+	if err != nil {
+		log.Fatal(err)
+		return primitive.ObjectID{}, err
+	}
+
+	message := NotificationMessaging.NotificationMessage{
+		MessageType:            "HostResponded",
+		MessageForNotification: "Your reservation request has been rejected",
+		AccountID:              accountID,
+	}
+	repo.publisher.Publish(message)
 
 	return id, nil
 }
