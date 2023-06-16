@@ -48,7 +48,7 @@ services:
     networks:
       - network
     ports:
-      - 5000:27017
+      - 5010:27017
 
   #MongoDB seeding container
   mongo-seed:

@@ -353,7 +353,7 @@ func (controller *AccountController) CreateApiKey(ctx *gin.Context) {
 		return
 	}
 
-	if keyDto.ExpirationDate.Before(time.Now()) {
+	if keyDto.ExpirationDate.Before(time.Now()) && !keyDto.ExpirationDate.IsZero() {
 		ctx.JSON(http.StatusBadRequest, dto.NewSimpleResponse("Expiration date must be in future"))
 		return
 

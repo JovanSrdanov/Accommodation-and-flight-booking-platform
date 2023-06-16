@@ -12,5 +12,8 @@ type ApiKey struct {
 }
 
 func (key *ApiKey) IsValid() bool {
+	if key.ExpirationDate.IsZero() {
+		return true
+	}
 	return key.ExpirationDate.After(time.Now())
 }

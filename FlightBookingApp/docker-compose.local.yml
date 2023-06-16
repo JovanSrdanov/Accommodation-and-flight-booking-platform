@@ -17,7 +17,7 @@ services:
     volumes:
     - flightsAppDB:/data/db
     ports:
-    - 5000:27017
+    - 5010:27017
     networks:
       - network
 
