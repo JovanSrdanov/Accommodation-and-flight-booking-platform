@@ -13,6 +13,7 @@ import (
 	"log"
 	"net"
 	"reservation_service/communication/handler"
+	"reservation_service/communication/middleware"
 	"reservation_service/domain/service"
 	"reservation_service/persistence/repository"
 )
@@ -72,7 +73,7 @@ func (server *Server) startGrpcServer(reservationHandler *handler.ReservationHan
 	authInterceptor := interceptor.NewAuthServerInterceptor(tokenMaker, protectedMethodsWithAllowedRoles)
 
 	grpcServer := grpc.NewServer(
-		grpc.UnaryInterceptor(authInterceptor.Unary()),
+		grpc.ChainUnaryInterceptor(middleware.NewGRPUnaryServerInterceptor(), authInterceptor.Unary()),
 		grpc.StreamInterceptor(authInterceptor.Stream()),
 	)
 	reservation.RegisterReservationServiceServer(grpcServer, reservationHandler)

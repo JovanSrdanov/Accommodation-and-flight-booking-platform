@@ -6,6 +6,7 @@ import (
 	"common/saga/messaging/nats"
 	"context"
 	"fmt"
+	ginprometheus "github.com/zsais/go-gin-prometheus"
 	"log"
 	"net/http"
 
@@ -14,6 +15,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
@@ -45,6 +47,12 @@ func NewServer(config *Configuration) *Server {
 		config: config,
 		server: gin.Default(),
 	}
+
+	// OpenTelemetry
+	server.server.Use(otelgin.Middleware("api-gateway"))
+
+	prom := ginprometheus.NewPrometheus("gin")
+	prom.Use(server.server)
 
 	server.server.Use(middleware.AuthTokenParser())
 
@@ -131,7 +139,8 @@ func (server *Server) handleWebSocket(c *gin.Context) {
 }
 
 func (server *Server) initGrpcHandlers(mux *runtime.ServeMux) {
-	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
+	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithUnaryInterceptor(middleware.NewGRPUnaryClientInterceptor())}
 
 	authorizationEndpoint := fmt.Sprintf("%s:%s", server.config.AuthorizationHost, server.config.AuthorizationPort)
 	err := authorization.RegisterAuthorizationServiceHandlerFromEndpoint(context.TODO(), mux, authorizationEndpoint, opts)

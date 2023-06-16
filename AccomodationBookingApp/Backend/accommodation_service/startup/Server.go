@@ -2,6 +2,7 @@ package startup
 
 import (
 	"accommodation_service/communication/handler"
+	"accommodation_service/communication/middleware"
 	"accommodation_service/domain/service"
 	"accommodation_service/persistence/repository"
 	"authorization_service/domain/model"
@@ -92,7 +93,7 @@ func (server *Server) startGrpcServer(userProfileHandler *handler.AccommodationH
 	authInterceptor := interceptor.NewAuthServerInterceptor(tokenMaker, protectedMethodsWithAllowedRoles)
 
 	grpcServer := grpc.NewServer(
-		grpc.UnaryInterceptor(authInterceptor.Unary()),
+		grpc.ChainUnaryInterceptor(middleware.NewGRPUnaryServerInterceptor(), authInterceptor.Unary()),
 		grpc.StreamInterceptor(authInterceptor.Stream()),
 	)
 	accommodation.RegisterAccommodationServiceServer(grpcServer, userProfileHandler)
