@@ -5,12 +5,12 @@ import (
 	"authorization_service/domain/repository"
 	"authorization_service/domain/token"
 	"fmt"
+	"time"
+
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"log"
-	"time"
 )
 
 type AccountCredentialsService struct {
@@ -90,9 +90,6 @@ func (service AccountCredentialsService) ChangeUsername(userId uuid.UUID, userna
 	}
 
 	accCred, err := service.GetByUsername(username)
-	log.Println("new username: ", username)
-	log.Println("found acc: ", accCred)
-	log.Println("err: ", err)
 	if err == nil {
 		return fmt.Errorf("username already exists")
 	}

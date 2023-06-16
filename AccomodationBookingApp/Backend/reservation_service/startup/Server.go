@@ -8,13 +8,14 @@ import (
 	"common/saga/messaging"
 	"common/saga/messaging/nats"
 	"fmt"
-	"go.mongodb.org/mongo-driver/mongo"
-	"google.golang.org/grpc"
 	"log"
 	"net"
 	"reservation_service/communication/handler"
 	"reservation_service/domain/service"
 	"reservation_service/persistence/repository"
+
+	"go.mongodb.org/mongo-driver/mongo"
+	"google.golang.org/grpc"
 )
 
 const (

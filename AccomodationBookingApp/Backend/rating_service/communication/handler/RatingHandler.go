@@ -3,15 +3,15 @@ package handler
 import (
 	rating "common/proto/rating_service/generated"
 	"context"
-	"github.com/google/uuid"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"rating_service/domain/model"
 	"rating_service/domain/service"
 	"time"
+
+	"github.com/google/uuid"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type RatingHandler struct {
@@ -93,7 +93,6 @@ func (handler RatingHandler) RateHost(ctx context.Context, in *rating.RateHostRe
 
 	if oldProminenet != newProminent {
 		//TODO Jovan+Strahinja: Ovde da se objavi poruka u message queue (kad ovo proradi onda cu dodati i kad mu neko otkaze rezervaciju)
-		log.Println("Promenulo se alo")
 	}
 
 	return &rating.EmptyResponse{}, nil

@@ -3,8 +3,9 @@ package middleware
 import (
 	"authorization_service/domain/model"
 	"authorization_service/domain/token"
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 func ValidateToken(tokenMaker token.Maker) gin.HandlerFunc {
@@ -34,7 +35,6 @@ func ValidateToken(tokenMaker token.Maker) gin.HandlerFunc {
 		//	return
 		//}
 		//
-		//log.Println("footer data: ", footerData)
 		//
 		//providedRole := int8(footerData["Role"].(float64))
 		providedRole := tokenPayload.Role

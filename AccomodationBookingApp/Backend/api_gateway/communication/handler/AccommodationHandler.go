@@ -12,13 +12,13 @@ import (
 	reservation "common/proto/reservation_service/generated"
 	user_profile "common/proto/user_profile_service/generated"
 	"context"
+	"io/ioutil"
+	"net/http"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"io/ioutil"
-	"log"
-	"net/http"
-	"time"
 )
 
 type AccommodationHandler struct {
@@ -79,8 +79,6 @@ func (handler AccommodationHandler) SearchAccommodation(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, communication.NewErrorResponse(err.Error()))
 		return
 	}
-
-	log.Println(firstRoundDto)
 
 	secondRound, err := handler.FindReservations(searchDto, firstRoundDto)
 	if err != nil {
@@ -378,8 +376,6 @@ func (handler AccommodationHandler) IsHostProminent(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
-	log.Println(ratingProto.Rating)
 
 	if ratingProto.Rating.AvgRating <= 4.7 {
 		ctx.JSON(http.StatusOK, false)

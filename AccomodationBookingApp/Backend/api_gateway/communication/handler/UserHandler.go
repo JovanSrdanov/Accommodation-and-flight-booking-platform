@@ -11,11 +11,11 @@ import (
 	user_profile "common/proto/user_profile_service/generated"
 	"context"
 	"fmt"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"google.golang.org/grpc/metadata"
-	"log"
-	"net/http"
 )
 
 type UserHandler struct {
@@ -57,8 +57,6 @@ func (handler UserHandler) GetUserInfo(ctx *gin.Context) {
 		return
 	}
 
-	log.Println("username for get all: ", username)
-	log.Println("GIN KONTEEEEEEEKS: ", ctx.GetHeader("Authorization"))
 	ctxGrpc := createGrpcContextFromGinContext(ctx)
 
 	var userInfo dto.UserInfo
@@ -76,8 +74,6 @@ func (handler UserHandler) addAccountCredentialsInfo(userInfo *dto.UserInfo, use
 	authorizationClient := communication.NewAuthorizationClient(handler.authorizationServiceAddress)
 
 	accountCredentialsInfo, err := authorizationClient.GetByUsername(ctx, &authorization.GetByUsernameRequest{Username: username})
-	log.Println("accCredInfo from authClient GetByUsername: ", accountCredentialsInfo)
-	log.Println("ERRRRRRRRRRRRRRROR: ", err)
 
 	if err != nil {
 		return err
@@ -91,10 +87,8 @@ func (handler UserHandler) addAccountCredentialsInfo(userInfo *dto.UserInfo, use
 
 func (handler UserHandler) addUserProfileInfo(userInfo *dto.UserInfo, ctx context.Context) error {
 	userProfileClient := communication.NewUserProfileClient(handler.userProfileServiceAddress)
-	log.Println("userInfoId for userProfileInfo: ", userInfo.UserProfileID.String())
 
 	userProfileInfo, err := userProfileClient.GetById(ctx, &user_profile.GetByIdRequest{Id: userInfo.UserProfileID.String()})
-	log.Println("userProfileInfo from userProfileClient GetById: ", userProfileInfo)
 
 	if err != nil {
 		return err

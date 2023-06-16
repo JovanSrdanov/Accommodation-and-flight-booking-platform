@@ -4,15 +4,16 @@ import (
 	"common/NotificationMessaging"
 	"common/saga/messaging"
 	"context"
+	"log"
+	"reservation_service/domain/model"
+	"time"
+
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"log"
-	"reservation_service/domain/model"
-	"time"
 )
 
 type ReservationRepositoryMongo struct {
@@ -55,7 +56,6 @@ func (repo ReservationRepositoryMongo) CreateAvailability(newAvailability *model
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println(res)
 	return primitive.ObjectID{}, nil
 }
 
@@ -117,23 +117,20 @@ func (repo ReservationRepositoryMongo) SearchAccommodation(accommodationIds []*p
 
 		cursor, err := collectionReservations.Find(ctx, filter)
 		if err != nil {
-			log.Println(err)
+
 			return []*model.SearchResponseDto{}, err
 		}
 
 		var reservations []*model.Reservation
 		err = cursor.All(ctx, &reservations)
 		if err != nil {
-			log.Println(err)
+
 			return []*model.SearchResponseDto{}, err
 		}
 
 		gas := false
 
 		for _, reservationValue := range reservations {
-			log.Println(reservationValue.Status)
-			log.Println(dateRange.From.String() + " " + dateRange.To.String())
-			log.Println(reservationValue.DateRange.From.String() + " " + reservationValue.DateRange.To.String())
 
 			if reservationValue.Status == "accepted" && reservationValue.DateRange.Overlaps(dateRange) {
 				//return []*model.SearchResponseDto{}, status.Errorf(codes.Aborted, "Not available date, overlaps*")
@@ -213,14 +210,12 @@ func (repo ReservationRepositoryMongo) CreateReservation(reservation *model.Rese
 
 	cursor, err := collectionReservations.Find(ctx, filter)
 	if err != nil {
-		log.Println(err)
 		return &model.Reservation{}, err
 	}
 
 	var reservations []*model.Reservation
 	err = cursor.All(ctx, &reservations)
 	if err != nil {
-		log.Println(err)
 		return &model.Reservation{}, err
 	}
 
@@ -245,7 +240,6 @@ func (repo ReservationRepositoryMongo) CreateReservation(reservation *model.Rese
 
 	_, err = collectionReservations.InsertOne(ctx, &reservation)
 	if err != nil {
-		log.Println(err)
 		return &model.Reservation{}, err
 	}
 	if availability.IsAutomaticReservation {
@@ -325,14 +319,12 @@ func (repo ReservationRepositoryMongo) UpdatePriceAndDate(priceWithDate *model.U
 	filter2 := bson.D{{"accommodationId", priceWithDate.AccommodationId}}
 	cursor, err := collectionReservations.Find(ctx, filter2)
 	if err != nil {
-		log.Println(err)
 		return &model.UpdatePriceAndDate{}, err
 	}
 
 	var reservations []*model.Reservation
 	err = cursor.All(ctx, &reservations)
 	if err != nil {
-		log.Println(err)
 		return &model.UpdatePriceAndDate{}, err
 	}
 
@@ -375,14 +367,12 @@ func (repo ReservationRepositoryMongo) GetAllMy(hostId string) (model.Availabili
 
 	cursor, err := collection.Find(ctx, filter)
 	if err != nil {
-		log.Println(err)
 		return model.Availabilities{}, err
 	}
 
 	var availabilities model.Availabilities
 	err = cursor.All(ctx, &availabilities)
 	if err != nil {
-		log.Println(err)
 		return model.Availabilities{}, err
 	}
 	return availabilities, nil
@@ -392,7 +382,6 @@ func (repo ReservationRepositoryMongo) GetAllAcceptedReservations(hostId string)
 	//Dobavi sve dostpunosti i iz njih izvuci sve accommodationId gde je hostId prosledjenji
 	availabilities, err := repo.GetAllMy(hostId)
 	if err != nil {
-		log.Println(err)
 		return model.Reservations{}, err
 	}
 
@@ -414,14 +403,12 @@ func (repo ReservationRepositoryMongo) GetAllAcceptedReservations(hostId string)
 
 	cursor, err := collection.Find(ctx, filter)
 	if err != nil {
-		log.Println(err)
 		return model.Reservations{}, err
 	}
 
 	var reservations model.Reservations
 	err = cursor.All(ctx, &reservations)
 	if err != nil {
-		log.Println(err)
 		return model.Reservations{}, err
 	}
 
@@ -432,7 +419,6 @@ func (repo ReservationRepositoryMongo) GetAllPendingReservations(hostId string) 
 	//Dobavi sve dostpunosti i iz njih izvuci sve accommodationId gde je hostId prosledjenji
 	availabilities, err := repo.GetAllMy(hostId)
 	if err != nil {
-		log.Println(err)
 		return model.Reservations{}, []int32{}, err
 	}
 
@@ -454,14 +440,12 @@ func (repo ReservationRepositoryMongo) GetAllPendingReservations(hostId string) 
 
 	cursor, err := collection.Find(ctx, filter)
 	if err != nil {
-		log.Println(err)
 		return model.Reservations{}, []int32{}, err
 	}
 
 	var reservations model.Reservations
 	err = cursor.All(ctx, &reservations)
 	if err != nil {
-		log.Println(err)
 		return model.Reservations{}, []int32{}, err
 	}
 
@@ -494,14 +478,12 @@ func (repo ReservationRepositoryMongo) GetAllReservationsForGuest(guestId string
 
 	cursor, err := collection.Find(ctx, filter)
 	if err != nil {
-		log.Println(err)
 		return model.Reservations{}, err
 	}
 
 	var reservations model.Reservations
 	err = cursor.All(ctx, &reservations)
 	if err != nil {
-		log.Println(err)
 		return model.Reservations{}, err
 	}
 
@@ -519,7 +501,6 @@ func (repo ReservationRepositoryMongo) CreateAvailabilityBase(base *model.Availa
 
 	result, err := collection.InsertOne(ctx, &base)
 	if err != nil {
-		log.Println(err)
 		return primitive.ObjectID{}, err
 	}
 
@@ -588,14 +569,12 @@ func (repo ReservationRepositoryMongo) AcceptReservation(id primitive.ObjectID) 
 	filter = bson.D{{"accommodationId", reservation.AccommodationId}}
 	cursor, err := collectionReservations.Find(ctx, filter)
 	if err != nil {
-		log.Println(err)
 		return primitive.ObjectID{}, err
 	}
 
 	var reservations []*model.Reservation
 	err = cursor.All(ctx, &reservations)
 	if err != nil {
-		log.Println(err)
 		return primitive.ObjectID{}, err
 	}
 
@@ -788,7 +767,7 @@ func (repo ReservationRepositoryMongo) GetAllReservationsForHost(hostId string) 
 	//Dobavi sve dostpunosti i iz njih izvuci sve accommodationId gde je hostId prosledjenji
 	availabilities, err := repo.GetAllMy(hostId)
 	if err != nil {
-		log.Println(err)
+
 		return model.Reservations{}, err
 	}
 
@@ -809,14 +788,14 @@ func (repo ReservationRepositoryMongo) GetAllReservationsForHost(hostId string) 
 
 	cursor, err := collection.Find(ctx, filter)
 	if err != nil {
-		log.Println(err)
+
 		return model.Reservations{}, err
 	}
 
 	var reservations model.Reservations
 	err = cursor.All(ctx, &reservations)
 	if err != nil {
-		log.Println(err)
+
 		return model.Reservations{}, err
 	}
 
@@ -836,14 +815,14 @@ func (repo ReservationRepositoryMongo) GetAllRatableAccommodationsForGuest(guest
 
 	cursor, err := collection.Find(ctx, filter)
 	if err != nil {
-		log.Println(err)
+
 		return nil, err
 	}
 
 	var reservations model.Reservations
 	err = cursor.All(ctx, &reservations)
 	if err != nil {
-		log.Println(err)
+
 		return nil, err
 	}
 
@@ -883,14 +862,14 @@ func (repo ReservationRepositoryMongo) GetAllRatableHostsForGuest(guestId string
 
 	cursor, err := collection.Find(ctx, filter)
 	if err != nil {
-		log.Println(err)
+
 		return nil, err
 	}
 
 	var availabilities model.Availabilities
 	err = cursor.All(ctx, &availabilities)
 	if err != nil {
-		log.Println(err)
+
 		return nil, err
 	}
 
