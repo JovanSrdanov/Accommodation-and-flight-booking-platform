@@ -8,10 +8,12 @@ import (
 	"authorization_service/domain/token"
 	"authorization_service/interceptor"
 	"authorization_service/persistence/repository"
+	"common/event_sourcing"
 	authorization "common/proto/authorization_service/generated"
 	"common/saga/messaging"
 	"common/saga/messaging/nats"
 	"fmt"
+	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc"
 	"gorm.io/gorm"
 	"log"
@@ -45,13 +47,34 @@ func (server *Server) Start() {
 
 	commandSubscriber := server.initDeleteSubscriber(server.config.DeleteUserCommandSubject, QueueGroup)
 	replyPublisher := server.initDeletePublisher(server.config.DeleteUserReplySubject)
-	server.initDeleteHandler(accountCredentialsService, replyPublisher, commandSubscriber)
+
+	mongoClient := server.initMongoClient()
+	eventRepo := server.initEventRepo(mongoClient)
+	eventService := event_sourcing.NewEventService(eventRepo)
+
+	server.initDeleteHandler(accountCredentialsService, replyPublisher, commandSubscriber, eventService)
 
 	server.startGrpcServer(accountCredentialsHandler, tokenMaker)
 }
 
+func (server *Server) initMongoClient() *mongo.Client {
+	client, err := repository.GetMongoClient(server.config.AuthorizationEventDbName, server.config.AuthorizationEventDbPort)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return client
+}
+
+func (server *Server) initEventRepo(client *mongo.Client) *event_sourcing.EventRepositoryMongo {
+	repo, err := event_sourcing.NewEventRepositoryMongo(client, server.config.AuthorizationEventInnerDbName, server.config.AuthorizationEventDbCollectionName)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return repo
+}
+
 func (server *Server) initPostgresClient() *gorm.DB {
-	client, err := repository.GetClient(
+	client, err := repository.GetPostgresClient(
 		server.config.DBHost, server.config.DBUser,
 		server.config.DBPass, server.config.DBName,
 		server.config.DBPort)
@@ -89,8 +112,8 @@ func (server *Server) initDeletePublisher(subject string) messaging.Publisher {
 	return publisher
 }
 
-func (server *Server) initDeleteHandler(service *service.AccountCredentialsService, publisher messaging.Publisher, subscriber messaging.Subscriber) {
-	_, err := handler.NewDeleteAccountCredentialsHandler(service, publisher, subscriber)
+func (server *Server) initDeleteHandler(service *service.AccountCredentialsService, publisher messaging.Publisher, subscriber messaging.Subscriber, eventService *event_sourcing.EventService) {
+	_, err := handler.NewDeleteAccountCredentialsHandler(service, publisher, subscriber, eventService)
 	if err != nil {
 		log.Fatal(err)
 	}

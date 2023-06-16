@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+option go_package = "common/notification";
+import "google/api/annotations.proto";
+
+package notification;
+
+service NotificationService{
+  rpc Create(CreateRequest) returns(CreateResponse) {
+  }
+
+  rpc UpdateMyNotificationConsent(UpdateMyNotificationConsentRequest) returns(UpdateMyNotificationConsentResponse) {
+    option (google.api.http) = {
+      put: "/api-1/notification/update-my",
+      body: "*"
+    };
+  }
+
+  rpc GetMyNotificationSettings(EmptyRequest) returns(GetMyNotificationSettingsResponse) {
+    option (google.api.http) = {
+      get: "/api-1/notification/get-my",
+    };
+  }
+}
+
+message GetMyRequest {
+  string userProfileId = 1;
+}
+
+message GetMyNotificationSettingsResponse {
+  bool RequestMade =1;
+  bool ReservationCanceled=2;
+  bool HostRatingGiven=3;
+  bool AccommodationRatingGiven=4;
+  bool ProminentHost=5;
+  bool HostResponded=6;
+}
+
+
+message UpdateMyNotificationConsentRequest {
+  bool RequestMade =1;
+  bool ReservationCanceled=2;
+  bool HostRatingGiven=3;
+  bool AccommodationRatingGiven=4;
+  bool ProminentHost=5;
+  bool HostResponded=6;
+}
+
+message UpdateMyNotificationConsentResponse{
+  string message =1;
+}
+
+
+message EmptyRequest {}
+
+message CreateRequest {
+    string UserProfileID =1;
+    bool RequestMade =2;
+    bool ReservationCanceled=3;
+    bool HostRatingGiven=4;
+    bool AccommodationRatingGiven=5;
+    bool ProminentHost=6;
+    bool HostResponded=7;
+}
+
+message CreateResponse{}

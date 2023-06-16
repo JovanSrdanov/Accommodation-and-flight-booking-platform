@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"common/NotificationMessaging"
+	"common/saga/messaging"
 	"context"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
@@ -14,11 +16,15 @@ import (
 )
 
 type ReservationRepositoryMongo struct {
-	dbClient *mongo.Client
+	dbClient  *mongo.Client
+	publisher messaging.Publisher
 }
 
-func NewReservationRepositoryMongo(dbClient *mongo.Client) (*ReservationRepositoryMongo, error) {
-	return &ReservationRepositoryMongo{dbClient: dbClient}, nil
+func NewReservationRepositoryMongo(dbClient *mongo.Client, publisher messaging.Publisher) (*ReservationRepositoryMongo, error) {
+	return &ReservationRepositoryMongo{
+		dbClient:  dbClient,
+		publisher: publisher,
+	}, nil
 }
 
 func (repo ReservationRepositoryMongo) CreateAvailability(newAvailability *model.AvailabilityRequest) (primitive.ObjectID, error) {
@@ -618,6 +624,20 @@ func (repo ReservationRepositoryMongo) AcceptReservation(id primitive.ObjectID) 
 		return primitive.ObjectID{}, err
 	}
 
+	// Find the reservation u want to change
+
+	accountID, err := uuid.Parse(reservation.GuestId)
+	if err != nil {
+		log.Fatal(err)
+		return primitive.ObjectID{}, err
+	}
+
+	message := NotificationMessaging.NotificationMessage{
+		MessageType:            "RequestMade",
+		MessageForNotification: "Reservation accepted",
+		AccountID:              accountID,
+	}
+	repo.publisher.Publish(message)
 	return reservation.ID, nil
 }
 
@@ -716,4 +736,122 @@ func (repo ReservationRepositoryMongo) DeleteAvailabilitiesAndReservationsByAcco
 	}
 
 	return nil
+}
+
+func (repo ReservationRepositoryMongo) GetAllReservationsForHost(hostId string) (model.Reservations, error) {
+	//Dobavi sve dostpunosti i iz njih izvuci sve accommodationId gde je hostId prosledjenji
+	availabilities, err := repo.GetAllMy(hostId)
+	if err != nil {
+		log.Println(err)
+		return model.Reservations{}, err
+	}
+
+	accommodationIds := make([]primitive.ObjectID, 0)
+
+	for _, availability := range availabilities {
+		accommodationIds = append(accommodationIds, availability.AccommodationId)
+	}
+
+	//Sad dobavi sve rezervacije koje imaju ovaj accId
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	collection := repo.getCollectionReservation()
+
+	filter := bson.M{
+		"accommodationId": bson.M{"$in": accommodationIds}}
+
+	cursor, err := collection.Find(ctx, filter)
+	if err != nil {
+		log.Println(err)
+		return model.Reservations{}, err
+	}
+
+	var reservations model.Reservations
+	err = cursor.All(ctx, &reservations)
+	if err != nil {
+		log.Println(err)
+		return model.Reservations{}, err
+	}
+
+	return reservations, nil
+}
+
+func (repo ReservationRepositoryMongo) GetAllRatableAccommodationsForGuest(guestId string) ([]string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	collection := repo.getCollectionReservation()
+
+	filter := bson.M{
+		"guestId": guestId,
+		"status":  "accepted",
+	}
+
+	cursor, err := collection.Find(ctx, filter)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	var reservations model.Reservations
+	err = cursor.All(ctx, &reservations)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	resp := make([]string, 0)
+	for _, val := range reservations {
+		vreme := time.Now()
+		vreme = vreme.In(time.UTC)
+
+		vreme = time.Date(vreme.Year(), vreme.Month(), vreme.Day(), 0, 0, 0, 0, vreme.Location())
+		if val.DateRange.To.Before(vreme) {
+			resp = append(resp, val.AccommodationId.Hex())
+		}
+	}
+
+	return resp, nil
+}
+
+func (repo ReservationRepositoryMongo) GetAllRatableHostsForGuest(guestId string) ([]string, error) {
+	accommodationIds, err := repo.GetAllRatableAccommodationsForGuest(guestId)
+	if err != nil {
+		return nil, err
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	collection := repo.getCollectionAvailability()
+
+	accommodationOids := make([]primitive.ObjectID, 0)
+	for _, val := range accommodationIds {
+		oid, _ := primitive.ObjectIDFromHex(val)
+		accommodationOids = append(accommodationOids, oid)
+	}
+
+	filter := bson.M{
+		"accommodationId": bson.M{"$in": accommodationOids}}
+
+	cursor, err := collection.Find(ctx, filter)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	var availabilities model.Availabilities
+	err = cursor.All(ctx, &availabilities)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	hostIds := make([]string, 0)
+	for _, val := range availabilities {
+		hostIds = append(hostIds, val.HostId)
+	}
+
+	return hostIds, nil
 }

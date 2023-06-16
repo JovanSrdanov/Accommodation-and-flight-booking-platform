@@ -1,10 +1,5 @@
 version: "3.8"
 
-x-logging: &fluent-bit
-  driver: fluentd
-  options:
-    fluentd-address: ${FLUENT_BIT_ADDRESS}:24224
-
 services:
 
   api_gateway:
@@ -26,11 +21,19 @@ services:
       ACCOMMODATION_SERVICE_PORT: ${ACCOMMODATION_SERVICE_PORT}
       RESERVATION_SERVICE_HOST: ${RESERVATION_SERVICE_HOST}
       RESERVATION_SERVICE_PORT: ${RESERVATION_SERVICE_PORT}
-      JAEGER_ENDPOINT: ${JAEGER_ENDPOINT}
+      NOTIFICATION_SERVICE_HOST: ${NOTIFICATION_SERVICE_HOST}
+      NOTIFICATION_SERVICE_PORT: ${NOTIFICATION_SERVICE_PORT}
+      RATING_SERVICE_HOST: ${RATING_SERVICE_HOST}
+      RATING_SERVICE_PORT: ${RATING_SERVICE_PORT}
+      SEND_NOTIFICATION_TO_API_GATEWAY_SUBJECT: ${SEND_NOTIFICATION_TO_API_GATEWAY_SUBJECT}
+      SEND_EVENT_TO_NOTIFICATION_SERVICE_SUBJECT: ${SEND_EVENT_TO_NOTIFICATION_SERVICE_SUBJECT}
+
+      NATS_HOST: ${NATS_HOST}
+      NATS_PORT: ${NATS_PORT}
+      NATS_USER: ${NATS_USER}
+      NATS_PASS: ${NATS_PASS}
     networks:
       - network
-      - monitoring
-    logging: *fluent-bit
 
   authorization_service:
     image: authorization_service
@@ -38,7 +41,7 @@ services:
     build:
       context: .
       dockerfile: ./authorization_service/Dockerfile
-    restart: on-failure
+    restart: always
     environment:
       AUTHORIZATION_DB_HOST: ${AUTHORIZATION_DB_HOST}
       AUTHORIZATION_DB_PORT: ${AUTHORIZATION_DB_PORT}
@@ -52,14 +55,17 @@ services:
       NATS_PASS: ${NATS_PASS}
       DELETE_USER_COMMAND_SUBJECT: ${DELETE_USER_COMMAND_SUBJECT}
       DELETE_USER_REPLY_SUBJECT: ${DELETE_USER_REPLY_SUBJECT}
-      JAEGER_ENDPOINT: ${JAEGER_ENDPOINT}
+
+      AUTHORIZATION_EVENT_DB_NAME: ${AUTHORIZATION_EVENT_DB_NAME}
+      AUTHORIZATION_EVENT_DB_PORT: ${AUTHORIZATION_EVENT_DB_PORT}
+      AUTHORIZATION_EVENT_INNER_DB_NAME: ${AUTHORIZATION_EVENT_INNER_DB_NAME}
+      AUTHORIZATION_EVENT_DB_COLLECTION_NAME: ${AUTHORIZATION_EVENT_DB_COLLECTION_NAME}
+
     depends_on:
       authorization_db:
           condition: service_healthy
     networks:
       - network
-      - monitoring
-    logging: *fluent-bit
 
   authorization_db:
     image: authorization_db
@@ -74,15 +80,29 @@ services:
       POSTGRES_DB: ${AUTHORIZATION_DB_NAME}
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      interval: 20s
+      timeout: 10s
+      retries: 20
+      start_period: 10s 
     networks:
       - network
-      - monitoring
     ports:
       - 5001:5432
-    logging: *fluent-bit
+
+
+  authorization_event_db:
+    image: mongo
+    container_name: authorization_event_db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok'
+      interval: 20s
+      timeout: 10s
+      retries: 20
+      start_period: 10s 
+    networks:
+      - network
+    ports:
+      - 6001:27017
 
   user_profile_service:
     image: user_profile_service
@@ -90,7 +110,7 @@ services:
     build:
       context: .
       dockerfile: ./user_profile_service/Dockerfile
-    restart: on-failure
+    restart: always
     environment:
       USER_PROFILE_DB_HOST: ${USER_PROFILE_DB_HOST}
       USER_PROFILE_DB_PORT: ${USER_PROFILE_DB_PORT}
@@ -116,14 +136,11 @@ services:
       RESERVATION_SERVICE_PORT: ${RESERVATION_SERVICE_PORT}
       ACCOMMODATION_SERVICE_HOST: ${ACCOMMODATION_SERVICE_HOST}
       ACCOMMODATION_SERVICE_PORT: ${ACCOMMODATION_SERVICE_PORT}
-      JAEGER_ENDPOINT: ${JAEGER_ENDPOINT}
     depends_on:
       user_profile_db:
         condition: service_healthy
     networks:
       - network
-      - monitoring
-    logging: *fluent-bit
 
 
 
@@ -140,31 +157,28 @@ services:
       POSTGRES_DB: ${USER_PROFILE_DB_NAME}
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      interval: 20s
+      timeout: 10s
+      retries: 20
+      start_period: 10s 
     networks:
       - network
-      - monitoring
     ports:
       - 5002:5432
-    logging: *fluent-bit
 
   user_profile_event_db:
     image: mongo
     container_name: user_profile_event_db
     healthcheck:
       test: echo 'db.runCommand("ping").ok'
-      interval: 10s
+      interval: 20s
       timeout: 10s
-      retries: 10
+      retries: 20
+      start_period: 10s 
     networks:
       - network
-      - monitoring
     ports:
-      - 5003:27017
-    logging: *fluent-bit
-
+      - 6002:27017
 
   accommodation_service:
     image: accommodation_service
@@ -180,14 +194,22 @@ services:
       ACCOMMODATION_SERVICE_DB_PORT: ${ACCOMMODATION_SERVICE_DB_PORT}
       RESERVATION_SERVICE_HOST: ${RESERVATION_SERVICE_HOST}
       RESERVATION_SERVICE_PORT: ${RESERVATION_SERVICE_PORT}
-      JAEGER_ENDPOINT: ${JAEGER_ENDPOINT}
+      NATS_HOST: ${NATS_HOST}
+      NATS_PORT: ${NATS_PORT}
+      NATS_USER: ${NATS_USER}
+      NATS_PASS: ${NATS_PASS}
+      DELETE_USER_COMMAND_SUBJECT: ${DELETE_USER_COMMAND_SUBJECT}
+      DELETE_USER_REPLY_SUBJECT: ${DELETE_USER_REPLY_SUBJECT}
+
+      ACCOMMODATION_EVENT_DB_NAME: ${ACCOMMODATION_EVENT_DB_NAME}
+      ACCOMMODATION_EVENT_DB_PORT: ${ACCOMMODATION_EVENT_DB_PORT}
+      ACCOMMODATION_EVENT_INNER_DB_NAME: ${ACCOMMODATION_EVENT_INNER_DB_NAME}
+      ACCOMMODATION_EVENT_DB_COLLECTION_NAME: ${ACCOMMODATION_EVENT_DB_COLLECTION_NAME}
     networks:
       - network
-      - monitoring
     depends_on:
       accommodation_db:
         condition: service_healthy
-    logging: *fluent-bit
 
   accommodation_db:
     image: mongo
@@ -196,15 +218,29 @@ services:
       - accommodationDb:/data/db
     healthcheck:
       test: echo 'db.runCommand("ping").ok'
-      interval: 10s
+      interval: 20s
       timeout: 10s
-      retries: 10
+      retries: 20
+      start_period: 10s 
     ports:
-      - 6969:27017
+      - 5003:27017
     networks:
       - network
-      - monitoring
-    logging: *fluent-bit
+
+  accommodation_event_db:
+    image: mongo
+    container_name: accommodation_event_db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok'
+      interval: 20s
+      timeout: 10s
+      retries: 20
+      start_period: 10s 
+    networks:
+      - network
+    ports:
+      - 6003:27017
+
 
   reservation_service:
     image: reservation_service
@@ -218,14 +254,21 @@ services:
       RESERVATION_SERVICE_PORT: ${RESERVATION_SERVICE_PORT}
       RESERVATION_SERVICE_DB_NAME: ${RESERVATION_SERVICE_DB_NAME}
       RESERVATION_SERVICE_DB_PORT: ${RESERVATION_SERVICE_DB_PORT}
-      JAEGER_ENDPOINT: ${JAEGER_ENDPOINT}
+      SEND_NOTIFICATION_TO_API_GATEWAY_SUBJECT: ${SEND_NOTIFICATION_TO_API_GATEWAY_SUBJECT}
+      SEND_EVENT_TO_NOTIFICATION_SERVICE_SUBJECT: ${SEND_EVENT_TO_NOTIFICATION_SERVICE_SUBJECT}
+
+      NATS_HOST: ${NATS_HOST}
+      NATS_PORT: ${NATS_PORT}
+      NATS_USER: ${NATS_USER}
+      NATS_PASS: ${NATS_PASS}
+      DELETE_USER_COMMAND_SUBJECT: ${DELETE_USER_COMMAND_SUBJECT}
+      DELETE_USER_REPLY_SUBJECT: ${DELETE_USER_REPLY_SUBJECT}
     networks:
       - network
-      - monitoring
     depends_on:
       reservation_db:
         condition: service_healthy
-    logging: *fluent-bit
+   
 
   reservation_db:
     image: mongo
@@ -234,15 +277,135 @@ services:
       - reservationDb:/data/db
     healthcheck:
       test: echo 'db.runCommand("ping").ok'
-      interval: 10s
+      interval: 20s
       timeout: 10s
-      retries: 10
-    ports:
-      - 6968:27017
+      retries: 20
+      start_period: 10s 
     networks:
       - network
-      - monitoring
-    logging: *fluent-bit
+    ports:
+      - 5004:27017
+
+
+  notification_service:
+    image: notification_service
+    container_name: notification_service
+    build:
+      context: .
+      dockerfile: ./notification_service/Dockerfile
+    restart: on-failure
+    environment:
+      NOTIFICATION_DB_HOST: ${NOTIFICATION_DB_HOST}
+      NOTIFICATION_DB_PORT: ${NOTIFICATION_DB_PORT}
+      NOTIFICATION_DB_NAME: ${NOTIFICATION_DB_NAME}
+      NOTIFICATION_DB_USER: ${NOTIFICATION_DB_USER}
+      NOTIFICATION_DB_PASS: ${NOTIFICATION_DB_PASS}
+      NOTIFICATION_SERVICE_PORT: ${NOTIFICATION_SERVICE_PORT}
+      SEND_NOTIFICATION_TO_API_GATEWAY_SUBJECT: ${SEND_NOTIFICATION_TO_API_GATEWAY_SUBJECT}
+      SEND_EVENT_TO_NOTIFICATION_SERVICE_SUBJECT: ${SEND_EVENT_TO_NOTIFICATION_SERVICE_SUBJECT}
+
+      NOTIFICATION_EVENT_DB_NAME: ${NOTIFICATION_EVENT_DB_NAME}
+      NOTIFICATION_EVENT_DB_PORT: ${NOTIFICATION_EVENT_DB_PORT}
+      NOTIFICATION_EVENT_INNER_DB_NAME: ${NOTIFICATION_EVENT_INNER_DB_NAME}
+      NOTIFICATION_EVENT_DB_COLLECTION_NAME: ${NOTIFICATION_EVENT_DB_COLLECTION_NAME}
+
+      DELETE_USER_COMMAND_SUBJECT: ${DELETE_USER_COMMAND_SUBJECT}
+      DELETE_USER_REPLY_SUBJECT: ${DELETE_USER_REPLY_SUBJECT}
+
+      NATS_HOST: ${NATS_HOST}
+      NATS_PORT: ${NATS_PORT}
+      NATS_USER: ${NATS_USER}
+      NATS_PASS: ${NATS_PASS}
+    depends_on:
+      notification_db:
+        condition: service_healthy
+    networks:
+      - network
+
+  notification_db:
+    image: notification_db
+    container_name: notification_db
+    restart: on-failure
+    build:
+      context: ../Database/Notification
+      dockerfile: Dockerfile
+    environment:
+      PGUSER: ${NOTIFICATION_DB_USER}
+      POSTGRES_PASSWORD: ${NOTIFICATION_DB_PASS}
+      POSTGRES_DB: ${NOTIFICATION_DB_NAME}
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - network
+    ports:
+      - 5005:5432
+
+  notification_event_db:
+    image: mongo
+    container_name: notification_event_db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok'
+      interval: 20s
+      timeout: 10s
+      retries: 20
+      start_period: 10s 
+    networks:
+      - network
+    ports:
+      - 6005:27017
+
+  rating_service:
+    image: rating_service
+    container_name: rating_service
+    build:
+      context: .
+      dockerfile: ./rating_service/Dockerfile
+    restart: always
+    environment:
+      RATING_SERVICE_HOST: ${RATING_SERVICE_HOST}
+      RATING_SERVICE_PORT: ${RATING_SERVICE_PORT}
+      NEO4J_DB: ${NEO4J_DB}
+      NEO4J_USERNAME: ${NEO4J_USERNAME}
+      NEO4J_PASS: ${NEO4J_PASS}
+      API_GATEWAY_HOST: ${API_GATEWAY_HOST}
+    networks:
+      - network
+    depends_on:
+      neo4j:
+        condition: service_healthy
+
+  neo4j:
+      image: neo4j
+      restart: always
+      container_name: rating_db
+      ports:
+        # bolt
+        - "7687:7687"
+        # http
+        - "7474:7474"
+        # https
+        - "7473:7473"
+      # Docker healtcheck - checks if database is "alive"
+      healthcheck:
+        # test: [ "CMD-SHELL", "echo RETURN 1 | cypher-shell -a <NEO4J_dbms_connector_bolt_listen__address> -u <user defined username> -p <user defined password> || exit 1" ]
+        test:
+          [
+            "CMD-SHELL",
+            "echo RETURN 1 | cypher-shell -a bolt://neo4j:7687 -u neo4j -p nekaSifra || exit 1",
+          ]
+        interval: 20s
+        timeout: 10s
+        retries: 20
+        start_period: 10s 
+      networks:
+        - network
+      environment:
+        - NEO4J_AUTH=neo4j/nekaSifra
+      volumes:
+        - ratingDb:/data
 
   nats:
     image: nats
@@ -250,15 +413,14 @@ services:
     restart: on-failure
     networks:
       - network
-      - monitoring
-    logging: *fluent-bit
 
 volumes:
   accommodationDb:
   reservationDb:
+  ratingDb:
 
 networks:
   network:
-    driver: bridge
-  monitoring:
     external: true
+    driver: bridge
+

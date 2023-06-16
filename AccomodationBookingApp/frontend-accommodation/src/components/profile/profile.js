@@ -146,29 +146,13 @@ function Profile() {
         } else {
             setErrorMessage(": UNKNOWN ERROR")
         }
+        
+        interceptor.delete("api-1/user").then((res) => {
+            setDeletedAccountDialogShow(true);
 
-
-        const response = await interceptor.delete('api-1/user');
-        console.log(response);
-
-        let deleted = false;
-        for (let step = 0; step < 5 && !deleted; step++) {
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-            try {
-                const res = await interceptor.get('api-1/account-credentials/is-deleted');
-                if (res.data.response) {
-                    setDeletedAccountDialogShow(true);
-                    deleted = true;
-                    localStorage.removeItem('paseto');
-                }
-            } catch (error) {
-            }
-
-
-        }
-        if (!deleted) {
+        }).catch((err) => {
             setErrorDialogShow(true);
-        }
+        })
 
 
     };

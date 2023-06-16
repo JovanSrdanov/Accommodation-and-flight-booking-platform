@@ -4,7 +4,6 @@ import (
 	"authorization_service/domain/model"
 	"authorization_service/domain/token"
 	"github.com/gin-gonic/gin"
-	"log"
 	"net/http"
 )
 
@@ -16,13 +15,9 @@ func ValidateToken(tokenMaker token.Maker) gin.HandlerFunc {
 			return
 		}
 
-		log.Println("auth header: ", authHeader)
-
 		accessToken := authHeader[len("Bearer "):]
-		log.Println("accessToken: ", accessToken)
 
 		tokenPayload, err := tokenMaker.VerifyToken(accessToken)
-		log.Println("token payload: ", tokenPayload)
 
 		if err != nil {
 			ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": err.Error()})
@@ -43,7 +38,6 @@ func ValidateToken(tokenMaker token.Maker) gin.HandlerFunc {
 		//
 		//providedRole := int8(footerData["Role"].(float64))
 		providedRole := tokenPayload.Role
-		log.Println("provided role: ", providedRole)
 
 		ctx.Keys["id"] = tokenPayload.ID
 		ctx.Keys["Role"] = providedRole

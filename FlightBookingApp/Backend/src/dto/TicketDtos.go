@@ -17,3 +17,9 @@ type BuyTicketDto struct {
 	FlightId        primitive.ObjectID `json:"flightId" binding:"required" bson:"flightId"`
 	NumberOfTickets int32              `json:"numberOfTickets" binding:"required,min=1" bson:"numberOfTickets"`
 }
+
+type BuyTicketApiKeyDto struct {
+	ApiKey          string             `json:"apiKey" binding:"required"`
+	FlightId        primitive.ObjectID `json:"flightId" binding:"required" bson:"flightId"`
+	NumberOfTickets int32              `json:"numberOfTickets" binding:"required,min=1" bson:"numberOfTickets"`
+}

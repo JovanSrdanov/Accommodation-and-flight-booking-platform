@@ -25,7 +25,8 @@ func (service *EventService) Delete(sagaId uuid.UUID, action string) error {
 
 }
 
-func (service *EventService) GetEventEntity(event *Event, entity interface{}) {
-	userProfileBytes, _ := bson.Marshal(event.Entity)
-	bson.Unmarshal(userProfileBytes, entity)
+// For some reason you can't directly read interface from bson db read
+func (service *EventService) ResolveEventEntity(unresolvedEntity interface{}, entity interface{}) {
+	entityBytes, _ := bson.Marshal(unresolvedEntity)
+	bson.Unmarshal(entityBytes, entity)
 }

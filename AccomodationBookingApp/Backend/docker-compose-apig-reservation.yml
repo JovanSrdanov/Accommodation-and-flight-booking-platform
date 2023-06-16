@@ -1,0 +1,219 @@
+version: "3.8"
+
+services:
+  authorization_service:
+    image: authorization_service
+    container_name: authorization_service
+    build:
+      context: .
+      dockerfile: ./authorization_service/Dockerfile
+    restart: on-failure
+    environment:
+      AUTHORIZATION_DB_HOST: ${AUTHORIZATION_DB_HOST}
+      AUTHORIZATION_DB_PORT: ${AUTHORIZATION_DB_PORT}
+      AUTHORIZATION_DB_USER: ${AUTHORIZATION_DB_USER}
+      AUTHORIZATION_DB_PASS: ${AUTHORIZATION_DB_PASS}
+      AUTHORIZATION_DB_NAME: ${AUTHORIZATION_DB_NAME}
+      AUTHORIZATION_SERVICE_PORT: ${AUTHORIZATION_SERVICE_PORT}
+      NATS_HOST: ${NATS_HOST}
+      NATS_PORT: ${NATS_PORT}
+      NATS_USER: ${NATS_USER}
+      NATS_PASS: ${NATS_PASS}
+      DELETE_USER_COMMAND_SUBJECT: ${DELETE_USER_COMMAND_SUBJECT}
+      DELETE_USER_REPLY_SUBJECT: ${DELETE_USER_REPLY_SUBJECT}
+    depends_on:
+      authorization_db:
+        condition: service_healthy
+    networks:
+      - network
+    ports:
+      - "8001:8001"
+
+  authorization_db:
+    image: authorization_db
+    container_name: authorization_db
+    restart: on-failure
+    build:
+      context: ../Database/Authorization
+      dockerfile: Dockerfile
+    environment:
+      PGUSER: ${AUTHORIZATION_DB_USER}
+      POSTGRES_PASSWORD: ${AUTHORIZATION_DB_PASS}
+      POSTGRES_DB: ${AUTHORIZATION_DB_NAME}
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - network
+
+
+  user_profile_service:
+    image: user_profile_service
+    container_name: user_profile_service
+    build:
+      context: .
+      dockerfile: ./user_profile_service/Dockerfile
+    restart: on-failure
+    environment:
+      USER_PROFILE_DB_HOST: ${USER_PROFILE_DB_HOST}
+      USER_PROFILE_DB_PORT: ${USER_PROFILE_DB_PORT}
+      USER_PROFILE_DB_NAME: ${USER_PROFILE_DB_NAME}
+      USER_PROFILE_DB_USER: ${USER_PROFILE_DB_USER}
+      USER_PROFILE_DB_PASS: ${USER_PROFILE_DB_PASS}
+
+      USER_PROFILE_EVENT_DB_NAME: ${USER_PROFILE_EVENT_DB_NAME}
+      USER_PROFILE_EVENT_DB_PORT: ${USER_PROFILE_EVENT_DB_PORT}
+      USER_PROFILE_EVENT_INNER_DB_NAME: ${USER_PROFILE_EVENT_INNER_DB_NAME}
+      USER_PROFILE_EVENT_DB_COLLECTION_NAME: ${USER_PROFILE_EVENT_DB_COLLECTION_NAME}
+
+      USER_PROFILE_SERVICE_PORT: ${USER_PROFILE_SERVICE_PORT}
+      NATS_HOST: ${NATS_HOST}
+      NATS_PORT: ${NATS_PORT}
+      NATS_USER: ${NATS_USER}
+      NATS_PASS: ${NATS_PASS}
+      DELETE_USER_COMMAND_SUBJECT: ${DELETE_USER_COMMAND_SUBJECT}
+      DELETE_USER_REPLY_SUBJECT: ${DELETE_USER_REPLY_SUBJECT}
+      AUTHORIZATION_SERVICE_HOST: ${AUTHORIZATION_SERVICE_HOST}
+      AUTHORIZATION_SERVICE_PORT: ${AUTHORIZATION_SERVICE_PORT}
+      RESERVATION_SERVICE_HOST: ${RESERVATION_SERVICE_HOST}
+      RESERVATION_SERVICE_PORT: ${RESERVATION_SERVICE_PORT}
+    depends_on:
+      user_profile_db:
+        condition: service_healthy
+    networks:
+      - network
+    ports:
+      - "8002:8002"
+
+
+
+  user_profile_db:
+    image: user_profile_db
+    container_name: user_profile_db
+    restart: on-failure
+    build:
+      context: ../Database/UserProfile
+      dockerfile: Dockerfile
+    environment:
+      PGUSER: ${USER_PROFILE_DB_USER}
+      POSTGRES_PASSWORD: ${USER_PROFILE_DB_PASS}
+      POSTGRES_DB: ${USER_PROFILE_DB_NAME}
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - network
+
+  user_profile_event_db:
+    image: mongo
+    container_name: user_profile_event_db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok'
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    networks:
+      - network
+
+
+  accommodation_service:
+    image: accommodation_service
+    container_name: accommodation_service
+    build:
+      context: .
+      dockerfile: ./accommodation_service/Dockerfile
+    restart: on-failure
+    environment:
+      ACCOMMODATION_SERVICE_HOST: ${ACCOMMODATION_SERVICE_HOST}
+      ACCOMMODATION_SERVICE_PORT: ${ACCOMMODATION_SERVICE_PORT}
+      ACCOMMODATION_SERVICE_DB_NAME: ${ACCOMMODATION_SERVICE_DB_NAME}
+      ACCOMMODATION_SERVICE_DB_PORT: ${ACCOMMODATION_SERVICE_DB_PORT}
+      RESERVATION_SERVICE_HOST: ${RESERVATION_SERVICE_HOST}
+      RESERVATION_SERVICE_PORT: ${RESERVATION_SERVICE_PORT}
+    networks:
+      - network
+    depends_on:
+      accommodation_db:
+        condition: service_healthy
+    ports:
+      - "8003:8003"
+
+  accommodation_db:
+    image: mongo
+    container_name: ${ACCOMMODATION_SERVICE_DB_NAME}
+    volumes:
+      - accommodationDb:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok'
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    ports:
+      - "6969:27017"
+    networks:
+      - network
+
+  reservation_db:
+    image: mongo
+    container_name: ${RESERVATION_SERVICE_DB_NAME}
+    volumes:
+      - reservationDb:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok'
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    ports:
+      - "6968:27017"
+    networks:
+      - network
+
+  neo4j:
+    image: neo4j
+    restart: always
+    container_name: rating_db
+    ports:
+      # bolt
+      - "7687:7687"
+      # http
+      - "7474:7474"
+      # https
+      - "7473:7473"
+    # Docker healtcheck - checks if database is "alive"
+    healthcheck:
+      # test: [ "CMD-SHELL", "echo RETURN 1 | cypher-shell -a <NEO4J_dbms_connector_bolt_listen__address> -u <user defined username> -p <user defined password> || exit 1" ]
+      test:
+        [
+          "CMD-SHELL",
+          "echo RETURN 1 | cypher-shell -a bolt://neo4j:7687 -u neo4j -p nekaSifra || exit 1",
+        ]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+    networks:
+      - network
+    environment:
+      - NEO4J_AUTH=neo4j/nekaSifra
+    volumes:
+      - ratingDb:/data
+
+  nats:
+    image: nats
+    container_name: nats
+    restart: on-failure
+    networks:
+      - network
+
+volumes:
+  accommodationDb:
+  reservationDb:
+  ratingDb:
+
+networks:
+  network:
+    driver: bridge
+
