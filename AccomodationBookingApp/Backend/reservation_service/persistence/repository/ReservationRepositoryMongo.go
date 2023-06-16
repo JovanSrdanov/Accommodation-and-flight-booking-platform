@@ -173,6 +173,12 @@ func (repo ReservationRepositoryMongo) CreateReservation(reservation *model.Rese
 		return &model.Reservation{}, err
 	}
 
+	accountID, err := uuid.Parse(availability.HostId)
+	if err != nil {
+		log.Fatal(err)
+		return &model.Reservation{}, err
+	}
+
 	//Da li moze da se spoje neke
 	sortedAvailableDates := availability.AvailableDates
 	bubbleSort(sortedAvailableDates)
@@ -229,8 +235,20 @@ func (repo ReservationRepositoryMongo) CreateReservation(reservation *model.Rese
 
 	if availability.IsAutomaticReservation {
 		reservation.Status = "accepted"
+		message := NotificationMessaging.NotificationMessage{
+			MessageType:            "RequestMade",
+			MessageForNotification: "A reservation has been made for your accommodation",
+			AccountID:              accountID,
+		}
+		repo.publisher.Publish(message)
 	} else {
 		reservation.Status = "pending"
+		message := NotificationMessaging.NotificationMessage{
+			MessageType:            "RequestMade",
+			MessageForNotification: "A reservation request has been made for your accommodation",
+			AccountID:              accountID,
+		}
+		repo.publisher.Publish(message)
 	}
 
 	reservation.ID = primitive.NewObjectID()
@@ -539,6 +557,29 @@ func (repo ReservationRepositoryMongo) CancelReservation(id primitive.ObjectID) 
 	if result.MatchedCount == 0 {
 		return primitive.ObjectID{}, status.Errorf(codes.Unimplemented, "Not updated")
 	}
+
+	filter = bson.D{{"accommodationId", reservation.AccommodationId}}
+
+	coll := repo.getCollectionAvailability()
+	// Find the availability document
+	var availability model.Availability
+	err = coll.FindOne(ctx, filter).Decode(&availability)
+	if err != nil {
+		log.Fatal(err)
+		return primitive.ObjectID{}, err
+	}
+
+	accountID, err := uuid.Parse(availability.HostId)
+	if err != nil {
+		log.Fatal(err)
+		return primitive.ObjectID{}, err
+	}
+	message := NotificationMessaging.NotificationMessage{
+		MessageType:            "ReservationCanceled",
+		MessageForNotification: "Guest canceled a reservation",
+		AccountID:              accountID,
+	}
+	repo.publisher.Publish(message)
 
 	return id, nil
 }
