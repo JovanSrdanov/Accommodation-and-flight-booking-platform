@@ -1,6 +1,7 @@
 package client
 
 import (
+	"accommodation_service/communication/middleware"
 	authorization "common/proto/authorization_service/generated"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -17,5 +18,6 @@ func NewAccountCredentialsClient(address string) authorization.AuthorizationServ
 }
 
 func getConnection(address string) (*grpc.ClientConn, error) {
-	return grpc.Dial(address, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	return grpc.Dial(address, grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithUnaryInterceptor(middleware.NewGRPUnaryClientInterceptor()))
 }

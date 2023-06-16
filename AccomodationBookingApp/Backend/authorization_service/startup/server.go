@@ -2,6 +2,7 @@ package startup
 
 import (
 	"authorization_service/communication/handler"
+	"authorization_service/communication/middleware"
 	"authorization_service/domain/model"
 	"authorization_service/domain/service"
 	"authorization_service/domain/token"
@@ -131,7 +132,7 @@ func (server *Server) startGrpcServer(
 	authInterceptor := interceptor.NewAuthServerInterceptor(maker, protectedMethodsWithAllowedRoles)
 
 	grpcServer := grpc.NewServer(
-		grpc.UnaryInterceptor(authInterceptor.Unary()),
+		grpc.ChainUnaryInterceptor(middleware.NewGRPUnaryServerInterceptor(), authInterceptor.Unary()),
 		grpc.StreamInterceptor(authInterceptor.Stream()),
 	)
 	authorization.RegisterAuthorizationServiceServer(grpcServer, accountCredentialsHandler)

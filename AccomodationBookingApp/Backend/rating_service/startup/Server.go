@@ -11,6 +11,7 @@ import (
 	"log"
 	"net"
 	"rating_service/communication/handler"
+	"rating_service/communication/middleware"
 	"rating_service/domain/service"
 	"rating_service/persistence/repository"
 )
@@ -58,7 +59,7 @@ func (server Server) startGrpcServer(ratingHandler *handler.RatingHandler) {
 	authInterceptor := interceptor.NewAuthServerInterceptor(tokenMaker, protectedMethodsWithAllowedRoles)
 
 	grpcServer := grpc.NewServer(
-		grpc.UnaryInterceptor(authInterceptor.Unary()),
+		grpc.ChainUnaryInterceptor(middleware.NewGRPUnaryServerInterceptor(), authInterceptor.Unary()),
 		grpc.StreamInterceptor(authInterceptor.Stream()),
 	)
 	rating.RegisterRatingServiceServer(grpcServer, ratingHandler)

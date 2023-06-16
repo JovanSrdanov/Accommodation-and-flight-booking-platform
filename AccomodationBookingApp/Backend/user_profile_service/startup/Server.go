@@ -15,6 +15,7 @@ import (
 	"log"
 	"net"
 	"user_profile_service/communication/handler"
+	"user_profile_service/communication/middleware"
 	"user_profile_service/communication/orchestrator"
 	"user_profile_service/domain/service"
 	"user_profile_service/persistence/repository"
@@ -104,7 +105,7 @@ func (server *Server) startGrpcServer(userProfileHandler *handler.UserProfileHan
 	authInterceptor := interceptor.NewAuthServerInterceptor(tokenMaker, protectedMethodsWithAllowedRoles)
 
 	grpcServer := grpc.NewServer(
-		grpc.UnaryInterceptor(authInterceptor.Unary()),
+		grpc.ChainUnaryInterceptor(middleware.NewGRPUnaryServerInterceptor(), authInterceptor.Unary()),
 		grpc.StreamInterceptor(authInterceptor.Stream()),
 	)
 	user_profile.RegisterUserProfileServiceServer(grpcServer, userProfileHandler)
