@@ -1,6 +1,7 @@
 package communication
 
 import (
+	"api_gateway/communication/middleware"
 	accommodation "common/proto/accommodation_service/generated"
 	authorization "common/proto/authorization_service/generated"
 	reservation "common/proto/reservation_service/generated"
@@ -11,7 +12,8 @@ import (
 )
 
 func getConnection(address string) (*grpc.ClientConn, error) {
-	return grpc.Dial(address, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	return grpc.Dial(address, grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithUnaryInterceptor(middleware.NewGRPUnaryClientInterceptor()))
 }
 
 func NewAuthorizationClient(address string) authorization.AuthorizationServiceClient {

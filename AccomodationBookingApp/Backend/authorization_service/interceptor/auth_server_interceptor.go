@@ -62,12 +62,15 @@ func (interceptor *AuthServerInterceptor) Stream() grpc.StreamServerInterceptor 
 
 func (interceptor *AuthServerInterceptor) authorize(ctx context.Context, method string) (error, context.Context) {
 	log.Println("Authorization in progress...")
+	log.Println("TEST")
+	log.Println(interceptor.protectedMethodsWithAllowedRoles)
+	log.Println(method)
 	allowedRoles, ok := interceptor.protectedMethodsWithAllowedRoles[method]
 	if !ok {
 		// if a provided method is not in the accessible roles map, it means that everyone can use it
+		log.Println("Method: " + method + " not found in the list of allowed methods")
 		return nil, nil
 	}
-
 	metaData, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return status.Errorf(codes.Unauthenticated, "metadata is not provided"), nil
@@ -79,6 +82,8 @@ func (interceptor *AuthServerInterceptor) authorize(ctx context.Context, method 
 	if len(values) == 0 {
 		return status.Errorf(codes.Unauthenticated, "authorization token not provided"), nil
 	}
+
+	log.Println("Header")
 
 	accessToken := strings.TrimPrefix(values[0], "Bearer ")
 	tokenPayload, err := interceptor.tokenMaker.VerifyToken(accessToken)

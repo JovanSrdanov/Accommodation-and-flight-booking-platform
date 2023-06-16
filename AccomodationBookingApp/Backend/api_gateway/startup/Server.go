@@ -13,6 +13,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"log"
@@ -28,6 +29,9 @@ func NewServer(config *Configuration) *Server {
 		config: config,
 		server: gin.Default(),
 	}
+
+	// OpenTelemetry
+	server.server.Use(otelgin.Middleware("api-gateway"))
 
 	server.server.Use(middleware.AuthTokenParser())
 
@@ -54,7 +58,8 @@ func NewServer(config *Configuration) *Server {
 }
 
 func (server *Server) initGrpcHandlers(mux *runtime.ServeMux) {
-	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
+	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithUnaryInterceptor(middleware.NewGRPUnaryClientInterceptor())}
 
 	authorizationEndpoint := fmt.Sprintf("%s:%s", server.config.AuthorizationHost, server.config.AuthorizationPort)
 	err := authorization.RegisterAuthorizationServiceHandlerFromEndpoint(context.TODO(), mux, authorizationEndpoint, opts)

@@ -7,6 +7,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"log"
+	"user_profile_service/communication/middleware"
 )
 
 func NewAccountCredentialsClient(address string) authorization.AuthorizationServiceClient {
@@ -36,5 +37,6 @@ func NewAccommodationClient(address string) accommodation.AccommodationServiceCl
 	return accommodation.NewAccommodationServiceClient(conn)
 }
 func getConnection(address string) (*grpc.ClientConn, error) {
-	return grpc.Dial(address, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	return grpc.Dial(address, grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithUnaryInterceptor(middleware.NewGRPUnaryClientInterceptor()))
 }
