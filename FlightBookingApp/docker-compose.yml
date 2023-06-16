@@ -4,24 +4,24 @@ services:
   flights-app:
     image: flights-app
     build:
-        context: ./Backend
-        dockerfile: Dockerfile
+      context: ./Backend
+      dockerfile: Dockerfile
     restart: always
     container_name: "flights-app"
     ports:
       - 4200:4200
     environment:
-      - PORT=4200
-      - MONGO_DB_URI=mongodb://root:pass@mongo:27017
-      - CON_POOL_MIN_POOL_SIZE=4
-      - CON_POOL_MAX_POOL_SIZE=10
-      - CONNECTION_POOL_MONITORING=FALSE
-      - GRACEFUL_SHUTDOWN_TIMEOUT=2
+      - PORT=${PORT}
+      - MONGO_DB_URI=${MONGO_DB_URI}
+      - CON_POOL_MIN_POOL_SIZE=${CON_POOL_MIN_POOL_SIZE}
+      - CON_POOL_MAX_POOL_SIZE=${CON_POOL_MAX_POOL_SIZE}
+      - CONNECTION_POOL_MONITORING=${CONNECTION_POOL_MONITORING}
+      - GRACEFUL_SHUTDOWN_TIMEOUT=${GRACEFUL_SHUTDOWN_TIMEOUT}
       #Auth
-      - ACCESS_SECRET_KEY=SecretToken
-      - REFRESH_SECRET_KEY=SecretTokenSecretToken
-      - SENDER_EMAIL=xmlprojekat1@gmail.com
-      - SENDER_APP_PASSWORD=cmyrhmgnrenxhwuc
+      - ACCESS_SECRET_KEY=${ACCESS_SECRET_KEY}
+      - REFRESH_SECRET_KEY=${REFRESH_SECRET_KEY}
+      - SENDER_EMAIL=${SENDER_EMAIL}@gmail.com
+      - SENDER_APP_PASSWORD=${SENDER_APP_PASSWORD}
     depends_on:
         mongo:
             condition: service_healthy
@@ -47,6 +47,9 @@ services:
       - flightsAppDB:/data/db
     networks:
       - network
+    ports:
+      - 5000:27017
+
   #MongoDB seeding container
   mongo-seed:
     image: "mongo-seed"
@@ -59,31 +62,8 @@ services:
     networks:
       - network
 
-  # NoSQL: MongoExpress
-  mongo-express:
-    image: mongo-express
-    restart: always
-    container_name: "flights-db-express"
-    environment:
-      # hostname of mongo databse
-      - ME_CONFIG_MONGODB_SERVER=mongo
-      - ME_CONFIG_MONGODB_ADMINUSERNAME=root
-      - ME_CONFIG_MONGODB_ADMINPASSWORD=pass
-      - ME_CONFIG_BASICAUTH_USERNAME=admin
-      - ME_CONFIG_BASICAUTH_PASSWORD=admin
-      - ME_CONFIG_MONGODB_URL=mongodb://mongo:27017/
-    depends_on:
-      - mongo
-    ports:
-      - "8081:8081"
-    volumes:
-      - flightsAppDB_express_data:/data/db
-    networks:
-      - network
-
 volumes:
   flightsAppDB:
-  flightsAppDB_express_data:
 
 networks:
   network:
