@@ -52,7 +52,7 @@ func (repo ReservationRepositoryMongo) CreateAvailability(newAvailability *model
 	newAvailability.PriceWithDate.ID = primitive.NewObjectID()
 
 	update := bson.M{"$push": bson.M{"availableDates": newAvailability.PriceWithDate}}
-	res, err := collection.UpdateOne(ctx, filter, update)
+	_, err = collection.UpdateOne(ctx, filter, update)
 	if err != nil {
 		log.Fatal(err)
 	}

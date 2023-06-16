@@ -40,19 +40,19 @@ func (handler *NotificationConsentHandler) HandleMessages(message *NotificationM
 			handler.publisher.Publish(message)
 		}
 	case "ReservationCanceled":
-		if notificationConsent.HostResponded {
+		if notificationConsent.ReservationCanceled {
 			handler.publisher.Publish(message)
 		}
 	case "HostRatingGiven":
-		if notificationConsent.HostResponded {
+		if notificationConsent.HostRatingGiven {
 			handler.publisher.Publish(message)
 		}
 	case "AccommodationRatingGiven":
-		if notificationConsent.HostResponded {
+		if notificationConsent.AccommodationRatingGiven {
 			handler.publisher.Publish(message)
 		}
 	case "ProminentHost":
-		if notificationConsent.HostResponded {
+		if notificationConsent.ProminentHost {
 			handler.publisher.Publish(message)
 		}
 	case "HostResponded":

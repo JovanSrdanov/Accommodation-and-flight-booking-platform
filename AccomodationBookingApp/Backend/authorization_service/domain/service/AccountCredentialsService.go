@@ -89,7 +89,7 @@ func (service AccountCredentialsService) ChangeUsername(userId uuid.UUID, userna
 		return nil
 	}
 
-	accCred, err := service.GetByUsername(username)
+	_, err = service.GetByUsername(username)
 	if err == nil {
 		return fmt.Errorf("username already exists")
 	}

@@ -201,7 +201,7 @@ function SearchAndFilterAccommodations(props) {
 
         const startDate = new Date(formData.startDate);
         const utcStartDate = new Date(startDate.getTime() - startDate.getTimezoneOffset() * 60000);
-        console.log(utcStartDate)
+
         searchAndFilterData.startDate = Math.round(utcStartDate.getTime() / 1000);
 
         const endDate = new Date(formData.endDate);
@@ -211,8 +211,6 @@ function SearchAndFilterAccommodations(props) {
 
         searchAndFilterData.maxPrice = parseInt(searchAndFilterData.maxPrice)
         searchAndFilterData.minPrice = parseInt(searchAndFilterData.minPrice)
-
-        console.log(searchAndFilterData)
 
         setResultDialogShow(true);
         interceptor.post("api-2/accommodation/search", searchAndFilterData).then(res => {
@@ -302,7 +300,7 @@ function SearchAndFilterAccommodations(props) {
                                                         </AccordionDetails>
                                                     </Accordion>
                                                 </StyledTableCell>
-                                                {props.canBuy && props.canBuy == true && (
+                                                {props.canBuy && props.canBuy === true && (
                                                     <StyledTableCell>
                                                         <Button
                                                             onClick={() => {

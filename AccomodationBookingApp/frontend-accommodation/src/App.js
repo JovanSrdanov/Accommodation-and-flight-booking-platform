@@ -38,13 +38,11 @@ import TravelExploreIcon from '@mui/icons-material/TravelExplore';
 import {Flex} from "reflexbox";
 import interceptor from "./interceptor/interceptor";
 import EditNotificationsIcon from '@mui/icons-material/EditNotifications';
-import {SnackbarProvider, useSnackbar} from "notistack";
+import {useSnackbar} from "notistack";
 
 function App() {
 
     const navigate = useNavigate();
-    const [notificationSnackBar, setNotificationSnackBar] = useState(false);
-    const [message, setMessage] = useState('');
     const {enqueueSnackbar} = useSnackbar();
     const openWebSocket = () => {
 
@@ -67,10 +65,7 @@ function App() {
 
         };
         ws.onmessage = (event) => {
-            console.log(event.data.toUpperCase());
-            enqueueSnackbar(event.data.toUpperCase());
-            // setMessage(event.data.toUpperCase());
-            // setNotificationSnackBar(true)
+            enqueueSnackbar(event.data.toUpperCase(), {variant: 'info'});
         };
 
         ws.onclose = () => {
@@ -219,267 +214,266 @@ function App() {
 
 
     return (
-        <SnackbarProvider maxSnack={3}>
-            <>
-                {/*<Snackbar*/}
-                {/*    anchorOrigin={{*/}
-                {/*        vertical: 'bottom',*/}
-                {/*        horizontal: 'right',*/}
-                {/*    }}*/}
-                {/*    open={notificationSnackBar}*/}
-                {/*    autoHideDuration={5000}*/}
-                {/*    onClose={() => setNotificationSnackBar(false)}*/}
-                {/*    message={message}*/}
-                {/*>*/}
-                {/*    <Alert onClose={handleClose} severity="info">*/}
-                {/*        {message}*/}
-                {/*    </Alert>*/}
 
-                {/*</Snackbar>*/}
+        <>
+            {/*<Snackbar*/}
+            {/*    anchorOrigin={{*/}
+            {/*        vertical: 'bottom',*/}
+            {/*        horizontal: 'right',*/}
+            {/*    }}*/}
+            {/*    open={notificationSnackBar}*/}
+            {/*    autoHideDuration={5000}*/}
+            {/*    onClose={() => setNotificationSnackBar(false)}*/}
+            {/*    message={message}*/}
+            {/*>*/}
+            {/*    <Alert onClose={handleClose} severity="info">*/}
+            {/*        {message}*/}
+            {/*    </Alert>*/}
 
-                <Dialog open={open} onClose={handleClose}>
-                    <DialogTitle>Choose about what you want to be notified</DialogTitle>
-                    <DialogContent>
+            {/*</Snackbar>*/}
 
-                        <Flex flexDirection="column">
-                            {ROLE === 'Host' && (
-                                <>
-                                    <FormControlLabel
-                                        control={
-                                            <Switch
-                                                checked={selectedItem.RequestMade}
-                                                onChange={handleSwitchChange}
-                                                name="RequestMade"
-                                                color="success"
-                                            />
-                                        }
-                                        label="Request Made"
-                                    />
-                                    <FormControlLabel
-                                        control={
-                                            <Switch
-                                                checked={selectedItem.ReservationCanceled}
-                                                onChange={handleSwitchChange}
-                                                name="ReservationCanceled"
-                                                color="success"
-                                            />
-                                        }
-                                        label="Reservation Canceled"
-                                    />
-                                    <FormControlLabel
-                                        control={
-                                            <Switch
-                                                checked={selectedItem.HostRatingGiven}
-                                                onChange={handleSwitchChange}
-                                                name="HostRatingGiven"
-                                                color="success"
-                                            />
-                                        }
-                                        label="Host Rating Given"
-                                    />
-                                    <FormControlLabel
-                                        control={
-                                            <Switch
-                                                checked={selectedItem.AccommodationRatingGiven}
-                                                onChange={handleSwitchChange}
-                                                name="AccommodationRatingGiven"
-                                                color="success"
-                                            />
-                                        }
-                                        label="Accommodation Rating Given"
-                                    />
-                                    <FormControlLabel
-                                        control={
-                                            <Switch
-                                                checked={selectedItem.ProminentHost}
-                                                onChange={handleSwitchChange}
-                                                name="ProminentHost"
-                                                color="success"
-                                            />
-                                        }
-                                        label="Prominent Host"
-                                    />
-                                </>
-                            )}
-                            {ROLE === 'Guest' && (
+            <Dialog open={open} onClose={handleClose}>
+                <DialogTitle>Choose about what you want to be notified</DialogTitle>
+                <DialogContent>
+
+                    <Flex flexDirection="column">
+                        {ROLE === 'Host' && (
+                            <>
                                 <FormControlLabel
                                     control={
                                         <Switch
-                                            checked={selectedItem.HostResponded}
+                                            checked={selectedItem.RequestMade}
                                             onChange={handleSwitchChange}
-                                            name="HostResponded"
+                                            name="RequestMade"
                                             color="success"
                                         />
                                     }
-                                    label="Host Responded"
+                                    label="Request Made"
                                 />
-                            )}
-                        </Flex>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={handleClose} color="info" variant="outlined">
-                            Close
-                        </Button>
+                                <FormControlLabel
+                                    control={
+                                        <Switch
+                                            checked={selectedItem.ReservationCanceled}
+                                            onChange={handleSwitchChange}
+                                            name="ReservationCanceled"
+                                            color="success"
+                                        />
+                                    }
+                                    label="Reservation Canceled"
+                                />
+                                <FormControlLabel
+                                    control={
+                                        <Switch
+                                            checked={selectedItem.HostRatingGiven}
+                                            onChange={handleSwitchChange}
+                                            name="HostRatingGiven"
+                                            color="success"
+                                        />
+                                    }
+                                    label="Host Rating Given"
+                                />
+                                <FormControlLabel
+                                    control={
+                                        <Switch
+                                            checked={selectedItem.AccommodationRatingGiven}
+                                            onChange={handleSwitchChange}
+                                            name="AccommodationRatingGiven"
+                                            color="success"
+                                        />
+                                    }
+                                    label="Accommodation Rating Given"
+                                />
+                                <FormControlLabel
+                                    control={
+                                        <Switch
+                                            checked={selectedItem.ProminentHost}
+                                            onChange={handleSwitchChange}
+                                            name="ProminentHost"
+                                            color="success"
+                                        />
+                                    }
+                                    label="Prominent Host"
+                                />
+                            </>
+                        )}
+                        {ROLE === 'Guest' && (
+                            <FormControlLabel
+                                control={
+                                    <Switch
+                                        checked={selectedItem.HostResponded}
+                                        onChange={handleSwitchChange}
+                                        name="HostResponded"
+                                        color="success"
+                                    />
+                                }
+                                label="Host Responded"
+                            />
+                        )}
+                    </Flex>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose} color="info" variant="outlined">
+                        Close
+                    </Button>
 
-                    </DialogActions>
-                </Dialog>
-
-
-                <ParticlesBg color="#FF9021" type="cobweb" num={100} bg={true}/>
-                <Box>
-                    <AppBar position="static">
-                        <Toolbar>
-                            <Tooltip title="Search for your desired accommodation" arrow>
-                                <Button sx={{color: "gold", mr: 5}}
-                                        onClick={() => navigate('/search-and-filter-accommodations')}
-                                        endIcon={<TravelExploreIcon/>} startIcon={<HotelIcon/>}>
-
-                                    Restful Reserve
-
-                                </Button>
-                            </Tooltip>
-
-                            {ROLE === 'Guest' && (
-                                <>
-
-                                    <Tooltip title="View your reservations" arrow>
-                                        <Button startIcon={<HistoryIcon/>} sx={{color: 'inherit'}}
-                                                onClick={() => navigate('/my-reservations')}>
-
-                                            My Reservations
-                                        </Button>
-                                    </Tooltip>
-
-                                    <Tooltip title="Our recommendations for you based on your preferences" arrow>
-                                        <Button startIcon={<RecommendOutlinedIcon/>} sx={{color: 'inherit'}}
-                                                onClick={() => navigate('/recommendations-for-you')}>
-
-                                            Recommendations for you
-                                        </Button>
-                                    </Tooltip>
-
-                                </>
-                            )}
-
-                            {ROLE === 'Host' && (
-                                <>
-
-                                    <Tooltip title="Places you host" arrow>
-                                        <Button startIcon={<OtherHousesOutlinedIcon/>} sx={{color: 'inherit'}}
-                                                onClick={() => navigate('/my-places')}>
-
-                                            My places
-                                        </Button>
-                                    </Tooltip>
-                                    <Tooltip title="Host a new place that you want to rent" arrow>
-                                        <Button startIcon={<AddCircleOutlineOutlinedIcon/>} sx={{color: 'inherit'}}
-                                                onClick={() => navigate('/host-a-place')}>
-
-                                            Host a place
-                                        </Button>
-                                    </Tooltip>
-                                    <Tooltip title="View all reservations and request for reservations" arrow>
-                                        <Button startIcon={<ChecklistOutlinedIcon/>} sx={{color: 'inherit'}}
-                                                onClick={() => navigate('/reservations-and-requests')}>
-
-                                            Reservations and requests
-                                        </Button>
-                                    </Tooltip>
-                                </>
-                            )}
-
-                            {(ROLE === 'Guest' || ROLE === 'Host') && (
-                                <>
-                                    <Tooltip title="Your notifications" arrow>
-                                        <Button startIcon={<EditNotificationsIcon/>} sx={{marginLeft: 'auto'}}
-                                                color="success"
-                                                onClick={handleClickOpen}>
-                                            Notifications
-                                        </Button>
-                                    </Tooltip>
+                </DialogActions>
+            </Dialog>
 
 
-                                    <Tooltip title="Your informations" arrow>
-                                        <Button color="info"
-                                                startIcon={<PersonOutlineOutlinedIcon/>}
-                                                onClick={() => {
-                                                    navigate('/profile');
-                                                }}>
+            <ParticlesBg color="#FF9021" type="cobweb" num={100} bg={true}/>
+            <Box>
+                <AppBar position="static">
+                    <Toolbar>
+                        <Tooltip title="Search for your desired accommodation" arrow>
+                            <Button sx={{color: "gold", mr: 5}}
+                                    onClick={() => navigate('/search-and-filter-accommodations')}
+                                    endIcon={<TravelExploreIcon/>} startIcon={<HotelIcon/>}>
 
-                                            My profile
-                                        </Button>
-                                    </Tooltip>
-                                    <Tooltip title="Log out of the system" arrow>
-                                        <Button color="error" onClick={handleLogout} startIcon={<LogoutOutlinedIcon/>}>
+                                Restful Reserve
 
-                                            Log out
-                                        </Button>
-                                    </Tooltip>
-                                </>
-                            )}
-
-                            {(!(ROLE === 'Guest') && !(ROLE === 'Host')) && (
-                                <>   <Tooltip title="View all reservations and request for reservations" arrow>
-                                    <Button color="warning" sx={{marginLeft: 'auto'}} startIcon={<LoginIcon/>}
-                                            onClick={() => navigate('/login')}>
-
-                                        Log in
-                                    </Button>
-                                </Tooltip>
-                                    <Tooltip title="View all reservations and request for reservations" arrow>
-                                        <Button color="success" startIcon={<HowToRegIcon/>}
-                                                onClick={() => navigate('/register')}>
-
-                                            Register
-                                        </Button>
-                                    </Tooltip>
-                                </>
-                            )}
-                        </Toolbar>
-
-                    </AppBar>
-                    <Routes>
-
+                            </Button>
+                        </Tooltip>
 
                         {ROLE === 'Guest' && (
                             <>
 
-                                <Route path="/my-reservations" element={<MyReservationsPage/>}/>
+                                <Tooltip title="View your reservations" arrow>
+                                    <Button startIcon={<HistoryIcon/>} sx={{color: 'inherit'}}
+                                            onClick={() => navigate('/my-reservations')}>
 
-                                <Route path="/recommendations-for-you" element={<RecommendationsForYouPage/>}/>
-                                <Route path="/profile" element={<ProfilePage/>}/>
-                                <Route path="/search-and-filter-accommodations"
-                                       element={<SearchAndFilterAccommodationsPage canBuy={true}/>}/>
-                                <Route path="/*" element={<Navigate to="/search-and-filter-accommodations"/>}/>
+                                        My Reservations
+                                    </Button>
+                                </Tooltip>
+
+                                <Tooltip title="Our recommendations for you based on your preferences" arrow>
+                                    <Button startIcon={<RecommendOutlinedIcon/>} sx={{color: 'inherit'}}
+                                            onClick={() => navigate('/recommendations-for-you')}>
+
+                                        Recommendations for you
+                                    </Button>
+                                </Tooltip>
+
                             </>
                         )}
 
                         {ROLE === 'Host' && (
                             <>
-                                <Route path="/my-places" element={<MyPlacesPage/>}/>
-                                <Route path="/host-a-place" element={<HostAPlacePage/>}/>
-                                <Route path="/reservations-and-requests" element={<ReservationsAndRequestsPage/>}/>
-                                <Route path="/profile" element={<ProfilePage/>}/>
-                                <Route path="/search-and-filter-accommodations"
-                                       element={<SearchAndFilterAccommodationsPage canBuy={false}/>}/>
-                                <Route path="/*" element={<Navigate to="/search-and-filter-accommodations"/>}/>
+
+                                <Tooltip title="Places you host" arrow>
+                                    <Button startIcon={<OtherHousesOutlinedIcon/>} sx={{color: 'inherit'}}
+                                            onClick={() => navigate('/my-places')}>
+
+                                        My places
+                                    </Button>
+                                </Tooltip>
+                                <Tooltip title="Host a new place that you want to rent" arrow>
+                                    <Button startIcon={<AddCircleOutlineOutlinedIcon/>} sx={{color: 'inherit'}}
+                                            onClick={() => navigate('/host-a-place')}>
+
+                                        Host a place
+                                    </Button>
+                                </Tooltip>
+                                <Tooltip title="View all reservations and request for reservations" arrow>
+                                    <Button startIcon={<ChecklistOutlinedIcon/>} sx={{color: 'inherit'}}
+                                            onClick={() => navigate('/reservations-and-requests')}>
+
+                                        Reservations and requests
+                                    </Button>
+                                </Tooltip>
                             </>
                         )}
 
-                        {ROLE === null && (
+                        {(ROLE === 'Guest' || ROLE === 'Host') && (
                             <>
-                                <Route path="/login" element={<LoginPage/>}/>
-                                <Route path="/register" element={<RegisterPage/>}/>
-                                <Route path="/search-and-filter-accommodations"
-                                       element={<SearchAndFilterAccommodationsPage canBuy={false}/>}/>
-                                <Route path="/*" element={<Navigate to="/search-and-filter-accommodations"/>}/>
+                                <Tooltip title="Your notifications" arrow>
+                                    <Button startIcon={<EditNotificationsIcon/>} sx={{marginLeft: 'auto'}}
+                                            color="success"
+                                            onClick={handleClickOpen}>
+                                        Notifications
+                                    </Button>
+                                </Tooltip>
+
+
+                                <Tooltip title="Your informations" arrow>
+                                    <Button color="info"
+                                            startIcon={<PersonOutlineOutlinedIcon/>}
+                                            onClick={() => {
+                                                navigate('/profile');
+                                            }}>
+
+                                        My profile
+                                    </Button>
+                                </Tooltip>
+                                <Tooltip title="Log out of the system" arrow>
+                                    <Button color="error" onClick={handleLogout} startIcon={<LogoutOutlinedIcon/>}>
+
+                                        Log out
+                                    </Button>
+                                </Tooltip>
                             </>
                         )}
 
-                    </Routes>
-                </Box>
-            </>
-        </SnackbarProvider>
+                        {(!(ROLE === 'Guest') && !(ROLE === 'Host')) && (
+                            <>   <Tooltip title="View all reservations and request for reservations" arrow>
+                                <Button color="warning" sx={{marginLeft: 'auto'}} startIcon={<LoginIcon/>}
+                                        onClick={() => navigate('/login')}>
+
+                                    Log in
+                                </Button>
+                            </Tooltip>
+                                <Tooltip title="View all reservations and request for reservations" arrow>
+                                    <Button color="success" startIcon={<HowToRegIcon/>}
+                                            onClick={() => navigate('/register')}>
+
+                                        Register
+                                    </Button>
+                                </Tooltip>
+                            </>
+                        )}
+                    </Toolbar>
+
+                </AppBar>
+                <Routes>
+
+
+                    {ROLE === 'Guest' && (
+                        <>
+
+                            <Route path="/my-reservations" element={<MyReservationsPage/>}/>
+
+                            <Route path="/recommendations-for-you" element={<RecommendationsForYouPage/>}/>
+                            <Route path="/profile" element={<ProfilePage/>}/>
+                            <Route path="/search-and-filter-accommodations"
+                                   element={<SearchAndFilterAccommodationsPage canBuy={true}/>}/>
+                            <Route path="/*" element={<Navigate to="/search-and-filter-accommodations"/>}/>
+                        </>
+                    )}
+
+                    {ROLE === 'Host' && (
+                        <>
+                            <Route path="/my-places" element={<MyPlacesPage/>}/>
+                            <Route path="/host-a-place" element={<HostAPlacePage/>}/>
+                            <Route path="/reservations-and-requests" element={<ReservationsAndRequestsPage/>}/>
+                            <Route path="/profile" element={<ProfilePage/>}/>
+                            <Route path="/search-and-filter-accommodations"
+                                   element={<SearchAndFilterAccommodationsPage canBuy={false}/>}/>
+                            <Route path="/*" element={<Navigate to="/search-and-filter-accommodations"/>}/>
+                        </>
+                    )}
+
+                    {ROLE === null && (
+                        <>
+                            <Route path="/login" element={<LoginPage/>}/>
+                            <Route path="/register" element={<RegisterPage/>}/>
+                            <Route path="/search-and-filter-accommodations"
+                                   element={<SearchAndFilterAccommodationsPage canBuy={false}/>}/>
+                            <Route path="/*" element={<Navigate to="/search-and-filter-accommodations"/>}/>
+                        </>
+                    )}
+
+                </Routes>
+            </Box>
+        </>
 
 
     );
