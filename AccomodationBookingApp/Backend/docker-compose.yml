@@ -1,5 +1,10 @@
 version: "3.8"
 
+x-logging: &fluent-bit
+  driver: fluentd
+  options:
+    fluentd-address: ${FLUENT_BIT_ADDRESS}:24224
+
 services:
 
   api_gateway:
@@ -32,8 +37,12 @@ services:
       NATS_PORT: ${NATS_PORT}
       NATS_USER: ${NATS_USER}
       NATS_PASS: ${NATS_PASS}
+
+      JAEGER_ENDPOINT: ${JAEGER_ENDPOINT}
     networks:
       - network
+      - monitoring
+    logging: *fluent-bit
 
   authorization_service:
     image: authorization_service
@@ -61,11 +70,14 @@ services:
       AUTHORIZATION_EVENT_INNER_DB_NAME: ${AUTHORIZATION_EVENT_INNER_DB_NAME}
       AUTHORIZATION_EVENT_DB_COLLECTION_NAME: ${AUTHORIZATION_EVENT_DB_COLLECTION_NAME}
 
+      JAEGER_ENDPOINT: ${JAEGER_ENDPOINT}
     depends_on:
       authorization_db:
           condition: service_healthy
     networks:
       - network
+      - monitoring
+    logging: *fluent-bit
 
   authorization_db:
     image: authorization_db
@@ -86,9 +98,10 @@ services:
       start_period: 10s 
     networks:
       - network
+      - monitoring
     ports:
       - 5001:5432
-
+    logging: *fluent-bit
 
   authorization_event_db:
     image: mongo
@@ -101,8 +114,10 @@ services:
       start_period: 10s 
     networks:
       - network
+      - monitoring
     ports:
       - 6001:27017
+    logging: *fluent-bit
 
   user_profile_service:
     image: user_profile_service
@@ -136,12 +151,15 @@ services:
       RESERVATION_SERVICE_PORT: ${RESERVATION_SERVICE_PORT}
       ACCOMMODATION_SERVICE_HOST: ${ACCOMMODATION_SERVICE_HOST}
       ACCOMMODATION_SERVICE_PORT: ${ACCOMMODATION_SERVICE_PORT}
+
+      JAEGER_ENDPOINT: ${JAEGER_ENDPOINT}
     depends_on:
       user_profile_db:
         condition: service_healthy
     networks:
       - network
-
+      - monitoring
+    logging: *fluent-bit
 
 
   user_profile_db:
@@ -163,8 +181,10 @@ services:
       start_period: 10s 
     networks:
       - network
+      - monitoring
     ports:
       - 5002:5432
+    logging: *fluent-bit
 
   user_profile_event_db:
     image: mongo
@@ -177,8 +197,10 @@ services:
       start_period: 10s 
     networks:
       - network
+      - monitoring
     ports:
       - 6002:27017
+    logging: *fluent-bit
 
   accommodation_service:
     image: accommodation_service
@@ -205,11 +227,15 @@ services:
       ACCOMMODATION_EVENT_DB_PORT: ${ACCOMMODATION_EVENT_DB_PORT}
       ACCOMMODATION_EVENT_INNER_DB_NAME: ${ACCOMMODATION_EVENT_INNER_DB_NAME}
       ACCOMMODATION_EVENT_DB_COLLECTION_NAME: ${ACCOMMODATION_EVENT_DB_COLLECTION_NAME}
+
+      JAEGER_ENDPOINT: ${JAEGER_ENDPOINT}
     networks:
       - network
+      - monitoring
     depends_on:
       accommodation_db:
         condition: service_healthy
+    logging: *fluent-bit
 
   accommodation_db:
     image: mongo
@@ -226,6 +252,8 @@ services:
       - 5003:27017
     networks:
       - network
+      - monitoring
+    logging: *fluent-bit
 
   accommodation_event_db:
     image: mongo
@@ -238,9 +266,10 @@ services:
       start_period: 10s 
     networks:
       - network
+      - monitoring
     ports:
       - 6003:27017
-
+    logging: *fluent-bit
 
   reservation_service:
     image: reservation_service
@@ -263,12 +292,15 @@ services:
       NATS_PASS: ${NATS_PASS}
       DELETE_USER_COMMAND_SUBJECT: ${DELETE_USER_COMMAND_SUBJECT}
       DELETE_USER_REPLY_SUBJECT: ${DELETE_USER_REPLY_SUBJECT}
+
+      JAEGER_ENDPOINT: ${JAEGER_ENDPOINT}
     networks:
       - network
+      - monitoring
     depends_on:
       reservation_db:
         condition: service_healthy
-   
+    logging: *fluent-bit
 
   reservation_db:
     image: mongo
@@ -283,9 +315,10 @@ services:
       start_period: 10s 
     networks:
       - network
+      - monitoring
     ports:
       - 5004:27017
-
+    logging: *fluent-bit
 
   notification_service:
     image: notification_service
@@ -316,11 +349,15 @@ services:
       NATS_PORT: ${NATS_PORT}
       NATS_USER: ${NATS_USER}
       NATS_PASS: ${NATS_PASS}
+
+      JAEGER_ENDPOINT: ${JAEGER_ENDPOINT}
     depends_on:
       notification_db:
         condition: service_healthy
     networks:
       - network
+      - monitoring
+    logging: *fluent-bit
 
   notification_db:
     image: notification_db
@@ -340,8 +377,10 @@ services:
       retries: 5
     networks:
       - network
+      - monitoring
     ports:
       - 5005:5432
+    logging: *fluent-bit
 
   notification_event_db:
     image: mongo
@@ -354,8 +393,10 @@ services:
       start_period: 10s 
     networks:
       - network
+      - monitoring
     ports:
       - 6005:27017
+    logging: *fluent-bit
 
   rating_service:
     image: rating_service
@@ -371,11 +412,15 @@ services:
       NEO4J_USERNAME: ${NEO4J_USERNAME}
       NEO4J_PASS: ${NEO4J_PASS}
       API_GATEWAY_HOST: ${API_GATEWAY_HOST}
+
+      JAEGER_ENDPOINT: ${JAEGER_ENDPOINT}
     networks:
       - network
+      - monitoring
     depends_on:
       neo4j:
         condition: service_healthy
+    logging: *fluent-bit
 
   neo4j:
       image: neo4j
@@ -402,10 +447,12 @@ services:
         start_period: 10s 
       networks:
         - network
+        - monitoring
       environment:
         - NEO4J_AUTH=neo4j/nekaSifra
       volumes:
         - ratingDb:/data
+      logging: *fluent-bit
 
   nats:
     image: nats
@@ -413,6 +460,8 @@ services:
     restart: on-failure
     networks:
       - network
+      - monitoring
+    logging: *fluent-bit
 
 volumes:
   accommodationDb:
@@ -423,4 +472,5 @@ networks:
   network:
     external: true
     driver: bridge
-
+  monitoring:
+    external: true
