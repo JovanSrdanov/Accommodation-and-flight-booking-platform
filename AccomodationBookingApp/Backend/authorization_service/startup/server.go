@@ -132,7 +132,6 @@ func (server *Server) startGrpcServer(
 	authInterceptor := interceptor.NewAuthServerInterceptor(maker, protectedMethodsWithAllowedRoles)
 
 	grpcServer := grpc.NewServer(
-		//grpc.UnaryInterceptor(authInterceptor.Unary()),
 		grpc.ChainUnaryInterceptor(middleware.NewGRPUnaryServerInterceptor(), authInterceptor.Unary()),
 		grpc.StreamInterceptor(authInterceptor.Stream()),
 	)

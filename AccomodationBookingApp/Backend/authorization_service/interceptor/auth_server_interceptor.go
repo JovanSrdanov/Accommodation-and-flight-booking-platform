@@ -62,9 +62,7 @@ func (interceptor *AuthServerInterceptor) Stream() grpc.StreamServerInterceptor 
 
 func (interceptor *AuthServerInterceptor) authorize(ctx context.Context, method string) (error, context.Context) {
 	log.Println("Authorization in progress...")
-	log.Println("TEST")
-	log.Println(interceptor.protectedMethodsWithAllowedRoles)
-	log.Println(method)
+
 	allowedRoles, ok := interceptor.protectedMethodsWithAllowedRoles[method]
 	if !ok {
 		// if a provided method is not in the accessible roles map, it means that everyone can use it
@@ -75,8 +73,6 @@ func (interceptor *AuthServerInterceptor) authorize(ctx context.Context, method 
 	if !ok {
 		return status.Errorf(codes.Unauthenticated, "metadata is not provided"), nil
 	}
-
-	log.Println("metadataaaaaaaaaa: ", metaData)
 
 	values := metaData["authorization"]
 	if len(values) == 0 {
@@ -93,12 +89,6 @@ func (interceptor *AuthServerInterceptor) authorize(ctx context.Context, method 
 
 	ctx = context.WithValue(ctx, "id", tokenPayload.ID)
 
-	//var footerData map[string]interface{}
-	//if err := paseto.ParseFooter(accessToken, &footerData); err != nil {
-	//	return status.Errorf(codes.Internal, "failed to parse token footer: ", err), nil
-	//}
-	//
-	//providedRole := int8(footerData["Role"].(float64))
 	providedRole := tokenPayload.Role
 
 	for _, role := range allowedRoles {

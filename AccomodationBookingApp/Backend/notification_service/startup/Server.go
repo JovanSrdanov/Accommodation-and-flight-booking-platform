@@ -15,6 +15,7 @@ import (
 	"log"
 	"net"
 	"notification_service/communication/handler"
+	"notification_service/communication/middleware"
 	"notification_service/domain/service"
 	"notification_service/persistence/repository"
 )
@@ -150,7 +151,7 @@ func (server *Server) startGrpcServer(notificationConsentHandler *handler.Notifi
 	authInterceptor := interceptor.NewAuthServerInterceptor(tokenMaker, protectedMethodsWithAllowedRoles)
 
 	grpcServer := grpc.NewServer(
-		grpc.UnaryInterceptor(authInterceptor.Unary()),
+		grpc.ChainUnaryInterceptor(middleware.NewGRPUnaryServerInterceptor(), authInterceptor.Unary()),
 		grpc.StreamInterceptor(authInterceptor.Stream()),
 	)
 	notification.RegisterNotificationServiceServer(grpcServer, notificationConsentHandler)
