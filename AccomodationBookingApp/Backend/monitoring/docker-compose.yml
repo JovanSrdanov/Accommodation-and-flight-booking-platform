@@ -45,6 +45,36 @@ services:
     networks:
       - monitoring
 
+  prometheus:
+    image: prom/prometheus:v2.35.0
+    restart: on-failure
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - prometheus:/var/lib/prometheus
+    networks:
+      - monitoring
+
+  node-exporter:
+    image: prom/node-exporter:v1.1.2
+    ports:
+      - "9100:9100"
+    networks:
+      - monitoring
+
+  cadvisor:
+    image: google/cadvisor:v0.33.0
+    ports:
+      - "8080:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    networks:
+      - monitoring
+
 volumes:
   grafana:
     name: grafana

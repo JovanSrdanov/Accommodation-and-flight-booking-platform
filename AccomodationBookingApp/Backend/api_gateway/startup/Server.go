@@ -13,6 +13,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/zsais/go-gin-prometheus"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -32,6 +33,9 @@ func NewServer(config *Configuration) *Server {
 
 	// OpenTelemetry
 	server.server.Use(otelgin.Middleware("api-gateway"))
+
+	prom := ginprometheus.NewPrometheus("gin")
+	prom.Use(server.server)
 
 	server.server.Use(middleware.AuthTokenParser())
 
