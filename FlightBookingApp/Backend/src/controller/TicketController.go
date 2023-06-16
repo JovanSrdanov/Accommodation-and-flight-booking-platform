@@ -13,12 +13,14 @@ import (
 type TicketController struct {
 	ticketService service.TicketService
 	jwtService    service.JwtService
+	apiKeyService *service.ApiKeyService
 }
 
-func NewTicketController(ticketService service.TicketService, jwtService service.JwtService) *TicketController {
+func NewTicketController(ticketService service.TicketService, jwtService service.JwtService, apiKeyService *service.ApiKeyService) *TicketController {
 	return &TicketController{
 		ticketService: ticketService,
 		jwtService:    jwtService,
+		apiKeyService: apiKeyService,
 	}
 }
 
@@ -155,6 +157,40 @@ func (controller *TicketController) BuyTicket(ctx *gin.Context) {
 
 	//Kreiranje tiketa u bazi
 	id, err := controller.ticketService.BuyTicket(ticket, buyTicketDto.NumberOfTickets)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.NewSimpleResponse(err.Error()))
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, dto.NewCreatedResponse(id))
+}
+
+func (controller *TicketController) BuyTicketApiKey(ctx *gin.Context) {
+	//DTO i njegova validacija
+	var buyTicketApiKeyDto dto.BuyTicketApiKeyDto
+
+	err := ctx.ShouldBindJSON(&buyTicketApiKeyDto)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.NewSimpleResponse(err.Error()))
+		return
+	}
+
+	apiKey, err := controller.apiKeyService.GetByValue(buyTicketApiKeyDto.ApiKey)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.NewSimpleResponse(err.Error()))
+		return
+	}
+
+	user, err := controller.jwtService.GetUser(apiKey.AccountId)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, dto.NewSimpleResponse(err.Error()))
+		return
+	}
+
+	ticket := model.NewTicket(user, user, buyTicketApiKeyDto.FlightId)
+
+	//Kreiranje tiketa u bazi
+	id, err := controller.ticketService.BuyTicket(ticket, buyTicketApiKeyDto.NumberOfTickets)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, dto.NewSimpleResponse(err.Error()))
 		return

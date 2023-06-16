@@ -22,11 +22,15 @@ func DefineTicketEndpoints(upperRouterGroup *gin.RouterGroup, client *mongo.Clie
 		flightRepo repository.FlightRepository  = depContainer.GetRepository("flight").(repository.FlightRepository)
 		serv       service.TicketService        = service.NewTicketService(repo, flightRepo)
 		jwtServ    service.JwtService           = depContainer.GetService("jwt").(service.JwtService)
-		contr      *controller.TicketController = controller.NewTicketController(serv, jwtServ)
+		apiKeyServ                              = depContainer.GetService("apiKey")
+		contr      *controller.TicketController = controller.NewTicketController(serv, jwtServ, apiKeyServ.(*service.ApiKeyService))
 	)
 	depContainer.RegisterEntityDependencyBundle("ticket", repo, serv, contr)
 
 	tickets := upperRouterGroup.Group("/ticket")
+	//Unauthenticated
+	tickets.POST("api-key", contr.BuyTicketApiKey)
+	//Authenticated
 	tickets.Use(middleware.ValidateToken())
 	{
 		tickets.GET("",

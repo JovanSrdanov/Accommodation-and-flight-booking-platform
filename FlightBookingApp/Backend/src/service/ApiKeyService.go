@@ -27,3 +27,11 @@ func (service *ApiKeyService) GetByAccountId(id primitive.ObjectID) (model.ApiKe
 	}
 	return key, err
 }
+
+func (service *ApiKeyService) GetByValue(value string) (model.ApiKey, error) {
+	key, err := service.apiKeyRepo.GetByValue(value)
+	if !key.IsValid() {
+		return model.ApiKey{}, errors.New("Api key expired")
+	}
+	return key, err
+}

@@ -18,6 +18,7 @@ type apiKeyRepository struct {
 type ApiKeyRepository interface {
 	Create(key *model.ApiKey) error
 	GetByAccountId(id primitive.ObjectID) (model.ApiKey, error)
+	GetByValue(value string) (model.ApiKey, error)
 }
 
 func NewApiKeyRepository(client *mongo.Client, logger *log.Logger) ApiKeyRepository {
@@ -59,6 +60,24 @@ func (repo *apiKeyRepository) GetByAccountId(id primitive.ObjectID) (model.ApiKe
 
 	return apiKey, nil
 }
+
+func (repo *apiKeyRepository) GetByValue(value string) (model.ApiKey, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	collection := repo.getCollection()
+
+	result := collection.FindOne(ctx, bson.M{"value": value})
+	if result.Err() != nil {
+		return model.ApiKey{}, result.Err()
+	}
+
+	var apiKey model.ApiKey
+	result.Decode(&apiKey)
+
+	return apiKey, nil
+}
+
 func (repo *apiKeyRepository) getCollection() *mongo.Collection {
 	db := repo.base.client.Database("flightDb")
 	collection := db.Collection("apiKeys")
