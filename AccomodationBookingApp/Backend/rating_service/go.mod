@@ -8,7 +8,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/neo4j/neo4j-go-driver/v4 v4.4.7
 	go.mongodb.org/mongo-driver v1.11.7
-	google.golang.org/grpc v1.54.0
+	google.golang.org/grpc v1.55.0
 )
 
 require (
