@@ -257,8 +257,7 @@ function SearchAndFilterAccommodations(props) {
 
     const [ratingInfo, setRatingInfo] = React.useState(null);
     const [showRatingDialog, setShowRatingDialog] = React.useState(false);
-
-
+    
     const handleViewHostRatingClick = (item) => {
         console.log(item)
         interceptor.get("api-2/accommodation/rating/host/" + item.hostId

@@ -916,7 +916,18 @@ func (repo ReservationRepositoryMongo) GetAllRatableHostsForGuest(guestId string
 
 	hostIds := make([]string, 0)
 	for _, val := range availabilities {
-		hostIds = append(hostIds, val.HostId)
+		exists := false
+		for _, id := range hostIds {
+			if id == val.HostId {
+				exists = true
+				break
+			}
+		}
+
+		// If the hostId doesn't exist, append it to hostIds
+		if !exists {
+			hostIds = append(hostIds, val.HostId)
+		}
 	}
 
 	return hostIds, nil

@@ -209,13 +209,13 @@ function Ratings(props) {
             </Dialog>
 
             <div className="wrapper">
-                <Flex flexDirection="rows" alignItems="center" justifyContent="center">
-                    <Flex flexDirection="column" alignItems="center" m={1}>
+                <Flex flexDirection="rows">
+                    <Flex flexDirection="column" alignItems="center" m={2}>
                         <Box m={1}>
                             Hosts
                         </Box>
                         {ratableHosts != null && ratableHosts.length > 0 && (
-                            <div className="wrapper">
+                            <div>
                                 <TableContainer component={Paper}
                                                 sx={{maxHeight: 700, overflowY: 'scroll'}}>
                                     <Table>
@@ -287,12 +287,12 @@ function Ratings(props) {
                         )}
 
                     </Flex>
-                    <Flex flexDirection="column" alignItems="center" m={1}>
+                    <Flex flexDirection="column" alignItems="center" m={2}>
                         <Box m={1}>
                             Accommodations
                         </Box>
                         {ratableAccommodations != null && ratableAccommodations.length > 0 && (
-                            <div className="wrapper">
+                            <div>
                                 <TableContainer component={Paper}
                                                 sx={{maxHeight: 700, overflowY: 'scroll'}}>
                                     <Table>
@@ -331,7 +331,7 @@ function Ratings(props) {
                                                                             ))}
                                                                         </AccordionDetails>
                                                                     </Accordion>
-                                                                  
+
                                                                     <Accordion sx={{border: '2px solid black'}}>
                                                                         <AccordionSummary
                                                                             expandIcon={
