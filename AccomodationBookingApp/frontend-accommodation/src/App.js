@@ -39,6 +39,8 @@ import {Flex} from "reflexbox";
 import interceptor from "./interceptor/interceptor";
 import EditNotificationsIcon from '@mui/icons-material/EditNotifications';
 import {useSnackbar} from "notistack";
+import RatingsPage from "./pages/guest-pages/ratings-page";
+import StarRateIcon from '@mui/icons-material/StarRate';
 
 function App() {
 
@@ -216,21 +218,6 @@ function App() {
     return (
 
         <>
-            {/*<Snackbar*/}
-            {/*    anchorOrigin={{*/}
-            {/*        vertical: 'bottom',*/}
-            {/*        horizontal: 'right',*/}
-            {/*    }}*/}
-            {/*    open={notificationSnackBar}*/}
-            {/*    autoHideDuration={5000}*/}
-            {/*    onClose={() => setNotificationSnackBar(false)}*/}
-            {/*    message={message}*/}
-            {/*>*/}
-            {/*    <Alert onClose={handleClose} severity="info">*/}
-            {/*        {message}*/}
-            {/*    </Alert>*/}
-
-            {/*</Snackbar>*/}
 
             <Dialog open={open} onClose={handleClose}>
                 <DialogTitle>Choose about what you want to be notified</DialogTitle>
@@ -352,6 +339,13 @@ function App() {
                                         Recommendations for you
                                     </Button>
                                 </Tooltip>
+                                <Tooltip title="Rate your visiting history" arrow>
+                                    <Button startIcon={<StarRateIcon/>} sx={{color: 'inherit'}}
+                                            onClick={() => navigate('/ratings')}>
+
+                                        Ratings
+                                    </Button>
+                                </Tooltip>
 
                             </>
                         )}
@@ -380,6 +374,7 @@ function App() {
                                         Reservations and requests
                                     </Button>
                                 </Tooltip>
+
                             </>
                         )}
 
@@ -438,9 +433,8 @@ function App() {
 
                     {ROLE === 'Guest' && (
                         <>
-
+                            <Route path="/ratings" element={<RatingsPage/>}/>
                             <Route path="/my-reservations" element={<MyReservationsPage/>}/>
-
                             <Route path="/recommendations-for-you" element={<RecommendationsForYouPage/>}/>
                             <Route path="/profile" element={<ProfilePage/>}/>
                             <Route path="/search-and-filter-accommodations"
@@ -451,6 +445,7 @@ function App() {
 
                     {ROLE === 'Host' && (
                         <>
+
                             <Route path="/my-places" element={<MyPlacesPage/>}/>
                             <Route path="/host-a-place" element={<HostAPlacePage/>}/>
                             <Route path="/reservations-and-requests" element={<ReservationsAndRequestsPage/>}/>

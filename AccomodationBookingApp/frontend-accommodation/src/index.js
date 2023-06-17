@@ -15,7 +15,7 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <ThemeProvider theme={darkTheme}>
         <BrowserRouter>
-            <SnackbarProvider maxSnack={3}>
+            <SnackbarProvider maxSnack={5}>
                 <App></App>
             </SnackbarProvider>
         </BrowserRouter>

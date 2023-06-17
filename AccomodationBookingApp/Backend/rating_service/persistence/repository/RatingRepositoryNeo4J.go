@@ -585,7 +585,7 @@ func (repo RatingRepositoryNeo4J) CalculateRatingForHost(hostId string) (model.S
 	result, err := session.ReadTransaction(func(tx neo4j.Transaction) (interface{}, error) {
 		result, err := tx.Run(
 			"MATCH (:Host {hostId: $hostID})<-[r:RATED_HOST]-(g:Guest) "+
-				"RETURN toFloat(SUM(r.rating)) / count(r) AS avgRating",
+				"RETURN CASE WHEN count(r) > 0 THEN toFloat(SUM(r.rating)) / count(r) ELSE toFloat(0) END AS avgRating",
 			map[string]interface{}{
 				"hostID": hostId,
 			},
