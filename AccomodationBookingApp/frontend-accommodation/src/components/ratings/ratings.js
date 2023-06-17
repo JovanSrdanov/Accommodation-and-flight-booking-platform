@@ -331,8 +331,7 @@ function Ratings(props) {
                                                                             ))}
                                                                         </AccordionDetails>
                                                                     </Accordion>
-                                                                    <Box m={1}>
-                                                                    </Box>
+                                                                  
                                                                     <Accordion sx={{border: '2px solid black'}}>
                                                                         <AccordionSummary
                                                                             expandIcon={

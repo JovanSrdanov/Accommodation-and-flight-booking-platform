@@ -170,6 +170,7 @@ function SearchAndFilterAccommodations(props) {
 
     const handleResultDialogShow = () => {
         setResultDialogShow(false)
+        setResultData(null)
     };
 
     const [formData, setFormData] = useState({
@@ -253,8 +254,86 @@ function SearchAndFilterAccommodations(props) {
 
 
     };
+
+    const [ratingInfo, setRatingInfo] = React.useState(null);
+    const [showRatingDialog, setShowRatingDialog] = React.useState(false);
+
+
+    const handleViewHostRatingClick = (item) => {
+        console.log(item)
+        interceptor.get("api-2/accommodation/rating/host/" + item.hostId
+        ).then((res) => {
+            setRatingInfo(res.data)
+            setShowRatingDialog(true)
+        }).catch((err) => {
+            console.log(err)
+        })
+    };
+    const handleRatingDialogClose = () => {
+        setShowRatingDialog(false)
+        setRatingInfo(null)
+    };
+    const handleViewAccommodationRatingClick = (item) => {
+        interceptor.get("api-2/accommodation/rating/" + item.id).then((res) => {
+            setRatingInfo(res.data)
+            setShowRatingDialog(true)
+        }).catch((err) => {
+            console.log(err)
+        })
+    };
     return (
         <>
+            <Dialog onClose={handleRatingDialogClose} open={showRatingDialog}>
+                <DialogTitle>Ratings:</DialogTitle>
+                <DialogContent>
+
+                    {ratingInfo !== null && ratingInfo.ratings != null && ratingInfo.ratings.length > 0 && (
+                        <>
+                            <Box m={1}>
+                                <li>Avarage rating: {ratingInfo.avgRating}</li>
+                            </Box>
+
+                            <TableContainer component={Paper} sx={{maxHeight: 500, height: 500, overflowY: 'scroll'}}>
+                                <Table>
+                                    <TableBody>
+                                        {ratingInfo.ratings.map((item, idx) => (
+                                            <React.Fragment key={`${idx}-row`}>
+                                                <StyledTableRow>
+                                                    <StyledTableCell>
+                                                        <Box m={1} sx={{
+                                                            overflowy: 'auto',
+                                                            overflowX: 'auto'
+                                                        }}>
+                                                            <li>Date: {item.Date}</li>
+                                                            <li>Name: {item.name}</li>
+                                                            <li>Surname: {item.surname}</li>
+                                                            <li>Rating: {item.rating}</li>
+                                                        </Box>
+                                                    </StyledTableCell>
+                                                </StyledTableRow>
+                                            </React.Fragment>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </>
+                    )}
+
+
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        fullWidth
+                        onClick={handleRatingDialogClose}
+                        variant="contained"
+                    >
+                        Close
+                    </Button>
+
+                </DialogActions>
+            </Dialog>
+
+
             <Dialog onClose={handleResultDialogShow} open={resultDialogShow} fullWidth maxWidth="lg">
                 <DialogTitle>Search and filter results</DialogTitle>
                 <DialogContent>
@@ -266,42 +345,95 @@ function SearchAndFilterAccommodations(props) {
                                         <React.Fragment key={`${item.id}-row`}>
                                             <StyledTableRow>
                                                 <StyledTableCell>
-                                                    <Box m={1}>
+                                                    <Box m={1} sx={{
+                                                        width: 250,
+                                                        height: 125,
+                                                        overflowy: 'auto',
+                                                        overflowX: 'auto'
+                                                    }}>
                                                         <li>Name: {item.name}</li>
                                                         <li>Total price: {item.price}$</li>
                                                         <li>{item.address.city}, {item.address.country}</li>
                                                         <li>{item.address.street}, {item.address.streetNumber}</li>
+                                                        <li>Guests: {item.minGuests} - {item.maxGuests}</li>
+                                                        <li>Rating: {item.rating}</li>
                                                     </Box>
                                                 </StyledTableCell>
                                                 <StyledTableCell>
-                                                    <Accordion sx={{border: '1px solid black'}}>
-                                                        <AccordionSummary
-                                                            expandIcon={<ExpandMoreIcon/>}>Images</AccordionSummary>
-                                                        <AccordionDetails>
-                                                            {item.images && item.images.length > 0 && (
-                                                                <ImageList
-                                                                    variant="masonry"
-                                                                    sx={{
-                                                                        width: 400,
-                                                                        height: 200,
-                                                                        border: '1px solid #f57c00',
-                                                                        margin: '0 auto' // Center horizontally
-                                                                    }}
-                                                                    cols={2}
-                                                                    gap={1}
-                                                                >
-                                                                    {item.images.map((item1, index) => (
-                                                                        <ImageListItem key={item1}>
-                                                                            <img src={item1} alt="" loading="lazy"/>
-                                                                        </ImageListItem>
+                                                    <Box m={1} sx={{
+                                                        width: 350,
+                                                        overflowy: 'auto',
+                                                        overflowX: 'auto'
+                                                    }}>
+                                                        <Box m={1}>
+                                                            <Accordion sx={{border: "2px solid black"}}>
+                                                                <AccordionSummary
+                                                                    expandIcon={<ExpandMoreIcon/>}>
+                                                                    List Of Ameneties
+                                                                </AccordionSummary>
+                                                                <AccordionDetails
+                                                                    sx={{height: 200, overflowY: 'scroll'}}>
+                                                                    {item.amenities.map((a) => (
+                                                                        <Box m={1} key={a}>- {a}</Box>
                                                                     ))}
-                                                                </ImageList>
-                                                            )}
-                                                        </AccordionDetails>
-                                                    </Accordion>
+                                                                </AccordionDetails>
+                                                            </Accordion>
+                                                        </Box>
+                                                        <Box m={1}>
+                                                            <Accordion sx={{border: '1px solid black'}}>
+                                                                <AccordionSummary
+                                                                    expandIcon={
+                                                                        <ExpandMoreIcon/>}>Images</AccordionSummary>
+                                                                <AccordionDetails>
+                                                                    {item.images && item.images.length > 0 && (
+                                                                        <ImageList
+                                                                            variant="masonry"
+                                                                            sx={{
+                                                                                width: 250,
+                                                                                height: 200,
+                                                                                border: '1px solid #f57c00',
+                                                                                margin: '0 auto' // Center horizontally
+                                                                            }}
+                                                                            cols={1}
+                                                                            gap={1}
+                                                                        >
+                                                                            {item.images.map((item1, index) => (
+                                                                                <ImageListItem key={item1}>
+                                                                                    <img src={item1} alt=""
+                                                                                         loading="lazy"/>
+                                                                                </ImageListItem>
+                                                                            ))}
+                                                                        </ImageList>
+                                                                    )}
+                                                                </AccordionDetails>
+                                                            </Accordion>
+                                                        </Box>
+                                                    </Box>
+
+                                                </StyledTableCell>
+                                                <StyledTableCell>
+                                                    <Box m={1}>
+                                                        <Button fullWidth color="success" variant="outlined"
+                                                                onClick={() => {
+                                                                    handleViewHostRatingClick(item)
+                                                                }}>
+                                                            Host rating
+                                                        </Button>
+                                                    </Box>
+                                                    <Box m={1}>
+                                                        <Button fullWidth color="success" variant="outlined"
+                                                                onClick={() => {
+                                                                    handleViewAccommodationRatingClick(item)
+                                                                }}>
+                                                            Accommodation rating
+                                                        </Button>
+                                                    </Box>
+
+
                                                 </StyledTableCell>
                                                 {props.canBuy && props.canBuy === true && (
                                                     <StyledTableCell>
+
                                                         <Button
                                                             onClick={() => {
                                                                 handleReserve(item);
