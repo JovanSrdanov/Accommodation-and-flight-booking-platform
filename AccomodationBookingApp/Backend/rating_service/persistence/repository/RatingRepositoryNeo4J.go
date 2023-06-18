@@ -1,6 +1,9 @@
 package repository
 
 import (
+	"common/NotificationMessaging"
+	"common/saga/messaging"
+	"github.com/google/uuid"
 	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"log"
@@ -10,11 +13,13 @@ import (
 )
 
 type RatingRepositoryNeo4J struct {
-	dbClient neo4j.Driver
+	dbClient  neo4j.Driver
+	publisher messaging.Publisher
 }
 
-func NewRatingRepositoryNeo4J(dbClient neo4j.Driver) (*RatingRepositoryNeo4J, error) {
-	return &RatingRepositoryNeo4J{dbClient: dbClient}, nil
+func NewRatingRepositoryNeo4J(dbClient neo4j.Driver, publisher messaging.Publisher) (*RatingRepositoryNeo4J, error) {
+	return &RatingRepositoryNeo4J{dbClient: dbClient,
+		publisher: publisher}, nil
 }
 
 func (repo RatingRepositoryNeo4J) RateAccommodation(guestId string, ratingDto *model.Rating) error {
@@ -438,6 +443,18 @@ func (repo RatingRepositoryNeo4J) RateHost(ratingDto *model.RateHostDto) error {
 		log.Fatal(err)
 	}
 
+	accountID, err := uuid.Parse(hostID)
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+	message := NotificationMessaging.NotificationMessage{
+		MessageType:            "HostRatingGiven",
+		MessageForNotification: "Guest has given you a new rating",
+		AccountID:              accountID,
+	}
+	repo.publisher.Publish(message)
+
 	return nil
 }
 
@@ -528,6 +545,17 @@ func (repo RatingRepositoryNeo4J) DeleteRatingForHost(hostId string, guestId str
 	if err != nil {
 		log.Fatal(err)
 	}
+	accountID, err := uuid.Parse(hostId)
+	if err != nil {
+		log.Fatal(err)
+		return "", err
+	}
+	message := NotificationMessaging.NotificationMessage{
+		MessageType:            "HostRatingGiven",
+		MessageForNotification: "Guest has deleted his previous rating",
+		AccountID:              accountID,
+	}
+	repo.publisher.Publish(message)
 
 	return "Rating for host deleted", nil
 }

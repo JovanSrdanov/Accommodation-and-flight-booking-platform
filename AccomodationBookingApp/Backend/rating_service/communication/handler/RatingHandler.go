@@ -1,9 +1,12 @@
 package handler
 
 import (
+	"common/NotificationMessaging"
 	rating "common/proto/rating_service/generated"
+	"common/saga/messaging"
 	"context"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"rating_service/domain/model"
@@ -17,10 +20,12 @@ import (
 type RatingHandler struct {
 	rating.UnimplementedRatingServiceServer
 	ratingService service.RatingService
+	publisher     messaging.Publisher
 }
 
-func NewRatingHandler(ratingService service.RatingService) *RatingHandler {
-	return &RatingHandler{ratingService: ratingService}
+func NewRatingHandler(ratingService service.RatingService, publisher messaging.Publisher) *RatingHandler {
+	return &RatingHandler{ratingService: ratingService,
+		publisher: publisher}
 }
 
 func (handler RatingHandler) RateAccommodation(ctx context.Context, in *rating.RateAccommodationRequest) (*rating.EmptyResponse, error) {
@@ -93,6 +98,24 @@ func (handler RatingHandler) RateHost(ctx context.Context, in *rating.RateHostRe
 
 	if oldProminenet != newProminent {
 		//TODO Jovan+Strahinja: Ovde da se objavi poruka u message queue (kad ovo proradi onda cu dodati i kad mu neko otkaze rezervaciju)
+		accountID, err := uuid.Parse(in.Rating.HostId)
+		if err != nil {
+			log.Fatal(err)
+			return nil, err
+		}
+		MFN := ""
+		if newProminent {
+			MFN = "You are now a prominent host"
+		} else {
+			MFN = "You are no longer prominent host"
+		}
+
+		message := NotificationMessaging.NotificationMessage{
+			MessageType:            "HostRatingGiven",
+			MessageForNotification: MFN,
+			AccountID:              accountID,
+		}
+		handler.publisher.Publish(message)
 	}
 
 	return &rating.EmptyResponse{}, nil
@@ -110,10 +133,39 @@ func (handler RatingHandler) GetRatingForHost(ctx context.Context, in *rating.Ra
 }
 
 func (handler RatingHandler) DeleteRatingForHost(ctx context.Context, in *rating.RatingForHostRequest) (*rating.SimpleResponse, error) {
+	oldProminenet, err := prominentHostHttp(in.HostId)
+	if err != nil {
+		return nil, err
+	}
 	loggedInId := ctx.Value("id").(uuid.UUID).String()
 	message, err := handler.ratingService.DeleteRatingForHost(in.HostId, loggedInId)
 	if err != nil {
 		return nil, err
+	}
+	newProminent, err := prominentHostHttp(in.HostId)
+	if err != nil {
+		return nil, err
+	}
+	if oldProminenet != newProminent {
+		//TODO Jovan+Strahinja: Ovde da se objavi poruka u message queue (kad ovo proradi onda cu dodati i kad mu neko otkaze rezervaciju)
+		accountID, err := uuid.Parse(in.HostId)
+		if err != nil {
+			log.Fatal(err)
+			return nil, err
+		}
+		MFN := ""
+		if newProminent {
+			MFN = "You are now a prominent host"
+		} else {
+			MFN = "You are no longer prominent host"
+		}
+
+		message := NotificationMessaging.NotificationMessage{
+			MessageType:            "HostRatingGiven",
+			MessageForNotification: MFN,
+			AccountID:              accountID,
+		}
+		handler.publisher.Publish(message)
 	}
 
 	return &rating.SimpleResponse{Message: message}, nil

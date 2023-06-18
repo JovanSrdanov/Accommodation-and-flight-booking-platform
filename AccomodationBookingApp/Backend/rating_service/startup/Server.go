@@ -5,6 +5,8 @@ import (
 	"authorization_service/domain/token"
 	"authorization_service/interceptor"
 	rating "common/proto/rating_service/generated"
+	"common/saga/messaging"
+	"common/saga/messaging/nats"
 	"fmt"
 	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
 	"google.golang.org/grpc"
@@ -25,11 +27,22 @@ func NewServer(config *Configuration) *Server {
 }
 
 func (server Server) Start() {
+	sendEventPublisher := server.initSendEventPublisher(server.config.SendEventToNotificationServiceSubject)
 	neo4jClient := server.initNeo4jClient()
-	ratingRepo := initRatingRepo(neo4jClient)
+	ratingRepo := initRatingRepo(neo4jClient, sendEventPublisher)
 	ratingService := service.NewRatingService(*ratingRepo)
-	ratingHandler := handler.NewRatingHandler(*ratingService)
+	ratingHandler := handler.NewRatingHandler(*ratingService, sendEventPublisher)
 	server.startGrpcServer(ratingHandler)
+}
+
+func (server *Server) initSendEventPublisher(subject string) messaging.Publisher {
+	publisher, err := nats.NewNATSPublisher(
+		server.config.NatsHost, server.config.NatsPort,
+		server.config.NatsUser, server.config.NatsPass, subject)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return publisher
 }
 
 func (server Server) initNeo4jClient() neo4j.Driver {
@@ -40,8 +53,8 @@ func (server Server) initNeo4jClient() neo4j.Driver {
 	return client
 }
 
-func initRatingRepo(neo4jClient neo4j.Driver) *repository.RatingRepositoryNeo4J {
-	repo, err := repository.NewRatingRepositoryNeo4J(neo4jClient)
+func initRatingRepo(neo4jClient neo4j.Driver, publisher messaging.Publisher) *repository.RatingRepositoryNeo4J {
+	repo, err := repository.NewRatingRepositoryNeo4J(neo4jClient, publisher)
 	if err != nil {
 		log.Fatal(err)
 	}
