@@ -12,13 +12,13 @@ import (
 	reservation "common/proto/reservation_service/generated"
 	user_profile "common/proto/user_profile_service/generated"
 	"context"
+	"io/ioutil"
+	"net/http"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"io/ioutil"
-	"log"
-	"net/http"
-	"time"
 )
 
 type AccommodationHandler struct {
@@ -60,6 +60,9 @@ func (handler AccommodationHandler) Init(router *gin.RouterGroup) {
 		middleware.ValidateToken(handler.tokenMaker),
 		middleware.Authorization([]model.Role{model.Guest}),
 		handler.GetRecommendedAccommodations)
+	userGroup.GET("/prominent-host",
+		middleware.ValidateToken(handler.tokenMaker),
+		middleware.Authorization([]model.Role{model.Host}), handler.IsHostProminentPaseto)
 }
 
 func (handler AccommodationHandler) SearchAccommodation(ctx *gin.Context) {
@@ -79,8 +82,6 @@ func (handler AccommodationHandler) SearchAccommodation(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, communication.NewErrorResponse(err.Error()))
 		return
 	}
-
-	log.Println(firstRoundDto)
 
 	secondRound, err := handler.FindReservations(searchDto, firstRoundDto)
 	if err != nil {
@@ -370,6 +371,16 @@ func (handler AccommodationHandler) GetRatableHosts(ctx *gin.Context) {
 func (handler AccommodationHandler) IsHostProminent(ctx *gin.Context) {
 	hostId := ctx.Param("hostId")
 
+	handler.IsHostProminentCalculate(ctx, hostId)
+}
+
+func (handler AccommodationHandler) IsHostProminentPaseto(ctx *gin.Context) {
+	loggedInAccCredIdFromCtx := ctx.Keys["id"].(uuid.UUID).String()
+
+	handler.IsHostProminentCalculate(ctx, loggedInAccCredIdFromCtx)
+}
+
+func (handler AccommodationHandler) IsHostProminentCalculate(ctx *gin.Context, hostId string) {
 	ratingClient := communication.NewRatingClient(handler.ratingServiceAddress)
 	reservationClient := communication.NewReservationClient(handler.reservationServiceAddress)
 
@@ -378,8 +389,6 @@ func (handler AccommodationHandler) IsHostProminent(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
-	log.Println(ratingProto.Rating)
 
 	if ratingProto.Rating.AvgRating <= 4.7 {
 		ctx.JSON(http.StatusOK, false)

@@ -7,8 +7,8 @@ import (
 	reservation "common/proto/reservation_service/generated"
 	"context"
 	"fmt"
+
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"log"
 
 	"github.com/google/uuid"
 )
@@ -37,8 +37,6 @@ func (handler AccommodationHandler) Create(ctx context.Context, in *accommodatio
 	if err != nil {
 		return nil, err
 	}
-
-	log.Println(id.Hex())
 
 	// Create availability base
 	//Ovo samo ne radi jbg

@@ -2,7 +2,6 @@ import ParticlesBg from 'particles-bg'
 import "./particles.css"
 import {Navigate, Route, Routes, useNavigate} from "react-router-dom";
 import {
-    Alert,
     AppBar,
     Box,
     Button,
@@ -11,7 +10,6 @@ import {
     DialogContent,
     DialogTitle,
     FormControlLabel,
-    Snackbar,
     Switch,
     Toolbar,
     Tooltip
@@ -40,12 +38,14 @@ import TravelExploreIcon from '@mui/icons-material/TravelExplore';
 import {Flex} from "reflexbox";
 import interceptor from "./interceptor/interceptor";
 import EditNotificationsIcon from '@mui/icons-material/EditNotifications';
+import {useSnackbar} from "notistack";
+import RatingsPage from "./pages/guest-pages/ratings-page";
+import StarRateIcon from '@mui/icons-material/StarRate';
 
 function App() {
 
     const navigate = useNavigate();
-    const [notificationSnackBar, setNotificationSnackBar] = useState(false);
-    const [message, setMessage] = useState('');
+    const {enqueueSnackbar} = useSnackbar();
     const openWebSocket = () => {
 
         const paseto = localStorage.getItem('paseto');
@@ -56,7 +56,7 @@ function App() {
 
         if (websocketOpen) {
             return
-         
+
         }
         setWebsocketOpen(true);
 
@@ -67,9 +67,7 @@ function App() {
 
         };
         ws.onmessage = (event) => {
-
-            setMessage(event.data.toUpperCase());
-            setNotificationSnackBar(true)
+            enqueueSnackbar(event.data.toUpperCase(), {variant: 'info'});
         };
 
         ws.onclose = () => {
@@ -218,21 +216,8 @@ function App() {
 
 
     return (
+
         <>
-            <Snackbar
-                anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'right',
-                }}
-                open={notificationSnackBar}
-                autoHideDuration={5000}
-                onClose={() => setNotificationSnackBar(false)}
-                message={message}
-            >
-                <Alert onClose={handleClose} severity="success" sx={{width: '100%'}}>
-                    {message}
-                </Alert>
-            </Snackbar>
 
             <Dialog open={open} onClose={handleClose}>
                 <DialogTitle>Choose about what you want to be notified</DialogTitle>
@@ -354,6 +339,13 @@ function App() {
                                         Recommendations for you
                                     </Button>
                                 </Tooltip>
+                                <Tooltip title="Rate your visiting history" arrow>
+                                    <Button startIcon={<StarRateIcon/>} sx={{color: 'inherit'}}
+                                            onClick={() => navigate('/ratings')}>
+
+                                        Ratings
+                                    </Button>
+                                </Tooltip>
 
                             </>
                         )}
@@ -382,6 +374,7 @@ function App() {
                                         Reservations and requests
                                     </Button>
                                 </Tooltip>
+
                             </>
                         )}
 
@@ -440,9 +433,8 @@ function App() {
 
                     {ROLE === 'Guest' && (
                         <>
-
+                            <Route path="/ratings" element={<RatingsPage/>}/>
                             <Route path="/my-reservations" element={<MyReservationsPage/>}/>
-
                             <Route path="/recommendations-for-you" element={<RecommendationsForYouPage/>}/>
                             <Route path="/profile" element={<ProfilePage/>}/>
                             <Route path="/search-and-filter-accommodations"
@@ -453,6 +445,7 @@ function App() {
 
                     {ROLE === 'Host' && (
                         <>
+
                             <Route path="/my-places" element={<MyPlacesPage/>}/>
                             <Route path="/host-a-place" element={<HostAPlacePage/>}/>
                             <Route path="/reservations-and-requests" element={<ReservationsAndRequestsPage/>}/>

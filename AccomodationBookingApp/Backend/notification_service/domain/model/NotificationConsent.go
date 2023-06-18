@@ -9,7 +9,7 @@ type NotificationConsent struct {
 	ReservationCanceled      bool      `json:"ReservationCanceled"`
 	HostRatingGiven          bool      `json:"HostRatingGiven"`
 	AccommodationRatingGiven bool      `json:"AccommodationRatingGiven"`
-	ProminentHost            bool      `json:"AccommodationRatingGiven"`
+	ProminentHost            bool      `json:"ProminentHost"`
 	HostResponded            bool      `json:"HostResponded"`
 }
 

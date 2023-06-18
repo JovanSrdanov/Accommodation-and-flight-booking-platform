@@ -4,12 +4,13 @@ import (
 	"authorization_service/domain/model"
 	"authorization_service/domain/token"
 	"context"
+	"log"
+	"strings"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
-	"log"
-	"strings"
 )
 
 type AuthServerInterceptor struct {
@@ -61,7 +62,6 @@ func (interceptor *AuthServerInterceptor) Stream() grpc.StreamServerInterceptor 
 }
 
 func (interceptor *AuthServerInterceptor) authorize(ctx context.Context, method string) (error, context.Context) {
-	log.Println("Authorization in progress...")
 
 	allowedRoles, ok := interceptor.protectedMethodsWithAllowedRoles[method]
 	if !ok {

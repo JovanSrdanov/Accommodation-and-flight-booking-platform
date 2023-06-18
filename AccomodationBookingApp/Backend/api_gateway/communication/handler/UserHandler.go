@@ -11,11 +11,11 @@ import (
 	user_profile "common/proto/user_profile_service/generated"
 	"context"
 	"fmt"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"google.golang.org/grpc/metadata"
-	"log"
-	"net/http"
 )
 
 type UserHandler struct {
@@ -57,8 +57,6 @@ func (handler UserHandler) GetUserInfo(ctx *gin.Context) {
 		return
 	}
 
-	log.Println("username for get all: ", username)
-	log.Println("GIN KONTEEEEEEEKS: ", ctx.GetHeader("Authorization"))
 	ctxGrpc := createGrpcContextFromGinContext(ctx)
 
 	var userInfo dto.UserInfo

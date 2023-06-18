@@ -37,8 +37,8 @@ function HostAPlace() {
     const [placeData, setPlaceData] = useState({
         Name: '',
         MinGuests: '1',
-        MaxGuests: '1',
-        isAutomaticReservation: true,
+        MaxGuests: '10',
+        isAutomaticReservation: false,
         Address: {
             country: '',
             city: '',
@@ -70,7 +70,7 @@ function HostAPlace() {
                     Images: base64Images,
                 },
             }
-        
+
             interceptor.post("api-1/accommodation", accommodation).then(() => {
                 setSuccessDialogShow(true);
             }).catch((err) => {
