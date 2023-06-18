@@ -5,8 +5,10 @@ import {
     Accordion,
     AccordionDetails,
     AccordionSummary,
+    Backdrop,
     Box,
     Button,
+    CircularProgress,
     Dialog,
     DialogActions,
     DialogContent,
@@ -50,6 +52,8 @@ function Ratings(props) {
     const [rateHostDialogShow, setRateHostDialogShow] = useState(false);
     const [rateAccommodationDialogShow, setRateAccommodationDialogShow] = useState(false);
 
+    const [openBackDrop, setOpenBackDrop] = React.useState(false);
+
 
     const getRatableHosts = () => {
         interceptor.get("api-2/accommodation/ratable/hosts").then((res) => {
@@ -85,6 +89,7 @@ function Ratings(props) {
 
 
     const handleRateHost = () => {
+        setOpenBackDrop(true)
         var sendData = {
             rating: {
                 hostId: selectedHost.hostId,
@@ -93,7 +98,7 @@ function Ratings(props) {
         }
         interceptor.post("api-1/rating/host", sendData).then((res) => {
 
-            getRatableAccommodations();
+            setOpenBackDrop(false)
             getRatableHosts();
             handleRateHostDialogClose()
 
@@ -107,7 +112,7 @@ function Ratings(props) {
         setSelectedAccommodation(null)
     };
     const handleRateAccommodation = () => {
-
+        setOpenBackDrop(true)
         var sendData = {
             rating: {
                 accommodationId: selectedAccommodation.id,
@@ -115,6 +120,7 @@ function Ratings(props) {
             }
         }
         interceptor.post("api-1/rating/accommodation", sendData).then((res) => {
+            setOpenBackDrop(false)
             getRatableAccommodations();
             handleRateAccommodationDialogClose()
 
@@ -127,7 +133,9 @@ function Ratings(props) {
         setRateAccommodationDialogShow(true)
     };
     const handleDeleteHostRating = (item) => {
+        setOpenBackDrop(true)
         interceptor.delete("api-1/rating/host/" + item.hostId).then((res) => {
+            setOpenBackDrop(false)
             getRatableHosts();
         }).catch((err) => {
             console.log(err)
@@ -135,7 +143,9 @@ function Ratings(props) {
 
     };
     const handleDeleteAccommodationRating = (item) => {
+        setOpenBackDrop(true)
         interceptor.delete("api-1/rating/accommodation/" + item.id).then((res) => {
+            setOpenBackDrop(false)
             getRatableAccommodations();
         }).catch((err) => {
             console.log(err)
@@ -143,6 +153,12 @@ function Ratings(props) {
     };
     return (
         <>
+            <Backdrop
+                sx={{color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1}}
+                open={openBackDrop}
+            >
+                <CircularProgress color="inherit"/>
+            </Backdrop>
             <Dialog onClose={handleRateAccommodationDialogClose} open={rateAccommodationDialogShow}>
                 {selectedAccommodation &&
                     (<DialogTitle>Rate the accommodation: {selectedAccommodation.name}

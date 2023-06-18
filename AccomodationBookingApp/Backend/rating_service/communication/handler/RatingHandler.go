@@ -97,7 +97,6 @@ func (handler RatingHandler) RateHost(ctx context.Context, in *rating.RateHostRe
 	}
 
 	if oldProminenet != newProminent {
-		//TODO Jovan+Strahinja: Ovde da se objavi poruka u message queue (kad ovo proradi onda cu dodati i kad mu neko otkaze rezervaciju)
 		accountID, err := uuid.Parse(in.Rating.HostId)
 		if err != nil {
 			log.Fatal(err)
@@ -147,7 +146,6 @@ func (handler RatingHandler) DeleteRatingForHost(ctx context.Context, in *rating
 		return nil, err
 	}
 	if oldProminenet != newProminent {
-		//TODO Jovan+Strahinja: Ovde da se objavi poruka u message queue (kad ovo proradi onda cu dodati i kad mu neko otkaze rezervaciju)
 		accountID, err := uuid.Parse(in.HostId)
 		if err != nil {
 			log.Fatal(err)

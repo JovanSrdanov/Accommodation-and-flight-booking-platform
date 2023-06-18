@@ -4,7 +4,10 @@ import (
 	"common/NotificationMessaging"
 	"common/saga/messaging"
 	"context"
+	"io/ioutil"
 	"log"
+	"net/http"
+	"os"
 	"reservation_service/domain/model"
 	"time"
 
@@ -231,6 +234,10 @@ func (repo ReservationRepositoryMongo) CreateReservation(reservation *model.Rese
 		}
 	}
 
+	oldProminenet, err := prominentHostHttp(availability.HostId)
+	if err != nil {
+		return nil, err
+	}
 	//Kreiranje rezervacije
 
 	if availability.IsAutomaticReservation {
@@ -270,6 +277,30 @@ func (repo ReservationRepositoryMongo) CreateReservation(reservation *model.Rese
 		message := NotificationMessaging.NotificationMessage{
 			MessageType:            "HostResponded",
 			MessageForNotification: "The host has accepted your reservation request automatically",
+			AccountID:              accountID,
+		}
+		repo.publisher.Publish(message)
+	}
+	newProminent, err := prominentHostHttp(availability.HostId)
+	if err != nil {
+		return nil, err
+	}
+	if oldProminenet != newProminent {
+		accountID, err := uuid.Parse(availability.HostId)
+		if err != nil {
+			log.Fatal(err)
+			return &model.Reservation{}, err
+		}
+		MFN := ""
+		if newProminent {
+			MFN = "You are now a prominent host"
+		} else {
+			MFN = "You are no longer prominent host"
+		}
+
+		message := NotificationMessaging.NotificationMessage{
+			MessageType:            "HostRatingGiven",
+			MessageForNotification: MFN,
 			AccountID:              accountID,
 		}
 		repo.publisher.Publish(message)
@@ -547,6 +578,22 @@ func (repo ReservationRepositoryMongo) CancelReservation(id primitive.ObjectID) 
 
 	update := bson.M{"$set": bson.M{"status": "canceled"}}
 
+	filter = bson.D{{"accommodationId", reservation.AccommodationId}}
+
+	coll := repo.getCollectionAvailability()
+	// Find the availability document
+	var availability model.Availability
+	err = coll.FindOne(ctx, filter).Decode(&availability)
+	if err != nil {
+		log.Fatal(err)
+		return primitive.ObjectID{}, err
+	}
+	oldProminenet, err := prominentHostHttp(availability.HostId)
+	if err != nil {
+		return primitive.ObjectID{}, err
+	}
+
+	filter = bson.D{{"_id", id}}
 	// Update the document matching the filter
 	result, err := collection.UpdateOne(ctx, filter, update)
 	if err != nil {
@@ -557,16 +604,29 @@ func (repo ReservationRepositoryMongo) CancelReservation(id primitive.ObjectID) 
 	if result.MatchedCount == 0 {
 		return primitive.ObjectID{}, status.Errorf(codes.Unimplemented, "Not updated")
 	}
-
-	filter = bson.D{{"accommodationId", reservation.AccommodationId}}
-
-	coll := repo.getCollectionAvailability()
-	// Find the availability document
-	var availability model.Availability
-	err = coll.FindOne(ctx, filter).Decode(&availability)
+	newProminent, err := prominentHostHttp(availability.HostId)
 	if err != nil {
-		log.Fatal(err)
 		return primitive.ObjectID{}, err
+	}
+	if oldProminenet != newProminent {
+		accountID, err := uuid.Parse(availability.HostId)
+		if err != nil {
+			log.Fatal(err)
+			return primitive.ObjectID{}, err
+		}
+		MFN := ""
+		if newProminent {
+			MFN = "You are now a prominent host"
+		} else {
+			MFN = "You are no longer prominent host"
+		}
+
+		message := NotificationMessaging.NotificationMessage{
+			MessageType:            "HostRatingGiven",
+			MessageForNotification: MFN,
+			AccountID:              accountID,
+		}
+		repo.publisher.Publish(message)
 	}
 
 	accountID, err := uuid.Parse(availability.HostId)
@@ -620,6 +680,21 @@ func (repo ReservationRepositoryMongo) AcceptReservation(id primitive.ObjectID) 
 	}
 
 	pendingIds := make([]primitive.ObjectID, 0)
+
+	filter = bson.D{{"accommodationId", reservation.AccommodationId}}
+
+	coll := repo.getCollectionAvailability()
+	// Find the availability document
+	var availability model.Availability
+	err = coll.FindOne(ctx, filter).Decode(&availability)
+	if err != nil {
+		log.Fatal(err)
+		return primitive.ObjectID{}, err
+	}
+	oldProminenet, err := prominentHostHttp(availability.HostId)
+	if err != nil {
+		return primitive.ObjectID{}, err
+	}
 
 	for _, reservationValue := range reservations {
 		if reservationValue.ID != reservation.ID && reservationValue.Status == "accepted" && reservationValue.DateRange.Overlaps(reservation.DateRange) {
@@ -685,6 +760,33 @@ func (repo ReservationRepositoryMongo) AcceptReservation(id primitive.ObjectID) 
 		AccountID:              accountID,
 	}
 	repo.publisher.Publish(message)
+
+	newProminent, err := prominentHostHttp(availability.HostId)
+	if err != nil {
+		return primitive.ObjectID{}, err
+	}
+
+	if oldProminenet != newProminent {
+		accountID, err := uuid.Parse(availability.HostId)
+		if err != nil {
+			log.Fatal(err)
+			return primitive.ObjectID{}, err
+		}
+		MFN := ""
+		if newProminent {
+			MFN = "You are now a prominent host"
+		} else {
+			MFN = "You are no longer prominent host"
+		}
+
+		message := NotificationMessaging.NotificationMessage{
+			MessageType:            "HostRatingGiven",
+			MessageForNotification: MFN,
+			AccountID:              accountID,
+		}
+		repo.publisher.Publish(message)
+	}
+
 	return reservation.ID, nil
 }
 
@@ -931,4 +1033,31 @@ func (repo ReservationRepositoryMongo) GetAllRatableHostsForGuest(guestId string
 	}
 
 	return hostIds, nil
+}
+
+func prominentHostHttp(hostId string) (bool, error) {
+	client := &http.Client{}
+
+	apiHost := os.Getenv("API_GATEWAY_HOST")
+	req, err := http.NewRequest("GET", "http://"+apiHost+":8000/api-2/accommodation/prominent-host/"+hostId, nil)
+	if err != nil {
+		return false, err
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return false, err
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return false, err
+	}
+
+	if string(body) == "true" {
+		return true, nil
+	} else {
+		return false, nil
+	}
 }
