@@ -70,6 +70,9 @@ func (handler AccommodationHandler) SearchAccommodation(ctx *gin.Context) {
 	err := ctx.ShouldBindJSON(&searchDto)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, communication.NewErrorResponse(err.Error()))
+		middleware.HttpReqCountTotal.Inc()
+		middleware.HttpReqCountFail.Inc()
+		log.Println("Counter incremented")
 		return
 	}
 
@@ -77,6 +80,9 @@ func (handler AccommodationHandler) SearchAccommodation(ctx *gin.Context) {
 	firstRoundDto, err = handler.FindAccommodations(searchDto)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, communication.NewErrorResponse(err.Error()))
+		middleware.HttpReqCountTotal.Inc()
+		middleware.HttpReqCountFail.Inc()
+		log.Println("Counter incremented")
 		return
 	}
 
@@ -85,15 +91,24 @@ func (handler AccommodationHandler) SearchAccommodation(ctx *gin.Context) {
 	secondRound, err := handler.FindReservations(searchDto, firstRoundDto)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, communication.NewErrorResponse(err.Error()))
+		middleware.HttpReqCountTotal.Inc()
+		middleware.HttpReqCountFail.Inc()
+		log.Println("Counter incremented")
 		return
 	}
 
 	finalDto, err := handler.FindRating(searchDto, secondRound, context.TODO())
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, communication.NewErrorResponse(err.Error()))
+		middleware.HttpReqCountTotal.Inc()
+		middleware.HttpReqCountFail.Inc()
+		log.Println("Counter incremented")
 		return
 	}
 
+	middleware.HttpReqCountTotal.Inc()
+	middleware.HttpReqCountSucc.Inc()
+	log.Println("Counter incremented")
 	ctx.JSON(http.StatusOK, finalDto)
 
 }
@@ -270,6 +285,9 @@ func (handler AccommodationHandler) GetRatableAccommodations(ctx *gin.Context) {
 
 	protoResponse, err := reservationClient.GetAllRatableAccommodationsForGuest(ctxGrpc, &reservation.GuestIdRequest{GuestId: loggedInAccCredIdFromCtx})
 	if err != nil {
+		middleware.HttpReqCountTotal.Inc()
+		middleware.HttpReqCountFail.Inc()
+		log.Println("Counter incremented")
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Big puc kod get ratable accommodations?"})
 		return
 	}
@@ -278,6 +296,9 @@ func (handler AccommodationHandler) GetRatableAccommodations(ctx *gin.Context) {
 	for _, accId := range protoResponse.AccommodationIds {
 		accommodationProto, err2 := accommodationClient.GetById(ctxGrpc, &accommodation.GetByIdRequest{Id: accId})
 		if err2 != nil {
+			middleware.HttpReqCountTotal.Inc()
+			middleware.HttpReqCountFail.Inc()
+			log.Println("Counter incremented")
 			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Big puc kod get ratable accommodations?"})
 			return
 		}
@@ -288,6 +309,9 @@ func (handler AccommodationHandler) GetRatableAccommodations(ctx *gin.Context) {
 		})
 
 		if err2 != nil {
+			middleware.HttpReqCountTotal.Inc()
+			middleware.HttpReqCountFail.Inc()
+			log.Println("Counter incremented")
 			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err2.Error()})
 			return
 		}
@@ -312,6 +336,9 @@ func (handler AccommodationHandler) GetRatableAccommodations(ctx *gin.Context) {
 		})
 	}
 
+	middleware.HttpReqCountTotal.Inc()
+	middleware.HttpReqCountSucc.Inc()
+	log.Println("Counter incremented")
 	ctx.JSON(http.StatusOK, dtoSlice)
 }
 
@@ -326,6 +353,9 @@ func (handler AccommodationHandler) GetRatableHosts(ctx *gin.Context) {
 
 	protoHostIds, err := reservationClient.GetAllRatableHostsForGuest(ctxGrpc, &reservation.GuestIdRequest{GuestId: loggedInAccCredIdFromCtx})
 	if err != nil {
+		middleware.HttpReqCountTotal.Inc()
+		middleware.HttpReqCountFail.Inc()
+		log.Println("Counter incremented")
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -334,12 +364,18 @@ func (handler AccommodationHandler) GetRatableHosts(ctx *gin.Context) {
 	for _, hostId := range protoHostIds.HostIds {
 		protoAccInfo, err2 := authorizationClient.GetById(ctxGrpc, &authorization.GetByIdRequest{Id: hostId})
 		if err2 != nil {
+			middleware.HttpReqCountTotal.Inc()
+			middleware.HttpReqCountFail.Inc()
+			log.Println("Counter incremented")
 			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Big puc kod get ratable host?"})
 			return
 		}
 
 		protoUserInfo, err2 := userProfileClient.GetById(ctxGrpc, &user_profile.GetByIdRequest{Id: protoAccInfo.AccountCredentials.UserProfileId})
 		if err2 != nil {
+			middleware.HttpReqCountTotal.Inc()
+			middleware.HttpReqCountFail.Inc()
+			log.Println("Counter incremented")
 			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err2.Error()})
 			return
 		}
@@ -350,6 +386,9 @@ func (handler AccommodationHandler) GetRatableHosts(ctx *gin.Context) {
 		})
 
 		if err2 != nil {
+			middleware.HttpReqCountTotal.Inc()
+			middleware.HttpReqCountFail.Inc()
+			log.Println("Counter incremented")
 			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err2.Error()})
 			return
 		}
@@ -364,6 +403,9 @@ func (handler AccommodationHandler) GetRatableHosts(ctx *gin.Context) {
 		})
 	}
 
+	middleware.HttpReqCountTotal.Inc()
+	middleware.HttpReqCountSucc.Inc()
+	log.Println("Counter incremented")
 	ctx.JSON(http.StatusOK, dtoSlice)
 }
 
@@ -375,6 +417,9 @@ func (handler AccommodationHandler) IsHostProminent(ctx *gin.Context) {
 
 	ratingProto, err := ratingClient.CalculateRatingForHost(context.TODO(), &rating.RatingForHostRequest{HostId: hostId})
 	if err != nil {
+		middleware.HttpReqCountTotal.Inc()
+		middleware.HttpReqCountFail.Inc()
+		log.Println("Counter incremented")
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -382,12 +427,18 @@ func (handler AccommodationHandler) IsHostProminent(ctx *gin.Context) {
 	log.Println(ratingProto.Rating)
 
 	if ratingProto.Rating.AvgRating <= 4.7 {
+		middleware.HttpReqCountTotal.Inc()
+		middleware.HttpReqCountSucc.Inc()
+		log.Println("Counter incremented")
 		ctx.JSON(http.StatusOK, false)
 		return
 	}
 
 	protoAllReservations, err := reservationClient.GetAllReservationsForHost(ctx, &reservation.HostIdRequest{HostId: hostId})
 	if err != nil {
+		middleware.HttpReqCountTotal.Inc()
+		middleware.HttpReqCountFail.Inc()
+		log.Println("Counter incremented")
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -416,10 +467,16 @@ func (handler AccommodationHandler) IsHostProminent(ctx *gin.Context) {
 	}
 
 	if cancelRate > 5.0 || durationOfReservedDays < 50 {
+		middleware.HttpReqCountTotal.Inc()
+		middleware.HttpReqCountSucc.Inc()
+		log.Println("Counter incremented")
 		ctx.JSON(http.StatusOK, false)
 		return
 	}
 
+	middleware.HttpReqCountTotal.Inc()
+	middleware.HttpReqCountSucc.Inc()
+	log.Println("Counter incremented")
 	ctx.JSON(http.StatusOK, true)
 }
 
@@ -440,12 +497,18 @@ func (handler AccommodationHandler) GetRatingDetailForAccommodation(ctx *gin.Con
 	for _, protoGuestInfo := range protoRatingDetails.Rating.Ratings {
 		protoAccInfo, err2 := authorizationClient.GetById(ctx, &authorization.GetByIdRequest{Id: protoGuestInfo.GuestId})
 		if err2 != nil {
+			middleware.HttpReqCountTotal.Inc()
+			middleware.HttpReqCountFail.Inc()
+			log.Println("Counter incremented")
 			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Big puc kod get ratable host?"})
 			return
 		}
 
 		protoUserInfo, err2 := userProfileClient.GetById(ctx, &user_profile.GetByIdRequest{Id: protoAccInfo.AccountCredentials.UserProfileId})
 		if err2 != nil {
+			middleware.HttpReqCountTotal.Inc()
+			middleware.HttpReqCountFail.Inc()
+			log.Println("Counter incremented")
 			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err2.Error()})
 			return
 		}
@@ -465,6 +528,9 @@ func (handler AccommodationHandler) GetRatingDetailForAccommodation(ctx *gin.Con
 		Ratings:         guestsInfo,
 	}
 
+	middleware.HttpReqCountTotal.Inc()
+	middleware.HttpReqCountSucc.Inc()
+	log.Println("Counter incremented")
 	ctx.JSON(http.StatusOK, response)
 }
 
@@ -485,12 +551,18 @@ func (handler AccommodationHandler) GetRatingDetailForHost(ctx *gin.Context) {
 	for _, protoGuestInfo := range protoRatingDetails.Rating.Ratings {
 		protoAccInfo, err2 := authorizationClient.GetById(ctx, &authorization.GetByIdRequest{Id: protoGuestInfo.GuestId})
 		if err2 != nil {
+			middleware.HttpReqCountTotal.Inc()
+			middleware.HttpReqCountFail.Inc()
+			log.Println("Counter incremented")
 			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Big puc kod get ratable host?"})
 			return
 		}
 
 		protoUserInfo, err2 := userProfileClient.GetById(ctx, &user_profile.GetByIdRequest{Id: protoAccInfo.AccountCredentials.UserProfileId})
 		if err2 != nil {
+			middleware.HttpReqCountTotal.Inc()
+			middleware.HttpReqCountFail.Inc()
+			log.Println("Counter incremented")
 			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err2.Error()})
 			return
 		}
@@ -510,6 +582,9 @@ func (handler AccommodationHandler) GetRatingDetailForHost(ctx *gin.Context) {
 		Ratings:   guestsInfo,
 	}
 
+	middleware.HttpReqCountTotal.Inc()
+	middleware.HttpReqCountSucc.Inc()
+	log.Println("Counter incremented")
 	ctx.JSON(http.StatusOK, response)
 }
 
@@ -530,6 +605,9 @@ func (handler AccommodationHandler) GetRecommendedAccommodations(ctx *gin.Contex
 	for _, protoRecommendation := range protoRecommendations.Recommendation {
 		accommodationInfoProto, err2 := accommodationClient.GetById(ctxGrpc, &accommodation.GetByIdRequest{Id: protoRecommendation.AccommodationId})
 		if err2 != nil {
+			middleware.HttpReqCountTotal.Inc()
+			middleware.HttpReqCountFail.Inc()
+			log.Println("Counter incremented")
 			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err2.Error()})
 			return
 		}
@@ -552,5 +630,8 @@ func (handler AccommodationHandler) GetRecommendedAccommodations(ctx *gin.Contex
 		})
 	}
 
+	middleware.HttpReqCountTotal.Inc()
+	middleware.HttpReqCountSucc.Inc()
+	log.Println("Counter incremented")
 	ctx.JSON(http.StatusOK, recommendations)
 }

@@ -13,7 +13,6 @@ import (
 )
 
 type AuthServerInterceptor struct {
-	// TODO Stefan check if should be *token.PasetoMaker
 	tokenMaker                       token.Maker
 	protectedMethodsWithAllowedRoles map[string][]model.Role
 }
@@ -78,8 +77,6 @@ func (interceptor *AuthServerInterceptor) authorize(ctx context.Context, method 
 	if len(values) == 0 {
 		return status.Errorf(codes.Unauthenticated, "authorization token not provided"), nil
 	}
-
-	log.Println("Header")
 
 	accessToken := strings.TrimPrefix(values[0], "Bearer ")
 	tokenPayload, err := interceptor.tokenMaker.VerifyToken(accessToken)

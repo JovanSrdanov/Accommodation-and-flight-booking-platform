@@ -28,15 +28,6 @@ func ValidateToken(tokenMaker token.Maker) gin.HandlerFunc {
 			ctx.Keys = make(map[string]interface{})
 		}
 
-		//var footerData map[string]interface{}
-		//if err := paseto.ParseFooter(accessToken, &footerData); err != nil {
-		//	ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"failed to parse token footer": err.Error()})
-		//	return
-		//}
-		//
-		//log.Println("footer data: ", footerData)
-		//
-		//providedRole := int8(footerData["Role"].(float64))
 		providedRole := tokenPayload.Role
 
 		ctx.Keys["id"] = tokenPayload.ID

@@ -6,7 +6,7 @@ import (
 	"common/saga/messaging/nats"
 	"context"
 	"fmt"
-	ginprometheus "github.com/zsais/go-gin-prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"log"
 	"net/http"
 
@@ -51,8 +51,20 @@ func NewServer(config *Configuration) *Server {
 	// OpenTelemetry
 	server.server.Use(otelgin.Middleware("api-gateway"))
 
-	prom := ginprometheus.NewPrometheus("gin")
-	prom.Use(server.server)
+	// Metrics
+	//p := ginprom.New(
+	//	ginprom.Engine(server.server),
+	//	ginprom.Subsystem("gin"),
+	//	ginprom.Path("/metrics"),
+	//)
+	//p.AddCustomCounter("custom", "Some help text to provide", []string{"label"})
+	//
+	//err := p.AddCounterValue("custom", []string{"label"}, 1)
+	//if err != nil {
+	//	return nil
+	//}
+	//server.server.Use(p.Instrument())
+	//server.server.Use(middleware.GinpromMiddleware(p))
 
 	server.server.Use(middleware.AuthTokenParser())
 
@@ -67,6 +79,9 @@ func NewServer(config *Configuration) *Server {
 	server.server.NoRoute(func(c *gin.Context) {
 		c.JSON(404, gin.H{"message": "Endpoint doesn't exist"})
 	})
+
+	//prom := ginprometheus.NewPrometheus("gin")
+	//prom.Use(server.server)
 
 	grpcMux := runtime.NewServeMux()
 	server.initGrpcHandlers(grpcMux)
@@ -139,8 +154,10 @@ func (server *Server) handleWebSocket(c *gin.Context) {
 }
 
 func (server *Server) initGrpcHandlers(mux *runtime.ServeMux) {
+	//clMetrics, promReg := middleware.RegisterMetrics()
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithUnaryInterceptor(middleware.NewGRPUnaryClientInterceptor())}
+		grpc.WithChainUnaryInterceptor(middleware.NewGRPUnaryClientInterceptor())} /*,
+	clMetrics.UnaryClientInterceptor()*/
 
 	authorizationEndpoint := fmt.Sprintf("%s:%s", server.config.AuthorizationHost, server.config.AuthorizationPort)
 	err := authorization.RegisterAuthorizationServiceHandlerFromEndpoint(context.TODO(), mux, authorizationEndpoint, opts)
@@ -177,6 +194,13 @@ func (server *Server) initGrpcHandlers(mux *runtime.ServeMux) {
 	if err != nil {
 		panic(err)
 	}
+
+	//server.server.GET("/metrics", gin.WrapH(promhttp.HandlerFor(
+	//	promReg,
+	//	promhttp.HandlerOpts{
+	//		// Opt into OpenMetrics e.g. to support exemplars.
+	//		EnableOpenMetrics: true,
+	//	})))
 }
 
 func (server *Server) initCustomHandlers(routerGroup *gin.RouterGroup) {
@@ -198,6 +222,8 @@ func (server *Server) initCustomHandlers(routerGroup *gin.RouterGroup) {
 
 func (server *Server) Start() {
 	port := fmt.Sprintf(":%s", server.config.Port)
+	// Metrics
+	server.server.GET("/metrics", gin.WrapH(promhttp.Handler()))
 	err := server.server.Run(port)
 	if err != nil {
 		log.Fatal(err)
