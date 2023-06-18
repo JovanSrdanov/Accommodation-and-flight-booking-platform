@@ -60,6 +60,9 @@ func (handler AccommodationHandler) Init(router *gin.RouterGroup) {
 		middleware.ValidateToken(handler.tokenMaker),
 		middleware.Authorization([]model.Role{model.Guest}),
 		handler.GetRecommendedAccommodations)
+	userGroup.GET("/prominent-host",
+		middleware.ValidateToken(handler.tokenMaker),
+		middleware.Authorization([]model.Role{model.Host}), handler.IsHostProminentPaseto)
 }
 
 func (handler AccommodationHandler) SearchAccommodation(ctx *gin.Context) {
@@ -368,6 +371,16 @@ func (handler AccommodationHandler) GetRatableHosts(ctx *gin.Context) {
 func (handler AccommodationHandler) IsHostProminent(ctx *gin.Context) {
 	hostId := ctx.Param("hostId")
 
+	handler.IsHostProminentCalculate(ctx, hostId)
+}
+
+func (handler AccommodationHandler) IsHostProminentPaseto(ctx *gin.Context) {
+	loggedInAccCredIdFromCtx := ctx.Keys["id"].(uuid.UUID).String()
+
+	handler.IsHostProminentCalculate(ctx, loggedInAccCredIdFromCtx)
+}
+
+func (handler AccommodationHandler) IsHostProminentCalculate(ctx *gin.Context, hostId string) {
 	ratingClient := communication.NewRatingClient(handler.ratingServiceAddress)
 	reservationClient := communication.NewReservationClient(handler.reservationServiceAddress)
 
