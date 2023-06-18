@@ -64,14 +64,18 @@ services:
       - monitoring
 
   cadvisor:
-    image: google/cadvisor:v0.33.0
+    #image: google/cadvisor:v0.33.0
+    image: gcr.io/cadvisor/cadvisor:latest
+    #resolves OOM warning
+    privileged: true
     ports:
       - "8080:8080"
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:rw
       - /sys:/sys:ro
-      - /var/lib/docker/:/var/lib/docker:ro
+#      - /var/lib/docker/:/var/lib/docker:ro
+      - /mnt/docker-data/docker-root/docker/:/var/lib/docker:ro
     networks:
       - monitoring
 
