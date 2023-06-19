@@ -18,7 +18,6 @@ import (
 	"user_profile_service/communication/middleware"
 	"user_profile_service/communication/orchestrator"
 	"user_profile_service/domain/service"
-	interceptor2 "user_profile_service/interceptor"
 	"user_profile_service/persistence/repository"
 )
 
@@ -104,13 +103,10 @@ func (server *Server) startGrpcServer(userProfileHandler *handler.UserProfileHan
 	tokenMaker, _ := token.NewPasetoMaker("12345678901234567890123456789012")
 	protectedMethodsWithAllowedRoles := getProtectedMethodsWithAllowedRoles()
 
-	// TEST ginprom
-	ginpromInterceptor := interceptor2.NewGinpromInterceptor()
-
 	authInterceptor := interceptor.NewAuthServerInterceptor(tokenMaker, protectedMethodsWithAllowedRoles)
 
 	grpcServer := grpc.NewServer(
-		grpc.ChainUnaryInterceptor(middleware.NewGRPUnaryServerInterceptor(), ginpromInterceptor.Unary(),
+		grpc.ChainUnaryInterceptor(middleware.NewGRPUnaryServerInterceptor(),
 			authInterceptor.Unary()),
 		grpc.StreamInterceptor(authInterceptor.Stream()),
 	)

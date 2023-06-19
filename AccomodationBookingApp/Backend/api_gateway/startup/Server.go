@@ -1,12 +1,14 @@
 package startup
 
 import (
+	"api_gateway/persistance/repository"
 	"common/NotificationMessaging"
 	"common/saga/messaging"
 	"common/saga/messaging/nats"
 	"context"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"go.mongodb.org/mongo-driver/mongo"
 	"log"
 	"net/http"
 
@@ -51,21 +53,6 @@ func NewServer(config *Configuration) *Server {
 	// OpenTelemetry
 	server.server.Use(otelgin.Middleware("api-gateway"))
 
-	// Metrics
-	//p := ginprom.New(
-	//	ginprom.Engine(server.server),
-	//	ginprom.Subsystem("gin"),
-	//	ginprom.Path("/metrics"),
-	//)
-	//p.AddCustomCounter("custom", "Some help text to provide", []string{"label"})
-	//
-	//err := p.AddCounterValue("custom", []string{"label"}, 1)
-	//if err != nil {
-	//	return nil
-	//}
-	//server.server.Use(p.Instrument())
-	//server.server.Use(middleware.GinpromMiddleware(p))
-
 	server.server.Use(middleware.AuthTokenParser())
 
 	corsMiddleware := cors.New(cors.Config{
@@ -79,9 +66,6 @@ func NewServer(config *Configuration) *Server {
 	server.server.NoRoute(func(c *gin.Context) {
 		c.JSON(404, gin.H{"message": "Endpoint doesn't exist"})
 	})
-
-	//prom := ginprometheus.NewPrometheus("gin")
-	//prom.Use(server.server)
 
 	grpcMux := runtime.NewServeMux()
 	server.initGrpcHandlers(grpcMux)
@@ -154,10 +138,8 @@ func (server *Server) handleWebSocket(c *gin.Context) {
 }
 
 func (server *Server) initGrpcHandlers(mux *runtime.ServeMux) {
-	//clMetrics, promReg := middleware.RegisterMetrics()
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithChainUnaryInterceptor(middleware.NewGRPUnaryClientInterceptor())} /*,
-	clMetrics.UnaryClientInterceptor()*/
+		grpc.WithChainUnaryInterceptor(middleware.NewGRPUnaryClientInterceptor())}
 
 	authorizationEndpoint := fmt.Sprintf("%s:%s", server.config.AuthorizationHost, server.config.AuthorizationPort)
 	err := authorization.RegisterAuthorizationServiceHandlerFromEndpoint(context.TODO(), mux, authorizationEndpoint, opts)
@@ -194,17 +176,12 @@ func (server *Server) initGrpcHandlers(mux *runtime.ServeMux) {
 	if err != nil {
 		panic(err)
 	}
-
-	//server.server.GET("/metrics", gin.WrapH(promhttp.HandlerFor(
-	//	promReg,
-	//	promhttp.HandlerOpts{
-	//		// Opt into OpenMetrics e.g. to support exemplars.
-	//		EnableOpenMetrics: true,
-	//	})))
 }
 
 func (server *Server) initCustomHandlers(routerGroup *gin.RouterGroup) {
 	tokenMaker, _ := token.NewPasetoMaker("12345678901234567890123456789012")
+	mongoClient := server.initUniqueVisitorsMongoClient()
+	uniqueVisitorsRepo := initUniqueVisitorsRepo(mongoClient)
 
 	authorizationEndpoint := fmt.Sprintf("%s:%s", server.config.AuthorizationHost, server.config.AuthorizationPort)
 	userProfileEndpoint := fmt.Sprintf("%s:%s", server.config.UserProfileHost, server.config.UserProfilePort)
@@ -213,19 +190,38 @@ func (server *Server) initCustomHandlers(routerGroup *gin.RouterGroup) {
 	notificationEndpoint := fmt.Sprintf("%s:%s", server.config.NotificationHost, server.config.NotificationPort)
 	ratingEndpoint := fmt.Sprintf("%s:%s", server.config.RatingHost, server.config.RatingPort)
 
-	userInfoHandler := handler.NewUserHandler(authorizationEndpoint, userProfileEndpoint, notificationEndpoint, tokenMaker)
+	userInfoHandler := handler.NewUserHandler(authorizationEndpoint, userProfileEndpoint, notificationEndpoint, tokenMaker,
+		uniqueVisitorsRepo)
 	userInfoHandler.Init(routerGroup)
 
-	accommodationHandler := handler.NewAccommodationHandler(accommodationEndpoint, reservationEndpoint, authorizationEndpoint, userProfileEndpoint, ratingEndpoint, tokenMaker)
+	accommodationHandler := handler.NewAccommodationHandler(accommodationEndpoint, reservationEndpoint,
+		authorizationEndpoint, userProfileEndpoint, ratingEndpoint, tokenMaker)
 	accommodationHandler.Init(routerGroup)
 }
 
 func (server *Server) Start() {
 	port := fmt.Sprintf(":%s", server.config.Port)
+
 	// Metrics
 	server.server.GET("/metrics", gin.WrapH(promhttp.Handler()))
 	err := server.server.Run(port)
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func (server *Server) initUniqueVisitorsMongoClient() *mongo.Client {
+	client, err := repository.GetClient(server.config.UniqueVisitorsDbPort, server.config.UniqueVisitorsDbHost)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return client
+}
+
+func initUniqueVisitorsRepo(mongoClient *mongo.Client) *repository.UniqueVisitorRepositoryMongo {
+	repo, err := repository.NewUniqueVisitorRepositoryMongo(mongoClient)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return repo
 }

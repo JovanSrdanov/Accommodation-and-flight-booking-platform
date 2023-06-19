@@ -5,19 +5,6 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promauto"
 )
 
-//func RegisterMetrics() (*grpcprom.ClientMetrics, *prometheus.Registry) {
-//	// Setup counter metrics.
-//	countMetrics := grpcprom.NewClientMetrics(
-//		grpcprom.WithClientCounterOptions(grpcprom.WithConstLabels(prometheus.Labels{"test": "test"})),
-//	)
-//	// grpcprom:Package prometheus provides a standalone interceptor for metrics.
-//
-//	reg := prometheus.NewRegistry() // NewRegistry creates a new vanilla Registry without any Collectors pre-registered.
-//	reg.MustRegister(countMetrics)  // MustRegister implements Registerer
-//
-//	return countMetrics, reg
-//}
-
 var (
 	HttpReqCountTotal = promauto.NewCounter(prometheus.CounterOpts{
 		Name: "api_gateway_http_requests_total",
@@ -45,4 +32,11 @@ var (
 		Help: "The total number of processed failed http requests that produce 404 error",
 	},
 		[]string{"endpoint"})
+)
+
+var (
+	UniqueUserCount = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "unique_user_visits",
+		Help: "The total number visits from unique users",
+	})
 )

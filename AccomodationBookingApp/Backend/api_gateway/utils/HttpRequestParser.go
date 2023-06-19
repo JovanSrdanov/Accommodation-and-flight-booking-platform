@@ -1,15 +1,10 @@
 package utils
 
-import "strings"
+import "github.com/mssola/user_agent"
 
-func ParseWebBrowser(userAgent string) string {
-	// Split User-Agent string by space
-	parts := strings.Split(userAgent, " ")
+func GetBrowserName(userAgent string) string {
+	ua := user_agent.New(userAgent)
+	browserName, _ := ua.Browser()
 
-	if len(parts) > 0 {
-		// Extract the first part as the web browser
-		return parts[0]
-	}
-
-	return "Unknown"
+	return browserName
 }

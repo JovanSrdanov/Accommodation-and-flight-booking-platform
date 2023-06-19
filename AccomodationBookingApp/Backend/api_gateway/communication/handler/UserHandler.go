@@ -3,7 +3,9 @@ package handler
 import (
 	"api_gateway/communication"
 	"api_gateway/communication/middleware"
+	model2 "api_gateway/domain/model"
 	"api_gateway/dto"
+	"api_gateway/persistance/repository"
 	"api_gateway/utils"
 	"authorization_service/domain/model"
 	"authorization_service/domain/token"
@@ -25,15 +27,17 @@ type UserHandler struct {
 	userProfileServiceAddress   string
 	notificationServiceAddress  string
 	tokenMaker                  token.Maker
+	uniqueVisitorsRepo          *repository.UniqueVisitorRepositoryMongo
 }
 
 func NewUserHandler(authorizationServiceAddress, userProfileServiceAddress, notificationServiceAddress string,
-	tokenMaker token.Maker) *UserHandler {
+	tokenMaker token.Maker, repo *repository.UniqueVisitorRepositoryMongo) *UserHandler {
 	return &UserHandler{
 		authorizationServiceAddress: authorizationServiceAddress,
 		userProfileServiceAddress:   userProfileServiceAddress,
 		notificationServiceAddress:  notificationServiceAddress,
 		tokenMaker:                  tokenMaker,
+		uniqueVisitorsRepo:          repo,
 	}
 }
 
@@ -48,19 +52,12 @@ func (handler UserHandler) Init(router *gin.RouterGroup) {
 		middleware.Authorization([]model.Role{model.Guest, model.Host}),
 		handler.GetLoggedInUserInfo,
 	)
+	userGroup.GET("/is-unique-visitor",
+		handler.IsUniqueVisitor)
 	userGroup.POST("", handler.CreateUser)
 }
 
 func (handler UserHandler) GetUserInfo(ctx *gin.Context) {
-	// TEST ZA POSETIOCE
-	ipAddress := ctx.ClientIP()
-	timestamp := time.Now().Format("2006-01-02 15:04:05")
-	userAgent := ctx.Request.UserAgent()
-	webBrowser := utils.ParseWebBrowser(userAgent)
-
-	log.Println("IP ADDRESS: " + ipAddress + ", TIMESTAMP: " + timestamp + ", USER AGENT: " +
-		userAgent + ", WEB BROWSER: " + webBrowser)
-
 	username := ctx.Param("username")
 
 	if username == "" {
@@ -311,6 +308,36 @@ func (handler UserHandler) CreateNotificationConsent(id uuid.UUID) error {
 	}
 	return nil
 
+}
+
+func (handler UserHandler) IsUniqueVisitor(ctx *gin.Context) {
+	ipAddress := ctx.ClientIP()
+	timestamp := time.Now().Format("2006-01-02 15:04:05")
+	userAgent := ctx.Request.Header.Get("User-Agent")
+	webBrowser := utils.GetBrowserName(userAgent)
+
+	visitor, err := handler.uniqueVisitorsRepo.GetVisitorByIpAndBrowser(ipAddress, webBrowser)
+	// if no visitor is found, that means this new visitor is unique
+	if visitor == nil && err == nil {
+		_, err = handler.uniqueVisitorsRepo.CreateUniqueVisitor(&model2.UniqueVisitor{
+			IpAddress: ipAddress,
+			Timestamp: timestamp,
+			Browser:   webBrowser,
+		})
+		if err != nil {
+			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "could not check whether the visitor is unique"})
+			middleware.HttpReqCountTotal.Inc()
+			middleware.HttpReqCountFail.Inc()
+			return
+		}
+		middleware.UniqueUserCount.Inc()
+		log.Println("Counter incremented")
+	}
+
+	middleware.HttpReqCountTotal.Inc()
+	middleware.HttpReqCountSucc.Inc()
+	log.Println("Counter incremented")
+	ctx.JSON(http.StatusOK, "successfully checked whether the visitor is unique")
 }
 
 func createGrpcContextFromGinContext(ctx *gin.Context) context.Context {
