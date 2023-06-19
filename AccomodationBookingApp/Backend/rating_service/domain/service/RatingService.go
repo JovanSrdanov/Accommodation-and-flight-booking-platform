@@ -1,8 +1,11 @@
 package service
 
 import (
+	"common/NotificationMessaging"
 	accommodation "common/proto/accommodation_service/generated"
+	"common/saga/messaging"
 	"context"
+	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"log"
 	"os"
@@ -13,10 +16,12 @@ import (
 
 type RatingService struct {
 	ratingRepo repository.IRatingRepository
+	publisher  messaging.Publisher
 }
 
-func NewRatingService(ratingRepo repository.IRatingRepository) *RatingService {
-	return &RatingService{ratingRepo: ratingRepo}
+func NewRatingService(ratingRepo repository.IRatingRepository, publisher messaging.Publisher) *RatingService {
+	return &RatingService{ratingRepo: ratingRepo,
+		publisher: publisher}
 }
 
 func (service RatingService) RateAccommodation(guestId string, rating *model.Rating) error {
@@ -30,6 +35,19 @@ func (service RatingService) RateAccommodation(guestId string, rating *model.Rat
 		return err2
 	}
 	log.Println(hostId)
+
+	accountID, err := uuid.Parse(hostId)
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+
+	message := NotificationMessaging.NotificationMessage{
+		MessageType:            "AccommodationRatingGiven",
+		MessageForNotification: "Your accommodation has been rated",
+		AccountID:              accountID,
+	}
+	service.publisher.Publish(message)
 
 	return res
 }
@@ -68,6 +86,18 @@ func (service RatingService) DeleteRatingForAccommodation(accommodationId string
 	}
 
 	log.Println(hostId)
+	accountID, err := uuid.Parse(hostId)
+	if err != nil {
+		log.Fatal(err)
+		return "", err
+	}
+
+	message := NotificationMessaging.NotificationMessage{
+		MessageType:            "AccommodationRatingGiven",
+		MessageForNotification: "A rating for your accommodation has been deleted",
+		AccountID:              accountID,
+	}
+	service.publisher.Publish(message)
 
 	return errorMess, nil
 }

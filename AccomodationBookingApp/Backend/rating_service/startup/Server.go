@@ -30,7 +30,7 @@ func (server Server) Start() {
 	sendEventPublisher := server.initSendEventPublisher(server.config.SendEventToNotificationServiceSubject)
 	neo4jClient := server.initNeo4jClient()
 	ratingRepo := initRatingRepo(neo4jClient, sendEventPublisher)
-	ratingService := service.NewRatingService(*ratingRepo)
+	ratingService := service.NewRatingService(*ratingRepo, sendEventPublisher)
 	ratingHandler := handler.NewRatingHandler(*ratingService, sendEventPublisher)
 	server.startGrpcServer(ratingHandler)
 }
