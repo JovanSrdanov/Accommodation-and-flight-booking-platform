@@ -84,7 +84,6 @@ func initUserProfileRepo(mongoClient *mongo.Client) *repository.AccommodationRep
 }
 func (server *Server) startGrpcServer(userProfileHandler *handler.AccommodationHandler) {
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%s", server.config.Port))
-	log.Println("port: " + server.config.Port)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}

@@ -144,7 +144,15 @@ function App() {
     };
 
     const ROLE = pasetoExpirationRole();
-
+    if (ROLE === null) {
+        interceptor
+          .get("api-2/user/is-unique-visitor")
+          .then((res) => {
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+    }
 
     const handleLogout = () => {
         localStorage.removeItem('paseto');
@@ -213,7 +221,6 @@ function App() {
                 // Handle the error
             });
     }, [selectedItem]);
-
 
     return (
 

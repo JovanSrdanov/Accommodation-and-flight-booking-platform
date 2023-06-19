@@ -32,6 +32,8 @@ services:
       RATING_SERVICE_PORT: ${RATING_SERVICE_PORT}
       SEND_NOTIFICATION_TO_API_GATEWAY_SUBJECT: ${SEND_NOTIFICATION_TO_API_GATEWAY_SUBJECT}
       SEND_EVENT_TO_NOTIFICATION_SERVICE_SUBJECT: ${SEND_EVENT_TO_NOTIFICATION_SERVICE_SUBJECT}
+      UNIQUE_SITE_VISITORS_DB_NAME: ${UNIQUE_SITE_VISITORS_DB_NAME}
+      UNIQUE_SITE_VISITORS_DB_PORT: ${UNIQUE_SITE_VISITORS_DB_PORT}
 
       NATS_HOST: ${NATS_HOST}
       NATS_PORT: ${NATS_PORT}
@@ -382,6 +384,24 @@ services:
       - 5005:5432
     logging: *fluent-bit
 
+  unique_site_visitors_db:
+    image: mongo
+    container_name: ${UNIQUE_SITE_VISITORS_DB_NAME}
+    volumes:
+      - uniqueSiteVisitorsDb:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok'
+      interval: 20s
+      timeout: 10s
+      retries: 20
+      start_period: 10s
+    ports:
+      - 5006:27017
+    networks:
+      - network
+      - monitoring
+    logging: *fluent-bit
+
   notification_event_db:
     image: mongo
     container_name: notification_event_db
@@ -473,6 +493,7 @@ volumes:
   accommodationDb:
   reservationDb:
   ratingDb:
+  uniqueSiteVisitorsDb:
 
 networks:
   network:

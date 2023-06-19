@@ -102,10 +102,12 @@ func (server *Server) startGrpcServer(userProfileHandler *handler.UserProfileHan
 
 	tokenMaker, _ := token.NewPasetoMaker("12345678901234567890123456789012")
 	protectedMethodsWithAllowedRoles := getProtectedMethodsWithAllowedRoles()
+
 	authInterceptor := interceptor.NewAuthServerInterceptor(tokenMaker, protectedMethodsWithAllowedRoles)
 
 	grpcServer := grpc.NewServer(
-		grpc.ChainUnaryInterceptor(middleware.NewGRPUnaryServerInterceptor(), authInterceptor.Unary()),
+		grpc.ChainUnaryInterceptor(middleware.NewGRPUnaryServerInterceptor(),
+			authInterceptor.Unary()),
 		grpc.StreamInterceptor(authInterceptor.Stream()),
 	)
 	user_profile.RegisterUserProfileServiceServer(grpcServer, userProfileHandler)

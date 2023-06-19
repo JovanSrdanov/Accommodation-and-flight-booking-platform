@@ -19,6 +19,8 @@ type Configuration struct {
 	RatingHost                          string
 	RatingPort                          string
 	SendNotificationToAPIGatewaySubject string
+	UniqueVisitorsDbHost                string
+	UniqueVisitorsDbPort                string
 	NatsHost                            string
 	NatsPort                            string
 	NatsUser                            string
@@ -41,6 +43,8 @@ func NewConfig() *Configuration {
 		RatingHost:                          os.Getenv("RATING_SERVICE_HOST"),
 		RatingPort:                          os.Getenv("RATING_SERVICE_PORT"),
 		SendNotificationToAPIGatewaySubject: os.Getenv("SEND_NOTIFICATION_TO_API_GATEWAY_SUBJECT"),
+		UniqueVisitorsDbHost:                os.Getenv("UNIQUE_SITE_VISITORS_DB_NAME"),
+		UniqueVisitorsDbPort:                os.Getenv("UNIQUE_SITE_VISITORS_DB_PORT"),
 		NatsHost:                            os.Getenv("NATS_HOST"),
 		NatsPort:                            os.Getenv("NATS_PORT"),
 		NatsUser:                            os.Getenv("NATS_USER"),

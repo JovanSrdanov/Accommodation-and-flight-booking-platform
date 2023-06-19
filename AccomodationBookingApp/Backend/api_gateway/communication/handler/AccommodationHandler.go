@@ -12,13 +12,12 @@ import (
 	reservation "common/proto/reservation_service/generated"
 	user_profile "common/proto/user_profile_service/generated"
 	"context"
-	"io/ioutil"
-	"net/http"
-	"time"
-
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"io/ioutil"
+	"net/http"
+	"time"
 )
 
 type AccommodationHandler struct {
@@ -76,6 +75,8 @@ func (handler AccommodationHandler) SearchAccommodation(ctx *gin.Context) {
 	err := ctx.ShouldBindJSON(&searchDto)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, communication.NewErrorResponse(err.Error()))
+		middleware.HttpReqCountTotal.Inc()
+		middleware.HttpReqCountFail.Inc()
 		return
 	}
 
@@ -83,21 +84,29 @@ func (handler AccommodationHandler) SearchAccommodation(ctx *gin.Context) {
 	firstRoundDto, err = handler.FindAccommodations(searchDto)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, communication.NewErrorResponse(err.Error()))
+		middleware.HttpReqCountTotal.Inc()
+		middleware.HttpReqCountFail.Inc()
 		return
 	}
 
 	secondRound, err := handler.FindReservations(searchDto, firstRoundDto)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, communication.NewErrorResponse(err.Error()))
+		middleware.HttpReqCountTotal.Inc()
+		middleware.HttpReqCountFail.Inc()
 		return
 	}
 
 	finalDto, err := handler.FindRating(searchDto, secondRound, context.TODO())
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, communication.NewErrorResponse(err.Error()))
+		middleware.HttpReqCountTotal.Inc()
+		middleware.HttpReqCountFail.Inc()
 		return
 	}
 
+	middleware.HttpReqCountTotal.Inc()
+	middleware.HttpReqCountSucc.Inc()
 	ctx.JSON(http.StatusOK, finalDto)
 
 }
@@ -274,7 +283,9 @@ func (handler AccommodationHandler) GetRatableAccommodations(ctx *gin.Context) {
 
 	protoResponse, err := reservationClient.GetAllRatableAccommodationsForGuest(ctxGrpc, &reservation.GuestIdRequest{GuestId: loggedInAccCredIdFromCtx})
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Big puc kod get ratable accommodations??"})
+		middleware.HttpReqCountTotal.Inc()
+		middleware.HttpReqCountFail.Inc()
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Big puc kod get ratable accommodations?"})
 		return
 	}
 
@@ -282,6 +293,8 @@ func (handler AccommodationHandler) GetRatableAccommodations(ctx *gin.Context) {
 	for _, accId := range protoResponse.AccommodationIds {
 		accommodationProto, err2 := accommodationClient.GetById(context.TODO(), &accommodation.GetByIdRequest{Id: accId})
 		if err2 != nil {
+			middleware.HttpReqCountTotal.Inc()
+			middleware.HttpReqCountFail.Inc()
 			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Big puc kod get ratable accommodations?"})
 			return
 		}
@@ -292,6 +305,8 @@ func (handler AccommodationHandler) GetRatableAccommodations(ctx *gin.Context) {
 		})
 
 		if err2 != nil {
+			middleware.HttpReqCountTotal.Inc()
+			middleware.HttpReqCountFail.Inc()
 			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err2.Error()})
 			return
 		}
@@ -316,6 +331,8 @@ func (handler AccommodationHandler) GetRatableAccommodations(ctx *gin.Context) {
 		})
 	}
 
+	middleware.HttpReqCountTotal.Inc()
+	middleware.HttpReqCountSucc.Inc()
 	ctx.JSON(http.StatusOK, dtoSlice)
 }
 
@@ -330,6 +347,8 @@ func (handler AccommodationHandler) GetRatableHosts(ctx *gin.Context) {
 
 	protoHostIds, err := reservationClient.GetAllRatableHostsForGuest(ctxGrpc, &reservation.GuestIdRequest{GuestId: loggedInAccCredIdFromCtx})
 	if err != nil {
+		middleware.HttpReqCountTotal.Inc()
+		middleware.HttpReqCountFail.Inc()
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -338,12 +357,16 @@ func (handler AccommodationHandler) GetRatableHosts(ctx *gin.Context) {
 	for _, hostId := range protoHostIds.HostIds {
 		protoAccInfo, err2 := authorizationClient.GetById(ctxGrpc, &authorization.GetByIdRequest{Id: hostId})
 		if err2 != nil {
+			middleware.HttpReqCountTotal.Inc()
+			middleware.HttpReqCountFail.Inc()
 			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Big puc kod get ratable host?"})
 			return
 		}
 
 		protoUserInfo, err2 := userProfileClient.GetById(ctxGrpc, &user_profile.GetByIdRequest{Id: protoAccInfo.AccountCredentials.UserProfileId})
 		if err2 != nil {
+			middleware.HttpReqCountTotal.Inc()
+			middleware.HttpReqCountFail.Inc()
 			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err2.Error()})
 			return
 		}
@@ -354,6 +377,8 @@ func (handler AccommodationHandler) GetRatableHosts(ctx *gin.Context) {
 		})
 
 		if err2 != nil {
+			middleware.HttpReqCountTotal.Inc()
+			middleware.HttpReqCountFail.Inc()
 			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err2.Error()})
 			return
 		}
@@ -368,6 +393,8 @@ func (handler AccommodationHandler) GetRatableHosts(ctx *gin.Context) {
 		})
 	}
 
+	middleware.HttpReqCountTotal.Inc()
+	middleware.HttpReqCountSucc.Inc()
 	ctx.JSON(http.StatusOK, dtoSlice)
 }
 
@@ -389,17 +416,23 @@ func (handler AccommodationHandler) IsHostProminentCalculate(ctx *gin.Context, h
 
 	ratingProto, err := ratingClient.CalculateRatingForHost(context.TODO(), &rating.RatingForHostRequest{HostId: hostId})
 	if err != nil {
+		middleware.HttpReqCountTotal.Inc()
+		middleware.HttpReqCountFail.Inc()
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	if ratingProto.Rating.AvgRating <= 4.7 {
+		middleware.HttpReqCountTotal.Inc()
+		middleware.HttpReqCountSucc.Inc()
 		ctx.JSON(http.StatusOK, false)
 		return
 	}
 
 	protoAllReservations, err := reservationClient.GetAllReservationsForHost(ctx, &reservation.HostIdRequest{HostId: hostId})
 	if err != nil {
+		middleware.HttpReqCountTotal.Inc()
+		middleware.HttpReqCountFail.Inc()
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -428,10 +461,14 @@ func (handler AccommodationHandler) IsHostProminentCalculate(ctx *gin.Context, h
 	}
 
 	if cancelRate > 5.0 || durationOfReservedDays < 50 {
+		middleware.HttpReqCountTotal.Inc()
+		middleware.HttpReqCountSucc.Inc()
 		ctx.JSON(http.StatusOK, false)
 		return
 	}
 
+	middleware.HttpReqCountTotal.Inc()
+	middleware.HttpReqCountSucc.Inc()
 	ctx.JSON(http.StatusOK, true)
 }
 
@@ -452,12 +489,16 @@ func (handler AccommodationHandler) GetRatingDetailForAccommodation(ctx *gin.Con
 	for _, protoGuestInfo := range protoRatingDetails.Rating.Ratings {
 		protoAccInfo, err2 := authorizationClient.GetById(ctx, &authorization.GetByIdRequest{Id: protoGuestInfo.GuestId})
 		if err2 != nil {
+			middleware.HttpReqCountTotal.Inc()
+			middleware.HttpReqCountFail.Inc()
 			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Big puc kod get ratable host?"})
 			return
 		}
 
 		protoUserInfo, err2 := userProfileClient.GetById(ctx, &user_profile.GetByIdRequest{Id: protoAccInfo.AccountCredentials.UserProfileId})
 		if err2 != nil {
+			middleware.HttpReqCountTotal.Inc()
+			middleware.HttpReqCountFail.Inc()
 			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err2.Error()})
 			return
 		}
@@ -477,6 +518,8 @@ func (handler AccommodationHandler) GetRatingDetailForAccommodation(ctx *gin.Con
 		Ratings:         guestsInfo,
 	}
 
+	middleware.HttpReqCountTotal.Inc()
+	middleware.HttpReqCountSucc.Inc()
 	ctx.JSON(http.StatusOK, response)
 }
 
@@ -497,12 +540,16 @@ func (handler AccommodationHandler) GetRatingDetailForHost(ctx *gin.Context) {
 	for _, protoGuestInfo := range protoRatingDetails.Rating.Ratings {
 		protoAccInfo, err2 := authorizationClient.GetById(ctx, &authorization.GetByIdRequest{Id: protoGuestInfo.GuestId})
 		if err2 != nil {
+			middleware.HttpReqCountTotal.Inc()
+			middleware.HttpReqCountFail.Inc()
 			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Big puc kod get ratable host?"})
 			return
 		}
 
 		protoUserInfo, err2 := userProfileClient.GetById(ctx, &user_profile.GetByIdRequest{Id: protoAccInfo.AccountCredentials.UserProfileId})
 		if err2 != nil {
+			middleware.HttpReqCountTotal.Inc()
+			middleware.HttpReqCountFail.Inc()
 			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err2.Error()})
 			return
 		}
@@ -522,6 +569,8 @@ func (handler AccommodationHandler) GetRatingDetailForHost(ctx *gin.Context) {
 		Ratings:   guestsInfo,
 	}
 
+	middleware.HttpReqCountTotal.Inc()
+	middleware.HttpReqCountSucc.Inc()
 	ctx.JSON(http.StatusOK, response)
 }
 
@@ -542,6 +591,8 @@ func (handler AccommodationHandler) GetRecommendedAccommodations(ctx *gin.Contex
 	for _, protoRecommendation := range protoRecommendations.Recommendation {
 		accommodationInfoProto, err2 := accommodationClient.GetById(ctxGrpc, &accommodation.GetByIdRequest{Id: protoRecommendation.AccommodationId})
 		if err2 != nil {
+			middleware.HttpReqCountTotal.Inc()
+			middleware.HttpReqCountFail.Inc()
 			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err2.Error()})
 			return
 		}
@@ -564,6 +615,8 @@ func (handler AccommodationHandler) GetRecommendedAccommodations(ctx *gin.Contex
 		})
 	}
 
+	middleware.HttpReqCountTotal.Inc()
+	middleware.HttpReqCountSucc.Inc()
 	ctx.JSON(http.StatusOK, recommendations)
 }
 
@@ -575,6 +628,8 @@ func (handler AccommodationHandler) GetReservation(ctx *gin.Context) {
 
 	allReservationsProto, err := reservationClient.GetAllReservationsForGuest(ctxGrpc, &reservation.EmptyRequest{})
 	if err != nil {
+		middleware.HttpReqCountTotal.Inc()
+		middleware.HttpReqCountFail.Inc()
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -583,6 +638,8 @@ func (handler AccommodationHandler) GetReservation(ctx *gin.Context) {
 	for _, val := range allReservationsProto.Reservations {
 		accommodationInfoProto, err2 := accommodationClient.GetById(ctxGrpc, &accommodation.GetByIdRequest{Id: val.AccommodationId})
 		if err2 != nil {
+			middleware.HttpReqCountTotal.Inc()
+			middleware.HttpReqCountFail.Inc()
 			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err2.Error()})
 			return
 		}
@@ -608,5 +665,7 @@ func (handler AccommodationHandler) GetReservation(ctx *gin.Context) {
 		})
 	}
 
+	middleware.HttpReqCountTotal.Inc()
+	middleware.HttpReqCountSucc.Inc()
 	ctx.JSON(http.StatusOK, dtoSlice)
 }
