@@ -210,7 +210,7 @@ function Profile() {
     };
     const handleDeletedAccountClose = () => {
         setDeletedAccountDialogShow(false)
-
+        localStorage.removeItem('paseto');
         navigate('/login');
     };
     const handleErrorClose = () => {
