@@ -63,6 +63,9 @@ func (handler AccommodationHandler) Init(router *gin.RouterGroup) {
 	userGroup.GET("/prominent-host",
 		middleware.ValidateToken(handler.tokenMaker),
 		middleware.Authorization([]model.Role{model.Host}), handler.IsHostProminentPaseto)
+	userGroup.GET("/reservation/all/guest",
+		middleware.ValidateToken(handler.tokenMaker),
+		middleware.Authorization([]model.Role{model.Guest}), handler.GetReservation)
 }
 
 func (handler AccommodationHandler) SearchAccommodation(ctx *gin.Context) {
@@ -271,13 +274,13 @@ func (handler AccommodationHandler) GetRatableAccommodations(ctx *gin.Context) {
 
 	protoResponse, err := reservationClient.GetAllRatableAccommodationsForGuest(ctxGrpc, &reservation.GuestIdRequest{GuestId: loggedInAccCredIdFromCtx})
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Big puc kod get ratable accommodations?"})
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Big puc kod get ratable accommodations??"})
 		return
 	}
 
 	dtoSlice := make([]*dto.Accommodation, 0)
 	for _, accId := range protoResponse.AccommodationIds {
-		accommodationProto, err2 := accommodationClient.GetById(ctxGrpc, &accommodation.GetByIdRequest{Id: accId})
+		accommodationProto, err2 := accommodationClient.GetById(context.TODO(), &accommodation.GetByIdRequest{Id: accId})
 		if err2 != nil {
 			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Big puc kod get ratable accommodations?"})
 			return
@@ -562,4 +565,48 @@ func (handler AccommodationHandler) GetRecommendedAccommodations(ctx *gin.Contex
 	}
 
 	ctx.JSON(http.StatusOK, recommendations)
+}
+
+func (handler AccommodationHandler) GetReservation(ctx *gin.Context) {
+	reservationClient := communication.NewReservationClient(handler.reservationServiceAddress)
+	accommodationClient := communication.NewAccommodationClient(handler.accommodationServiceAddress)
+
+	ctxGrpc := createGrpcContextFromGinContext(ctx)
+
+	allReservationsProto, err := reservationClient.GetAllReservationsForGuest(ctxGrpc, &reservation.EmptyRequest{})
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	dtoSlice := make([]*dto.ReservationFullInfo, 0)
+	for _, val := range allReservationsProto.Reservations {
+		accommodationInfoProto, err2 := accommodationClient.GetById(ctxGrpc, &accommodation.GetByIdRequest{Id: val.AccommodationId})
+		if err2 != nil {
+			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err2.Error()})
+			return
+		}
+
+		dtoSlice = append(dtoSlice, &dto.ReservationFullInfo{
+			ID: val.Id,
+			DateRange: dto.DateRange{
+				From: time.Unix(val.DateRange.From, 0),
+				To:   time.Unix(val.DateRange.To, 0),
+			},
+			Price:             val.Price,
+			NumberOfGuests:    val.NumberOfGuests,
+			Status:            val.Status,
+			AccommodationId:   val.AccommodationId,
+			GuestId:           val.GuestId,
+			AccommodationName: accommodationInfoProto.Accommodation.Name,
+			Address: dto.Address{
+				Country:      accommodationInfoProto.Accommodation.Address.Country,
+				City:         accommodationInfoProto.Accommodation.Address.City,
+				Street:       accommodationInfoProto.Accommodation.Address.Street,
+				StreetNumber: accommodationInfoProto.Accommodation.Address.StreetNumber,
+			},
+		})
+	}
+
+	ctx.JSON(http.StatusOK, dtoSlice)
 }
