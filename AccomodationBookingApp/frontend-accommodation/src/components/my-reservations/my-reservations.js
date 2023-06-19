@@ -86,25 +86,20 @@ function MyReservations() {
                                                     handleCancel(r.Id)
                                                 }}
                                                 fullWidth
-                                                disabled={r.status === 'rejected' || r.status === 'canceled' || new Date(r.dateRange.from * 1000).setHours(0, 0, 0, 0) <= new Date(new Date().getTime() + 1 * 24 * 60 * 60 * 1000).setHours(0, 0, 0, 0)}
+                                                disabled={r.status === 'rejected' || r.status === 'canceled' || new Date(r.dateRange.from) <= new Date(new Date().setDate(new Date().getDate() - 1))}
                                                 variant="contained" color="warning">Cancel reservation</Button>
                                         </Box>
                                         <Box m={1}>
                                             <Button
-                                                onClick={() => {
-                                                    handleCancel(r.Id)
-                                                }}
+
                                                 fullWidth
-                                                disabled={r.status === 'rejected' || r.status === 'canceled' || new Date(r.dateRange.from * 1000).setHours(0, 0, 0, 0) <= new Date(new Date().getTime() + 1 * 24 * 60 * 60 * 1000).setHours(0, 0, 0, 0)}
+                                                disabled={r.status === 'rejected' || r.status === 'canceled' || new Date(r.dateRange.from) <= new Date(new Date().setDate(new Date().getDate() - 1))}
                                                 variant="outlined" color="info">Flights from accommodation</Button>
                                         </Box>
                                         <Box m={1}>
                                             <Button
-                                                onClick={() => {
-                                                    handleCancel(r.Id)
-                                                }}
                                                 fullWidth
-                                                disabled={r.status === 'rejected' || r.status === 'canceled' || new Date(r.dateRange.from * 1000).setHours(0, 0, 0, 0) <= new Date(new Date().getTime() + 1 * 24 * 60 * 60 * 1000).setHours(0, 0, 0, 0)}
+                                                disabled={r.status === 'rejected' || r.status === 'canceled' || new Date(r.dateRange.to) <= new Date(new Date().setDate(new Date().getDate() - 1))}
                                                 variant="outlined" color="info">Flights to accommodation</Button>
                                         </Box>
                                     </StyledTableCell>
