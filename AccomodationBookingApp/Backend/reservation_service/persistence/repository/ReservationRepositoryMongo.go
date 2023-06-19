@@ -448,6 +448,7 @@ func (repo ReservationRepositoryMongo) GetAllAcceptedReservations(hostId string)
 
 	filter := bson.M{
 		"accommodationId": bson.M{"$in": accommodationIds},
+		"dateRange.from":  bson.M{"$gte": time.Now().UTC()},
 		"status":          "accepted"}
 
 	cursor, err := collection.Find(ctx, filter)

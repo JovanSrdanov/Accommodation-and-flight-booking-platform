@@ -1,0 +1,1976 @@
+{
+	"Name": "reservation.ReservationService/HostHasActiveReservations",
+	"SpanContext": {
+		"TraceID": "cd01cd9dfa55f8279020575549b4a9c2",
+		"SpanID": "71c5c410dca2240e",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "cd01cd9dfa55f8279020575549b4a9c2",
+		"SpanID": "47c320a3523840cb",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": true
+	},
+	"SpanKind": 2,
+	"StartTime": "2023-06-19T22:55:36.960173081+02:00",
+	"EndTime": "2023-06-19T22:55:36.962465102+02:00",
+	"Attributes": [
+		{
+			"Key": "rpc.system",
+			"Value": {
+				"Type": "STRING",
+				"Value": "grpc"
+			}
+		},
+		{
+			"Key": "rpc.service",
+			"Value": {
+				"Type": "STRING",
+				"Value": "reservation.ReservationService"
+			}
+		},
+		{
+			"Key": "rpc.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "HostHasActiveReservations"
+			}
+		},
+		{
+			"Key": "net.sock.peer.addr",
+			"Value": {
+				"Type": "STRING",
+				"Value": "::1"
+			}
+		},
+		{
+			"Key": "net.sock.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 47022
+			}
+		},
+		{
+			"Key": "rpc.grpc.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 0
+			}
+		}
+	],
+	"Events": [
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "RECEIVED"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T22:55:36.96019564+02:00"
+		},
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "SENT"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T22:55:36.962448409+02:00"
+		}
+	],
+	"Links": null,
+	"Status": {
+		"Code": "Unset",
+		"Description": ""
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 0,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___7go_build_reservation_service"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "reservation.ReservationService/HostHasActiveReservations",
+	"SpanContext": {
+		"TraceID": "0bcb2bd462d4274687257d1f3628bf6c",
+		"SpanID": "cd1cfb23fb62b5b5",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "0bcb2bd462d4274687257d1f3628bf6c",
+		"SpanID": "1bbceba73a74aa7c",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": true
+	},
+	"SpanKind": 2,
+	"StartTime": "2023-06-19T22:55:38.352586599+02:00",
+	"EndTime": "2023-06-19T22:55:38.354043304+02:00",
+	"Attributes": [
+		{
+			"Key": "rpc.system",
+			"Value": {
+				"Type": "STRING",
+				"Value": "grpc"
+			}
+		},
+		{
+			"Key": "rpc.service",
+			"Value": {
+				"Type": "STRING",
+				"Value": "reservation.ReservationService"
+			}
+		},
+		{
+			"Key": "rpc.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "HostHasActiveReservations"
+			}
+		},
+		{
+			"Key": "net.sock.peer.addr",
+			"Value": {
+				"Type": "STRING",
+				"Value": "::1"
+			}
+		},
+		{
+			"Key": "net.sock.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 47028
+			}
+		},
+		{
+			"Key": "rpc.grpc.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 0
+			}
+		}
+	],
+	"Events": [
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "RECEIVED"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T22:55:38.352597704+02:00"
+		},
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "SENT"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T22:55:38.354030312+02:00"
+		}
+	],
+	"Links": null,
+	"Status": {
+		"Code": "Unset",
+		"Description": ""
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 0,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___7go_build_reservation_service"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "reservation.ReservationService/HostHasActiveReservations",
+	"SpanContext": {
+		"TraceID": "95e5e33bef0daa5b538a949c4e9e26c8",
+		"SpanID": "ea05c67269699eb9",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "95e5e33bef0daa5b538a949c4e9e26c8",
+		"SpanID": "89cdfd957b430d8d",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": true
+	},
+	"SpanKind": 2,
+	"StartTime": "2023-06-19T22:56:43.782514649+02:00",
+	"EndTime": "2023-06-19T22:56:43.784208748+02:00",
+	"Attributes": [
+		{
+			"Key": "rpc.system",
+			"Value": {
+				"Type": "STRING",
+				"Value": "grpc"
+			}
+		},
+		{
+			"Key": "rpc.service",
+			"Value": {
+				"Type": "STRING",
+				"Value": "reservation.ReservationService"
+			}
+		},
+		{
+			"Key": "rpc.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "HostHasActiveReservations"
+			}
+		},
+		{
+			"Key": "net.sock.peer.addr",
+			"Value": {
+				"Type": "STRING",
+				"Value": "::1"
+			}
+		},
+		{
+			"Key": "net.sock.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 36942
+			}
+		},
+		{
+			"Key": "rpc.grpc.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 0
+			}
+		}
+	],
+	"Events": [
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "RECEIVED"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T22:56:43.782527081+02:00"
+		},
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "SENT"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T22:56:43.784198761+02:00"
+		}
+	],
+	"Links": null,
+	"Status": {
+		"Code": "Unset",
+		"Description": ""
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 0,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___7go_build_reservation_service"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "reservation.ReservationService/HostHasActiveReservations",
+	"SpanContext": {
+		"TraceID": "592160e0c0670e96f50f5f519cb898c1",
+		"SpanID": "92938ae825b1a238",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "592160e0c0670e96f50f5f519cb898c1",
+		"SpanID": "e1a23a985f3207f5",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": true
+	},
+	"SpanKind": 2,
+	"StartTime": "2023-06-19T22:57:30.39107652+02:00",
+	"EndTime": "2023-06-19T22:57:30.392413514+02:00",
+	"Attributes": [
+		{
+			"Key": "rpc.system",
+			"Value": {
+				"Type": "STRING",
+				"Value": "grpc"
+			}
+		},
+		{
+			"Key": "rpc.service",
+			"Value": {
+				"Type": "STRING",
+				"Value": "reservation.ReservationService"
+			}
+		},
+		{
+			"Key": "rpc.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "HostHasActiveReservations"
+			}
+		},
+		{
+			"Key": "net.sock.peer.addr",
+			"Value": {
+				"Type": "STRING",
+				"Value": "::1"
+			}
+		},
+		{
+			"Key": "net.sock.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 42724
+			}
+		},
+		{
+			"Key": "rpc.grpc.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 0
+			}
+		}
+	],
+	"Events": [
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "RECEIVED"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T22:57:30.39108546+02:00"
+		},
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "SENT"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T22:57:30.392404365+02:00"
+		}
+	],
+	"Links": null,
+	"Status": {
+		"Code": "Unset",
+		"Description": ""
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 0,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___7go_build_reservation_service"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "reservation.ReservationService/HostHasActiveReservations",
+	"SpanContext": {
+		"TraceID": "10295afb5a518c8e1f1e6269507b1a8f",
+		"SpanID": "9c39a96a663f9140",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "10295afb5a518c8e1f1e6269507b1a8f",
+		"SpanID": "46ba631535312b98",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": true
+	},
+	"SpanKind": 2,
+	"StartTime": "2023-06-19T22:57:41.774153226+02:00",
+	"EndTime": "2023-06-19T22:57:41.77564534+02:00",
+	"Attributes": [
+		{
+			"Key": "rpc.system",
+			"Value": {
+				"Type": "STRING",
+				"Value": "grpc"
+			}
+		},
+		{
+			"Key": "rpc.service",
+			"Value": {
+				"Type": "STRING",
+				"Value": "reservation.ReservationService"
+			}
+		},
+		{
+			"Key": "rpc.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "HostHasActiveReservations"
+			}
+		},
+		{
+			"Key": "net.sock.peer.addr",
+			"Value": {
+				"Type": "STRING",
+				"Value": "::1"
+			}
+		},
+		{
+			"Key": "net.sock.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 44672
+			}
+		},
+		{
+			"Key": "rpc.grpc.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 0
+			}
+		}
+	],
+	"Events": [
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "RECEIVED"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T22:57:41.774170338+02:00"
+		},
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "SENT"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T22:57:41.775634794+02:00"
+		}
+	],
+	"Links": null,
+	"Status": {
+		"Code": "Unset",
+		"Description": ""
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 0,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___7go_build_reservation_service"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "reservation.ReservationService/HostHasActiveReservations",
+	"SpanContext": {
+		"TraceID": "f04d1a8ef39161ba03b9d06fa8759189",
+		"SpanID": "ae1f522d1bcfcda1",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "f04d1a8ef39161ba03b9d06fa8759189",
+		"SpanID": "6280c6ac195a1261",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": true
+	},
+	"SpanKind": 2,
+	"StartTime": "2023-06-19T22:57:57.982767331+02:00",
+	"EndTime": "2023-06-19T22:57:57.984757073+02:00",
+	"Attributes": [
+		{
+			"Key": "rpc.system",
+			"Value": {
+				"Type": "STRING",
+				"Value": "grpc"
+			}
+		},
+		{
+			"Key": "rpc.service",
+			"Value": {
+				"Type": "STRING",
+				"Value": "reservation.ReservationService"
+			}
+		},
+		{
+			"Key": "rpc.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "HostHasActiveReservations"
+			}
+		},
+		{
+			"Key": "net.sock.peer.addr",
+			"Value": {
+				"Type": "STRING",
+				"Value": "::1"
+			}
+		},
+		{
+			"Key": "net.sock.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 47054
+			}
+		},
+		{
+			"Key": "rpc.grpc.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 0
+			}
+		}
+	],
+	"Events": [
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "RECEIVED"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T22:57:57.982783605+02:00"
+		},
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "SENT"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T22:57:57.984742756+02:00"
+		}
+	],
+	"Links": null,
+	"Status": {
+		"Code": "Unset",
+		"Description": ""
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 0,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___7go_build_reservation_service"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "reservation.ReservationService/HostHasActiveReservations",
+	"SpanContext": {
+		"TraceID": "da550b00a9cb46e65af8e37f56677f27",
+		"SpanID": "c15a02c8d7af31ff",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "da550b00a9cb46e65af8e37f56677f27",
+		"SpanID": "706e3a4f16defc51",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": true
+	},
+	"SpanKind": 2,
+	"StartTime": "2023-06-19T22:59:01.585468995+02:00",
+	"EndTime": "2023-06-19T22:59:01.58783449+02:00",
+	"Attributes": [
+		{
+			"Key": "rpc.system",
+			"Value": {
+				"Type": "STRING",
+				"Value": "grpc"
+			}
+		},
+		{
+			"Key": "rpc.service",
+			"Value": {
+				"Type": "STRING",
+				"Value": "reservation.ReservationService"
+			}
+		},
+		{
+			"Key": "rpc.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "HostHasActiveReservations"
+			}
+		},
+		{
+			"Key": "net.sock.peer.addr",
+			"Value": {
+				"Type": "STRING",
+				"Value": "::1"
+			}
+		},
+		{
+			"Key": "net.sock.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 54274
+			}
+		},
+		{
+			"Key": "rpc.grpc.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 0
+			}
+		}
+	],
+	"Events": [
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "RECEIVED"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T22:59:01.585494208+02:00"
+		},
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "SENT"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T22:59:01.587820241+02:00"
+		}
+	],
+	"Links": null,
+	"Status": {
+		"Code": "Unset",
+		"Description": ""
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 0,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___7go_build_reservation_service"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "reservation.ReservationService/HostHasActiveReservations",
+	"SpanContext": {
+		"TraceID": "c0680aeff5d0c81e0161d05dd3b404be",
+		"SpanID": "728ba8633d4bab67",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "c0680aeff5d0c81e0161d05dd3b404be",
+		"SpanID": "1b39ec1df708a70a",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": true
+	},
+	"SpanKind": 2,
+	"StartTime": "2023-06-19T23:00:17.240482662+02:00",
+	"EndTime": "2023-06-19T23:00:22.241675921+02:00",
+	"Attributes": [
+		{
+			"Key": "rpc.system",
+			"Value": {
+				"Type": "STRING",
+				"Value": "grpc"
+			}
+		},
+		{
+			"Key": "rpc.service",
+			"Value": {
+				"Type": "STRING",
+				"Value": "reservation.ReservationService"
+			}
+		},
+		{
+			"Key": "rpc.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "HostHasActiveReservations"
+			}
+		},
+		{
+			"Key": "net.sock.peer.addr",
+			"Value": {
+				"Type": "STRING",
+				"Value": "::1"
+			}
+		},
+		{
+			"Key": "net.sock.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 41406
+			}
+		},
+		{
+			"Key": "rpc.grpc.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 2
+			}
+		}
+	],
+	"Events": [
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "RECEIVED"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T23:00:17.240498307+02:00"
+		},
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "SENT"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T23:00:22.241651545+02:00"
+		}
+	],
+	"Links": null,
+	"Status": {
+		"Code": "Error",
+		"Description": "server selection error: context deadline exceeded, current topology: { Type: Single, Servers: [{ Addr: localhost:5004, Type: Unknown, Last error: dial tcp [::1]:5004: connect: connection refused }, ] }"
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 0,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___7go_build_reservation_service"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "reservation.ReservationService/HostHasActiveReservations",
+	"SpanContext": {
+		"TraceID": "76029a210b54f010ddf1c72a8ad0b227",
+		"SpanID": "6171b6396c457478",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "76029a210b54f010ddf1c72a8ad0b227",
+		"SpanID": "120c75d6a3c2218e",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": true
+	},
+	"SpanKind": 2,
+	"StartTime": "2023-06-19T23:01:10.387347002+02:00",
+	"EndTime": "2023-06-19T23:01:15.388232805+02:00",
+	"Attributes": [
+		{
+			"Key": "rpc.system",
+			"Value": {
+				"Type": "STRING",
+				"Value": "grpc"
+			}
+		},
+		{
+			"Key": "rpc.service",
+			"Value": {
+				"Type": "STRING",
+				"Value": "reservation.ReservationService"
+			}
+		},
+		{
+			"Key": "rpc.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "HostHasActiveReservations"
+			}
+		},
+		{
+			"Key": "net.sock.peer.addr",
+			"Value": {
+				"Type": "STRING",
+				"Value": "::1"
+			}
+		},
+		{
+			"Key": "net.sock.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 51508
+			}
+		},
+		{
+			"Key": "rpc.grpc.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 2
+			}
+		}
+	],
+	"Events": [
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "RECEIVED"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T23:01:10.387359783+02:00"
+		},
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "SENT"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T23:01:15.388222677+02:00"
+		}
+	],
+	"Links": null,
+	"Status": {
+		"Code": "Error",
+		"Description": "server selection error: context deadline exceeded, current topology: { Type: Single, Servers: [{ Addr: localhost:5004, Type: Unknown, Last error: dial tcp [::1]:5004: connect: connection refused }, ] }"
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 0,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___7go_build_reservation_service"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "reservation.ReservationService/HostHasActiveReservations",
+	"SpanContext": {
+		"TraceID": "4c765371e649fda76aa10b87fa29ea70",
+		"SpanID": "7b021030f6e8e07d",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "4c765371e649fda76aa10b87fa29ea70",
+		"SpanID": "ce0f6c02663b1515",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": true
+	},
+	"SpanKind": 2,
+	"StartTime": "2023-06-19T23:01:34.620683178+02:00",
+	"EndTime": "2023-06-19T23:01:34.62532414+02:00",
+	"Attributes": [
+		{
+			"Key": "rpc.system",
+			"Value": {
+				"Type": "STRING",
+				"Value": "grpc"
+			}
+		},
+		{
+			"Key": "rpc.service",
+			"Value": {
+				"Type": "STRING",
+				"Value": "reservation.ReservationService"
+			}
+		},
+		{
+			"Key": "rpc.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "HostHasActiveReservations"
+			}
+		},
+		{
+			"Key": "net.sock.peer.addr",
+			"Value": {
+				"Type": "STRING",
+				"Value": "::1"
+			}
+		},
+		{
+			"Key": "net.sock.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 33834
+			}
+		},
+		{
+			"Key": "rpc.grpc.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 0
+			}
+		}
+	],
+	"Events": [
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "RECEIVED"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T23:01:34.620697426+02:00"
+		},
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "SENT"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T23:01:34.625305561+02:00"
+		}
+	],
+	"Links": null,
+	"Status": {
+		"Code": "Unset",
+		"Description": ""
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 0,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___7go_build_reservation_service"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "reservation.ReservationService/HostHasActiveReservations",
+	"SpanContext": {
+		"TraceID": "6c155d5bc86e92ce3064b528cb1e0b9d",
+		"SpanID": "341448b501913d22",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "6c155d5bc86e92ce3064b528cb1e0b9d",
+		"SpanID": "8f0de11d92b50ce8",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": true
+	},
+	"SpanKind": 2,
+	"StartTime": "2023-06-19T23:04:44.268262739+02:00",
+	"EndTime": "2023-06-19T23:04:44.271949093+02:00",
+	"Attributes": [
+		{
+			"Key": "rpc.system",
+			"Value": {
+				"Type": "STRING",
+				"Value": "grpc"
+			}
+		},
+		{
+			"Key": "rpc.service",
+			"Value": {
+				"Type": "STRING",
+				"Value": "reservation.ReservationService"
+			}
+		},
+		{
+			"Key": "rpc.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "HostHasActiveReservations"
+			}
+		},
+		{
+			"Key": "net.sock.peer.addr",
+			"Value": {
+				"Type": "STRING",
+				"Value": "::1"
+			}
+		},
+		{
+			"Key": "net.sock.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 35028
+			}
+		},
+		{
+			"Key": "rpc.grpc.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 0
+			}
+		}
+	],
+	"Events": [
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "RECEIVED"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T23:04:44.268276987+02:00"
+		},
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "SENT"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T23:04:44.271937918+02:00"
+		}
+	],
+	"Links": null,
+	"Status": {
+		"Code": "Unset",
+		"Description": ""
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 0,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___7go_build_reservation_service"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "reservation.ReservationService/HostHasActiveReservations",
+	"SpanContext": {
+		"TraceID": "5f4401382dafb823617814965f735a60",
+		"SpanID": "44c3d28179849d62",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "5f4401382dafb823617814965f735a60",
+		"SpanID": "bf584be05213804a",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": true
+	},
+	"SpanKind": 2,
+	"StartTime": "2023-06-19T23:05:22.294027351+02:00",
+	"EndTime": "2023-06-19T23:05:22.295625347+02:00",
+	"Attributes": [
+		{
+			"Key": "rpc.system",
+			"Value": {
+				"Type": "STRING",
+				"Value": "grpc"
+			}
+		},
+		{
+			"Key": "rpc.service",
+			"Value": {
+				"Type": "STRING",
+				"Value": "reservation.ReservationService"
+			}
+		},
+		{
+			"Key": "rpc.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "HostHasActiveReservations"
+			}
+		},
+		{
+			"Key": "net.sock.peer.addr",
+			"Value": {
+				"Type": "STRING",
+				"Value": "::1"
+			}
+		},
+		{
+			"Key": "net.sock.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 52566
+			}
+		},
+		{
+			"Key": "rpc.grpc.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 0
+			}
+		}
+	],
+	"Events": [
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "RECEIVED"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T23:05:22.294039364+02:00"
+		},
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "SENT"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T23:05:22.295611098+02:00"
+		}
+	],
+	"Links": null,
+	"Status": {
+		"Code": "Unset",
+		"Description": ""
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 0,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___7go_build_reservation_service"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "reservation.ReservationService/HostHasActiveReservations",
+	"SpanContext": {
+		"TraceID": "a803b7f016dc91d59f2407a23c35aff4",
+		"SpanID": "78e87f73498d21c3",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "a803b7f016dc91d59f2407a23c35aff4",
+		"SpanID": "89b42bd9a4c28fa1",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": true
+	},
+	"SpanKind": 2,
+	"StartTime": "2023-06-19T23:05:57.013683929+02:00",
+	"EndTime": "2023-06-19T23:05:57.016347441+02:00",
+	"Attributes": [
+		{
+			"Key": "rpc.system",
+			"Value": {
+				"Type": "STRING",
+				"Value": "grpc"
+			}
+		},
+		{
+			"Key": "rpc.service",
+			"Value": {
+				"Type": "STRING",
+				"Value": "reservation.ReservationService"
+			}
+		},
+		{
+			"Key": "rpc.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "HostHasActiveReservations"
+			}
+		},
+		{
+			"Key": "net.sock.peer.addr",
+			"Value": {
+				"Type": "STRING",
+				"Value": "::1"
+			}
+		},
+		{
+			"Key": "net.sock.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 39210
+			}
+		},
+		{
+			"Key": "rpc.grpc.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 0
+			}
+		}
+	],
+	"Events": [
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "RECEIVED"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T23:05:57.013699295+02:00"
+		},
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "SENT"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T23:05:57.016322298+02:00"
+		}
+	],
+	"Links": null,
+	"Status": {
+		"Code": "Unset",
+		"Description": ""
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 0,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___7go_build_reservation_service"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
