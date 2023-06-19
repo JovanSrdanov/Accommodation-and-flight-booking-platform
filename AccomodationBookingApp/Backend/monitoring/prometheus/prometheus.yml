@@ -14,21 +14,25 @@ scrape_configs:
     static_configs:
       - targets: ['localhost:9090']
 
-  - job_name: 'authorization_service'
+  - job_name: 'api_gateway'
     static_configs:
-      - targets: ['authorization_service:8000']
+      - targets: [ 'api_gateway:8000' ]
 
-  - job_name: 'user_profile_service'
-    static_configs:
-      - targets: [ 'user_profile_service:8000' ]
-
-  - job_name: 'accommodation_service'
-    static_configs:
-      - targets: [ 'accommodation_service:8000' ]
-
-  - job_name: 'reservation_service'
-    static_configs:
-      - targets: [ 'reservation_service:8000' ]
+#  - job_name: 'authorization_service'
+#    static_configs:
+#      - targets: ['authorization_service:8000']
+#
+#  - job_name: 'user_profile_service'
+#    static_configs:
+#      - targets: [ 'user_profile_service:8000' ]
+#
+#  - job_name: 'accommodation_service'
+#    static_configs:
+#      - targets: [ 'accommodation_service:8000' ]
+#
+#  - job_name: 'reservation_service'
+#    static_configs:
+#      - targets: [ 'reservation_service:8000' ]
 
   - job_name: 'node_exporter'
     static_configs:

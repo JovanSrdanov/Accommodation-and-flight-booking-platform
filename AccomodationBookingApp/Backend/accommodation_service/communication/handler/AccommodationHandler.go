@@ -7,10 +7,8 @@ import (
 	reservation "common/proto/reservation_service/generated"
 	"context"
 	"fmt"
-
-	"go.mongodb.org/mongo-driver/bson/primitive"
-
 	"github.com/google/uuid"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type AccommodationHandler struct {
