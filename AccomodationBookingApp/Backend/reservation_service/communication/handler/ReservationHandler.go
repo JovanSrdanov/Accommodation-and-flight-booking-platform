@@ -15,7 +15,9 @@ type ReservationHandler struct {
 }
 
 func NewReservationHandler(reservationService service.ReservationService) *ReservationHandler {
-	return &ReservationHandler{reservationService: reservationService}
+	return &ReservationHandler{
+		reservationService: reservationService,
+	}
 }
 
 func (handler ReservationHandler) CreateAvailability(ctx context.Context, in *reservation.CreateAvailabilityRequest) (*reservation.CreateAvailabilityResponse, error) {
@@ -59,6 +61,7 @@ func (handler ReservationHandler) CreateReservation(ctx context.Context, in *res
 	if err != nil {
 		return nil, err
 	}
+
 	return &reservation.CreateReservationRequest{}, nil
 }
 func (handler ReservationHandler) GetAllPendingReservations(ctx context.Context, in *reservation.EmptyRequest) (*reservation.GetAllPendingReservationsResponse, error) {
@@ -107,6 +110,7 @@ func (handler ReservationHandler) RejectReservation(ctx context.Context, in *res
 	if err != nil {
 		return nil, err
 	}
+
 	return &reservation.RejectReservationResponse{
 		Id: id.Hex(),
 	}, nil
@@ -170,7 +174,6 @@ func (handler ReservationHandler) HostHasActiveReservations(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	//log.Println("HOST ID:" + id.String())
 
 	activeReservations, err := handler.reservationService.GetAllAcceptedReservations(id.String())
 	if err != nil {
@@ -182,17 +185,28 @@ func (handler ReservationHandler) HostHasActiveReservations(ctx context.Context,
 	}
 	return &reservation.HostHasActiveReservationsResponse{HasActiveReservations: true}, nil
 }
-func (handler ReservationHandler) DeleteAvailabilitiesAndReservationsByAccommodationIds(ctx context.Context, in *reservation.DeleteAvailabilitiesAndReservationsByAccommodationIdsRequest) (*reservation.DeleteAvailabilitiesAndReservationsByAccommodationIdsResponse, error) {
-	for _, accomodationId := range in.AccommodationIds {
-		accommodationIdObj, err := primitive.ObjectIDFromHex(accomodationId)
-		if err != nil {
-			return &reservation.DeleteAvailabilitiesAndReservationsByAccommodationIdsResponse{Success: false}, err
-		}
-
-		err = handler.reservationService.DeleteAvailabilitiesAndReservationsByAccommodationId(accommodationIdObj)
-		if err != nil {
-			return &reservation.DeleteAvailabilitiesAndReservationsByAccommodationIdsResponse{Success: false}, err
-		}
+func (handler ReservationHandler) GetAllRatableAccommodationsForGuest(ctx context.Context, in *reservation.GuestIdRequest) (*reservation.AccommodationsIdsResponse, error) {
+	res, err := handler.reservationService.GetAllRatableAccommodationsForGuest(in.GuestId)
+	if err != nil {
+		return nil, err
 	}
-	return &reservation.DeleteAvailabilitiesAndReservationsByAccommodationIdsResponse{Success: true}, nil
+	return &reservation.AccommodationsIdsResponse{AccommodationIds: res}, nil
+}
+func (handler ReservationHandler) GetAllRatableHostsForGuest(ctx context.Context, in *reservation.GuestIdRequest) (*reservation.HostIdsResponse, error) {
+	res, err := handler.reservationService.GetAllRatableHostsForGuest(in.GuestId)
+	if err != nil {
+		return nil, err
+	}
+	return &reservation.HostIdsResponse{HostIds: res}, nil
+}
+func (handler ReservationHandler) GetAllReservationsForHost(ctx context.Context, in *reservation.HostIdRequest) (*reservation.GetAllReservationsResponse, error) {
+	mapper := NewReservationMapper()
+	protoReservations, err := handler.reservationService.GetAllReservationsForHost(in.HostId)
+	if err != nil {
+		return nil, err
+	}
+
+	return &reservation.GetAllReservationsResponse{
+		Reservation: mapper.mapToReservationsProto(protoReservations),
+	}, nil
 }

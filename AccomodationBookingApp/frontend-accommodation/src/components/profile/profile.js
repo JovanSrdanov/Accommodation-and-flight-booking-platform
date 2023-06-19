@@ -1,6 +1,16 @@
 import React, {useEffect, useState} from 'react';
 import {Flex} from "reflexbox";
-import {Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField} from "@mui/material";
+import {
+    Alert,
+    Box,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Snackbar,
+    TextField
+} from "@mui/material";
 import interceptor from "../../interceptor/interceptor";
 import {useNavigate} from "react-router-dom";
 
@@ -90,8 +100,43 @@ function Profile() {
 
     }
 
+    const [prominentHostInfo, setProminentHostInfo] = useState("")
+    const [prominentHostInfoSnackbar, setProminentHostInfoSnackBar] = useState(false)
+
+    const showProminentHost = () => {
+        const paseto = localStorage.getItem('paseto');
+        if (!paseto) {
+            localStorage.removeItem('paseto');
+            return null
+        }
+        const footer = paseto.split(".")[3];
+        const decodedFooter = JSON.parse(atob(footer));
+        const roleAndExp = decodedFooter.RoleAndExp;
+
+        const regex = /role:(.*), expiration date: (.*)/;
+        const matches = roleAndExp.match(regex);
+        const role = matches[1];
+
+        if (role === "0") {
+            interceptor.get("api-2/accommodation/prominent-host").then((res) => {
+                setProminentHostInfoSnackBar(true)
+                if (res.data === true) {
+                    setProminentHostInfo("You are a prominent host")
+                } else {
+                    setProminentHostInfo("You are not a prominent host")
+                }
+
+            }).catch((err) => {
+                console.log(err)
+            })
+
+        }
+
+
+    };
     useEffect(() => {
         getAllUserInfo();
+        showProminentHost();
     }, []);
 
     const handleBasicUserInfoInputChange = (event) => {
@@ -147,28 +192,12 @@ function Profile() {
             setErrorMessage(": UNKNOWN ERROR")
         }
 
+        interceptor.delete("api-1/user").then((res) => {
+            setDeletedAccountDialogShow(true);
 
-        const response = await interceptor.delete('api-1/user');
-        console.log(response);
-
-        let deleted = false;
-        for (let step = 0; step < 5 && !deleted; step++) {
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-            try {
-                const res = await interceptor.get('api-1/account-credentials/is-deleted');
-                if (res.data.response) {
-                    setDeletedAccountDialogShow(true);
-                    deleted = true;
-                    localStorage.removeItem('paseto');
-                }
-            } catch (error) {
-            }
-
-
-        }
-        if (!deleted) {
+        }).catch((err) => {
             setErrorDialogShow(true);
-        }
+        })
 
 
     };
@@ -189,6 +218,15 @@ function Profile() {
     };
     return (
         <>
+            <Snackbar open={prominentHostInfoSnackbar}
+
+                      anchorOrigin={{vertical: "bottom", horizontal: "right"}}
+            >
+                <Alert severity="info" sx={{width: '100%'}}>
+                    {prominentHostInfo}
+                </Alert>
+            </Snackbar>
+
             <Dialog onClose={handleClose} open={successDialogShow}>
                 <DialogTitle>Update Successful!</DialogTitle>
                 <DialogActions>

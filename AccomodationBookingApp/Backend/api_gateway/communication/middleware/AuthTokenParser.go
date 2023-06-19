@@ -12,9 +12,7 @@ func AuthTokenParser() gin.HandlerFunc {
 			ctx.Next()
 			return
 		}
-
 		accessToken := authHeader[len("Bearer "):]
-		//ctx.Request = ctx.Request.WithContext(context.WithValue(ctx.Request.Context(), "Authorization", accessToken))
 		ctx.Set("Authorization", accessToken)
 
 		ctx.Next()

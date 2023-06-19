@@ -6,6 +6,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/google/uuid"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"user_profile_service/communication"
 	"user_profile_service/domain/service"
 )
@@ -76,7 +78,8 @@ func (handler UserProfileHandler) GetById(ctx context.Context, in *user_profile.
 	return mapper.mapToGetByIdResponse(userProfile), nil
 }
 
-func (handler UserProfileHandler) Delete(ctx context.Context, in *user_profile.DeleteRequest) (*user_profile.DeleteResponse, error) {
+// Delete This function is part of saga
+func (handler UserProfileHandler) DeleteUserProfile(ctx context.Context, in *user_profile.DeleteRequest) (*user_profile.DeleteResponse, error) {
 	id, err := uuid.Parse(in.GetId())
 	if err != nil {
 		return nil, err
@@ -88,6 +91,8 @@ func (handler UserProfileHandler) Delete(ctx context.Context, in *user_profile.D
 
 	return &user_profile.DeleteResponse{Message: "User profile deleted"}, nil
 }
+
+// DeleteUser  This function starts saga
 func (handler UserProfileHandler) DeleteUser(ctx context.Context, in *user_profile.DeleteUserRequest) (*user_profile.DeleteResponse, error) {
 	loggedInId, ok := ctx.Value("id").(uuid.UUID)
 	if !ok {
@@ -107,11 +112,14 @@ func (handler UserProfileHandler) DeleteUser(ctx context.Context, in *user_profi
 		return nil, err
 	}
 
-	err = handler.userProfileService.DeleteUser(loggedInId.String(), userProfileId, accCred.AccountCredentials.Role)
+	response, err := handler.userProfileService.DeleteUser(loggedInId.String(), userProfileId, accCred.AccountCredentials.Role)
 	if err != nil {
 		return &user_profile.DeleteResponse{Message: err.Error()}, err
 	}
 
-	message := fmt.Sprintf("Request accepted; AccountCredentialsId:%s; Role:%s", loggedInId.String(), accCred.AccountCredentials.Role.String())
-	return &user_profile.DeleteResponse{Message: message}, err
+	if response.ErrorHappened {
+		return nil, status.Errorf(codes.FailedPrecondition, response.Message)
+	}
+
+	return &user_profile.DeleteResponse{Message: "Account deleted"}, err
 }

@@ -1,6 +1,7 @@
 package communication
 
 import (
+	"accommodation_service/communication/middleware"
 	reservation "common/proto/reservation_service/generated"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -17,5 +18,6 @@ func NewReservationClient(address string) reservation.ReservationServiceClient {
 }
 
 func getConnection(address string) (*grpc.ClientConn, error) {
-	return grpc.Dial(address, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	return grpc.Dial(address, grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithUnaryInterceptor(middleware.NewGRPUnaryClientInterceptor()))
 }

@@ -1,24 +1,34 @@
 package repository
 
 import (
+	"common/NotificationMessaging"
+	"common/saga/messaging"
 	"context"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"os"
+	"reservation_service/domain/model"
+	"time"
+
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"log"
-	"reservation_service/domain/model"
-	"time"
 )
 
 type ReservationRepositoryMongo struct {
-	dbClient *mongo.Client
+	dbClient  *mongo.Client
+	publisher messaging.Publisher
 }
 
-func NewReservationRepositoryMongo(dbClient *mongo.Client) (*ReservationRepositoryMongo, error) {
-	return &ReservationRepositoryMongo{dbClient: dbClient}, nil
+func NewReservationRepositoryMongo(dbClient *mongo.Client, publisher messaging.Publisher) (*ReservationRepositoryMongo, error) {
+	return &ReservationRepositoryMongo{
+		dbClient:  dbClient,
+		publisher: publisher,
+	}, nil
 }
 
 func (repo ReservationRepositoryMongo) CreateAvailability(newAvailability *model.AvailabilityRequest) (primitive.ObjectID, error) {
@@ -45,11 +55,10 @@ func (repo ReservationRepositoryMongo) CreateAvailability(newAvailability *model
 	newAvailability.PriceWithDate.ID = primitive.NewObjectID()
 
 	update := bson.M{"$push": bson.M{"availableDates": newAvailability.PriceWithDate}}
-	res, err := collection.UpdateOne(ctx, filter, update)
+	_, err = collection.UpdateOne(ctx, filter, update)
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println(res)
 	return primitive.ObjectID{}, nil
 }
 
@@ -111,23 +120,20 @@ func (repo ReservationRepositoryMongo) SearchAccommodation(accommodationIds []*p
 
 		cursor, err := collectionReservations.Find(ctx, filter)
 		if err != nil {
-			log.Println(err)
+
 			return []*model.SearchResponseDto{}, err
 		}
 
 		var reservations []*model.Reservation
 		err = cursor.All(ctx, &reservations)
 		if err != nil {
-			log.Println(err)
+
 			return []*model.SearchResponseDto{}, err
 		}
 
 		gas := false
 
 		for _, reservationValue := range reservations {
-			log.Println(reservationValue.Status)
-			log.Println(dateRange.From.String() + " " + dateRange.To.String())
-			log.Println(reservationValue.DateRange.From.String() + " " + reservationValue.DateRange.To.String())
 
 			if reservationValue.Status == "accepted" && reservationValue.DateRange.Overlaps(dateRange) {
 				//return []*model.SearchResponseDto{}, status.Errorf(codes.Aborted, "Not available date, overlaps*")
@@ -170,6 +176,12 @@ func (repo ReservationRepositoryMongo) CreateReservation(reservation *model.Rese
 		return &model.Reservation{}, err
 	}
 
+	accountID, err := uuid.Parse(availability.HostId)
+	if err != nil {
+		log.Fatal(err)
+		return &model.Reservation{}, err
+	}
+
 	//Da li moze da se spoje neke
 	sortedAvailableDates := availability.AvailableDates
 	bubbleSort(sortedAvailableDates)
@@ -207,14 +219,12 @@ func (repo ReservationRepositoryMongo) CreateReservation(reservation *model.Rese
 
 	cursor, err := collectionReservations.Find(ctx, filter)
 	if err != nil {
-		log.Println(err)
 		return &model.Reservation{}, err
 	}
 
 	var reservations []*model.Reservation
 	err = cursor.All(ctx, &reservations)
 	if err != nil {
-		log.Println(err)
 		return &model.Reservation{}, err
 	}
 
@@ -224,12 +234,28 @@ func (repo ReservationRepositoryMongo) CreateReservation(reservation *model.Rese
 		}
 	}
 
+	oldProminenet, err := prominentHostHttp(availability.HostId)
+	if err != nil {
+		return nil, err
+	}
 	//Kreiranje rezervacije
 
 	if availability.IsAutomaticReservation {
 		reservation.Status = "accepted"
+		message := NotificationMessaging.NotificationMessage{
+			MessageType:            "RequestMade",
+			MessageForNotification: "A reservation has been made for your accommodation",
+			AccountID:              accountID,
+		}
+		repo.publisher.Publish(message)
 	} else {
 		reservation.Status = "pending"
+		message := NotificationMessaging.NotificationMessage{
+			MessageType:            "RequestMade",
+			MessageForNotification: "A reservation request has been made for your accommodation",
+			AccountID:              accountID,
+		}
+		repo.publisher.Publish(message)
 	}
 
 	reservation.ID = primitive.NewObjectID()
@@ -239,8 +265,45 @@ func (repo ReservationRepositoryMongo) CreateReservation(reservation *model.Rese
 
 	_, err = collectionReservations.InsertOne(ctx, &reservation)
 	if err != nil {
-		log.Println(err)
 		return &model.Reservation{}, err
+	}
+	if availability.IsAutomaticReservation {
+		accountID, err := uuid.Parse(reservation.GuestId)
+		if err != nil {
+			log.Fatal(err)
+			return &model.Reservation{}, err
+		}
+
+		message := NotificationMessaging.NotificationMessage{
+			MessageType:            "HostResponded",
+			MessageForNotification: "The host has accepted your reservation request automatically",
+			AccountID:              accountID,
+		}
+		repo.publisher.Publish(message)
+	}
+	newProminent, err := prominentHostHttp(availability.HostId)
+	if err != nil {
+		return nil, err
+	}
+	if oldProminenet != newProminent {
+		accountID, err := uuid.Parse(availability.HostId)
+		if err != nil {
+			log.Fatal(err)
+			return &model.Reservation{}, err
+		}
+		MFN := ""
+		if newProminent {
+			MFN = "You are now a prominent host"
+		} else {
+			MFN = "You are no longer prominent host"
+		}
+
+		message := NotificationMessaging.NotificationMessage{
+			MessageType:            "ProminentHost",
+			MessageForNotification: MFN,
+			AccountID:              accountID,
+		}
+		repo.publisher.Publish(message)
 	}
 
 	return reservation, nil
@@ -305,14 +368,12 @@ func (repo ReservationRepositoryMongo) UpdatePriceAndDate(priceWithDate *model.U
 	filter2 := bson.D{{"accommodationId", priceWithDate.AccommodationId}}
 	cursor, err := collectionReservations.Find(ctx, filter2)
 	if err != nil {
-		log.Println(err)
 		return &model.UpdatePriceAndDate{}, err
 	}
 
 	var reservations []*model.Reservation
 	err = cursor.All(ctx, &reservations)
 	if err != nil {
-		log.Println(err)
 		return &model.UpdatePriceAndDate{}, err
 	}
 
@@ -355,14 +416,12 @@ func (repo ReservationRepositoryMongo) GetAllMy(hostId string) (model.Availabili
 
 	cursor, err := collection.Find(ctx, filter)
 	if err != nil {
-		log.Println(err)
 		return model.Availabilities{}, err
 	}
 
 	var availabilities model.Availabilities
 	err = cursor.All(ctx, &availabilities)
 	if err != nil {
-		log.Println(err)
 		return model.Availabilities{}, err
 	}
 	return availabilities, nil
@@ -372,7 +431,6 @@ func (repo ReservationRepositoryMongo) GetAllAcceptedReservations(hostId string)
 	//Dobavi sve dostpunosti i iz njih izvuci sve accommodationId gde je hostId prosledjenji
 	availabilities, err := repo.GetAllMy(hostId)
 	if err != nil {
-		log.Println(err)
 		return model.Reservations{}, err
 	}
 
@@ -394,14 +452,12 @@ func (repo ReservationRepositoryMongo) GetAllAcceptedReservations(hostId string)
 
 	cursor, err := collection.Find(ctx, filter)
 	if err != nil {
-		log.Println(err)
 		return model.Reservations{}, err
 	}
 
 	var reservations model.Reservations
 	err = cursor.All(ctx, &reservations)
 	if err != nil {
-		log.Println(err)
 		return model.Reservations{}, err
 	}
 
@@ -412,7 +468,6 @@ func (repo ReservationRepositoryMongo) GetAllPendingReservations(hostId string) 
 	//Dobavi sve dostpunosti i iz njih izvuci sve accommodationId gde je hostId prosledjenji
 	availabilities, err := repo.GetAllMy(hostId)
 	if err != nil {
-		log.Println(err)
 		return model.Reservations{}, []int32{}, err
 	}
 
@@ -434,14 +489,12 @@ func (repo ReservationRepositoryMongo) GetAllPendingReservations(hostId string) 
 
 	cursor, err := collection.Find(ctx, filter)
 	if err != nil {
-		log.Println(err)
 		return model.Reservations{}, []int32{}, err
 	}
 
 	var reservations model.Reservations
 	err = cursor.All(ctx, &reservations)
 	if err != nil {
-		log.Println(err)
 		return model.Reservations{}, []int32{}, err
 	}
 
@@ -474,14 +527,12 @@ func (repo ReservationRepositoryMongo) GetAllReservationsForGuest(guestId string
 
 	cursor, err := collection.Find(ctx, filter)
 	if err != nil {
-		log.Println(err)
 		return model.Reservations{}, err
 	}
 
 	var reservations model.Reservations
 	err = cursor.All(ctx, &reservations)
 	if err != nil {
-		log.Println(err)
 		return model.Reservations{}, err
 	}
 
@@ -499,7 +550,6 @@ func (repo ReservationRepositoryMongo) CreateAvailabilityBase(base *model.Availa
 
 	result, err := collection.InsertOne(ctx, &base)
 	if err != nil {
-		log.Println(err)
 		return primitive.ObjectID{}, err
 	}
 
@@ -528,6 +578,22 @@ func (repo ReservationRepositoryMongo) CancelReservation(id primitive.ObjectID) 
 
 	update := bson.M{"$set": bson.M{"status": "canceled"}}
 
+	filter = bson.D{{"accommodationId", reservation.AccommodationId}}
+
+	coll := repo.getCollectionAvailability()
+	// Find the availability document
+	var availability model.Availability
+	err = coll.FindOne(ctx, filter).Decode(&availability)
+	if err != nil {
+		log.Fatal(err)
+		return primitive.ObjectID{}, err
+	}
+	oldProminenet, err := prominentHostHttp(availability.HostId)
+	if err != nil {
+		return primitive.ObjectID{}, err
+	}
+
+	filter = bson.D{{"_id", id}}
 	// Update the document matching the filter
 	result, err := collection.UpdateOne(ctx, filter, update)
 	if err != nil {
@@ -538,6 +604,42 @@ func (repo ReservationRepositoryMongo) CancelReservation(id primitive.ObjectID) 
 	if result.MatchedCount == 0 {
 		return primitive.ObjectID{}, status.Errorf(codes.Unimplemented, "Not updated")
 	}
+	newProminent, err := prominentHostHttp(availability.HostId)
+	if err != nil {
+		return primitive.ObjectID{}, err
+	}
+	if oldProminenet != newProminent {
+		accountID, err := uuid.Parse(availability.HostId)
+		if err != nil {
+			log.Fatal(err)
+			return primitive.ObjectID{}, err
+		}
+		MFN := ""
+		if newProminent {
+			MFN = "You are now a prominent host"
+		} else {
+			MFN = "You are no longer prominent host"
+		}
+
+		message := NotificationMessaging.NotificationMessage{
+			MessageType:            "ProminentHost",
+			MessageForNotification: MFN,
+			AccountID:              accountID,
+		}
+		repo.publisher.Publish(message)
+	}
+
+	accountID, err := uuid.Parse(availability.HostId)
+	if err != nil {
+		log.Fatal(err)
+		return primitive.ObjectID{}, err
+	}
+	message := NotificationMessaging.NotificationMessage{
+		MessageType:            "ReservationCanceled",
+		MessageForNotification: "Guest canceled a reservation",
+		AccountID:              accountID,
+	}
+	repo.publisher.Publish(message)
 
 	return id, nil
 }
@@ -568,18 +670,31 @@ func (repo ReservationRepositoryMongo) AcceptReservation(id primitive.ObjectID) 
 	filter = bson.D{{"accommodationId", reservation.AccommodationId}}
 	cursor, err := collectionReservations.Find(ctx, filter)
 	if err != nil {
-		log.Println(err)
 		return primitive.ObjectID{}, err
 	}
 
 	var reservations []*model.Reservation
 	err = cursor.All(ctx, &reservations)
 	if err != nil {
-		log.Println(err)
 		return primitive.ObjectID{}, err
 	}
 
 	pendingIds := make([]primitive.ObjectID, 0)
+
+	filter = bson.D{{"accommodationId", reservation.AccommodationId}}
+
+	coll := repo.getCollectionAvailability()
+	// Find the availability document
+	var availability model.Availability
+	err = coll.FindOne(ctx, filter).Decode(&availability)
+	if err != nil {
+		log.Fatal(err)
+		return primitive.ObjectID{}, err
+	}
+	oldProminenet, err := prominentHostHttp(availability.HostId)
+	if err != nil {
+		return primitive.ObjectID{}, err
+	}
 
 	for _, reservationValue := range reservations {
 		if reservationValue.ID != reservation.ID && reservationValue.Status == "accepted" && reservationValue.DateRange.Overlaps(reservation.DateRange) {
@@ -587,6 +702,19 @@ func (repo ReservationRepositoryMongo) AcceptReservation(id primitive.ObjectID) 
 		}
 		if reservationValue.ID != reservation.ID && reservationValue.Status == "pending" && reservationValue.DateRange.Overlaps(reservation.DateRange) {
 			pendingIds = append(pendingIds, reservationValue.ID)
+			accountID, err := uuid.Parse(reservationValue.GuestId)
+			if err != nil {
+				log.Fatal(err)
+				return primitive.ObjectID{}, err
+			}
+
+			message := NotificationMessaging.NotificationMessage{
+				MessageType:            "HostResponded",
+				MessageForNotification: "Your reservation request has been rejected",
+				AccountID:              accountID,
+			}
+			repo.publisher.Publish(message)
+
 		}
 	}
 
@@ -618,6 +746,47 @@ func (repo ReservationRepositoryMongo) AcceptReservation(id primitive.ObjectID) 
 		return primitive.ObjectID{}, err
 	}
 
+	/////////////////////
+
+	accountID, err := uuid.Parse(reservation.GuestId)
+	if err != nil {
+		log.Fatal(err)
+		return primitive.ObjectID{}, err
+	}
+
+	message := NotificationMessaging.NotificationMessage{
+		MessageType:            "HostResponded",
+		MessageForNotification: "The host has accepted your reservation request",
+		AccountID:              accountID,
+	}
+	repo.publisher.Publish(message)
+
+	newProminent, err := prominentHostHttp(availability.HostId)
+	if err != nil {
+		return primitive.ObjectID{}, err
+	}
+
+	if oldProminenet != newProminent {
+		accountID, err := uuid.Parse(availability.HostId)
+		if err != nil {
+			log.Fatal(err)
+			return primitive.ObjectID{}, err
+		}
+		MFN := ""
+		if newProminent {
+			MFN = "You are now a prominent host"
+		} else {
+			MFN = "You are no longer prominent host"
+		}
+
+		message := NotificationMessaging.NotificationMessage{
+			MessageType:            "ProminentHost",
+			MessageForNotification: MFN,
+			AccountID:              accountID,
+		}
+		repo.publisher.Publish(message)
+	}
+
 	return reservation.ID, nil
 }
 
@@ -643,6 +812,25 @@ func (repo ReservationRepositoryMongo) RejectReservation(id primitive.ObjectID) 
 	if result.MatchedCount == 0 {
 		return primitive.ObjectID{}, status.Errorf(codes.Unimplemented, "Not updated")
 	}
+
+	var reservation model.Reservation
+	err = collection.FindOne(ctx, filter).Decode(&reservation)
+	if err != nil {
+		log.Fatal(err)
+		return primitive.ObjectID{}, err
+	}
+	accountID, err := uuid.Parse(reservation.GuestId)
+	if err != nil {
+		log.Fatal(err)
+		return primitive.ObjectID{}, err
+	}
+
+	message := NotificationMessaging.NotificationMessage{
+		MessageType:            "HostResponded",
+		MessageForNotification: "Your reservation request has been rejected",
+		AccountID:              accountID,
+	}
+	repo.publisher.Publish(message)
 
 	return id, nil
 }
@@ -716,4 +904,162 @@ func (repo ReservationRepositoryMongo) DeleteAvailabilitiesAndReservationsByAcco
 	}
 
 	return nil
+}
+
+func (repo ReservationRepositoryMongo) GetAllReservationsForHost(hostId string) (model.Reservations, error) {
+	//Dobavi sve dostpunosti i iz njih izvuci sve accommodationId gde je hostId prosledjenji
+	availabilities, err := repo.GetAllMy(hostId)
+	if err != nil {
+
+		return model.Reservations{}, err
+	}
+
+	accommodationIds := make([]primitive.ObjectID, 0)
+
+	for _, availability := range availabilities {
+		accommodationIds = append(accommodationIds, availability.AccommodationId)
+	}
+
+	//Sad dobavi sve rezervacije koje imaju ovaj accId
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	collection := repo.getCollectionReservation()
+
+	filter := bson.M{
+		"accommodationId": bson.M{"$in": accommodationIds}}
+
+	cursor, err := collection.Find(ctx, filter)
+	if err != nil {
+
+		return model.Reservations{}, err
+	}
+
+	var reservations model.Reservations
+	err = cursor.All(ctx, &reservations)
+	if err != nil {
+
+		return model.Reservations{}, err
+	}
+
+	return reservations, nil
+}
+
+func (repo ReservationRepositoryMongo) GetAllRatableAccommodationsForGuest(guestId string) ([]string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	collection := repo.getCollectionReservation()
+
+	filter := bson.M{
+		"guestId": guestId,
+		"status":  "accepted",
+	}
+
+	cursor, err := collection.Find(ctx, filter)
+	if err != nil {
+
+		return nil, err
+	}
+
+	var reservations model.Reservations
+	err = cursor.All(ctx, &reservations)
+	if err != nil {
+
+		return nil, err
+	}
+
+	resp := make([]string, 0)
+	seen := make(map[string]bool)
+	for _, val := range reservations {
+		vreme := time.Now().In(time.UTC).Truncate(24 * time.Hour)
+		if val.DateRange.To.Before(vreme) {
+			accommodationID := val.AccommodationId.Hex()
+			if !seen[accommodationID] {
+				resp = append(resp, accommodationID)
+				seen[accommodationID] = true
+			}
+		}
+	}
+
+	return resp, nil
+}
+
+func (repo ReservationRepositoryMongo) GetAllRatableHostsForGuest(guestId string) ([]string, error) {
+	accommodationIds, err := repo.GetAllRatableAccommodationsForGuest(guestId)
+	if err != nil {
+		return nil, err
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	collection := repo.getCollectionAvailability()
+
+	accommodationOids := make([]primitive.ObjectID, 0)
+	for _, val := range accommodationIds {
+		oid, _ := primitive.ObjectIDFromHex(val)
+		accommodationOids = append(accommodationOids, oid)
+	}
+
+	filter := bson.M{
+		"accommodationId": bson.M{"$in": accommodationOids}}
+
+	cursor, err := collection.Find(ctx, filter)
+	if err != nil {
+
+		return nil, err
+	}
+
+	var availabilities model.Availabilities
+	err = cursor.All(ctx, &availabilities)
+	if err != nil {
+
+		return nil, err
+	}
+
+	hostIds := make([]string, 0)
+	for _, val := range availabilities {
+		exists := false
+		for _, id := range hostIds {
+			if id == val.HostId {
+				exists = true
+				break
+			}
+		}
+
+		// If the hostId doesn't exist, append it to hostIds
+		if !exists {
+			hostIds = append(hostIds, val.HostId)
+		}
+	}
+
+	return hostIds, nil
+}
+
+func prominentHostHttp(hostId string) (bool, error) {
+	client := &http.Client{}
+
+	apiHost := os.Getenv("API_GATEWAY_HOST")
+	req, err := http.NewRequest("GET", "http://"+apiHost+":8000/api-2/accommodation/prominent-host/"+hostId, nil)
+	if err != nil {
+		return false, err
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return false, err
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return false, err
+	}
+
+	if string(body) == "true" {
+		return true, nil
+	} else {
+		return false, nil
+	}
 }

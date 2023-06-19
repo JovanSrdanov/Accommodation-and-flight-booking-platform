@@ -1,33 +1,57 @@
 package startup
 
 import (
+	"api_gateway/persistance/repository"
+	"common/NotificationMessaging"
+	"common/saga/messaging"
+	"common/saga/messaging/nats"
+	"context"
+	"fmt"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"go.mongodb.org/mongo-driver/mongo"
+	"log"
+	"net/http"
+
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+	"github.com/gorilla/websocket"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+
 	"api_gateway/communication/handler"
 	"api_gateway/communication/middleware"
 	"authorization_service/domain/token"
 	accommodation "common/proto/accommodation_service/generated"
 	authorization "common/proto/authorization_service/generated"
+	notification "common/proto/notification_service/generated"
+	rating "common/proto/rating_service/generated"
 	reservation "common/proto/reservation_service/generated"
 	user_profile "common/proto/user_profile_service/generated"
-	"context"
-	"fmt"
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
-	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
-	"log"
 )
 
 type Server struct {
-	config *Configuration
-	server *gin.Engine
+	config     *Configuration
+	server     *gin.Engine
+	subscriber messaging.Subscriber
 }
+
+const (
+	QueueGroup = "api_gateway"
+)
+
+var wsConnections = make(map[uuid.UUID]*websocket.Conn) // Map to store websocket connections by user ID
 
 func NewServer(config *Configuration) *Server {
 	server := &Server{
 		config: config,
 		server: gin.Default(),
 	}
+
+	// OpenTelemetry
+	server.server.Use(otelgin.Middleware("api-gateway"))
 
 	server.server.Use(middleware.AuthTokenParser())
 
@@ -45,16 +69,76 @@ func NewServer(config *Configuration) *Server {
 
 	grpcMux := runtime.NewServeMux()
 	server.initGrpcHandlers(grpcMux)
-	//Wrapping gin around runtime.ServeMux
+	// Wrapping gin around runtime.ServeMux
 	server.server.Group("/api-1/*any").Any("", gin.WrapH(grpcMux))
 
 	server.initCustomHandlers(server.server.Group("/api-2"))
 
+	server.server.GET("/ws", server.handleWebSocket)
+
+	sendEventSubscriber := server.initSendEventSubscriber(server.config.SendNotificationToAPIGatewaySubject, QueueGroup)
+
+	sendEventSubscriber.Subscribe(server.HandleMessages)
+
 	return server
 }
 
+func (server *Server) HandleMessages(message *NotificationMessaging.NotificationMessage) {
+	conn, ok := wsConnections[message.AccountID]
+	if !ok {
+		return
+	}
+
+	err := conn.WriteMessage(websocket.TextMessage, []byte(message.MessageForNotification))
+	if err != nil {
+		log.Println("Failed to send message through WebSocket connection:", err)
+		return
+	}
+}
+
+func (server *Server) initSendEventSubscriber(subject string, queueGroup string) messaging.Subscriber {
+	subscriber, err := nats.NewNATSSubscriber(
+		server.config.NatsHost, server.config.NatsPort,
+		server.config.NatsUser, server.config.NatsPass, subject, queueGroup)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return subscriber
+}
+
+func (server *Server) handleWebSocket(c *gin.Context) {
+	upgrader := websocket.Upgrader{
+		CheckOrigin: func(r *http.Request) bool { return true },
+	}
+	pasetoToken := c.Query("authorization")
+	tokenMaker, _ := token.NewPasetoMaker("12345678901234567890123456789012")
+	tokenPayload, err := tokenMaker.VerifyToken(pasetoToken)
+	userID := tokenPayload.ID
+	if err != nil {
+		c.Status(http.StatusUnauthorized)
+		return
+	}
+	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
+		log.Println("Failed to upgrade WebSocket connection:", err)
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+	defer conn.Close()
+	wsConnections[userID] = conn
+	for {
+		_, _, readErr := conn.ReadMessage()
+		if readErr != nil {
+			log.Println("WebSocket connection closed by client:", readErr)
+			break
+		}
+	}
+	delete(wsConnections, userID)
+}
+
 func (server *Server) initGrpcHandlers(mux *runtime.ServeMux) {
-	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
+	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithChainUnaryInterceptor(middleware.NewGRPUnaryClientInterceptor())}
 
 	authorizationEndpoint := fmt.Sprintf("%s:%s", server.config.AuthorizationHost, server.config.AuthorizationPort)
 	err := authorization.RegisterAuthorizationServiceHandlerFromEndpoint(context.TODO(), mux, authorizationEndpoint, opts)
@@ -79,27 +163,64 @@ func (server *Server) initGrpcHandlers(mux *runtime.ServeMux) {
 	if err != nil {
 		panic(err)
 	}
+
+	notificationEndpoint := fmt.Sprintf("%s:%s", server.config.NotificationHost, server.config.NotificationPort)
+	err = notification.RegisterNotificationServiceHandlerFromEndpoint(context.TODO(), mux, notificationEndpoint, opts)
+	if err != nil {
+		panic(err)
+	}
+
+	ratingEndpoint := fmt.Sprintf("%s:%s", server.config.RatingHost, server.config.RatingPort)
+	err = rating.RegisterRatingServiceHandlerFromEndpoint(context.TODO(), mux, ratingEndpoint, opts)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func (server *Server) initCustomHandlers(routerGroup *gin.RouterGroup) {
 	tokenMaker, _ := token.NewPasetoMaker("12345678901234567890123456789012")
+	mongoClient := server.initUniqueVisitorsMongoClient()
+	uniqueVisitorsRepo := initUniqueVisitorsRepo(mongoClient)
 
 	authorizationEndpoint := fmt.Sprintf("%s:%s", server.config.AuthorizationHost, server.config.AuthorizationPort)
 	userProfileEndpoint := fmt.Sprintf("%s:%s", server.config.UserProfileHost, server.config.UserProfilePort)
 	accommodationEndpoint := fmt.Sprintf("%s:%s", server.config.AccommodationHost, server.config.AccommodationPort)
 	reservationEndpoint := fmt.Sprintf("%s:%s", server.config.ReservationHost, server.config.ReservationPort)
+	notificationEndpoint := fmt.Sprintf("%s:%s", server.config.NotificationHost, server.config.NotificationPort)
+	ratingEndpoint := fmt.Sprintf("%s:%s", server.config.RatingHost, server.config.RatingPort)
 
-	userInfoHandler := handler.NewUserHandler(authorizationEndpoint, userProfileEndpoint, tokenMaker)
+	userInfoHandler := handler.NewUserHandler(authorizationEndpoint, userProfileEndpoint, notificationEndpoint, tokenMaker,
+		uniqueVisitorsRepo)
 	userInfoHandler.Init(routerGroup)
 
-	accommodationHandler := handler.NewAccommodationHandler(accommodationEndpoint, reservationEndpoint)
+	accommodationHandler := handler.NewAccommodationHandler(accommodationEndpoint, reservationEndpoint,
+		authorizationEndpoint, userProfileEndpoint, ratingEndpoint, tokenMaker)
 	accommodationHandler.Init(routerGroup)
 }
 
 func (server *Server) Start() {
 	port := fmt.Sprintf(":%s", server.config.Port)
+
+	// Metrics
+	server.server.GET("/metrics", gin.WrapH(promhttp.Handler()))
 	err := server.server.Run(port)
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func (server *Server) initUniqueVisitorsMongoClient() *mongo.Client {
+	client, err := repository.GetClient(server.config.UniqueVisitorsDbPort, server.config.UniqueVisitorsDbHost)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return client
+}
+
+func initUniqueVisitorsRepo(mongoClient *mongo.Client) *repository.UniqueVisitorRepositoryMongo {
+	repo, err := repository.NewUniqueVisitorRepositoryMongo(mongoClient)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return repo
 }

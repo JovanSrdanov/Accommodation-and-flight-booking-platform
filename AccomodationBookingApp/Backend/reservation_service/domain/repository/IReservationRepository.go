@@ -22,4 +22,8 @@ type IReservationRepository interface {
 	GuestHasActiveReservations(guestID uuid.UUID) (bool, error)
 	SearchAccommodation(accommodationIds []*primitive.ObjectID, dateRange model.DateRange, numberOfGuests int32) ([]*model.SearchResponseDto, error)
 	DeleteAvailabilitiesAndReservationsByAccommodationId(accommodationId primitive.ObjectID) error
+
+	GetAllReservationsForHost(hostId string) (model.Reservations, error)
+	GetAllRatableAccommodationsForGuest(guestId string) ([]string, error)
+	GetAllRatableHostsForGuest(guestId string) ([]string, error)
 }

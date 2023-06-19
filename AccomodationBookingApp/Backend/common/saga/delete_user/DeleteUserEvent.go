@@ -12,18 +12,39 @@ const (
 	DeleteHostProfile
 	RollbackGuestProfile
 	RollbackHostProfile
+
 	DeleteGuestAccountCredentials
 	DeleteHostAccountCredentials
-	CancelDeletion
+	RollbackGuestAccountCredentials
+	RollbackHostAccountCredentials
+
+	DeleteHostAccommodations
+	RollbackHostAccommodations
+
+	//Last in chain so don't need rollback
+	DeleteHostReservations
+
+	DeleteHostNotifications
+	DeleteGuestNotifications
+	RollbackHostNotifications
+	RollbackGuestNotifications
+
 	FinishDeletion
 	UnknownCommand
 )
 
+type Response struct {
+	ErrorHappened bool
+	Message       string
+}
+
 type DeleteUserCommand struct {
-	Type          DeleteUserCommandType
-	SagaId        uuid.UUID
-	AccCredId     string
-	UserProfileId uuid.UUID
+	Type           DeleteUserCommandType
+	SagaId         uuid.UUID
+	AccCredId      string
+	UserProfileId  uuid.UUID
+	LastResponse   Response
+	AdditionalData interface{}
 }
 
 type DeleteUserReplyType int8
@@ -33,19 +54,38 @@ const (
 	DeletedHostProfile
 	GuestProfileDeletionFailed
 	HostProfileDeletionFailed
+	RolledbackGuestProfile
+	RolledbackHostProfile
+
 	DeletedGuestAccountCredentials
 	DeletedHostAccountCredentials
 	GuestAccountCredentialsDeletionFailed
 	HostAccountCredentialsDeletionFailed
-	RolledbackGuestProfile
-	RolledbackHostProfile
+	RolledbackGuestAccountCredentials
+	RolledbackHostAccountCredentials
+
+	DeletedHostAccommodations
+	HostAccommodationsDeletionFailed
+	RolledbackHostAccommodations
+
+	DeletedHostReservations
+	HostReservationsDeletionFailed
+
+	DeletedHostNotifications
+	DeletedGuestNotifications
+	HostNotificationsDeletionFailed
+	GuestNotificationsDeletionFailed
+	RolledbackHostNotifications
+	RolledbackGuestNotifications
+
 	UnknownReply
 )
 
 type DeleteUserReply struct {
-	Type          DeleteUserReplyType
-	AccCredId     string
-	SagaId        uuid.UUID
-	UserProfileId uuid.UUID
-	ErrorMessage  string
+	Type           DeleteUserReplyType
+	AccCredId      string
+	SagaId         uuid.UUID
+	UserProfileId  uuid.UUID
+	Response       Response
+	AdditionalData interface{}
 }

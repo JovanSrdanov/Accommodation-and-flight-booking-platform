@@ -11,17 +11,20 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type AccountController struct {
 	accountService service.AccountService
+	apiKeyService  *service.ApiKeyService
 }
 
-func NewAccountController(accountService service.AccountService) *AccountController {
+func NewAccountController(accountService service.AccountService, apiKeyService *service.ApiKeyService) *AccountController {
 	return &AccountController{
 		accountService: accountService,
+		apiKeyService:  apiKeyService,
 	}
 }
 
@@ -336,4 +339,52 @@ func (controller *AccountController) GetLoggedInfo(ctx *gin.Context) {
 		Email:    account.Email,
 	}
 	ctx.JSON(http.StatusOK, accountInfo)
+}
+func (controller *AccountController) CreateApiKey(ctx *gin.Context) {
+	userAccountID := ctx.Keys["ID"]
+	if userAccountID == nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, dto.NewSimpleResponse("Account id not provided"))
+		return
+	}
+
+	var keyDto dto.CreateApiKeyDto
+	if err := ctx.ShouldBindJSON(&keyDto); err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.NewSimpleResponse(err.Error()))
+		return
+	}
+
+	if keyDto.ExpirationDate.Before(time.Now()) && !keyDto.ExpirationDate.IsZero() {
+		ctx.JSON(http.StatusBadRequest, dto.NewSimpleResponse("Expiration date must be in future"))
+		return
+
+	}
+
+	apiKey := model.ApiKey{
+		AccountId:      userAccountID.(primitive.ObjectID),
+		Value:          uuid.NewString(),
+		ExpirationDate: keyDto.ExpirationDate,
+	}
+
+	err := controller.apiKeyService.Create(&apiKey)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.NewSimpleResponse(err.Error()))
+		return
+	}
+
+	ctx.Status(http.StatusCreated)
+}
+func (controller *AccountController) GetApiKey(ctx *gin.Context) {
+	userAccountID := ctx.Keys["ID"]
+	if userAccountID == nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, dto.NewSimpleResponse("Account id not provided"))
+		return
+	}
+
+	apiKey, err := controller.apiKeyService.GetByAccountId(userAccountID.(primitive.ObjectID))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.NewSimpleResponse(err.Error()))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, apiKey)
 }

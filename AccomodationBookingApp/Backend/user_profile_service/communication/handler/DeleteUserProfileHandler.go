@@ -1,7 +1,7 @@
 package handler
 
 import (
-	accommodation "common/proto/accommodation_service/generated"
+	"common/event_sourcing"
 	reservation "common/proto/reservation_service/generated"
 	events "common/saga/delete_user"
 	"common/saga/messaging"
@@ -10,7 +10,6 @@ import (
 	"user_profile_service/communication"
 	"user_profile_service/domain/model"
 	"user_profile_service/domain/service"
-	"user_profile_service/event_sourcing"
 )
 
 type DeleteUserProfileHandler struct {
@@ -86,7 +85,7 @@ func (handler *DeleteUserProfileHandler) RollbackProfile(deleteAction string, co
 	deleteEvent, _ := handler.eventService.Read(command.SagaId, deleteAction)
 
 	var userProfile model.UserProfile
-	handler.eventService.GetEventEntity(deleteEvent, &userProfile)
+	handler.eventService.ResolveEventEntity(deleteEvent.Entity, &userProfile)
 	handler.userProfileService.Create(&userProfile)
 }
 
@@ -95,7 +94,7 @@ func (handler *DeleteUserProfileHandler) handle(command *events.DeleteUserComman
 		SagaId:        command.SagaId,
 		AccCredId:     command.AccCredId,
 		UserProfileId: command.UserProfileId,
-		ErrorMessage:  "",
+		Response:      command.LastResponse,
 		Type:          events.UnknownReply,
 	}
 
@@ -104,18 +103,22 @@ func (handler *DeleteUserProfileHandler) handle(command *events.DeleteUserComman
 		guestHasActiveReservations, err := handler.GuestHasActiveReservations(command)
 		if err != nil {
 			reply.Type = events.GuestProfileDeletionFailed
-			reply.ErrorMessage = err.Error()
+			reply.Response.ErrorHappened = true
+			reply.Response.Message = err.Error()
 			break
 		}
 		if guestHasActiveReservations {
 			reply.Type = events.GuestProfileDeletionFailed
-			reply.ErrorMessage = "Guest has active reservations"
+			reply.Response.ErrorHappened = true
+			reply.Response.Message = "Guest has active reservations"
 			break
 		}
 
 		err = handler.DeleteUserProfile(command)
 		if err != nil {
 			reply.Type = events.GuestProfileDeletionFailed
+			reply.Response.ErrorHappened = true
+			reply.Response.Message = err.Error()
 			break
 		}
 
@@ -125,36 +128,23 @@ func (handler *DeleteUserProfileHandler) handle(command *events.DeleteUserComman
 		hostHasActiveReservations, err := handler.HostHasActiveReservations(command)
 		if err != nil {
 			reply.Type = events.HostProfileDeletionFailed
+			reply.Response.ErrorHappened = true
+			reply.Response.Message = err.Error()
 			break
 		}
 
 		if hostHasActiveReservations {
 			reply.Type = events.HostProfileDeletionFailed
-			reply.ErrorMessage = "Host has active reservations"
+			reply.Response.ErrorHappened = true
+			reply.Response.Message = "Host has active reservations"
 			break
 		}
 
 		err = handler.DeleteUserProfile(command)
 		if err != nil {
 			reply.Type = events.HostProfileDeletionFailed
-			break
-		}
-
-		//Delete accommodations
-		accommodationClient := communication.NewAccommodationClient(handler.accommodationServiceAddress)
-		result, err := accommodationClient.DeleteAllByHostId(context.TODO(), &accommodation.DeleteAllByHostIdRequest{HostId: command.AccCredId})
-		if err != nil {
-			reply.Type = events.HostProfileDeletionFailed
-			break
-		}
-
-		accommodationIds := result.AccommodationIds
-
-		//Delete reservations and availabilities
-		reservationClient := communication.NewReservationClient(handler.reservationServiceAddress)
-		accommodationServiceResult, err := reservationClient.DeleteAvailabilitiesAndReservationsByAccommodationIds(context.TODO(), &reservation.DeleteAvailabilitiesAndReservationsByAccommodationIdsRequest{AccommodationIds: accommodationIds})
-		if err != nil || !accommodationServiceResult.Success {
-			reply.Type = events.HostProfileDeletionFailed
+			reply.Response.ErrorHappened = true
+			reply.Response.Message = err.Error()
 			break
 		}
 

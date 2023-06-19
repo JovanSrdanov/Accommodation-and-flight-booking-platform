@@ -1,7 +1,19 @@
 import ParticlesBg from 'particles-bg'
 import "./particles.css"
 import {Navigate, Route, Routes, useNavigate} from "react-router-dom";
-import {AppBar, Box, Button, Toolbar, Tooltip} from "@mui/material";
+import {
+    AppBar,
+    Box,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    FormControlLabel,
+    Switch,
+    Toolbar,
+    Tooltip
+} from "@mui/material";
 import HotelIcon from '@mui/icons-material/Hotel'
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
@@ -12,7 +24,7 @@ import HostAPlacePage from "./pages/host-pages/host-a-place-page";
 import ReservationsAndRequestsPage from "./pages/host-pages/reservations-and-requests-page";
 import ProfilePage from "./pages/guest-pages/profile-page";
 import SearchAndFilterAccommodationsPage from "./pages/all-roles-pages/search-and-filter-accommodations-page";
-import React from "react";
+import React, {useEffect, useRef, useState} from "react";
 import HistoryIcon from '@mui/icons-material/History';
 import RecommendOutlinedIcon from '@mui/icons-material/RecommendOutlined';
 import OtherHousesOutlinedIcon from '@mui/icons-material/OtherHousesOutlined';
@@ -23,14 +35,53 @@ import RegisterPage from "./pages/unauthenticated-pages/register-page";
 import LoginIcon from '@mui/icons-material/Login';
 import HowToRegIcon from '@mui/icons-material/HowToReg';
 import TravelExploreIcon from '@mui/icons-material/TravelExplore';
+import {Flex} from "reflexbox";
+import interceptor from "./interceptor/interceptor";
+import EditNotificationsIcon from '@mui/icons-material/EditNotifications';
+import {useSnackbar} from "notistack";
+import RatingsPage from "./pages/guest-pages/ratings-page";
+import StarRateIcon from '@mui/icons-material/StarRate';
 
 function App() {
 
     const navigate = useNavigate();
+    const {enqueueSnackbar} = useSnackbar();
+    const openWebSocket = () => {
+
+        const paseto = localStorage.getItem('paseto');
+        if (!paseto) {
+            localStorage.removeItem('paseto');
+            return null
+        }
+
+        if (websocketOpen) {
+            return
+
+        }
+        setWebsocketOpen(true);
+
+        const ws = new WebSocket(`ws://localhost:8000/ws?authorization=${encodeURIComponent(paseto)}`);
+
+        ws.onopen = () => {
+            console.log('WEBSOCKET CONNECTION ESTABLISHED');
+
+        };
+        ws.onmessage = (event) => {
+            enqueueSnackbar(event.data.toUpperCase(), {variant: 'info'});
+        };
+
+        ws.onclose = () => {
+            console.log('WEBSOCKET CONNECTION CLOSED');
+            setWebsocketOpen(false);
+        };
+
+        return () => {
+            ws.close();
+        };
+    };
 
 
     const pasetoExpirationRole = () => {
-
         const paseto = localStorage.getItem('paseto');
         if (!paseto) {
             localStorage.removeItem('paseto');
@@ -39,6 +90,7 @@ function App() {
         const footer = paseto.split(".")[3];
         const decodedFooter = JSON.parse(atob(footer));
         const roleAndExp = decodedFooter.RoleAndExp;
+
 
         const regex = /role:(.*), expiration date: (.*)/;
         const matches = roleAndExp.match(regex);
@@ -71,10 +123,13 @@ function App() {
                 return null;
 
             } else {
+
                 if (role === "0") {
+
                     return "Host";
 
                 } else if (role === "1") {
+
                     return "Guest";
 
                 } else {
@@ -89,16 +144,177 @@ function App() {
     };
 
     const ROLE = pasetoExpirationRole();
-
+    if (ROLE === null) {
+        interceptor
+          .get("api-2/user/is-unique-visitor")
+          .then((res) => {
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+    }
 
     const handleLogout = () => {
         localStorage.removeItem('paseto');
-        navigate('/login');
+        window.location.href = "/login";
     };
-    return (
-        <div>
 
-            <ParticlesBg color="#FF9021" type="cobweb" num={100} bg={true}/>
+    const [selectedItem, setSelectedItem] = useState({
+        RequestMade: false,
+        ReservationCanceled: true,
+        HostRatingGiven: false,
+        AccommodationRatingGiven: false,
+        ProminentHost: false,
+        HostResponded: false,
+    });
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
+    const handleSwitchChange = (event) => {
+        setSelectedItem((prevState) => ({
+            ...prevState,
+            [event.target.name]: event.target.checked,
+        }));
+    };
+
+    const [open, setOpen] = useState(false);
+    const isFirstRender = useRef(true);
+    const isClickOpen = useRef(false);
+
+    const handleClickOpen = () => {
+        isClickOpen.current = true;
+        interceptor
+            .get("/api-1/notification/get-my")
+            .then((res) => {
+                setSelectedItem(res.data);
+                setOpen(true);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    };
+    const [websocketOpen, setWebsocketOpen] = useState(false);
+    useEffect(() => {
+
+        openWebSocket();
+
+
+    }, [navigate]);
+
+
+    useEffect(() => {
+
+        if (isFirstRender.current || isClickOpen.current) {
+            isFirstRender.current = false;
+            isClickOpen.current = false;
+            return;
+        }
+
+        interceptor
+            .put("/api-1/notification/update-my", selectedItem)
+            .then((res) => {
+                // Handle the response
+            })
+            .catch((err) => {
+                // Handle the error
+            });
+    }, [selectedItem]);
+
+    return (
+
+        <>
+
+            <Dialog open={open} onClose={handleClose}>
+                <DialogTitle>Choose about what you want to be notified</DialogTitle>
+                <DialogContent>
+
+                    <Flex flexDirection="column">
+                        {ROLE === 'Host' && (
+                            <>
+                                <FormControlLabel
+                                    control={
+                                        <Switch
+                                            checked={selectedItem.RequestMade}
+                                            onChange={handleSwitchChange}
+                                            name="RequestMade"
+                                            color="success"
+                                        />
+                                    }
+                                    label="Request Made"
+                                />
+                                <FormControlLabel
+                                    control={
+                                        <Switch
+                                            checked={selectedItem.ReservationCanceled}
+                                            onChange={handleSwitchChange}
+                                            name="ReservationCanceled"
+                                            color="success"
+                                        />
+                                    }
+                                    label="Reservation Canceled"
+                                />
+                                <FormControlLabel
+                                    control={
+                                        <Switch
+                                            checked={selectedItem.HostRatingGiven}
+                                            onChange={handleSwitchChange}
+                                            name="HostRatingGiven"
+                                            color="success"
+                                        />
+                                    }
+                                    label="Host Rating Given"
+                                />
+                                <FormControlLabel
+                                    control={
+                                        <Switch
+                                            checked={selectedItem.AccommodationRatingGiven}
+                                            onChange={handleSwitchChange}
+                                            name="AccommodationRatingGiven"
+                                            color="success"
+                                        />
+                                    }
+                                    label="Accommodation Rating Given"
+                                />
+                                <FormControlLabel
+                                    control={
+                                        <Switch
+                                            checked={selectedItem.ProminentHost}
+                                            onChange={handleSwitchChange}
+                                            name="ProminentHost"
+                                            color="success"
+                                        />
+                                    }
+                                    label="Prominent Host"
+                                />
+                            </>
+                        )}
+                        {ROLE === 'Guest' && (
+                            <FormControlLabel
+                                control={
+                                    <Switch
+                                        checked={selectedItem.HostResponded}
+                                        onChange={handleSwitchChange}
+                                        name="HostResponded"
+                                        color="success"
+                                    />
+                                }
+                                label="Host Responded"
+                            />
+                        )}
+                    </Flex>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose} color="info" variant="outlined">
+                        Close
+                    </Button>
+
+                </DialogActions>
+            </Dialog>
+
+
+            <ParticlesBg color="#FF9021" type="cobweb" num={200} bg={true}/>
             <Box>
                 <AppBar position="static">
                     <Toolbar>
@@ -130,6 +346,13 @@ function App() {
                                         Recommendations for you
                                     </Button>
                                 </Tooltip>
+                                <Tooltip title="Rate your visiting history" arrow>
+                                    <Button startIcon={<StarRateIcon/>} sx={{color: 'inherit'}}
+                                            onClick={() => navigate('/ratings')}>
+
+                                        Ratings
+                                    </Button>
+                                </Tooltip>
 
                             </>
                         )}
@@ -158,13 +381,23 @@ function App() {
                                         Reservations and requests
                                     </Button>
                                 </Tooltip>
+
                             </>
                         )}
 
                         {(ROLE === 'Guest' || ROLE === 'Host') && (
                             <>
+                                <Tooltip title="Your notifications" arrow>
+                                    <Button startIcon={<EditNotificationsIcon/>} sx={{marginLeft: 'auto'}}
+                                            color="success"
+                                            onClick={handleClickOpen}>
+                                        Notifications
+                                    </Button>
+                                </Tooltip>
+
+
                                 <Tooltip title="Your informations" arrow>
-                                    <Button color="info" sx={{marginLeft: 'auto'}}
+                                    <Button color="info"
                                             startIcon={<PersonOutlineOutlinedIcon/>}
                                             onClick={() => {
                                                 navigate('/profile');
@@ -207,9 +440,8 @@ function App() {
 
                     {ROLE === 'Guest' && (
                         <>
-
+                            <Route path="/ratings" element={<RatingsPage/>}/>
                             <Route path="/my-reservations" element={<MyReservationsPage/>}/>
-
                             <Route path="/recommendations-for-you" element={<RecommendationsForYouPage/>}/>
                             <Route path="/profile" element={<ProfilePage/>}/>
                             <Route path="/search-and-filter-accommodations"
@@ -220,6 +452,7 @@ function App() {
 
                     {ROLE === 'Host' && (
                         <>
+
                             <Route path="/my-places" element={<MyPlacesPage/>}/>
                             <Route path="/host-a-place" element={<HostAPlacePage/>}/>
                             <Route path="/reservations-and-requests" element={<ReservationsAndRequestsPage/>}/>
@@ -242,7 +475,7 @@ function App() {
 
                 </Routes>
             </Box>
-        </div>
+        </>
 
 
     );

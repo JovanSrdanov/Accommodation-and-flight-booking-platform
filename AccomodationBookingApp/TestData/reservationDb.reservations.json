@@ -1,0 +1,100 @@
+[{
+  "_id": {
+    "$oid": "648da000f683fb5cf18183ba"
+  },
+  "dateRange": {
+    "from": {
+      "$date": "2023-06-11T00:00:00.000Z"
+    },
+    "to": {
+      "$date": "2023-06-12T00:00:00.000Z"
+    }
+  },
+  "price": 2,
+  "numberOfGuests": 1,
+  "status": "accepted",
+  "accommodationId": {
+    "$oid": "648d9f62314cdca602198d67"
+  },
+  "guestId": "65ac16f5-ef60-11ed-895f-0242ac1c0006"
+},
+{
+  "_id": {
+    "$oid": "948da000f683fb5cf18183ba"
+  },
+  "dateRange": {
+    "from": {
+      "$date": "2023-06-13T00:00:00.000Z"
+    },
+    "to": {
+      "$date": "2023-06-15T00:00:00.000Z"
+    }
+  },
+  "price": 2,
+  "numberOfGuests": 1,
+  "status": "accepted",
+  "accommodationId": {
+    "$oid": "148d9f62314cdca602198d67"
+  },
+  "guestId": "65ac16f5-ef60-11ed-895f-0242ac1c0006"
+},
+{
+  "_id": {
+    "$oid": "644da000f683fb5cf18183ba"
+  },
+  "dateRange": {
+    "from": {
+      "$date": "2023-06-13T00:00:00.000Z"
+    },
+    "to": {
+      "$date": "2023-06-14T00:00:00.000Z"
+    }
+  },
+  "price": 2,
+  "numberOfGuests": 1,
+  "status": "accepted",
+  "accommodationId": {
+    "$oid": "648d9f62314cdca602198d67"
+  },
+  "guestId": "686bab3c-afca-428e-afaf-b2b42cd9c7df"
+},
+{
+  "_id": {
+    "$oid": "994da000f683fb5cf18183ba"
+  },
+  "dateRange": {
+    "from": {
+      "$date": "2021-10-02T00:00:00.000Z"
+    },
+    "to": {
+      "$date": "2021-12-29T00:00:00.000Z"
+    }
+  },
+  "price": 2,
+  "numberOfGuests": 1,
+  "status": "accepted",
+  "accommodationId": {
+    "$oid": "648d9f62314cdca602198d67"
+  },
+  "guestId": "686bab3c-afca-428e-afaf-b2b42cd9c7df"
+},
+{
+  "_id": {
+    "$oid": "6490543886ec4fcfab5949a2"
+  },
+  "dateRange": {
+    "from": {
+      "$date": "2023-06-28T00:00:00.000Z"
+    },
+    "to": {
+      "$date": "2023-06-30T00:00:00.000Z"
+    }
+  },
+  "price": 3,
+  "numberOfGuests": 1,
+  "status": "accepted",
+  "accommodationId": {
+    "$oid": "648d9f62314cdca602198d67"
+  },
+  "guestId": "65ac16f5-ef60-11ed-895f-0242ac1c0006"
+}]

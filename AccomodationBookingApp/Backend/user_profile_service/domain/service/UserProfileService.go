@@ -2,8 +2,8 @@ package service
 
 import (
 	authorization "common/proto/authorization_service/generated"
+	events "common/saga/delete_user"
 	"github.com/google/uuid"
-	"log"
 	"user_profile_service/communication/orchestrator"
 	"user_profile_service/domain/model"
 	"user_profile_service/domain/repository"
@@ -37,7 +37,6 @@ func (service UserProfileService) Update(id uuid.UUID, dto *model.UpdateProfileD
 	userInfo.Name = dto.Name
 	userInfo.Surname = dto.Surname
 	userInfo.Email = dto.Email
-	log.Println("new address: ", dto.Address)
 	userInfo.Address.Street = dto.Address.Street
 	userInfo.Address.City = dto.Address.City
 	userInfo.Address.Country = dto.Address.Country
@@ -55,7 +54,7 @@ func (service UserProfileService) Update(id uuid.UUID, dto *model.UpdateProfileD
 		Address: userInfo.Address,
 	}, nil
 }
-func (service UserProfileService) DeleteUser(accCredId string, userProfileID uuid.UUID, role authorization.Role) error {
+func (service UserProfileService) DeleteUser(accCredId string, userProfileID uuid.UUID, role authorization.Role) (events.Response, error) {
 	return service.deleteOrchestrator.Start(accCredId, userProfileID, role)
 }
 

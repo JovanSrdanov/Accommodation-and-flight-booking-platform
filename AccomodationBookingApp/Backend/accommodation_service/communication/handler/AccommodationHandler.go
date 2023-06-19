@@ -7,9 +7,8 @@ import (
 	reservation "common/proto/reservation_service/generated"
 	"context"
 	"fmt"
-	"log"
-
 	"github.com/google/uuid"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type AccommodationHandler struct {
@@ -36,8 +35,6 @@ func (handler AccommodationHandler) Create(ctx context.Context, in *accommodatio
 	if err != nil {
 		return nil, err
 	}
-
-	log.Println(id.Hex())
 
 	// Create availability base
 	//Ovo samo ne radi jbg
@@ -97,8 +94,15 @@ func (handler AccommodationHandler) GetById(ctx context.Context, in *accommodati
 
 	mapper := NewUserProfileMapper()
 	*/
+	mapper := NewAccommodationMapper()
+	id, _ := primitive.ObjectIDFromHex(in.Id)
 
-	return &accommodation.GetByIdResponse{}, nil
+	res, err := handler.accommodationService.GetById(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return mapper.mapToGetByIdResponse(res), nil
 }
 
 func (handler AccommodationHandler) Delete(ctx context.Context, in *accommodation.DeleteRequest) (*accommodation.DeleteResponse, error) {
@@ -106,7 +110,7 @@ func (handler AccommodationHandler) Delete(ctx context.Context, in *accommodatio
 	if err != nil {
 		return nil, err
 	}
-	err = handler.accommodationService.Delete(id)
+	err = handler.accommodationService.DeleteUserProfile(id)
 	*/
 	return &accommodation.DeleteResponse{}, nil
 }
@@ -152,15 +156,6 @@ func (handler AccommodationHandler) GetAmenities(ctx context.Context, in *accomm
 	return &accommodation.GetAmenitiesResponse{
 		Amenities: amenities,
 	}, nil
-}
-
-func (handler AccommodationHandler) DeleteAllByHostId(ctx context.Context, in *accommodation.DeleteAllByHostIdRequest) (*accommodation.DeleteAllByHostIdResponse, error) {
-	accommodationIds, err := handler.accommodationService.DeleteAllByHostId(in.HostId)
-	if err != nil {
-		return nil, err
-	}
-
-	return &accommodation.DeleteAllByHostIdResponse{AccommodationIds: accommodationIds}, nil
 }
 
 func (handler AccommodationHandler) SearchAccommodation(ctx context.Context, in *accommodation.SearchRequest) (*accommodation.GetAllResponse, error) {

@@ -4,6 +4,7 @@ import (
 	"authorization_service/domain/model"
 	"authorization_service/domain/token"
 	"authorization_service/interceptor"
+	"common/event_sourcing"
 	user_profile "common/proto/user_profile_service/generated"
 	"common/saga/messaging"
 	"common/saga/messaging/nats"
@@ -14,9 +15,9 @@ import (
 	"log"
 	"net"
 	"user_profile_service/communication/handler"
+	"user_profile_service/communication/middleware"
 	"user_profile_service/communication/orchestrator"
 	"user_profile_service/domain/service"
-	"user_profile_service/event_sourcing"
 	"user_profile_service/persistence/repository"
 )
 
@@ -29,7 +30,9 @@ type Server struct {
 }
 
 func NewServer(config *Configuration) *Server {
-	return &Server{config: config}
+	return &Server{
+		config: config,
+	}
 }
 
 func (server *Server) Start() {
@@ -45,7 +48,7 @@ func (server *Server) Start() {
 	authServiceAddress := fmt.Sprintf("%s:%s", server.config.AuthServiceHost, server.config.AuthServicePort)
 	userProfileHandler := handler.NewUserProfileHandler(*userProfileService, authServiceAddress)
 
-	//Delete handler that listens orchestrator
+	//DeleteUserProfile handler that listens orchestrator
 	commandSubscriber := server.initDeleteSubscriber(server.config.DeleteUserCommandSubject, QueueGroup)
 	replyPublisher := server.initDeletePublisher(server.config.DeleteUserReplySubject)
 
@@ -67,8 +70,8 @@ func (server *Server) initMongoClient() *mongo.Client {
 	return client
 }
 
-func (server *Server) initEventRepo(client *mongo.Client) *repository.EventRepositoryMongo {
-	repo, err := repository.NewEventRepositoryMongo(client, server.config.UserProfileEventInnerDbName, server.config.UserProfileEventDbCollectionName)
+func (server *Server) initEventRepo(client *mongo.Client) *event_sourcing.EventRepositoryMongo {
+	repo, err := event_sourcing.NewEventRepositoryMongo(client, server.config.UserProfileEventInnerDbName, server.config.UserProfileEventDbCollectionName)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -99,10 +102,12 @@ func (server *Server) startGrpcServer(userProfileHandler *handler.UserProfileHan
 
 	tokenMaker, _ := token.NewPasetoMaker("12345678901234567890123456789012")
 	protectedMethodsWithAllowedRoles := getProtectedMethodsWithAllowedRoles()
+
 	authInterceptor := interceptor.NewAuthServerInterceptor(tokenMaker, protectedMethodsWithAllowedRoles)
 
 	grpcServer := grpc.NewServer(
-		grpc.UnaryInterceptor(authInterceptor.Unary()),
+		grpc.ChainUnaryInterceptor(middleware.NewGRPUnaryServerInterceptor(),
+			authInterceptor.Unary()),
 		grpc.StreamInterceptor(authInterceptor.Stream()),
 	)
 	user_profile.RegisterUserProfileServiceServer(grpcServer, userProfileHandler)
@@ -132,11 +137,17 @@ func (server *Server) initDeletePublisher(subject string) messaging.Publisher {
 }
 
 func (server *Server) initDeleteUserOrchestrator(publisher messaging.Publisher, subscriber messaging.Subscriber) *orchestrator.DeleteUserOrchestrator {
-	orchestrator, err := orchestrator.NewDeleteUserOrchestrator(publisher, subscriber)
+	orch, err := orchestrator.NewDeleteUserOrchestrator(publisher, subscriber, orchestrator.NatsInfo{
+		NatsHost: server.config.NatsHost,
+		NatsPort: server.config.NatsPort,
+		NatsUser: server.config.NatsUser,
+		NatsPass: server.config.NatsPass,
+		Subject:  server.config.DeleteUserCommandSubject,
+	})
 	if err != nil {
 		log.Fatal(err)
 	}
-	return orchestrator
+	return orch
 }
 
 func (server *Server) initDeleteUserHandler(userProfileService *service.UserProfileService, reservationServiceAddress, accommodationServiceAddress string, eventService *event_sourcing.EventService, publisher messaging.Publisher, subscriber messaging.Subscriber) {
