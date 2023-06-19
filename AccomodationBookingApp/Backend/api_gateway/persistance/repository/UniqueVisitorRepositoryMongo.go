@@ -40,8 +40,6 @@ func (repo UniqueVisitorRepositoryMongo) GetVisitorByIpAndBrowser(ipAddress, bro
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	log.Println(ipAddress + " " + browser)
-
 	collection := repo.getCollectionUniqueVisitor()
 	filter := bson.M{
 		"ipAddress": ipAddress,

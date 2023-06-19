@@ -114,7 +114,6 @@ func (server *Server) handleWebSocket(c *gin.Context) {
 	tokenMaker, _ := token.NewPasetoMaker("12345678901234567890123456789012")
 	tokenPayload, err := tokenMaker.VerifyToken(pasetoToken)
 	userID := tokenPayload.ID
-	log.Println("UserID: ", userID)
 	if err != nil {
 		c.Status(http.StatusUnauthorized)
 		return

@@ -17,7 +17,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"google.golang.org/grpc/metadata"
-	"log"
 	"net/http"
 	"time"
 )
@@ -64,7 +63,6 @@ func (handler UserHandler) GetUserInfo(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, "Username not provided")
 		middleware.HttpReqCountTotal.Inc()
 		middleware.HttpReqCountFail.Inc()
-		log.Println("Counter incremented")
 		return
 	}
 
@@ -81,7 +79,6 @@ func (handler UserHandler) GetUserInfo(ctx *gin.Context) {
 		middleware.HttpReqCountTotal.Inc()
 		middleware.HttpReqCountFail.Inc()
 		middleware.HttpReqCountNotFound.WithLabelValues("/user/:username/info").Inc()
-		log.Println("Counter incremented")
 		return
 	}
 
@@ -91,13 +88,11 @@ func (handler UserHandler) GetUserInfo(ctx *gin.Context) {
 		middleware.HttpReqCountTotal.Inc()
 		middleware.HttpReqCountFail.Inc()
 		middleware.HttpReqCountNotFound.WithLabelValues("/user/:username/info").Inc()
-		log.Println("Counter incremented")
 		return
 	}
 
 	middleware.HttpReqCountTotal.Inc()
 	middleware.HttpReqCountSucc.Inc()
-	log.Println("Counter incremented")
 	ctx.JSON(http.StatusOK, userInfo)
 }
 
@@ -145,7 +140,6 @@ func (handler UserHandler) CreateUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, communication.NewErrorResponse(err.Error()))
 		middleware.HttpReqCountTotal.Inc()
 		middleware.HttpReqCountFail.Inc()
-		log.Println("Counter incremented")
 		return
 	}
 
@@ -154,7 +148,6 @@ func (handler UserHandler) CreateUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, communication.NewErrorResponse(err.Error()))
 		middleware.HttpReqCountTotal.Inc()
 		middleware.HttpReqCountFail.Inc()
-		log.Println("Counter incremented")
 		return
 	}
 
@@ -166,13 +159,11 @@ func (handler UserHandler) CreateUser(ctx *gin.Context) {
 			ctx.JSON(http.StatusInternalServerError, communication.NewErrorResponse(deleteErr.Error()))
 			middleware.HttpReqCountTotal.Inc()
 			middleware.HttpReqCountFail.Inc()
-			log.Println("Counter incremented")
 			return
 		}
 		ctx.JSON(http.StatusBadRequest, communication.NewErrorResponse(err.Error()))
 		middleware.HttpReqCountTotal.Inc()
 		middleware.HttpReqCountFail.Inc()
-		log.Println("Counter incremented")
 		return
 	}
 
@@ -181,14 +172,12 @@ func (handler UserHandler) CreateUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, communication.NewErrorResponse(err.Error()))
 		middleware.HttpReqCountTotal.Inc()
 		middleware.HttpReqCountFail.Inc()
-		log.Println("Counter incremented")
 		return
 	}
 
 	ctx.JSON(http.StatusCreated, communication.NewCreatedUserResponse(user.Username, userProfileId))
 	middleware.HttpReqCountTotal.Inc()
 	middleware.HttpReqCountSucc.Inc()
-	log.Println("Counter incremented")
 }
 
 func (handler UserHandler) CreateUserProfile(user *dto.CreateUser) (uuid.UUID, error) {
@@ -245,7 +234,6 @@ func (handler UserHandler) GetLoggedInUserInfo(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "logged-in account credentials not provided"})
 		middleware.HttpReqCountTotal.Inc()
 		middleware.HttpReqCountFail.Inc()
-		log.Println("Counter incremented")
 		return
 	}
 	loggedInAccCredId := fmt.Sprintf("%v", loggedInAccCredIdFromCtx)
@@ -260,7 +248,6 @@ func (handler UserHandler) GetLoggedInUserInfo(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "could not get logged-in account credentials"})
 		middleware.HttpReqCountTotal.Inc()
 		middleware.HttpReqCountFail.Inc()
-		log.Println("Counter incremented")
 		return
 	}
 
@@ -272,7 +259,6 @@ func (handler UserHandler) GetLoggedInUserInfo(ctx *gin.Context) {
 		middleware.HttpReqCountTotal.Inc()
 		middleware.HttpReqCountFail.Inc()
 		middleware.HttpReqCountNotFound.WithLabelValues("/user/logged-in-info").Inc()
-		log.Println("Counter incremented")
 		return
 	}
 	err = handler.addUserProfileInfo(&userInfo, grpcCtx)
@@ -281,13 +267,11 @@ func (handler UserHandler) GetLoggedInUserInfo(ctx *gin.Context) {
 		middleware.HttpReqCountTotal.Inc()
 		middleware.HttpReqCountFail.Inc()
 		middleware.HttpReqCountNotFound.WithLabelValues("/user/logged-in-info").Inc()
-		log.Println("Counter incremented")
 		return
 	}
 
 	middleware.HttpReqCountTotal.Inc()
 	middleware.HttpReqCountSucc.Inc()
-	log.Println("Counter incremented")
 	ctx.JSON(http.StatusOK, userInfo)
 }
 
@@ -331,12 +315,10 @@ func (handler UserHandler) IsUniqueVisitor(ctx *gin.Context) {
 			return
 		}
 		middleware.UniqueUserCount.Inc()
-		log.Println("Counter incremented")
 	}
 
 	middleware.HttpReqCountTotal.Inc()
 	middleware.HttpReqCountSucc.Inc()
-	log.Println("Counter incremented")
 	ctx.JSON(http.StatusOK, "successfully checked whether the visitor is unique")
 }
 
