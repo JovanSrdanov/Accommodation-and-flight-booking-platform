@@ -368,11 +368,11 @@ function SearchAndFilterAccommodations(props) {
                                                             <Accordion sx={{border: "2px solid black"}}>
                                                                 <AccordionSummary
                                                                     expandIcon={<ExpandMoreIcon/>}>
-                                                                    List Of Ameneties
+                                                                    List Of Ameneties 
                                                                 </AccordionSummary>
                                                                 <AccordionDetails
                                                                     sx={{height: 200, overflowY: 'scroll'}}>
-                                                                    {item.amenities.map((a) => (
+                                                                    {item.amenites!==undefined &&item.amenites!==null && item.amenities.map((a) => (
                                                                         <Box m={1} key={a}>- {a}</Box>
                                                                     ))}
                                                                 </AccordionDetails>
