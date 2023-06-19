@@ -53,7 +53,7 @@ func initJaegerTracer(url string) (*trace.TracerProvider, error) {
 		trace.WithBatcher(exporter),
 		trace.WithResource(resource.NewWithAttributes(
 			semconv.SchemaURL,
-			semconv.ServiceNameKey.String("authoriation"),
+			semconv.ServiceNameKey.String("rating"),
 		)),
 	), nil
 }
