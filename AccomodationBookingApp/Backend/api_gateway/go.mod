@@ -7,7 +7,6 @@ replace common => ../common
 require (
 	authorization_service v0.0.0-00010101000000-000000000000
 	common v0.0.0-00010101000000-000000000000
-	github.com/Depado/ginprom v1.7.11
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.9.0
 	github.com/google/uuid v1.3.0

@@ -14,8 +14,6 @@ import (
 	user_profile "common/proto/user_profile_service/generated"
 	"context"
 	"fmt"
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"google.golang.org/grpc/metadata"

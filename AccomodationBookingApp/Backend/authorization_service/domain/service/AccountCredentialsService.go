@@ -5,8 +5,6 @@ import (
 	"authorization_service/domain/repository"
 	"authorization_service/domain/token"
 	"fmt"
-	"time"
-
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc/codes"

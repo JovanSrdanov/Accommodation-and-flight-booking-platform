@@ -12,10 +12,6 @@ import (
 	reservation "common/proto/reservation_service/generated"
 	user_profile "common/proto/user_profile_service/generated"
 	"context"
-	"io/ioutil"
-	"net/http"
-	"time"
-
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -632,6 +628,8 @@ func (handler AccommodationHandler) GetReservation(ctx *gin.Context) {
 
 	allReservationsProto, err := reservationClient.GetAllReservationsForGuest(ctxGrpc, &reservation.EmptyRequest{})
 	if err != nil {
+		middleware.HttpReqCountTotal.Inc()
+		middleware.HttpReqCountFail.Inc()
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -640,6 +638,8 @@ func (handler AccommodationHandler) GetReservation(ctx *gin.Context) {
 	for _, val := range allReservationsProto.Reservations {
 		accommodationInfoProto, err2 := accommodationClient.GetById(ctxGrpc, &accommodation.GetByIdRequest{Id: val.AccommodationId})
 		if err2 != nil {
+			middleware.HttpReqCountTotal.Inc()
+			middleware.HttpReqCountFail.Inc()
 			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err2.Error()})
 			return
 		}
@@ -665,5 +665,7 @@ func (handler AccommodationHandler) GetReservation(ctx *gin.Context) {
 		})
 	}
 
+	middleware.HttpReqCountTotal.Inc()
+	middleware.HttpReqCountSucc.Inc()
 	ctx.JSON(http.StatusOK, dtoSlice)
 }
