@@ -174,7 +174,6 @@ func (handler ReservationHandler) HostHasActiveReservations(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	//log.Println("HOST ID:" + id.String())
 
 	activeReservations, err := handler.reservationService.GetAllAcceptedReservations(id.String())
 	if err != nil {

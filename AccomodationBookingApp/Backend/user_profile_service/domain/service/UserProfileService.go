@@ -7,6 +7,8 @@ import (
 	"user_profile_service/communication/orchestrator"
 	"user_profile_service/domain/model"
 	"user_profile_service/domain/repository"
+
+	"github.com/google/uuid"
 )
 
 type UserProfileService struct {

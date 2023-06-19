@@ -1,7 +1,12 @@
 package service
 
 import (
+	accommodation "common/proto/accommodation_service/generated"
+	"context"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"log"
+	"os"
+	client2 "rating_service/communication/client"
 	"rating_service/domain/model"
 	"rating_service/domain/repository"
 )
@@ -15,8 +20,32 @@ func NewRatingService(ratingRepo repository.IRatingRepository) *RatingService {
 }
 
 func (service RatingService) RateAccommodation(guestId string, rating *model.Rating) error {
-	//TODO Strahinja: Ovde proveriti da li guest sme da uradi rate
-	return service.ratingRepo.RateAccommodation(guestId, rating)
+	res := service.ratingRepo.RateAccommodation(guestId, rating)
+	if res != nil {
+		return res
+	}
+
+	hostId, err2 := getHostIdForAccommodationId(rating.AccommodationId.Hex())
+	if err2 != nil {
+		return err2
+	}
+	log.Println(hostId)
+
+	return res
+}
+
+func getHostIdForAccommodationId(accommodationId string) (string, error) {
+	accommodationHost := os.Getenv("ACCOMMODATION_SERVICE_HOST")
+	accommodationPort := os.Getenv("ACCOMMODATION_SERVICE_PORT")
+	client := client2.NewAccommodationClient(accommodationHost + ":" + accommodationPort)
+
+	fullAccInfo, err := client.GetById(context.TODO(), &accommodation.GetByIdRequest{Id: accommodationId})
+	if err != nil {
+		return "", err
+	}
+
+	hostId := fullAccInfo.Accommodation.HostId
+	return hostId, nil
 }
 
 func (service RatingService) GetRatingForAccommodation(id primitive.ObjectID) (model.RatingResponse, error) {
@@ -28,7 +57,19 @@ func (service RatingService) GetRecommendedAccommodations(guestId string) ([]mod
 }
 
 func (service RatingService) DeleteRatingForAccommodation(accommodationId string, guestId string) (string, error) {
-	return service.ratingRepo.DeleteRatingForAccommodation(accommodationId, guestId)
+	errorMess, err := service.ratingRepo.DeleteRatingForAccommodation(accommodationId, guestId)
+	if err != nil {
+		return "Big puc kod brisanja accommodation rating " + errorMess, err
+	}
+
+	hostId, err := getHostIdForAccommodationId(accommodationId)
+	if err != nil {
+		return "Big puc kod brisanja accommodation rating", err
+	}
+
+	log.Println(hostId)
+
+	return errorMess, nil
 }
 
 func (service RatingService) RateHost(rating *model.RateHostDto) error {

@@ -30,7 +30,38 @@ func NewNotificationConsentHandler(notificationConsentService service.Notificati
 }
 
 func (handler *NotificationConsentHandler) HandleMessages(message *NotificationMessaging.NotificationMessage) {
-	handler.publisher.Publish(message)
+	notificationConsent, err := handler.notificationConsentService.GetById(message.AccountID)
+	if err != nil {
+		return
+	}
+	switch message.MessageType {
+	case "RequestMade":
+		if notificationConsent.HostResponded {
+			handler.publisher.Publish(message)
+		}
+	case "ReservationCanceled":
+		if notificationConsent.ReservationCanceled {
+			handler.publisher.Publish(message)
+		}
+	case "HostRatingGiven":
+		if notificationConsent.HostRatingGiven {
+			handler.publisher.Publish(message)
+		}
+	case "AccommodationRatingGiven":
+		if notificationConsent.AccommodationRatingGiven {
+			handler.publisher.Publish(message)
+		}
+	case "ProminentHost":
+		if notificationConsent.ProminentHost {
+			handler.publisher.Publish(message)
+		}
+	case "HostResponded":
+		if notificationConsent.HostResponded {
+			handler.publisher.Publish(message)
+		}
+
+	}
+
 }
 
 func (handler *NotificationConsentHandler) Create(ctx context.Context, req *notification.CreateRequest) (*notification.CreateResponse, error) {

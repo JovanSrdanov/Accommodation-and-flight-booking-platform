@@ -66,7 +66,6 @@ function MyReservations() {
                                         <li>Number of guests: {r.numberOfGuests}</li>
                                         <li>From: {new Date(r.dateRange.from * 1000).toLocaleDateString("en-GB")}</li>
                                         <li>To: {new Date(r.dateRange.to * 1000).toLocaleDateString("en-GB")}</li>
-                                        <li>Reserved place:</li>
                                         <li>Status: {r.status}</li>
                                     </StyledTableCell>
                                     <StyledTableCell>

@@ -12,6 +12,10 @@ import (
 	reservation "common/proto/reservation_service/generated"
 	user_profile "common/proto/user_profile_service/generated"
 	"context"
+	"io/ioutil"
+	"net/http"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -59,6 +63,12 @@ func (handler AccommodationHandler) Init(router *gin.RouterGroup) {
 		middleware.ValidateToken(handler.tokenMaker),
 		middleware.Authorization([]model.Role{model.Guest}),
 		handler.GetRecommendedAccommodations)
+	userGroup.GET("/prominent-host",
+		middleware.ValidateToken(handler.tokenMaker),
+		middleware.Authorization([]model.Role{model.Host}), handler.IsHostProminentPaseto)
+	userGroup.GET("/reservation/all/guest",
+		middleware.ValidateToken(handler.tokenMaker),
+		middleware.Authorization([]model.Role{model.Guest}), handler.GetReservation)
 }
 
 func (handler AccommodationHandler) SearchAccommodation(ctx *gin.Context) {
@@ -285,7 +295,7 @@ func (handler AccommodationHandler) GetRatableAccommodations(ctx *gin.Context) {
 
 	dtoSlice := make([]*dto.Accommodation, 0)
 	for _, accId := range protoResponse.AccommodationIds {
-		accommodationProto, err2 := accommodationClient.GetById(ctxGrpc, &accommodation.GetByIdRequest{Id: accId})
+		accommodationProto, err2 := accommodationClient.GetById(context.TODO(), &accommodation.GetByIdRequest{Id: accId})
 		if err2 != nil {
 			middleware.HttpReqCountTotal.Inc()
 			middleware.HttpReqCountFail.Inc()
@@ -395,6 +405,16 @@ func (handler AccommodationHandler) GetRatableHosts(ctx *gin.Context) {
 func (handler AccommodationHandler) IsHostProminent(ctx *gin.Context) {
 	hostId := ctx.Param("hostId")
 
+	handler.IsHostProminentCalculate(ctx, hostId)
+}
+
+func (handler AccommodationHandler) IsHostProminentPaseto(ctx *gin.Context) {
+	loggedInAccCredIdFromCtx := ctx.Keys["id"].(uuid.UUID).String()
+
+	handler.IsHostProminentCalculate(ctx, loggedInAccCredIdFromCtx)
+}
+
+func (handler AccommodationHandler) IsHostProminentCalculate(ctx *gin.Context, hostId string) {
 	ratingClient := communication.NewRatingClient(handler.ratingServiceAddress)
 	reservationClient := communication.NewReservationClient(handler.reservationServiceAddress)
 
@@ -602,4 +622,48 @@ func (handler AccommodationHandler) GetRecommendedAccommodations(ctx *gin.Contex
 	middleware.HttpReqCountTotal.Inc()
 	middleware.HttpReqCountSucc.Inc()
 	ctx.JSON(http.StatusOK, recommendations)
+}
+
+func (handler AccommodationHandler) GetReservation(ctx *gin.Context) {
+	reservationClient := communication.NewReservationClient(handler.reservationServiceAddress)
+	accommodationClient := communication.NewAccommodationClient(handler.accommodationServiceAddress)
+
+	ctxGrpc := createGrpcContextFromGinContext(ctx)
+
+	allReservationsProto, err := reservationClient.GetAllReservationsForGuest(ctxGrpc, &reservation.EmptyRequest{})
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	dtoSlice := make([]*dto.ReservationFullInfo, 0)
+	for _, val := range allReservationsProto.Reservations {
+		accommodationInfoProto, err2 := accommodationClient.GetById(ctxGrpc, &accommodation.GetByIdRequest{Id: val.AccommodationId})
+		if err2 != nil {
+			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err2.Error()})
+			return
+		}
+
+		dtoSlice = append(dtoSlice, &dto.ReservationFullInfo{
+			ID: val.Id,
+			DateRange: dto.DateRange{
+				From: time.Unix(val.DateRange.From, 0),
+				To:   time.Unix(val.DateRange.To, 0),
+			},
+			Price:             val.Price,
+			NumberOfGuests:    val.NumberOfGuests,
+			Status:            val.Status,
+			AccommodationId:   val.AccommodationId,
+			GuestId:           val.GuestId,
+			AccommodationName: accommodationInfoProto.Accommodation.Name,
+			Address: dto.Address{
+				Country:      accommodationInfoProto.Accommodation.Address.Country,
+				City:         accommodationInfoProto.Accommodation.Address.City,
+				Street:       accommodationInfoProto.Accommodation.Address.Street,
+				StreetNumber: accommodationInfoProto.Accommodation.Address.StreetNumber,
+			},
+		})
+	}
+
+	ctx.JSON(http.StatusOK, dtoSlice)
 }
