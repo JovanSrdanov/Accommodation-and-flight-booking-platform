@@ -110,7 +110,7 @@ func (handler RatingHandler) RateHost(ctx context.Context, in *rating.RateHostRe
 		}
 
 		message := NotificationMessaging.NotificationMessage{
-			MessageType:            "HostRatingGiven",
+			MessageType:            "ProminentHost",
 			MessageForNotification: MFN,
 			AccountID:              accountID,
 		}
@@ -159,7 +159,7 @@ func (handler RatingHandler) DeleteRatingForHost(ctx context.Context, in *rating
 		}
 
 		message := NotificationMessaging.NotificationMessage{
-			MessageType:            "HostRatingGiven",
+			MessageType:            "ProminentHost",
 			MessageForNotification: MFN,
 			AccountID:              accountID,
 		}

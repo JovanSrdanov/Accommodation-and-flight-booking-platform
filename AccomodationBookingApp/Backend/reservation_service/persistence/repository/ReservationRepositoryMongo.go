@@ -299,7 +299,7 @@ func (repo ReservationRepositoryMongo) CreateReservation(reservation *model.Rese
 		}
 
 		message := NotificationMessaging.NotificationMessage{
-			MessageType:            "HostRatingGiven",
+			MessageType:            "ProminentHost",
 			MessageForNotification: MFN,
 			AccountID:              accountID,
 		}
@@ -622,7 +622,7 @@ func (repo ReservationRepositoryMongo) CancelReservation(id primitive.ObjectID) 
 		}
 
 		message := NotificationMessaging.NotificationMessage{
-			MessageType:            "HostRatingGiven",
+			MessageType:            "ProminentHost",
 			MessageForNotification: MFN,
 			AccountID:              accountID,
 		}
@@ -780,7 +780,7 @@ func (repo ReservationRepositoryMongo) AcceptReservation(id primitive.ObjectID) 
 		}
 
 		message := NotificationMessaging.NotificationMessage{
-			MessageType:            "HostRatingGiven",
+			MessageType:            "ProminentHost",
 			MessageForNotification: MFN,
 			AccountID:              accountID,
 		}
