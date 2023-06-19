@@ -1,182 +1,72 @@
-[
-  {
-    "_id": {
-      "$oid": "64278c521a5ffb7e0687dc66"
-    },
-    "departureDateTime": {
-      "$date": "2023-04-29T03:15:24Z"
-    },
-    "startPoint": {
-      "_id": {
-        "$oid": "641da57fa83100cc5b153eca"
-      },
-      "name": "Frankfurt Airport",
-      "address": {
-        "country": "Germany",
-        "city": "Frankfurt",
-        "street": "Airport platz",
-        "streetNumber": "1"
-      }
-    },
-    "destination": {
-      "_id": {
-        "$oid": "641da58e81d79e074d787274"
-      },
-      "name": "Charles de Gaulle",
-      "address": {
-        "country": "France",
-        "city": "Paris",
-        "street": "Roissy-en-France",
-        "streetNumber": "95700"
-      }
-    },
-    "price": 275,
-    "numberOfSeats": 350,
-    "vacantSeats": 350,
-    "canceled": false
+[{
+  "_id": {
+    "$oid": "64907fa34fc78c65364bfc8b"
   },
-  {
-    "_id": {
-      "$oid": "64278c691a5ffb7e0687dc67"
-    },
-    "departureDateTime": {
-      "$date": "2023-04-28T23:50:51Z"
-    },
-    "startPoint": {
-      "_id": {
-        "$oid": "641da45c9bf72d42a37a8461"
-      },
-      "name": "Nikola Tesla",
-      "address": {
-        "country": "Serbia",
-        "city": "Beograd",
-        "street": "Ive Andrica",
-        "streetNumber": "52"
-      }
-    },
-    "destination": {
-      "_id": {
-        "$oid": "641da56f85e2ca6050058c1a"
-      },
-      "name": "Lisicji Jarak",
-      "address": {
-        "country": "Serbia",
-        "city": "Zrenjanin",
-        "street": "Jovana Subotica",
-        "streetNumber": "12"
-      }
-    },
-    "price": 175,
-    "numberOfSeats": 250,
-    "vacantSeats": 250,
-    "canceled": false
+  "departureDateTime": {
+    "$date": "2023-06-28T16:17:21.000Z"
   },
-  {
+  "startPoint": {
     "_id": {
-      "$oid": "64278c931a5ffb7e0687dc68"
+      "$oid": "641da56f85e2ca6050058c1a"
     },
-    "departureDateTime": {
-      "$date": "2023-06-30T04:30:17Z"
-    },
-    "startPoint": {
-      "_id": {
-        "$oid": "641da56f85e2ca6050058c1a"
-      },
-      "name": "Lisicji Jarak",
-      "address": {
-        "country": "Serbia",
-        "city": "Zrenjanin",
-        "street": "Jovana Subotica",
-        "streetNumber": "12"
-      }
-    },
-    "destination": {
-      "_id": {
-        "$oid": "641da58e81d79e074d787274"
-      },
-      "name": "Charles de Gaulle",
-      "address": {
-        "country": "France",
-        "city": "Paris",
-        "street": "Roissy-en-France",
-        "streetNumber": "95700"
-      }
-    },
-    "price": 1950,
-    "numberOfSeats": 10,
-    "vacantSeats": 10,
-    "canceled": false
+    "name": "Lisicji Jarak",
+    "address": {
+      "country": "Serbia",
+      "city": "Zrenjanin",
+      "street": "Jovana Subotica",
+      "streetNumber": "12"
+    }
   },
-  {
+  "destination": {
     "_id": {
-      "$oid": "64278cab1a5ffb7e0687dc69"
+      "$oid": "641da45c9bf72d42a37a8461"
     },
-    "departureDateTime": {
-      "$date": "2023-04-22T22:05:54Z"
-    },
-    "startPoint": {
-      "_id": {
-        "$oid": "641da56f85e2ca6050058c1a"
-      },
-      "name": "Lisicji Jarak",
-      "address": {
-        "country": "Serbia",
-        "city": "Zrenjanin",
-        "street": "Jovana Subotica",
-        "streetNumber": "12"
-      }
-    },
-    "destination": {
-      "_id": {
-        "$oid": "641da57fa83100cc5b153eca"
-      },
-      "name": "Frankfurt Airport",
-      "address": {
-        "country": "Germany",
-        "city": "Frankfurt",
-        "street": "Airport platz",
-        "streetNumber": "1"
-      }
-    },
-    "price": 123,
-    "numberOfSeats": 456,
-    "vacantSeats": 456,
-    "canceled": false
+    "name": "Nikola Tesla",
+    "address": {
+      "country": "Serbia",
+      "city": "Beograd",
+      "street": "Ive Andrica",
+      "streetNumber": "52"
+    }
   },
-  {
+  "price": 175,
+  "numberOfSeats": 250,
+  "vacantSeats": 250,
+  "canceled": false
+},
+{
+  "_id": {
+    "$oid": "64907fb34fc78c65364bfc8c"
+  },
+  "departureDateTime": {
+    "$date": "2023-06-30T16:17:42.000Z"
+  },
+  "startPoint": {
     "_id": {
-      "$oid": "64278ce31a5ffb7e0687dc6a"
+      "$oid": "641da45c9bf72d42a37a8461"
     },
-    "departureDateTime": {
-      "$date": "2097-04-01T09:55:32.586Z"
+    "name": "Nikola Tesla",
+    "address": {
+      "country": "Serbia",
+      "city": "Beograd",
+      "street": "Ive Andrica",
+      "streetNumber": "52"
+    }
+  },
+  "destination": {
+    "_id": {
+      "$oid": "641da56f85e2ca6050058c1a"
     },
-    "startPoint": {
-      "_id": {
-        "$oid": "641da58e81d79e074d787274"
-      },
-      "name": "Charles de Gaulle",
-      "address": {
-        "country": "France",
-        "city": "Paris",
-        "street": "Roissy-en-France",
-        "streetNumber": "95700"
-      }
-    },
-    "destination": {
-      "_id": {
-        "$oid": "641da45c9bf72d42a37a8461"
-      },
-      "name": "Nikola Tesla",
-      "address": {
-        "country": "Serbia",
-        "city": "Beograd",
-        "street": "Ive Andrica",
-        "streetNumber": "52"
-      }
-    },
-    "price": 1,
-    "numberOfSeats": 1,
-    "vacantSeats": 1,
-    "canceled": true
-  }
-]
+    "name": "Lisicji Jarak",
+    "address": {
+      "country": "Serbia",
+      "city": "Zrenjanin",
+      "street": "Jovana Subotica",
+      "streetNumber": "12"
+    }
+  },
+  "price": 175,
+  "numberOfSeats": 250,
+  "vacantSeats": 250,
+  "canceled": false
+}]

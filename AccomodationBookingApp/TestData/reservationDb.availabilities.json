@@ -1,0 +1,99 @@
+[{
+  "_id": {
+    "$oid": "648d9f63f683fb5cf18183b8"
+  },
+  "accommodationId": {
+    "$oid": "648d9f62314cdca602198d67"
+  },
+  "hostId": "5fa599f7-ef60-11ed-895f-0242ac1c0006",
+  "isAutomaticReservation": false,
+  "availableDates": [
+    {
+      "_id": {
+        "$oid": "648d9f86f683fb5cf18183b9"
+      },
+      "dateRange": {
+        "from": {
+          "$date": "2023-06-10T00:00:00.000Z"
+        },
+        "to": {
+          "$date": "2023-06-16T00:00:00.000Z"
+        }
+      },
+      "price": 1,
+      "isPricePerPerson": true
+    },
+    {
+      "_id": {
+        "$oid": "648def3b228dab8cb79509cf"
+      },
+      "dateRange": {
+        "from": {
+          "$date": "2023-06-17T00:00:00.000Z"
+        },
+        "to": {
+          "$date": "2023-06-30T00:00:00.000Z"
+        }
+      },
+      "price": 1,
+      "isPricePerPerson": true
+    },
+    {
+      "_id": {
+        "$oid": "648ebe05b15eddac9176488a"
+      },
+      "dateRange": {
+        "from": {
+          "$date": "2021-10-01T00:00:00.000Z"
+        },
+        "to": {
+          "$date": "2021-12-31T00:00:00.000Z"
+        }
+      },
+      "price": 1,
+      "isPricePerPerson": true
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "658d9f63f683fb5cf18183b8"
+  },
+  "accommodationId": {
+    "$oid": "148d9f62314cdca602198d67"
+  },
+  "hostId": "5fa599f7-ef60-11ed-895f-0242ac1c0006",
+  "isAutomaticReservation": false,
+  "availableDates": [
+    {
+      "_id": {
+        "$oid": "648d9f86f683fb5cf18183b9"
+      },
+      "dateRange": {
+        "from": {
+          "$date": "2023-06-10T00:00:00.000Z"
+        },
+        "to": {
+          "$date": "2023-06-16T00:00:00.000Z"
+        }
+      },
+      "price": 1,
+      "isPricePerPerson": true
+    },
+    {
+      "_id": {
+        "$oid": "648def3b228dab8cb79509cf"
+      },
+      "dateRange": {
+        "from": {
+          "$date": "2023-06-17T00:00:00.000Z"
+        },
+        "to": {
+          "$date": "2023-06-30T00:00:00.000Z"
+        }
+      },
+      "price": 1,
+      "isPricePerPerson": true
+    }
+  ]
+}]

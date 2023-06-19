@@ -314,7 +314,7 @@ function App() {
             </Dialog>
 
 
-            <ParticlesBg color="#FF9021" type="cobweb" num={100} bg={true}/>
+            <ParticlesBg color="#FF9021" type="cobweb" num={200} bg={true}/>
             <Box>
                 <AppBar position="static">
                     <Toolbar>

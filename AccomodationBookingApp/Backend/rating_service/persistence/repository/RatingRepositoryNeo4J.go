@@ -3,13 +3,14 @@ package repository
 import (
 	"common/NotificationMessaging"
 	"common/saga/messaging"
-	"github.com/google/uuid"
-	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"log"
 	"rating_service/domain/model"
 	"sort"
 	"time"
+
+	"github.com/google/uuid"
+	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type RatingRepositoryNeo4J struct {
@@ -552,7 +553,7 @@ func (repo RatingRepositoryNeo4J) DeleteRatingForHost(hostId string, guestId str
 	}
 	message := NotificationMessaging.NotificationMessage{
 		MessageType:            "HostRatingGiven",
-		MessageForNotification: "Guest has deleted his previous rating",
+		MessageForNotification: "Guest has deleted his previous rating for you",
 		AccountID:              accountID,
 	}
 	repo.publisher.Publish(message)

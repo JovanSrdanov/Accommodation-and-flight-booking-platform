@@ -299,7 +299,7 @@ func (repo ReservationRepositoryMongo) CreateReservation(reservation *model.Rese
 		}
 
 		message := NotificationMessaging.NotificationMessage{
-			MessageType:            "HostRatingGiven",
+			MessageType:            "ProminentHost",
 			MessageForNotification: MFN,
 			AccountID:              accountID,
 		}
@@ -622,7 +622,7 @@ func (repo ReservationRepositoryMongo) CancelReservation(id primitive.ObjectID) 
 		}
 
 		message := NotificationMessaging.NotificationMessage{
-			MessageType:            "HostRatingGiven",
+			MessageType:            "ProminentHost",
 			MessageForNotification: MFN,
 			AccountID:              accountID,
 		}
@@ -780,7 +780,7 @@ func (repo ReservationRepositoryMongo) AcceptReservation(id primitive.ObjectID) 
 		}
 
 		message := NotificationMessaging.NotificationMessage{
-			MessageType:            "HostRatingGiven",
+			MessageType:            "ProminentHost",
 			MessageForNotification: MFN,
 			AccountID:              accountID,
 		}
@@ -970,13 +970,15 @@ func (repo ReservationRepositoryMongo) GetAllRatableAccommodationsForGuest(guest
 	}
 
 	resp := make([]string, 0)
+	seen := make(map[string]bool)
 	for _, val := range reservations {
-		vreme := time.Now()
-		vreme = vreme.In(time.UTC)
-
-		vreme = time.Date(vreme.Year(), vreme.Month(), vreme.Day(), 0, 0, 0, 0, vreme.Location())
+		vreme := time.Now().In(time.UTC).Truncate(24 * time.Hour)
 		if val.DateRange.To.Before(vreme) {
-			resp = append(resp, val.AccommodationId.Hex())
+			accommodationID := val.AccommodationId.Hex()
+			if !seen[accommodationID] {
+				resp = append(resp, accommodationID)
+				seen[accommodationID] = true
+			}
 		}
 	}
 

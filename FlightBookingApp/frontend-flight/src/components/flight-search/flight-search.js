@@ -78,7 +78,6 @@ const FlightSearch = ({LoggedIn}) => {
                     ...pagination,
                 },
             });
-            console.log(data)
             if (data.Data != null)
                 setData(data.Data);
             else {
@@ -133,7 +132,7 @@ const FlightSearch = ({LoggedIn}) => {
             numberOfTickets: selectDesiredNumberOfSeats,
             flightId: selectedFlight.id,
         }).then((res) => {
-            console.log(res);
+
             setPurchaseDialog(true);
             handleCloseBuyTicketsDialog();
         })
@@ -144,7 +143,6 @@ const FlightSearch = ({LoggedIn}) => {
     };
     const navigate = useNavigate();
     const {auth} = useAuth()
-    console.log(auth)
 
 
     return (
