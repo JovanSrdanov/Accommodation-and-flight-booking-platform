@@ -1,0 +1,1976 @@
+{
+	"Name": "authorization.AuthorizationService/GetById",
+	"SpanContext": {
+		"TraceID": "f4eac615e0f833c89099ac62dfaf5861",
+		"SpanID": "915b9f750be4e1e8",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "f4eac615e0f833c89099ac62dfaf5861",
+		"SpanID": "a11931ece513ecae",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": true
+	},
+	"SpanKind": 2,
+	"StartTime": "2023-06-19T22:55:36.955488536+02:00",
+	"EndTime": "2023-06-19T22:55:36.956767352+02:00",
+	"Attributes": [
+		{
+			"Key": "rpc.system",
+			"Value": {
+				"Type": "STRING",
+				"Value": "grpc"
+			}
+		},
+		{
+			"Key": "rpc.service",
+			"Value": {
+				"Type": "STRING",
+				"Value": "authorization.AuthorizationService"
+			}
+		},
+		{
+			"Key": "rpc.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "GetById"
+			}
+		},
+		{
+			"Key": "net.sock.peer.addr",
+			"Value": {
+				"Type": "STRING",
+				"Value": "::1"
+			}
+		},
+		{
+			"Key": "net.sock.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 47666
+			}
+		},
+		{
+			"Key": "rpc.grpc.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 0
+			}
+		}
+	],
+	"Events": [
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "RECEIVED"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T22:55:36.955507394+02:00"
+		},
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "SENT"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T22:55:36.956751498+02:00"
+		}
+	],
+	"Links": null,
+	"Status": {
+		"Code": "Unset",
+		"Description": ""
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 0,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___3go_build_authorization_service"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "authorization.AuthorizationService/GetById",
+	"SpanContext": {
+		"TraceID": "755851dfbb20da764704d58c3541e95b",
+		"SpanID": "d404cfac78adc0ad",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "755851dfbb20da764704d58c3541e95b",
+		"SpanID": "1e719d7dab866160",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": true
+	},
+	"SpanKind": 2,
+	"StartTime": "2023-06-19T22:55:38.347467425+02:00",
+	"EndTime": "2023-06-19T22:55:38.348441937+02:00",
+	"Attributes": [
+		{
+			"Key": "rpc.system",
+			"Value": {
+				"Type": "STRING",
+				"Value": "grpc"
+			}
+		},
+		{
+			"Key": "rpc.service",
+			"Value": {
+				"Type": "STRING",
+				"Value": "authorization.AuthorizationService"
+			}
+		},
+		{
+			"Key": "rpc.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "GetById"
+			}
+		},
+		{
+			"Key": "net.sock.peer.addr",
+			"Value": {
+				"Type": "STRING",
+				"Value": "::1"
+			}
+		},
+		{
+			"Key": "net.sock.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 47674
+			}
+		},
+		{
+			"Key": "rpc.grpc.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 0
+			}
+		}
+	],
+	"Events": [
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "RECEIVED"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T22:55:38.347484676+02:00"
+		},
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "SENT"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T22:55:38.348427549+02:00"
+		}
+	],
+	"Links": null,
+	"Status": {
+		"Code": "Unset",
+		"Description": ""
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 0,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___3go_build_authorization_service"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "authorization.AuthorizationService/GetById",
+	"SpanContext": {
+		"TraceID": "59154264306a168f38984fa7a51612d4",
+		"SpanID": "bf4ff1f3dbf099c7",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "59154264306a168f38984fa7a51612d4",
+		"SpanID": "2782e2202103c710",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": true
+	},
+	"SpanKind": 2,
+	"StartTime": "2023-06-19T22:56:43.779121353+02:00",
+	"EndTime": "2023-06-19T22:56:43.78016033+02:00",
+	"Attributes": [
+		{
+			"Key": "rpc.system",
+			"Value": {
+				"Type": "STRING",
+				"Value": "grpc"
+			}
+		},
+		{
+			"Key": "rpc.service",
+			"Value": {
+				"Type": "STRING",
+				"Value": "authorization.AuthorizationService"
+			}
+		},
+		{
+			"Key": "rpc.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "GetById"
+			}
+		},
+		{
+			"Key": "net.sock.peer.addr",
+			"Value": {
+				"Type": "STRING",
+				"Value": "::1"
+			}
+		},
+		{
+			"Key": "net.sock.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 37848
+			}
+		},
+		{
+			"Key": "rpc.grpc.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 0
+			}
+		}
+	],
+	"Events": [
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "RECEIVED"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T22:56:43.779155226+02:00"
+		},
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "SENT"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T22:56:43.780151599+02:00"
+		}
+	],
+	"Links": null,
+	"Status": {
+		"Code": "Unset",
+		"Description": ""
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 0,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___3go_build_authorization_service"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "authorization.AuthorizationService/GetById",
+	"SpanContext": {
+		"TraceID": "f89c2f645a4ef5253f071bd22f88d636",
+		"SpanID": "a02c163220d5a513",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "f89c2f645a4ef5253f071bd22f88d636",
+		"SpanID": "8d655f0f7aeafa78",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": true
+	},
+	"SpanKind": 2,
+	"StartTime": "2023-06-19T22:57:30.387681617+02:00",
+	"EndTime": "2023-06-19T22:57:30.388550597+02:00",
+	"Attributes": [
+		{
+			"Key": "rpc.system",
+			"Value": {
+				"Type": "STRING",
+				"Value": "grpc"
+			}
+		},
+		{
+			"Key": "rpc.service",
+			"Value": {
+				"Type": "STRING",
+				"Value": "authorization.AuthorizationService"
+			}
+		},
+		{
+			"Key": "rpc.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "GetById"
+			}
+		},
+		{
+			"Key": "net.sock.peer.addr",
+			"Value": {
+				"Type": "STRING",
+				"Value": "::1"
+			}
+		},
+		{
+			"Key": "net.sock.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 33096
+			}
+		},
+		{
+			"Key": "rpc.grpc.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 0
+			}
+		}
+	],
+	"Events": [
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "RECEIVED"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T22:57:30.387691046+02:00"
+		},
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "SENT"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T22:57:30.388542007+02:00"
+		}
+	],
+	"Links": null,
+	"Status": {
+		"Code": "Unset",
+		"Description": ""
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 0,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___3go_build_authorization_service"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "authorization.AuthorizationService/GetById",
+	"SpanContext": {
+		"TraceID": "236c7f57f76dcaa71fd8baa04c0dfc41",
+		"SpanID": "387056fde27684de",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "236c7f57f76dcaa71fd8baa04c0dfc41",
+		"SpanID": "f0c4ebd1397fd4d2",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": true
+	},
+	"SpanKind": 2,
+	"StartTime": "2023-06-19T22:57:41.771182197+02:00",
+	"EndTime": "2023-06-19T22:57:41.771961918+02:00",
+	"Attributes": [
+		{
+			"Key": "rpc.system",
+			"Value": {
+				"Type": "STRING",
+				"Value": "grpc"
+			}
+		},
+		{
+			"Key": "rpc.service",
+			"Value": {
+				"Type": "STRING",
+				"Value": "authorization.AuthorizationService"
+			}
+		},
+		{
+			"Key": "rpc.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "GetById"
+			}
+		},
+		{
+			"Key": "net.sock.peer.addr",
+			"Value": {
+				"Type": "STRING",
+				"Value": "::1"
+			}
+		},
+		{
+			"Key": "net.sock.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 33330
+			}
+		},
+		{
+			"Key": "rpc.grpc.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 0
+			}
+		}
+	],
+	"Events": [
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "RECEIVED"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T22:57:41.77120755+02:00"
+		},
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "SENT"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T22:57:41.771949138+02:00"
+		}
+	],
+	"Links": null,
+	"Status": {
+		"Code": "Unset",
+		"Description": ""
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 0,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___3go_build_authorization_service"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "authorization.AuthorizationService/GetById",
+	"SpanContext": {
+		"TraceID": "ac2249da69e5d74c6cf9d6fd641e0aed",
+		"SpanID": "e02f407b04dea2cf",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "ac2249da69e5d74c6cf9d6fd641e0aed",
+		"SpanID": "612fae61de1d7276",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": true
+	},
+	"SpanKind": 2,
+	"StartTime": "2023-06-19T22:57:57.979681412+02:00",
+	"EndTime": "2023-06-19T22:57:57.980296794+02:00",
+	"Attributes": [
+		{
+			"Key": "rpc.system",
+			"Value": {
+				"Type": "STRING",
+				"Value": "grpc"
+			}
+		},
+		{
+			"Key": "rpc.service",
+			"Value": {
+				"Type": "STRING",
+				"Value": "authorization.AuthorizationService"
+			}
+		},
+		{
+			"Key": "rpc.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "GetById"
+			}
+		},
+		{
+			"Key": "net.sock.peer.addr",
+			"Value": {
+				"Type": "STRING",
+				"Value": "::1"
+			}
+		},
+		{
+			"Key": "net.sock.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 35646
+			}
+		},
+		{
+			"Key": "rpc.grpc.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 0
+			}
+		}
+	],
+	"Events": [
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "RECEIVED"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T22:57:57.979692796+02:00"
+		},
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "SENT"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T22:57:57.980281638+02:00"
+		}
+	],
+	"Links": null,
+	"Status": {
+		"Code": "Unset",
+		"Description": ""
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 0,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___3go_build_authorization_service"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "authorization.AuthorizationService/GetById",
+	"SpanContext": {
+		"TraceID": "eb31960f9a43cdf7762fc756c1168c5e",
+		"SpanID": "d64f0b55107bfefd",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "eb31960f9a43cdf7762fc756c1168c5e",
+		"SpanID": "740a598ee738ae45",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": true
+	},
+	"SpanKind": 2,
+	"StartTime": "2023-06-19T22:59:01.582195409+02:00",
+	"EndTime": "2023-06-19T22:59:01.582853046+02:00",
+	"Attributes": [
+		{
+			"Key": "rpc.system",
+			"Value": {
+				"Type": "STRING",
+				"Value": "grpc"
+			}
+		},
+		{
+			"Key": "rpc.service",
+			"Value": {
+				"Type": "STRING",
+				"Value": "authorization.AuthorizationService"
+			}
+		},
+		{
+			"Key": "rpc.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "GetById"
+			}
+		},
+		{
+			"Key": "net.sock.peer.addr",
+			"Value": {
+				"Type": "STRING",
+				"Value": "::1"
+			}
+		},
+		{
+			"Key": "net.sock.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 58334
+			}
+		},
+		{
+			"Key": "rpc.grpc.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 0
+			}
+		}
+	],
+	"Events": [
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "RECEIVED"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T22:59:01.582213917+02:00"
+		},
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "SENT"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T22:59:01.582842639+02:00"
+		}
+	],
+	"Links": null,
+	"Status": {
+		"Code": "Unset",
+		"Description": ""
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 0,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___3go_build_authorization_service"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "authorization.AuthorizationService/GetById",
+	"SpanContext": {
+		"TraceID": "a5ce2aaa0a638916b07c2ef84ae03172",
+		"SpanID": "7c0dc3a8dc5a4e76",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "a5ce2aaa0a638916b07c2ef84ae03172",
+		"SpanID": "c7dc9bcbfcd006eb",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": true
+	},
+	"SpanKind": 2,
+	"StartTime": "2023-06-19T23:00:17.236759221+02:00",
+	"EndTime": "2023-06-19T23:00:17.237593628+02:00",
+	"Attributes": [
+		{
+			"Key": "rpc.system",
+			"Value": {
+				"Type": "STRING",
+				"Value": "grpc"
+			}
+		},
+		{
+			"Key": "rpc.service",
+			"Value": {
+				"Type": "STRING",
+				"Value": "authorization.AuthorizationService"
+			}
+		},
+		{
+			"Key": "rpc.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "GetById"
+			}
+		},
+		{
+			"Key": "net.sock.peer.addr",
+			"Value": {
+				"Type": "STRING",
+				"Value": "::1"
+			}
+		},
+		{
+			"Key": "net.sock.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 41850
+			}
+		},
+		{
+			"Key": "rpc.grpc.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 0
+			}
+		}
+	],
+	"Events": [
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "RECEIVED"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T23:00:17.23677263+02:00"
+		},
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "SENT"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T23:00:17.237564504+02:00"
+		}
+	],
+	"Links": null,
+	"Status": {
+		"Code": "Unset",
+		"Description": ""
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 0,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___3go_build_authorization_service"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "authorization.AuthorizationService/GetById",
+	"SpanContext": {
+		"TraceID": "9e1bb7043a20ed7061539d60710d5d3f",
+		"SpanID": "6682399ee7632841",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "9e1bb7043a20ed7061539d60710d5d3f",
+		"SpanID": "21c0e68ac650d7a2",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": true
+	},
+	"SpanKind": 2,
+	"StartTime": "2023-06-19T23:01:10.3840672+02:00",
+	"EndTime": "2023-06-19T23:01:10.384830997+02:00",
+	"Attributes": [
+		{
+			"Key": "rpc.system",
+			"Value": {
+				"Type": "STRING",
+				"Value": "grpc"
+			}
+		},
+		{
+			"Key": "rpc.service",
+			"Value": {
+				"Type": "STRING",
+				"Value": "authorization.AuthorizationService"
+			}
+		},
+		{
+			"Key": "rpc.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "GetById"
+			}
+		},
+		{
+			"Key": "net.sock.peer.addr",
+			"Value": {
+				"Type": "STRING",
+				"Value": "::1"
+			}
+		},
+		{
+			"Key": "net.sock.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 42556
+			}
+		},
+		{
+			"Key": "rpc.grpc.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 0
+			}
+		}
+	],
+	"Events": [
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "RECEIVED"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T23:01:10.384083543+02:00"
+		},
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "SENT"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T23:01:10.384819682+02:00"
+		}
+	],
+	"Links": null,
+	"Status": {
+		"Code": "Unset",
+		"Description": ""
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 0,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___3go_build_authorization_service"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "authorization.AuthorizationService/GetById",
+	"SpanContext": {
+		"TraceID": "2592262a793a00e6d5db33f2ce28273f",
+		"SpanID": "8279c97afeb762ad",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "2592262a793a00e6d5db33f2ce28273f",
+		"SpanID": "5723c65da4e594ce",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": true
+	},
+	"SpanKind": 2,
+	"StartTime": "2023-06-19T23:01:34.617656765+02:00",
+	"EndTime": "2023-06-19T23:01:34.618348136+02:00",
+	"Attributes": [
+		{
+			"Key": "rpc.system",
+			"Value": {
+				"Type": "STRING",
+				"Value": "grpc"
+			}
+		},
+		{
+			"Key": "rpc.service",
+			"Value": {
+				"Type": "STRING",
+				"Value": "authorization.AuthorizationService"
+			}
+		},
+		{
+			"Key": "rpc.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "GetById"
+			}
+		},
+		{
+			"Key": "net.sock.peer.addr",
+			"Value": {
+				"Type": "STRING",
+				"Value": "::1"
+			}
+		},
+		{
+			"Key": "net.sock.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 34786
+			}
+		},
+		{
+			"Key": "rpc.grpc.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 0
+			}
+		}
+	],
+	"Events": [
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "RECEIVED"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T23:01:34.617703559+02:00"
+		},
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "SENT"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T23:01:34.618338497+02:00"
+		}
+	],
+	"Links": null,
+	"Status": {
+		"Code": "Unset",
+		"Description": ""
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 0,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___3go_build_authorization_service"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "authorization.AuthorizationService/GetById",
+	"SpanContext": {
+		"TraceID": "5b2b8df5ee930ddfede3a7b62243f23d",
+		"SpanID": "7720eea591531856",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "5b2b8df5ee930ddfede3a7b62243f23d",
+		"SpanID": "e589bdadb4dbdda4",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": true
+	},
+	"SpanKind": 2,
+	"StartTime": "2023-06-19T23:04:44.242644668+02:00",
+	"EndTime": "2023-06-19T23:04:44.263912742+02:00",
+	"Attributes": [
+		{
+			"Key": "rpc.system",
+			"Value": {
+				"Type": "STRING",
+				"Value": "grpc"
+			}
+		},
+		{
+			"Key": "rpc.service",
+			"Value": {
+				"Type": "STRING",
+				"Value": "authorization.AuthorizationService"
+			}
+		},
+		{
+			"Key": "rpc.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "GetById"
+			}
+		},
+		{
+			"Key": "net.sock.peer.addr",
+			"Value": {
+				"Type": "STRING",
+				"Value": "::1"
+			}
+		},
+		{
+			"Key": "net.sock.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 46124
+			}
+		},
+		{
+			"Key": "rpc.grpc.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 0
+			}
+		}
+	],
+	"Events": [
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "RECEIVED"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T23:04:44.242655493+02:00"
+		},
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "SENT"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T23:04:44.263898144+02:00"
+		}
+	],
+	"Links": null,
+	"Status": {
+		"Code": "Unset",
+		"Description": ""
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 0,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___3go_build_authorization_service"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "authorization.AuthorizationService/GetById",
+	"SpanContext": {
+		"TraceID": "6d00175850cfcedfd490bc182e02728a",
+		"SpanID": "77049bf439239c2f",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "6d00175850cfcedfd490bc182e02728a",
+		"SpanID": "a7fadaf4502ca8fe",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": true
+	},
+	"SpanKind": 2,
+	"StartTime": "2023-06-19T23:05:22.28947914+02:00",
+	"EndTime": "2023-06-19T23:05:22.290645928+02:00",
+	"Attributes": [
+		{
+			"Key": "rpc.system",
+			"Value": {
+				"Type": "STRING",
+				"Value": "grpc"
+			}
+		},
+		{
+			"Key": "rpc.service",
+			"Value": {
+				"Type": "STRING",
+				"Value": "authorization.AuthorizationService"
+			}
+		},
+		{
+			"Key": "rpc.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "GetById"
+			}
+		},
+		{
+			"Key": "net.sock.peer.addr",
+			"Value": {
+				"Type": "STRING",
+				"Value": "::1"
+			}
+		},
+		{
+			"Key": "net.sock.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 48842
+			}
+		},
+		{
+			"Key": "rpc.grpc.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 0
+			}
+		}
+	],
+	"Events": [
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "RECEIVED"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T23:05:22.289493039+02:00"
+		},
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "SENT"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T23:05:22.290621972+02:00"
+		}
+	],
+	"Links": null,
+	"Status": {
+		"Code": "Unset",
+		"Description": ""
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 0,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___3go_build_authorization_service"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "authorization.AuthorizationService/GetById",
+	"SpanContext": {
+		"TraceID": "2b6783f8da19c667b2353daf7b11500c",
+		"SpanID": "972c8ae11392561f",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "2b6783f8da19c667b2353daf7b11500c",
+		"SpanID": "22799172732264e4",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": true
+	},
+	"SpanKind": 2,
+	"StartTime": "2023-06-19T23:05:57.009932552+02:00",
+	"EndTime": "2023-06-19T23:05:57.010845113+02:00",
+	"Attributes": [
+		{
+			"Key": "rpc.system",
+			"Value": {
+				"Type": "STRING",
+				"Value": "grpc"
+			}
+		},
+		{
+			"Key": "rpc.service",
+			"Value": {
+				"Type": "STRING",
+				"Value": "authorization.AuthorizationService"
+			}
+		},
+		{
+			"Key": "rpc.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "GetById"
+			}
+		},
+		{
+			"Key": "net.sock.peer.addr",
+			"Value": {
+				"Type": "STRING",
+				"Value": "::1"
+			}
+		},
+		{
+			"Key": "net.sock.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 47122
+			}
+		},
+		{
+			"Key": "rpc.grpc.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 0
+			}
+		}
+	],
+	"Events": [
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "RECEIVED"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T23:05:57.009948196+02:00"
+		},
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "SENT"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T23:05:57.010833589+02:00"
+		}
+	],
+	"Links": null,
+	"Status": {
+		"Code": "Unset",
+		"Description": ""
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 0,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___3go_build_authorization_service"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}

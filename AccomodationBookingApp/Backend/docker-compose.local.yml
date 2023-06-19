@@ -159,12 +159,25 @@ services:
     ports:
       - 4000:4222
 
+  unique_site_visitors_db:
+    image: mongo
+    container_name: ${UNIQUE_SITE_VISITORS_DB_NAME}
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok'
+      interval: 20s
+      timeout: 10s
+      retries: 20
+      start_period: 10s
+    ports:
+      - 5006:27017
+    networks:
+      - network
+
 volumes:
   accommodationDb:
   reservationDb:
 
 networks:
   network:
-    external: true
     driver: bridge
 

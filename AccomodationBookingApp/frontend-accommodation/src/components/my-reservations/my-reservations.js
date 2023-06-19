@@ -505,7 +505,7 @@ function MyReservations() {
                                         <Box m={1}>
                                             <Button
                                                 onClick={() => {
-                                                    handleCancel(r.Id)
+                                                    handleCancel(r.id)
                                                 }}
                                                 fullWidth
                                                 disabled={r.status === 'rejected' || r.status === 'canceled' || new Date(r.dateRange.from) <= new Date(new Date().setDate(new Date().getDate() - 1))}

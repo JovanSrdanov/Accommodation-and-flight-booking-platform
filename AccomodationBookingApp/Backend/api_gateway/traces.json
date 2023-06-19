@@ -1,0 +1,3757 @@
+{
+	"Name": "user_profile.UserProfileService/DeleteUser",
+	"SpanContext": {
+		"TraceID": "f4eac615e0f833c89099ac62dfaf5861",
+		"SpanID": "77f13c0eb03bfcbc",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "f4eac615e0f833c89099ac62dfaf5861",
+		"SpanID": "00c7ee829bc9b91b",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"SpanKind": 3,
+	"StartTime": "2023-06-19T22:55:36.951992641+02:00",
+	"EndTime": "2023-06-19T22:55:36.965154246+02:00",
+	"Attributes": [
+		{
+			"Key": "rpc.system",
+			"Value": {
+				"Type": "STRING",
+				"Value": "grpc"
+			}
+		},
+		{
+			"Key": "rpc.service",
+			"Value": {
+				"Type": "STRING",
+				"Value": "user_profile.UserProfileService"
+			}
+		},
+		{
+			"Key": "rpc.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "DeleteUser"
+			}
+		},
+		{
+			"Key": "net.peer.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "localhost"
+			}
+		},
+		{
+			"Key": "net.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 8002
+			}
+		},
+		{
+			"Key": "rpc.grpc.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 9
+			}
+		}
+	],
+	"Events": [
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "SENT"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T22:55:36.952015968+02:00"
+		},
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "RECEIVED"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T22:55:36.965149357+02:00"
+		}
+	],
+	"Links": null,
+	"Status": {
+		"Code": "Error",
+		"Description": "Host has active reservations"
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 0,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___53go_build_api_gateway"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "/api-1/*any",
+	"SpanContext": {
+		"TraceID": "f4eac615e0f833c89099ac62dfaf5861",
+		"SpanID": "00c7ee829bc9b91b",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "00000000000000000000000000000000",
+		"SpanID": "0000000000000000",
+		"TraceFlags": "00",
+		"TraceState": "",
+		"Remote": false
+	},
+	"SpanKind": 2,
+	"StartTime": "2023-06-19T22:55:36.951873909+02:00",
+	"EndTime": "2023-06-19T22:55:36.965306014+02:00",
+	"Attributes": [
+		{
+			"Key": "http.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "DELETE"
+			}
+		},
+		{
+			"Key": "http.scheme",
+			"Value": {
+				"Type": "STRING",
+				"Value": "http"
+			}
+		},
+		{
+			"Key": "http.flavor",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.1"
+			}
+		},
+		{
+			"Key": "net.host.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "api-gateway"
+			}
+		},
+		{
+			"Key": "net.host.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 8000
+			}
+		},
+		{
+			"Key": "net.sock.peer.addr",
+			"Value": {
+				"Type": "STRING",
+				"Value": "127.0.0.1"
+			}
+		},
+		{
+			"Key": "net.sock.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 54304
+			}
+		},
+		{
+			"Key": "http.user_agent",
+			"Value": {
+				"Type": "STRING",
+				"Value": "insomnia/2023.1.0"
+			}
+		},
+		{
+			"Key": "http.route",
+			"Value": {
+				"Type": "STRING",
+				"Value": "/api-1/*any"
+			}
+		},
+		{
+			"Key": "http.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 400
+			}
+		}
+	],
+	"Events": null,
+	"Links": null,
+	"Status": {
+		"Code": "Unset",
+		"Description": ""
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 1,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___53go_build_api_gateway"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "user_profile.UserProfileService/DeleteUser",
+	"SpanContext": {
+		"TraceID": "755851dfbb20da764704d58c3541e95b",
+		"SpanID": "af034f12e7350aa8",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "755851dfbb20da764704d58c3541e95b",
+		"SpanID": "ace338c1c45ba6cf",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"SpanKind": 3,
+	"StartTime": "2023-06-19T22:55:38.345635177+02:00",
+	"EndTime": "2023-06-19T22:55:38.35526806+02:00",
+	"Attributes": [
+		{
+			"Key": "rpc.system",
+			"Value": {
+				"Type": "STRING",
+				"Value": "grpc"
+			}
+		},
+		{
+			"Key": "rpc.service",
+			"Value": {
+				"Type": "STRING",
+				"Value": "user_profile.UserProfileService"
+			}
+		},
+		{
+			"Key": "rpc.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "DeleteUser"
+			}
+		},
+		{
+			"Key": "net.peer.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "localhost"
+			}
+		},
+		{
+			"Key": "net.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 8002
+			}
+		},
+		{
+			"Key": "rpc.grpc.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 9
+			}
+		}
+	],
+	"Events": [
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "SENT"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T22:55:38.345661508+02:00"
+		},
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "RECEIVED"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T22:55:38.355257235+02:00"
+		}
+	],
+	"Links": null,
+	"Status": {
+		"Code": "Error",
+		"Description": "Host has active reservations"
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 0,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___53go_build_api_gateway"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "/api-1/*any",
+	"SpanContext": {
+		"TraceID": "755851dfbb20da764704d58c3541e95b",
+		"SpanID": "ace338c1c45ba6cf",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "00000000000000000000000000000000",
+		"SpanID": "0000000000000000",
+		"TraceFlags": "00",
+		"TraceState": "",
+		"Remote": false
+	},
+	"SpanKind": 2,
+	"StartTime": "2023-06-19T22:55:38.345571341+02:00",
+	"EndTime": "2023-06-19T22:55:38.355337344+02:00",
+	"Attributes": [
+		{
+			"Key": "http.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "DELETE"
+			}
+		},
+		{
+			"Key": "http.scheme",
+			"Value": {
+				"Type": "STRING",
+				"Value": "http"
+			}
+		},
+		{
+			"Key": "http.flavor",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.1"
+			}
+		},
+		{
+			"Key": "net.host.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "api-gateway"
+			}
+		},
+		{
+			"Key": "net.host.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 8000
+			}
+		},
+		{
+			"Key": "net.sock.peer.addr",
+			"Value": {
+				"Type": "STRING",
+				"Value": "127.0.0.1"
+			}
+		},
+		{
+			"Key": "net.sock.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 54304
+			}
+		},
+		{
+			"Key": "http.user_agent",
+			"Value": {
+				"Type": "STRING",
+				"Value": "insomnia/2023.1.0"
+			}
+		},
+		{
+			"Key": "http.route",
+			"Value": {
+				"Type": "STRING",
+				"Value": "/api-1/*any"
+			}
+		},
+		{
+			"Key": "http.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 400
+			}
+		}
+	],
+	"Events": null,
+	"Links": null,
+	"Status": {
+		"Code": "Unset",
+		"Description": ""
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 1,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___53go_build_api_gateway"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "user_profile.UserProfileService/DeleteUser",
+	"SpanContext": {
+		"TraceID": "59154264306a168f38984fa7a51612d4",
+		"SpanID": "738c3ec46106d5c5",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "59154264306a168f38984fa7a51612d4",
+		"SpanID": "02c0e4508a84c76e",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"SpanKind": 3,
+	"StartTime": "2023-06-19T22:56:43.776142292+02:00",
+	"EndTime": "2023-06-19T22:56:43.785399213+02:00",
+	"Attributes": [
+		{
+			"Key": "rpc.system",
+			"Value": {
+				"Type": "STRING",
+				"Value": "grpc"
+			}
+		},
+		{
+			"Key": "rpc.service",
+			"Value": {
+				"Type": "STRING",
+				"Value": "user_profile.UserProfileService"
+			}
+		},
+		{
+			"Key": "rpc.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "DeleteUser"
+			}
+		},
+		{
+			"Key": "net.peer.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "localhost"
+			}
+		},
+		{
+			"Key": "net.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 8002
+			}
+		},
+		{
+			"Key": "rpc.grpc.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 9
+			}
+		}
+	],
+	"Events": [
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "SENT"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T22:56:43.776171975+02:00"
+		},
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "RECEIVED"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T22:56:43.785392648+02:00"
+		}
+	],
+	"Links": null,
+	"Status": {
+		"Code": "Error",
+		"Description": "Host has active reservations"
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 0,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___53go_build_api_gateway"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "/api-1/*any",
+	"SpanContext": {
+		"TraceID": "59154264306a168f38984fa7a51612d4",
+		"SpanID": "02c0e4508a84c76e",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "00000000000000000000000000000000",
+		"SpanID": "0000000000000000",
+		"TraceFlags": "00",
+		"TraceState": "",
+		"Remote": false
+	},
+	"SpanKind": 2,
+	"StartTime": "2023-06-19T22:56:43.776072589+02:00",
+	"EndTime": "2023-06-19T22:56:43.785488471+02:00",
+	"Attributes": [
+		{
+			"Key": "http.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "DELETE"
+			}
+		},
+		{
+			"Key": "http.scheme",
+			"Value": {
+				"Type": "STRING",
+				"Value": "http"
+			}
+		},
+		{
+			"Key": "http.flavor",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.1"
+			}
+		},
+		{
+			"Key": "net.host.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "api-gateway"
+			}
+		},
+		{
+			"Key": "net.host.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 8000
+			}
+		},
+		{
+			"Key": "net.sock.peer.addr",
+			"Value": {
+				"Type": "STRING",
+				"Value": "127.0.0.1"
+			}
+		},
+		{
+			"Key": "net.sock.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 54304
+			}
+		},
+		{
+			"Key": "http.user_agent",
+			"Value": {
+				"Type": "STRING",
+				"Value": "insomnia/2023.1.0"
+			}
+		},
+		{
+			"Key": "http.route",
+			"Value": {
+				"Type": "STRING",
+				"Value": "/api-1/*any"
+			}
+		},
+		{
+			"Key": "http.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 400
+			}
+		}
+	],
+	"Events": null,
+	"Links": null,
+	"Status": {
+		"Code": "Unset",
+		"Description": ""
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 1,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___53go_build_api_gateway"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "user_profile.UserProfileService/DeleteUser",
+	"SpanContext": {
+		"TraceID": "f89c2f645a4ef5253f071bd22f88d636",
+		"SpanID": "518f59bb15c42af8",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "f89c2f645a4ef5253f071bd22f88d636",
+		"SpanID": "460a9430c94b9631",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"SpanKind": 3,
+	"StartTime": "2023-06-19T22:57:30.385369133+02:00",
+	"EndTime": "2023-06-19T22:57:30.393464154+02:00",
+	"Attributes": [
+		{
+			"Key": "rpc.system",
+			"Value": {
+				"Type": "STRING",
+				"Value": "grpc"
+			}
+		},
+		{
+			"Key": "rpc.service",
+			"Value": {
+				"Type": "STRING",
+				"Value": "user_profile.UserProfileService"
+			}
+		},
+		{
+			"Key": "rpc.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "DeleteUser"
+			}
+		},
+		{
+			"Key": "net.peer.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "localhost"
+			}
+		},
+		{
+			"Key": "net.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 8002
+			}
+		},
+		{
+			"Key": "rpc.grpc.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 9
+			}
+		}
+	],
+	"Events": [
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "SENT"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T22:57:30.385394905+02:00"
+		},
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "RECEIVED"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T22:57:30.393450395+02:00"
+		}
+	],
+	"Links": null,
+	"Status": {
+		"Code": "Error",
+		"Description": "Host has active reservations"
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 0,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___53go_build_api_gateway"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "/api-1/*any",
+	"SpanContext": {
+		"TraceID": "f89c2f645a4ef5253f071bd22f88d636",
+		"SpanID": "460a9430c94b9631",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "00000000000000000000000000000000",
+		"SpanID": "0000000000000000",
+		"TraceFlags": "00",
+		"TraceState": "",
+		"Remote": false
+	},
+	"SpanKind": 2,
+	"StartTime": "2023-06-19T22:57:30.385312421+02:00",
+	"EndTime": "2023-06-19T22:57:30.393525057+02:00",
+	"Attributes": [
+		{
+			"Key": "http.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "DELETE"
+			}
+		},
+		{
+			"Key": "http.scheme",
+			"Value": {
+				"Type": "STRING",
+				"Value": "http"
+			}
+		},
+		{
+			"Key": "http.flavor",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.1"
+			}
+		},
+		{
+			"Key": "net.host.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "api-gateway"
+			}
+		},
+		{
+			"Key": "net.host.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 8000
+			}
+		},
+		{
+			"Key": "net.sock.peer.addr",
+			"Value": {
+				"Type": "STRING",
+				"Value": "127.0.0.1"
+			}
+		},
+		{
+			"Key": "net.sock.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 54304
+			}
+		},
+		{
+			"Key": "http.user_agent",
+			"Value": {
+				"Type": "STRING",
+				"Value": "insomnia/2023.1.0"
+			}
+		},
+		{
+			"Key": "http.route",
+			"Value": {
+				"Type": "STRING",
+				"Value": "/api-1/*any"
+			}
+		},
+		{
+			"Key": "http.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 400
+			}
+		}
+	],
+	"Events": null,
+	"Links": null,
+	"Status": {
+		"Code": "Unset",
+		"Description": ""
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 1,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___53go_build_api_gateway"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "user_profile.UserProfileService/DeleteUser",
+	"SpanContext": {
+		"TraceID": "236c7f57f76dcaa71fd8baa04c0dfc41",
+		"SpanID": "ca19c12ee587ac06",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "236c7f57f76dcaa71fd8baa04c0dfc41",
+		"SpanID": "5bda983fcb095465",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"SpanKind": 3,
+	"StartTime": "2023-06-19T22:57:41.768053255+02:00",
+	"EndTime": "2023-06-19T22:57:42.880986258+02:00",
+	"Attributes": [
+		{
+			"Key": "rpc.system",
+			"Value": {
+				"Type": "STRING",
+				"Value": "grpc"
+			}
+		},
+		{
+			"Key": "rpc.service",
+			"Value": {
+				"Type": "STRING",
+				"Value": "user_profile.UserProfileService"
+			}
+		},
+		{
+			"Key": "rpc.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "DeleteUser"
+			}
+		},
+		{
+			"Key": "net.peer.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "localhost"
+			}
+		},
+		{
+			"Key": "net.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 8002
+			}
+		},
+		{
+			"Key": "rpc.grpc.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 9
+			}
+		}
+	],
+	"Events": [
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "SENT"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T22:57:41.768080354+02:00"
+		},
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "RECEIVED"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T22:57:42.880981439+02:00"
+		}
+	],
+	"Links": null,
+	"Status": {
+		"Code": "Error",
+		"Description": "failed to connect to `host=localhost user=postgres database=notification`: dial error (dial tcp 127.0.0.1:5005: connect: connection refused)"
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 0,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___53go_build_api_gateway"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "/api-1/*any",
+	"SpanContext": {
+		"TraceID": "236c7f57f76dcaa71fd8baa04c0dfc41",
+		"SpanID": "5bda983fcb095465",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "00000000000000000000000000000000",
+		"SpanID": "0000000000000000",
+		"TraceFlags": "00",
+		"TraceState": "",
+		"Remote": false
+	},
+	"SpanKind": 2,
+	"StartTime": "2023-06-19T22:57:41.767886681+02:00",
+	"EndTime": "2023-06-19T22:57:42.881049256+02:00",
+	"Attributes": [
+		{
+			"Key": "http.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "DELETE"
+			}
+		},
+		{
+			"Key": "http.scheme",
+			"Value": {
+				"Type": "STRING",
+				"Value": "http"
+			}
+		},
+		{
+			"Key": "http.flavor",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.1"
+			}
+		},
+		{
+			"Key": "net.host.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "api-gateway"
+			}
+		},
+		{
+			"Key": "net.host.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 8000
+			}
+		},
+		{
+			"Key": "net.sock.peer.addr",
+			"Value": {
+				"Type": "STRING",
+				"Value": "127.0.0.1"
+			}
+		},
+		{
+			"Key": "net.sock.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 54304
+			}
+		},
+		{
+			"Key": "http.user_agent",
+			"Value": {
+				"Type": "STRING",
+				"Value": "insomnia/2023.1.0"
+			}
+		},
+		{
+			"Key": "http.route",
+			"Value": {
+				"Type": "STRING",
+				"Value": "/api-1/*any"
+			}
+		},
+		{
+			"Key": "http.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 400
+			}
+		}
+	],
+	"Events": null,
+	"Links": null,
+	"Status": {
+		"Code": "Unset",
+		"Description": ""
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 1,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___53go_build_api_gateway"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "user_profile.UserProfileService/DeleteUser",
+	"SpanContext": {
+		"TraceID": "ac2249da69e5d74c6cf9d6fd641e0aed",
+		"SpanID": "f79853c9bebf0452",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "ac2249da69e5d74c6cf9d6fd641e0aed",
+		"SpanID": "29c41796baf700f1",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"SpanKind": 3,
+	"StartTime": "2023-06-19T22:57:57.97802859+02:00",
+	"EndTime": "2023-06-19T22:57:58.092177929+02:00",
+	"Attributes": [
+		{
+			"Key": "rpc.system",
+			"Value": {
+				"Type": "STRING",
+				"Value": "grpc"
+			}
+		},
+		{
+			"Key": "rpc.service",
+			"Value": {
+				"Type": "STRING",
+				"Value": "user_profile.UserProfileService"
+			}
+		},
+		{
+			"Key": "rpc.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "DeleteUser"
+			}
+		},
+		{
+			"Key": "net.peer.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "localhost"
+			}
+		},
+		{
+			"Key": "net.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 8002
+			}
+		},
+		{
+			"Key": "rpc.grpc.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 9
+			}
+		}
+	],
+	"Events": [
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "SENT"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T22:57:57.978054571+02:00"
+		},
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "RECEIVED"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T22:57:58.092170805+02:00"
+		}
+	],
+	"Links": null,
+	"Status": {
+		"Code": "Error",
+		"Description": "failed to connect to `host=localhost user=postgres database=notification`: dial error (dial tcp 127.0.0.1:5005: connect: connection refused)"
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 0,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___53go_build_api_gateway"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "/api-1/*any",
+	"SpanContext": {
+		"TraceID": "ac2249da69e5d74c6cf9d6fd641e0aed",
+		"SpanID": "29c41796baf700f1",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "00000000000000000000000000000000",
+		"SpanID": "0000000000000000",
+		"TraceFlags": "00",
+		"TraceState": "",
+		"Remote": false
+	},
+	"SpanKind": 2,
+	"StartTime": "2023-06-19T22:57:57.977972925+02:00",
+	"EndTime": "2023-06-19T22:57:58.092255733+02:00",
+	"Attributes": [
+		{
+			"Key": "http.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "DELETE"
+			}
+		},
+		{
+			"Key": "http.scheme",
+			"Value": {
+				"Type": "STRING",
+				"Value": "http"
+			}
+		},
+		{
+			"Key": "http.flavor",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.1"
+			}
+		},
+		{
+			"Key": "net.host.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "api-gateway"
+			}
+		},
+		{
+			"Key": "net.host.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 8000
+			}
+		},
+		{
+			"Key": "net.sock.peer.addr",
+			"Value": {
+				"Type": "STRING",
+				"Value": "127.0.0.1"
+			}
+		},
+		{
+			"Key": "net.sock.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 54304
+			}
+		},
+		{
+			"Key": "http.user_agent",
+			"Value": {
+				"Type": "STRING",
+				"Value": "insomnia/2023.1.0"
+			}
+		},
+		{
+			"Key": "http.route",
+			"Value": {
+				"Type": "STRING",
+				"Value": "/api-1/*any"
+			}
+		},
+		{
+			"Key": "http.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 400
+			}
+		}
+	],
+	"Events": null,
+	"Links": null,
+	"Status": {
+		"Code": "Unset",
+		"Description": ""
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 1,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___53go_build_api_gateway"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "user_profile.UserProfileService/DeleteUser",
+	"SpanContext": {
+		"TraceID": "eb31960f9a43cdf7762fc756c1168c5e",
+		"SpanID": "e3852cec7d96ef19",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "eb31960f9a43cdf7762fc756c1168c5e",
+		"SpanID": "5f01a46d0dd1e78b",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"SpanKind": 3,
+	"StartTime": "2023-06-19T22:59:01.579848981+02:00",
+	"EndTime": "2023-06-19T22:59:01.679758135+02:00",
+	"Attributes": [
+		{
+			"Key": "rpc.system",
+			"Value": {
+				"Type": "STRING",
+				"Value": "grpc"
+			}
+		},
+		{
+			"Key": "rpc.service",
+			"Value": {
+				"Type": "STRING",
+				"Value": "user_profile.UserProfileService"
+			}
+		},
+		{
+			"Key": "rpc.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "DeleteUser"
+			}
+		},
+		{
+			"Key": "net.peer.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "localhost"
+			}
+		},
+		{
+			"Key": "net.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 8002
+			}
+		},
+		{
+			"Key": "rpc.grpc.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 9
+			}
+		}
+	],
+	"Events": [
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "SENT"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T22:59:01.579869725+02:00"
+		},
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "RECEIVED"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T22:59:01.679752478+02:00"
+		}
+	],
+	"Links": null,
+	"Status": {
+		"Code": "Error",
+		"Description": "failed to connect to `host=localhost user=postgres database=notification`: dial error (dial tcp 127.0.0.1:5005: connect: connection refused)"
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 0,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___53go_build_api_gateway"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "/api-1/*any",
+	"SpanContext": {
+		"TraceID": "eb31960f9a43cdf7762fc756c1168c5e",
+		"SpanID": "5f01a46d0dd1e78b",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "00000000000000000000000000000000",
+		"SpanID": "0000000000000000",
+		"TraceFlags": "00",
+		"TraceState": "",
+		"Remote": false
+	},
+	"SpanKind": 2,
+	"StartTime": "2023-06-19T22:59:01.579796669+02:00",
+	"EndTime": "2023-06-19T22:59:01.679828815+02:00",
+	"Attributes": [
+		{
+			"Key": "http.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "DELETE"
+			}
+		},
+		{
+			"Key": "http.scheme",
+			"Value": {
+				"Type": "STRING",
+				"Value": "http"
+			}
+		},
+		{
+			"Key": "http.flavor",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.1"
+			}
+		},
+		{
+			"Key": "net.host.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "api-gateway"
+			}
+		},
+		{
+			"Key": "net.host.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 8000
+			}
+		},
+		{
+			"Key": "net.sock.peer.addr",
+			"Value": {
+				"Type": "STRING",
+				"Value": "127.0.0.1"
+			}
+		},
+		{
+			"Key": "net.sock.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 54304
+			}
+		},
+		{
+			"Key": "http.user_agent",
+			"Value": {
+				"Type": "STRING",
+				"Value": "insomnia/2023.1.0"
+			}
+		},
+		{
+			"Key": "http.route",
+			"Value": {
+				"Type": "STRING",
+				"Value": "/api-1/*any"
+			}
+		},
+		{
+			"Key": "http.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 400
+			}
+		}
+	],
+	"Events": null,
+	"Links": null,
+	"Status": {
+		"Code": "Unset",
+		"Description": ""
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 1,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___53go_build_api_gateway"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "user_profile.UserProfileService/DeleteUser",
+	"SpanContext": {
+		"TraceID": "a5ce2aaa0a638916b07c2ef84ae03172",
+		"SpanID": "01b1c5b7fc66509d",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "a5ce2aaa0a638916b07c2ef84ae03172",
+		"SpanID": "13697e450b418b57",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"SpanKind": 3,
+	"StartTime": "2023-06-19T23:00:17.234764031+02:00",
+	"EndTime": "2023-06-19T23:00:22.244420868+02:00",
+	"Attributes": [
+		{
+			"Key": "rpc.system",
+			"Value": {
+				"Type": "STRING",
+				"Value": "grpc"
+			}
+		},
+		{
+			"Key": "rpc.service",
+			"Value": {
+				"Type": "STRING",
+				"Value": "user_profile.UserProfileService"
+			}
+		},
+		{
+			"Key": "rpc.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "DeleteUser"
+			}
+		},
+		{
+			"Key": "net.peer.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "localhost"
+			}
+		},
+		{
+			"Key": "net.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 8002
+			}
+		},
+		{
+			"Key": "rpc.grpc.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 9
+			}
+		}
+	],
+	"Events": [
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "SENT"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T23:00:17.234787498+02:00"
+		},
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "RECEIVED"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T23:00:22.244410392+02:00"
+		}
+	],
+	"Links": null,
+	"Status": {
+		"Code": "Error",
+		"Description": "rpc error: code = DeadlineExceeded desc = server selection error: context deadline exceeded, current topology: { Type: Single, Servers: [{ Addr: localhost:5004, Type: Unknown, Last error: dial tcp [::1]:5004: connect: connection refused }, ] }"
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 0,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___53go_build_api_gateway"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "/api-1/*any",
+	"SpanContext": {
+		"TraceID": "a5ce2aaa0a638916b07c2ef84ae03172",
+		"SpanID": "13697e450b418b57",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "00000000000000000000000000000000",
+		"SpanID": "0000000000000000",
+		"TraceFlags": "00",
+		"TraceState": "",
+		"Remote": false
+	},
+	"SpanKind": 2,
+	"StartTime": "2023-06-19T23:00:17.234669674+02:00",
+	"EndTime": "2023-06-19T23:00:22.244524724+02:00",
+	"Attributes": [
+		{
+			"Key": "http.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "DELETE"
+			}
+		},
+		{
+			"Key": "http.scheme",
+			"Value": {
+				"Type": "STRING",
+				"Value": "http"
+			}
+		},
+		{
+			"Key": "http.flavor",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.1"
+			}
+		},
+		{
+			"Key": "net.host.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "api-gateway"
+			}
+		},
+		{
+			"Key": "net.host.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 8000
+			}
+		},
+		{
+			"Key": "net.sock.peer.addr",
+			"Value": {
+				"Type": "STRING",
+				"Value": "127.0.0.1"
+			}
+		},
+		{
+			"Key": "net.sock.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 54304
+			}
+		},
+		{
+			"Key": "http.user_agent",
+			"Value": {
+				"Type": "STRING",
+				"Value": "insomnia/2023.1.0"
+			}
+		},
+		{
+			"Key": "http.route",
+			"Value": {
+				"Type": "STRING",
+				"Value": "/api-1/*any"
+			}
+		},
+		{
+			"Key": "http.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 400
+			}
+		}
+	],
+	"Events": null,
+	"Links": null,
+	"Status": {
+		"Code": "Unset",
+		"Description": ""
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 1,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___53go_build_api_gateway"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "user_profile.UserProfileService/DeleteUser",
+	"SpanContext": {
+		"TraceID": "9e1bb7043a20ed7061539d60710d5d3f",
+		"SpanID": "d894a4a52399c57a",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "9e1bb7043a20ed7061539d60710d5d3f",
+		"SpanID": "1e1b19ea09f91e51",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"SpanKind": 3,
+	"StartTime": "2023-06-19T23:01:10.382561047+02:00",
+	"EndTime": "2023-06-19T23:01:15.389731204+02:00",
+	"Attributes": [
+		{
+			"Key": "rpc.system",
+			"Value": {
+				"Type": "STRING",
+				"Value": "grpc"
+			}
+		},
+		{
+			"Key": "rpc.service",
+			"Value": {
+				"Type": "STRING",
+				"Value": "user_profile.UserProfileService"
+			}
+		},
+		{
+			"Key": "rpc.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "DeleteUser"
+			}
+		},
+		{
+			"Key": "net.peer.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "localhost"
+			}
+		},
+		{
+			"Key": "net.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 8002
+			}
+		},
+		{
+			"Key": "rpc.grpc.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 9
+			}
+		}
+	],
+	"Events": [
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "SENT"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T23:01:10.382585352+02:00"
+		},
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "RECEIVED"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T23:01:15.389727433+02:00"
+		}
+	],
+	"Links": null,
+	"Status": {
+		"Code": "Error",
+		"Description": "rpc error: code = DeadlineExceeded desc = server selection error: context deadline exceeded, current topology: { Type: Single, Servers: [{ Addr: localhost:5004, Type: Unknown, Last error: dial tcp [::1]:5004: connect: connection refused }, ] }"
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 0,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___53go_build_api_gateway"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "/api-1/*any",
+	"SpanContext": {
+		"TraceID": "9e1bb7043a20ed7061539d60710d5d3f",
+		"SpanID": "1e1b19ea09f91e51",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "00000000000000000000000000000000",
+		"SpanID": "0000000000000000",
+		"TraceFlags": "00",
+		"TraceState": "",
+		"Remote": false
+	},
+	"SpanKind": 2,
+	"StartTime": "2023-06-19T23:01:10.382510621+02:00",
+	"EndTime": "2023-06-19T23:01:15.389796856+02:00",
+	"Attributes": [
+		{
+			"Key": "http.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "DELETE"
+			}
+		},
+		{
+			"Key": "http.scheme",
+			"Value": {
+				"Type": "STRING",
+				"Value": "http"
+			}
+		},
+		{
+			"Key": "http.flavor",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.1"
+			}
+		},
+		{
+			"Key": "net.host.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "api-gateway"
+			}
+		},
+		{
+			"Key": "net.host.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 8000
+			}
+		},
+		{
+			"Key": "net.sock.peer.addr",
+			"Value": {
+				"Type": "STRING",
+				"Value": "127.0.0.1"
+			}
+		},
+		{
+			"Key": "net.sock.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 54304
+			}
+		},
+		{
+			"Key": "http.user_agent",
+			"Value": {
+				"Type": "STRING",
+				"Value": "insomnia/2023.1.0"
+			}
+		},
+		{
+			"Key": "http.route",
+			"Value": {
+				"Type": "STRING",
+				"Value": "/api-1/*any"
+			}
+		},
+		{
+			"Key": "http.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 400
+			}
+		}
+	],
+	"Events": null,
+	"Links": null,
+	"Status": {
+		"Code": "Unset",
+		"Description": ""
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 1,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___53go_build_api_gateway"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "user_profile.UserProfileService/DeleteUser",
+	"SpanContext": {
+		"TraceID": "2592262a793a00e6d5db33f2ce28273f",
+		"SpanID": "b0e799bbdd8af1ae",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "2592262a793a00e6d5db33f2ce28273f",
+		"SpanID": "b71e20cbcbd7a1ae",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"SpanKind": 3,
+	"StartTime": "2023-06-19T23:01:34.615336529+02:00",
+	"EndTime": "2023-06-19T23:01:36.722102653+02:00",
+	"Attributes": [
+		{
+			"Key": "rpc.system",
+			"Value": {
+				"Type": "STRING",
+				"Value": "grpc"
+			}
+		},
+		{
+			"Key": "rpc.service",
+			"Value": {
+				"Type": "STRING",
+				"Value": "user_profile.UserProfileService"
+			}
+		},
+		{
+			"Key": "rpc.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "DeleteUser"
+			}
+		},
+		{
+			"Key": "net.peer.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "localhost"
+			}
+		},
+		{
+			"Key": "net.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 8002
+			}
+		},
+		{
+			"Key": "rpc.grpc.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 0
+			}
+		}
+	],
+	"Events": [
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "SENT"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T23:01:34.615372777+02:00"
+		},
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "RECEIVED"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T23:01:36.72209469+02:00"
+		}
+	],
+	"Links": null,
+	"Status": {
+		"Code": "Unset",
+		"Description": ""
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 0,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___53go_build_api_gateway"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "/api-1/*any",
+	"SpanContext": {
+		"TraceID": "2592262a793a00e6d5db33f2ce28273f",
+		"SpanID": "b71e20cbcbd7a1ae",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "00000000000000000000000000000000",
+		"SpanID": "0000000000000000",
+		"TraceFlags": "00",
+		"TraceState": "",
+		"Remote": false
+	},
+	"SpanKind": 2,
+	"StartTime": "2023-06-19T23:01:34.615210114+02:00",
+	"EndTime": "2023-06-19T23:01:36.722186115+02:00",
+	"Attributes": [
+		{
+			"Key": "http.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "DELETE"
+			}
+		},
+		{
+			"Key": "http.scheme",
+			"Value": {
+				"Type": "STRING",
+				"Value": "http"
+			}
+		},
+		{
+			"Key": "http.flavor",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.1"
+			}
+		},
+		{
+			"Key": "net.host.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "api-gateway"
+			}
+		},
+		{
+			"Key": "net.host.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 8000
+			}
+		},
+		{
+			"Key": "net.sock.peer.addr",
+			"Value": {
+				"Type": "STRING",
+				"Value": "127.0.0.1"
+			}
+		},
+		{
+			"Key": "net.sock.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 54304
+			}
+		},
+		{
+			"Key": "http.user_agent",
+			"Value": {
+				"Type": "STRING",
+				"Value": "insomnia/2023.1.0"
+			}
+		},
+		{
+			"Key": "http.route",
+			"Value": {
+				"Type": "STRING",
+				"Value": "/api-1/*any"
+			}
+		},
+		{
+			"Key": "http.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 200
+			}
+		}
+	],
+	"Events": null,
+	"Links": null,
+	"Status": {
+		"Code": "Unset",
+		"Description": ""
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 1,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___53go_build_api_gateway"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "user_profile.UserProfileService/DeleteUser",
+	"SpanContext": {
+		"TraceID": "5b2b8df5ee930ddfede3a7b62243f23d",
+		"SpanID": "be83dc6eafd4a885",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "5b2b8df5ee930ddfede3a7b62243f23d",
+		"SpanID": "98b795c0080e536c",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"SpanKind": 3,
+	"StartTime": "2023-06-19T23:04:44.240780084+02:00",
+	"EndTime": "2023-06-19T23:04:44.274124686+02:00",
+	"Attributes": [
+		{
+			"Key": "rpc.system",
+			"Value": {
+				"Type": "STRING",
+				"Value": "grpc"
+			}
+		},
+		{
+			"Key": "rpc.service",
+			"Value": {
+				"Type": "STRING",
+				"Value": "user_profile.UserProfileService"
+			}
+		},
+		{
+			"Key": "rpc.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "DeleteUser"
+			}
+		},
+		{
+			"Key": "net.peer.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "localhost"
+			}
+		},
+		{
+			"Key": "net.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 8002
+			}
+		},
+		{
+			"Key": "rpc.grpc.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 9
+			}
+		}
+	],
+	"Events": [
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "SENT"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T23:04:44.240803411+02:00"
+		},
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "RECEIVED"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T23:04:44.274119517+02:00"
+		}
+	],
+	"Links": null,
+	"Status": {
+		"Code": "Error",
+		"Description": "Host has active reservations"
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 0,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___53go_build_api_gateway"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "/api-1/*any",
+	"SpanContext": {
+		"TraceID": "5b2b8df5ee930ddfede3a7b62243f23d",
+		"SpanID": "98b795c0080e536c",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "00000000000000000000000000000000",
+		"SpanID": "0000000000000000",
+		"TraceFlags": "00",
+		"TraceState": "",
+		"Remote": false
+	},
+	"SpanKind": 2,
+	"StartTime": "2023-06-19T23:04:44.240702419+02:00",
+	"EndTime": "2023-06-19T23:04:44.274204445+02:00",
+	"Attributes": [
+		{
+			"Key": "http.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "DELETE"
+			}
+		},
+		{
+			"Key": "http.scheme",
+			"Value": {
+				"Type": "STRING",
+				"Value": "http"
+			}
+		},
+		{
+			"Key": "http.flavor",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.1"
+			}
+		},
+		{
+			"Key": "net.host.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "api-gateway"
+			}
+		},
+		{
+			"Key": "net.host.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 8000
+			}
+		},
+		{
+			"Key": "net.sock.peer.addr",
+			"Value": {
+				"Type": "STRING",
+				"Value": "127.0.0.1"
+			}
+		},
+		{
+			"Key": "net.sock.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 50262
+			}
+		},
+		{
+			"Key": "http.user_agent",
+			"Value": {
+				"Type": "STRING",
+				"Value": "insomnia/2023.1.0"
+			}
+		},
+		{
+			"Key": "http.route",
+			"Value": {
+				"Type": "STRING",
+				"Value": "/api-1/*any"
+			}
+		},
+		{
+			"Key": "http.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 400
+			}
+		}
+	],
+	"Events": null,
+	"Links": null,
+	"Status": {
+		"Code": "Unset",
+		"Description": ""
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 1,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___53go_build_api_gateway"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "user_profile.UserProfileService/DeleteUser",
+	"SpanContext": {
+		"TraceID": "6d00175850cfcedfd490bc182e02728a",
+		"SpanID": "f1dc4694ed829cc8",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "6d00175850cfcedfd490bc182e02728a",
+		"SpanID": "aca427ac7a5fadd7",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"SpanKind": 3,
+	"StartTime": "2023-06-19T23:05:22.287273935+02:00",
+	"EndTime": "2023-06-19T23:05:23.316003911+02:00",
+	"Attributes": [
+		{
+			"Key": "rpc.system",
+			"Value": {
+				"Type": "STRING",
+				"Value": "grpc"
+			}
+		},
+		{
+			"Key": "rpc.service",
+			"Value": {
+				"Type": "STRING",
+				"Value": "user_profile.UserProfileService"
+			}
+		},
+		{
+			"Key": "rpc.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "DeleteUser"
+			}
+		},
+		{
+			"Key": "net.peer.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "localhost"
+			}
+		},
+		{
+			"Key": "net.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 8002
+			}
+		},
+		{
+			"Key": "rpc.grpc.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 9
+			}
+		}
+	],
+	"Events": [
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "SENT"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T23:05:22.287303688+02:00"
+		},
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "RECEIVED"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T23:05:23.315996158+02:00"
+		}
+	],
+	"Links": null,
+	"Status": {
+		"Code": "Error",
+		"Description": "failed to connect to `host=localhost user=postgres database=notification`: dial error (dial tcp 127.0.0.1:5005: connect: connection refused)"
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 0,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___53go_build_api_gateway"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "/api-1/*any",
+	"SpanContext": {
+		"TraceID": "6d00175850cfcedfd490bc182e02728a",
+		"SpanID": "aca427ac7a5fadd7",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "00000000000000000000000000000000",
+		"SpanID": "0000000000000000",
+		"TraceFlags": "00",
+		"TraceState": "",
+		"Remote": false
+	},
+	"SpanKind": 2,
+	"StartTime": "2023-06-19T23:05:22.287203883+02:00",
+	"EndTime": "2023-06-19T23:05:23.316108884+02:00",
+	"Attributes": [
+		{
+			"Key": "http.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "DELETE"
+			}
+		},
+		{
+			"Key": "http.scheme",
+			"Value": {
+				"Type": "STRING",
+				"Value": "http"
+			}
+		},
+		{
+			"Key": "http.flavor",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.1"
+			}
+		},
+		{
+			"Key": "net.host.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "api-gateway"
+			}
+		},
+		{
+			"Key": "net.host.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 8000
+			}
+		},
+		{
+			"Key": "net.sock.peer.addr",
+			"Value": {
+				"Type": "STRING",
+				"Value": "127.0.0.1"
+			}
+		},
+		{
+			"Key": "net.sock.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 50262
+			}
+		},
+		{
+			"Key": "http.user_agent",
+			"Value": {
+				"Type": "STRING",
+				"Value": "insomnia/2023.1.0"
+			}
+		},
+		{
+			"Key": "http.route",
+			"Value": {
+				"Type": "STRING",
+				"Value": "/api-1/*any"
+			}
+		},
+		{
+			"Key": "http.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 400
+			}
+		}
+	],
+	"Events": null,
+	"Links": null,
+	"Status": {
+		"Code": "Unset",
+		"Description": ""
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 1,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___53go_build_api_gateway"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "user_profile.UserProfileService/DeleteUser",
+	"SpanContext": {
+		"TraceID": "2b6783f8da19c667b2353daf7b11500c",
+		"SpanID": "a140dccaa68d2367",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "2b6783f8da19c667b2353daf7b11500c",
+		"SpanID": "7653948e4477c06f",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"SpanKind": 3,
+	"StartTime": "2023-06-19T23:05:57.007599814+02:00",
+	"EndTime": "2023-06-19T23:05:58.36710264+02:00",
+	"Attributes": [
+		{
+			"Key": "rpc.system",
+			"Value": {
+				"Type": "STRING",
+				"Value": "grpc"
+			}
+		},
+		{
+			"Key": "rpc.service",
+			"Value": {
+				"Type": "STRING",
+				"Value": "user_profile.UserProfileService"
+			}
+		},
+		{
+			"Key": "rpc.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "DeleteUser"
+			}
+		},
+		{
+			"Key": "net.peer.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "localhost"
+			}
+		},
+		{
+			"Key": "net.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 8002
+			}
+		},
+		{
+			"Key": "rpc.grpc.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 0
+			}
+		}
+	],
+	"Events": [
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "SENT"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T23:05:57.007626983+02:00"
+		},
+		{
+			"Name": "message",
+			"Attributes": [
+				{
+					"Key": "message.type",
+					"Value": {
+						"Type": "STRING",
+						"Value": "RECEIVED"
+					}
+				},
+				{
+					"Key": "message.id",
+					"Value": {
+						"Type": "INT64",
+						"Value": 1
+					}
+				}
+			],
+			"DroppedAttributeCount": 0,
+			"Time": "2023-06-19T23:05:58.367096912+02:00"
+		}
+	],
+	"Links": null,
+	"Status": {
+		"Code": "Unset",
+		"Description": ""
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 0,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___53go_build_api_gateway"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
+{
+	"Name": "/api-1/*any",
+	"SpanContext": {
+		"TraceID": "2b6783f8da19c667b2353daf7b11500c",
+		"SpanID": "7653948e4477c06f",
+		"TraceFlags": "01",
+		"TraceState": "",
+		"Remote": false
+	},
+	"Parent": {
+		"TraceID": "00000000000000000000000000000000",
+		"SpanID": "0000000000000000",
+		"TraceFlags": "00",
+		"TraceState": "",
+		"Remote": false
+	},
+	"SpanKind": 2,
+	"StartTime": "2023-06-19T23:05:57.007503292+02:00",
+	"EndTime": "2023-06-19T23:05:58.367173111+02:00",
+	"Attributes": [
+		{
+			"Key": "http.method",
+			"Value": {
+				"Type": "STRING",
+				"Value": "DELETE"
+			}
+		},
+		{
+			"Key": "http.scheme",
+			"Value": {
+				"Type": "STRING",
+				"Value": "http"
+			}
+		},
+		{
+			"Key": "http.flavor",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.1"
+			}
+		},
+		{
+			"Key": "net.host.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "api-gateway"
+			}
+		},
+		{
+			"Key": "net.host.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 8000
+			}
+		},
+		{
+			"Key": "net.sock.peer.addr",
+			"Value": {
+				"Type": "STRING",
+				"Value": "127.0.0.1"
+			}
+		},
+		{
+			"Key": "net.sock.peer.port",
+			"Value": {
+				"Type": "INT64",
+				"Value": 50262
+			}
+		},
+		{
+			"Key": "http.user_agent",
+			"Value": {
+				"Type": "STRING",
+				"Value": "insomnia/2023.1.0"
+			}
+		},
+		{
+			"Key": "http.route",
+			"Value": {
+				"Type": "STRING",
+				"Value": "/api-1/*any"
+			}
+		},
+		{
+			"Key": "http.status_code",
+			"Value": {
+				"Type": "INT64",
+				"Value": 200
+			}
+		}
+	],
+	"Events": null,
+	"Links": null,
+	"Status": {
+		"Code": "Unset",
+		"Description": ""
+	},
+	"DroppedAttributes": 0,
+	"DroppedEvents": 0,
+	"DroppedLinks": 0,
+	"ChildSpanCount": 1,
+	"Resource": [
+		{
+			"Key": "service.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "unknown_service:___53go_build_api_gateway"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.language",
+			"Value": {
+				"Type": "STRING",
+				"Value": "go"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.name",
+			"Value": {
+				"Type": "STRING",
+				"Value": "opentelemetry"
+			}
+		},
+		{
+			"Key": "telemetry.sdk.version",
+			"Value": {
+				"Type": "STRING",
+				"Value": "1.16.0"
+			}
+		}
+	],
+	"InstrumentationLibrary": {
+		"Name": "go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin",
+		"Version": "0.42.0",
+		"SchemaURL": ""
+	}
+}
