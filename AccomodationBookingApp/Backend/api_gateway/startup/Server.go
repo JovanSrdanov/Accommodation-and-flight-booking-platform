@@ -53,7 +53,8 @@ func NewServer(config *Configuration) *Server {
 	// OpenTelemetry
 	server.server.Use(otelgin.Middleware("api-gateway"))
 
-	server.server.Use(middleware.AuthTokenParser())
+	tokenMaker, _ := token.NewPasetoMaker("12345678901234567890123456789012")
+	server.server.Use(middleware.AuthTokenParser(tokenMaker))
 
 	corsMiddleware := cors.New(cors.Config{
 		AllowOrigins: []string{"*"},
@@ -72,7 +73,7 @@ func NewServer(config *Configuration) *Server {
 	// Wrapping gin around runtime.ServeMux
 	server.server.Group("/api-1/*any").Any("", gin.WrapH(grpcMux))
 
-	server.initCustomHandlers(server.server.Group("/api-2"))
+	server.initCustomHandlers(server.server.Group("/api-2"), tokenMaker)
 
 	server.server.GET("/ws", server.handleWebSocket)
 
@@ -177,8 +178,7 @@ func (server *Server) initGrpcHandlers(mux *runtime.ServeMux) {
 	}
 }
 
-func (server *Server) initCustomHandlers(routerGroup *gin.RouterGroup) {
-	tokenMaker, _ := token.NewPasetoMaker("12345678901234567890123456789012")
+func (server *Server) initCustomHandlers(routerGroup *gin.RouterGroup, tokenMaker token.Maker) {
 	mongoClient := server.initUniqueVisitorsMongoClient()
 	uniqueVisitorsRepo := initUniqueVisitorsRepo(mongoClient)
 
