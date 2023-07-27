@@ -3,7 +3,9 @@ package handler
 import (
 	reservation "common/proto/reservation_service/generated"
 	"context"
+	"fmt"
 	"reservation_service/domain/service"
+	"reservation_service/utils"
 
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -34,8 +36,12 @@ func (handler ReservationHandler) CreateAvailability(ctx context.Context, in *re
 func (handler ReservationHandler) GetAllMy(ctx context.Context, in *reservation.EmptyRequest) (*reservation.GetAllMyResponse, error) {
 	mapper := NewReservationMapper()
 
-	loggedInId := ctx.Value("id")
-	availabilities, err := handler.reservationService.GetAllMy(loggedInId.(uuid.UUID).String())
+	loggedInId, err := utils.GetTokenInfo(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to extract id")
+	}
+
+	availabilities, err := handler.reservationService.GetAllMy(loggedInId.String())
 	if err != nil {
 		return &reservation.GetAllMyResponse{}, err
 	}
@@ -54,9 +60,14 @@ func (handler ReservationHandler) UpdatePriceAndDate(ctx context.Context, in *re
 func (handler ReservationHandler) CreateReservation(ctx context.Context, in *reservation.CreateReservationRequest) (*reservation.CreateReservationRequest, error) {
 	mapper := NewReservationMapper()
 	mappedReservation := mapper.mapFromCreateReservation(in)
-	loggedInId := ctx.Value("id")
-	mappedReservation.GuestId = loggedInId.(uuid.UUID).String()
-	_, err := handler.reservationService.CreateReservation(mappedReservation)
+
+	loggedInId, err := utils.GetTokenInfo(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to extract id")
+	}
+
+	mappedReservation.GuestId = loggedInId.String()
+	_, err = handler.reservationService.CreateReservation(mappedReservation)
 
 	if err != nil {
 		return nil, err
@@ -67,8 +78,12 @@ func (handler ReservationHandler) CreateReservation(ctx context.Context, in *res
 func (handler ReservationHandler) GetAllPendingReservations(ctx context.Context, in *reservation.EmptyRequest) (*reservation.GetAllPendingReservationsResponse, error) {
 	mapper := NewReservationMapper()
 
-	loggedInId := ctx.Value("id")
-	reservations, numberOfCancellations, err := handler.reservationService.GetAllPendingReservations(loggedInId.(uuid.UUID).String())
+	loggedInId, err := utils.GetTokenInfo(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to extract id")
+	}
+
+	reservations, numberOfCancellations, err := handler.reservationService.GetAllPendingReservations(loggedInId.String())
 	if err != nil {
 		return &reservation.GetAllPendingReservationsResponse{}, err
 	}
@@ -80,8 +95,11 @@ func (handler ReservationHandler) GetAllPendingReservations(ctx context.Context,
 func (handler ReservationHandler) GetAllAcceptedReservations(ctx context.Context, in *reservation.EmptyRequest) (*reservation.GetAllAcceptedReservationsResponse, error) {
 	mapper := NewReservationMapper()
 
-	loggedInId := ctx.Value("id")
-	reservations, err := handler.reservationService.GetAllAcceptedReservations(loggedInId.(uuid.UUID).String())
+	loggedInId, err := utils.GetTokenInfo(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to extract id")
+	}
+	reservations, err := handler.reservationService.GetAllAcceptedReservations(loggedInId.String())
 	if err != nil {
 		return &reservation.GetAllAcceptedReservationsResponse{}, err
 	}
@@ -93,8 +111,11 @@ func (handler ReservationHandler) GetAllAcceptedReservations(ctx context.Context
 func (handler ReservationHandler) GetAllReservationsForGuest(ctx context.Context, in *reservation.EmptyRequest) (*reservation.GetAllReservationsForGuestResponse, error) {
 	mapper := NewReservationMapper()
 
-	loggedInId := ctx.Value("id")
-	reservations, err := handler.reservationService.GetAllReservationsForGuest(loggedInId.(uuid.UUID).String())
+	loggedInId, err := utils.GetTokenInfo(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to extract id")
+	}
+	reservations, err := handler.reservationService.GetAllReservationsForGuest(loggedInId.String())
 	if err != nil {
 		return &reservation.GetAllReservationsForGuestResponse{}, err
 	}

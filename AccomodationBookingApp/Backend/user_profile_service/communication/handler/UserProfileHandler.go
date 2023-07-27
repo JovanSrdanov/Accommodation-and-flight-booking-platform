@@ -10,6 +10,7 @@ import (
 	"google.golang.org/grpc/status"
 	"user_profile_service/communication"
 	"user_profile_service/domain/service"
+	"user_profile_service/utils"
 )
 
 type UserProfileHandler struct {
@@ -39,9 +40,9 @@ func (handler UserProfileHandler) Create(ctx context.Context, in *user_profile.C
 
 func (handler UserProfileHandler) Update(ctx context.Context, req *user_profile.UpdateRequest) (*user_profile.UpdateRequest, error) {
 	// get account credentials id from logged-in user
-	loggedInId, ok := ctx.Value("id").(uuid.UUID)
-	if !ok {
-		return nil, fmt.Errorf("failed to extract id and cast to UUID")
+	loggedInId, err := utils.GetTokenInfo(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to extract id")
 	}
 
 	// get account credentials from acc cred microservice
@@ -94,9 +95,9 @@ func (handler UserProfileHandler) DeleteUserProfile(ctx context.Context, in *use
 
 // DeleteUser  This function starts saga
 func (handler UserProfileHandler) DeleteUser(ctx context.Context, in *user_profile.DeleteUserRequest) (*user_profile.DeleteResponse, error) {
-	loggedInId, ok := ctx.Value("id").(uuid.UUID)
-	if !ok {
-		return nil, fmt.Errorf("failed to extract id and cast to UUID")
+	loggedInId, err := utils.GetTokenInfo(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to extract id")
 	}
 
 	// get account credentials from acc cred microservice

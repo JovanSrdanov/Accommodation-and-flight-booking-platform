@@ -41,22 +41,35 @@ func AuthTokenParser(tokenMaker token.Maker) gin.HandlerFunc {
 		}
 
 		providedRole := tokenPayload.Role
-		for _, role := range allowedRoles {
-			if role == providedRole {
-				if len(ctx.Keys) == 0 {
-					ctx.Keys = make(map[string]interface{})
-				}
-
-				ctx.Keys["id"] = tokenPayload.ID
-				ctx.Keys["Role"] = providedRole
-				ctx.Next()
-				return
-			}
+		if foundRole(ctx, allowedRoles, providedRole) {
+			appendTokenInfoToContext(ctx, tokenPayload, providedRole)
+			ctx.Next()
+			return
 		}
 
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized access attempt"})
 		return
 	}
+}
+
+func foundRole(ctx *gin.Context, allowedRoles []model.Role, providedRole model.Role) bool {
+	for _, role := range allowedRoles {
+		if role == providedRole {
+			ctx.Next()
+			return true
+		}
+	}
+	return false
+}
+
+func appendTokenInfoToContext(ctx *gin.Context, tokenPayload *token.Payload, providedRole model.Role) {
+	//if len(ctx.Keys) == 0 {
+	//	ctx.Keys = make(map[string]interface{})
+	//}
+	ctx.Set("id", tokenPayload.ID)
+	ctx.Set("Role", providedRole)
+	ctx.Keys["id"] = tokenPayload.ID
+	ctx.Keys["Role"] = providedRole
 }
 
 func replaceUUIDsWithParam(endpoint string) string {
@@ -68,10 +81,6 @@ func replaceUUIDsWithParam(endpoint string) string {
 
 	// Find all matches in the input string
 	matches := pattern.FindAllString(endpoint, -1)
-
-	//log.Print("MATCHES:")
-	//log.Println(matches)
-
 	if len(matches) == 0 {
 		return endpoint
 	}
@@ -80,8 +89,6 @@ func replaceUUIDsWithParam(endpoint string) string {
 	for _, _ = range matches {
 		endpoint = pattern.ReplaceAllString(endpoint, "PARAM")
 	}
-
-	//log.Println("END STRING: " + endpoint)
 
 	return endpoint
 }

@@ -1,9 +1,6 @@
 package startup
 
 import (
-	"authorization_service/domain/model"
-	"authorization_service/domain/token"
-	"authorization_service/interceptor"
 	"common/event_sourcing"
 	user_profile "common/proto/user_profile_service/generated"
 	"common/saga/messaging"
@@ -100,16 +97,15 @@ func (server *Server) startGrpcServer(userProfileHandler *handler.UserProfileHan
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	tokenMaker, _ := token.NewPasetoMaker("12345678901234567890123456789012")
-	protectedMethodsWithAllowedRoles := getProtectedMethodsWithAllowedRoles()
-
-	authInterceptor := interceptor.NewAuthServerInterceptor(tokenMaker, protectedMethodsWithAllowedRoles)
+	//tokenMaker, _ := token.NewPasetoMaker("12345678901234567890123456789012")
+	//protectedMethodsWithAllowedRoles := getProtectedMethodsWithAllowedRoles()
+	//
+	//authInterceptor := interceptor.NewAuthServerInterceptor(tokenMaker, protectedMethodsWithAllowedRoles)
 
 	grpcServer := grpc.NewServer(
-		grpc.ChainUnaryInterceptor(middleware.NewGRPUnaryServerInterceptor(),
-			authInterceptor.Unary()),
-		grpc.StreamInterceptor(authInterceptor.Stream()),
-	)
+		grpc.ChainUnaryInterceptor(middleware.NewGRPUnaryServerInterceptor()))/*authInterceptor.Unary()),
+	grpc.StreamInterceptor(authInterceptor.Stream())*/
+
 	user_profile.RegisterUserProfileServiceServer(grpcServer, userProfileHandler)
 	if err := grpcServer.Serve(listener); err != nil {
 		log.Fatalf("failed to serve: %s", err)
@@ -158,12 +154,12 @@ func (server *Server) initDeleteUserHandler(userProfileService *service.UserProf
 
 }
 
-// returns a map which consists of a list of grpc methods and allowed roles for each of them
-func getProtectedMethodsWithAllowedRoles() map[string][]model.Role {
-	const authServicePath = "/user_profile.UserProfileService/"
-
-	return map[string][]model.Role{
-		authServicePath + "Update":     {model.Guest, model.Host},
-		authServicePath + "DeleteUser": {model.Guest, model.Host},
-	}
-}
+//// returns a map which consists of a list of grpc methods and allowed roles for each of them
+//func getProtectedMethodsWithAllowedRoles() map[string][]model.Role {
+//	const authServicePath = "/user_profile.UserProfileService/"
+//
+//	return map[string][]model.Role{
+//		authServicePath + "Update":     {model.Guest, model.Host},
+//		authServicePath + "DeleteUser": {model.Guest, model.Host},
+//	}
+//}

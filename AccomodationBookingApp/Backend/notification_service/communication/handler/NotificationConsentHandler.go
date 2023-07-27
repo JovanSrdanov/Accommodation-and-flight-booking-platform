@@ -6,8 +6,8 @@ import (
 	"common/saga/messaging"
 	"context"
 	"fmt"
-	"github.com/google/uuid"
 	"notification_service/domain/service"
+	"notification_service/utils"
 )
 
 type NotificationConsentHandler struct {
@@ -74,13 +74,13 @@ func (handler *NotificationConsentHandler) Create(ctx context.Context, req *noti
 }
 
 func (handler *NotificationConsentHandler) UpdateMyNotificationConsent(ctx context.Context, req *notification.UpdateMyNotificationConsentRequest) (*notification.UpdateMyNotificationConsentResponse, error) {
-
-	loggedInId, ok := ctx.Value("id").(uuid.UUID)
-	if !ok {
-		return nil, fmt.Errorf("failed to extract id and cast to UUID")
+	loggedInId, err := utils.GetTokenInfo(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to extract id")
 	}
+
 	UpdateMyNotificationConsent := mapFromUpdateMyNotificationConsentRequest(req, loggedInId)
-	_, err := handler.notificationConsentService.UpdateMyNotificationConsent(UpdateMyNotificationConsent)
+	_, err = handler.notificationConsentService.UpdateMyNotificationConsent(UpdateMyNotificationConsent)
 
 	if err != nil {
 		return nil, err
@@ -90,9 +90,9 @@ func (handler *NotificationConsentHandler) UpdateMyNotificationConsent(ctx conte
 }
 
 func (handler *NotificationConsentHandler) GetMyNotificationSettings(ctx context.Context, req *notification.EmptyRequest) (*notification.GetMyNotificationSettingsResponse, error) {
-	loggedInId, ok := ctx.Value("id").(uuid.UUID)
-	if !ok {
-		return nil, fmt.Errorf("failed to extract id and cast to UUID")
+	loggedInId, err := utils.GetTokenInfo(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to extract id")
 	}
 
 	notificationConsent, err := handler.notificationConsentService.GetById(loggedInId)

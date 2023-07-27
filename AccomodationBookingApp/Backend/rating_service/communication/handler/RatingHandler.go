@@ -5,12 +5,14 @@ import (
 	rating "common/proto/rating_service/generated"
 	"common/saga/messaging"
 	"context"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"rating_service/domain/model"
 	"rating_service/domain/service"
+	"rating_service/utils"
 	"time"
 
 	"github.com/google/uuid"
@@ -29,10 +31,13 @@ func NewRatingHandler(ratingService service.RatingService, publisher messaging.P
 }
 
 func (handler RatingHandler) RateAccommodation(ctx context.Context, in *rating.RateAccommodationRequest) (*rating.EmptyResponse, error) {
-	loggedInId := ctx.Value("id")
+	loggedInId, err := utils.GetTokenInfo(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to extract id")
+	}
 
 	mapper := NewRatingMapper()
-	err := handler.ratingService.RateAccommodation(loggedInId.(uuid.UUID).String(), mapper.mapFromRateAccommodationRequest(in))
+	err = handler.ratingService.RateAccommodation(loggedInId.String(), mapper.mapFromRateAccommodationRequest(in))
 	if err != nil {
 		return &rating.EmptyResponse{}, err
 	}
@@ -65,8 +70,12 @@ func (handler RatingHandler) GetRecommendedAccommodations(ctx context.Context, i
 }
 
 func (handler RatingHandler) DeleteRatingForAccommodation(ctx context.Context, in *rating.RatingForAccommodationRequest) (*rating.SimpleResponse, error) {
-	loggedInId := ctx.Value("id").(uuid.UUID).String()
-	message, err := handler.ratingService.DeleteRatingForAccommodation(in.AccommodationId, loggedInId)
+	loggedInId, err := utils.GetTokenInfo(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to extract id")
+	}
+
+	message, err := handler.ratingService.DeleteRatingForAccommodation(in.AccommodationId, loggedInId.String())
 	if err != nil {
 		return nil, err
 	}
@@ -80,10 +89,14 @@ func (handler RatingHandler) RateHost(ctx context.Context, in *rating.RateHostRe
 		return nil, err
 	}
 
-	loggedInId := ctx.Value("id").(uuid.UUID).String()
+	loggedInId, err := utils.GetTokenInfo(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to extract id")
+	}
+
 	err = handler.ratingService.RateHost(&model.RateHostDto{
 		HostId:  in.Rating.HostId,
-		GuestId: loggedInId,
+		GuestId: loggedInId.String(),
 		Rating:  in.Rating.Rating,
 		Date:    time.Now(),
 	})
@@ -136,8 +149,13 @@ func (handler RatingHandler) DeleteRatingForHost(ctx context.Context, in *rating
 	if err != nil {
 		return nil, err
 	}
-	loggedInId := ctx.Value("id").(uuid.UUID).String()
-	message, err := handler.ratingService.DeleteRatingForHost(in.HostId, loggedInId)
+
+	loggedInId, err := utils.GetTokenInfo(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to extract id")
+	}
+
+	message, err := handler.ratingService.DeleteRatingForHost(in.HostId, loggedInId.String())
 	if err != nil {
 		return nil, err
 	}

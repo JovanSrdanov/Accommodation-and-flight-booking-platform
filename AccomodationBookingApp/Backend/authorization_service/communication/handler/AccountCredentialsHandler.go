@@ -3,9 +3,9 @@ package handler
 import (
 	"authorization_service/domain/model"
 	"authorization_service/domain/service"
+	"authorization_service/utils"
 	authorizationProto "common/proto/authorization_service/generated"
 	"context"
-	"fmt"
 	"github.com/google/uuid"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
@@ -75,12 +75,12 @@ func (handler AccountCredentialsHandler) Login(ctx context.Context, req *authori
 }
 
 func (handler AccountCredentialsHandler) ChangeUsername(ctx context.Context, req *authorizationProto.ChangeUsernameRequest) (*emptypb.Empty, error) {
-	loggedInId, ok := ctx.Value("id").(uuid.UUID)
-	if !ok {
-		return &emptypb.Empty{}, fmt.Errorf("failed to extract id and cast to UUID")
+	loggedInId, err := utils.GetTokenInfo(ctx)
+	if err != nil {
+		return &emptypb.Empty{}, err
 	}
 
-	err := handler.accCredService.ChangeUsername(loggedInId, req.GetUsername())
+	err = handler.accCredService.ChangeUsername(loggedInId, req.GetUsername())
 	if err != nil {
 		return &emptypb.Empty{}, err
 	}
@@ -89,12 +89,12 @@ func (handler AccountCredentialsHandler) ChangeUsername(ctx context.Context, req
 }
 
 func (handler AccountCredentialsHandler) ChangePassword(ctx context.Context, req *authorizationProto.ChangePasswordRequest) (*emptypb.Empty, error) {
-	loggedInId, ok := ctx.Value("id").(uuid.UUID)
-	if !ok {
-		return &emptypb.Empty{}, fmt.Errorf("failed to extract id and cast to UUID")
+	loggedInId, err := utils.GetTokenInfo(ctx)
+	if err != nil {
+		return &emptypb.Empty{}, err
 	}
 
-	err := handler.accCredService.ChangePassword(loggedInId, req.GetOldPassword(), req.GetNewPassword())
+	err = handler.accCredService.ChangePassword(loggedInId, req.GetOldPassword(), req.GetNewPassword())
 	if err != nil {
 		return &emptypb.Empty{}, err
 	}
@@ -103,14 +103,14 @@ func (handler AccountCredentialsHandler) ChangePassword(ctx context.Context, req
 }
 
 func (handler AccountCredentialsHandler) CheckIfDeleted(ctx context.Context, req *authorizationProto.CheckIfDeletedRequest) (*authorizationProto.CheckIfDeletedResponse, error) {
-	loggedInId, ok := ctx.Value("id").(uuid.UUID)
-	if !ok {
+	loggedInId, err := utils.GetTokenInfo(ctx)
+	if err != nil {
 		return &authorizationProto.CheckIfDeletedResponse{
 			Response: false,
-		}, fmt.Errorf("failed to extract id and cast to UUID")
+		}, err
 	}
 
-	_, err := handler.accCredService.GetById(loggedInId)
+	_, err = handler.accCredService.GetById(loggedInId)
 	if err != nil {
 		return &authorizationProto.CheckIfDeletedResponse{
 			Response: true,

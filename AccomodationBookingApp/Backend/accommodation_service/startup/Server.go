@@ -5,9 +5,6 @@ import (
 	"accommodation_service/communication/middleware"
 	"accommodation_service/domain/service"
 	"accommodation_service/persistence/repository"
-	"authorization_service/domain/model"
-	"authorization_service/domain/token"
-	"authorization_service/interceptor"
 	"common/event_sourcing"
 	accommodation "common/proto/accommodation_service/generated"
 	"common/saga/messaging"
@@ -88,13 +85,13 @@ func (server *Server) startGrpcServer(userProfileHandler *handler.AccommodationH
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	tokenMaker, _ := token.NewPasetoMaker("12345678901234567890123456789012")
-	protectedMethodsWithAllowedRoles := getProtectedMethodsWithAllowedRoles()
-	authInterceptor := interceptor.NewAuthServerInterceptor(tokenMaker, protectedMethodsWithAllowedRoles)
+	//tokenMaker, _ := token.NewPasetoMaker("12345678901234567890123456789012")
+	//protectedMethodsWithAllowedRoles := getProtectedMethodsWithAllowedRoles()
+	//authInterceptor := interceptor.NewAuthServerInterceptor(tokenMaker, protectedMethodsWithAllowedRoles)
 
 	grpcServer := grpc.NewServer(
-		grpc.ChainUnaryInterceptor(middleware.NewGRPUnaryServerInterceptor(), authInterceptor.Unary()),
-		grpc.StreamInterceptor(authInterceptor.Stream()),
+		grpc.ChainUnaryInterceptor(middleware.NewGRPUnaryServerInterceptor() /*, authInterceptor.Unary()*/),
+		/*grpc.StreamInterceptor(authInterceptor.Stream()),*/
 	)
 	accommodation.RegisterAccommodationServiceServer(grpcServer, userProfileHandler)
 	if err := grpcServer.Serve(listener); err != nil {
@@ -130,12 +127,12 @@ func (server *Server) initDeleteHandler(service *service.AccommodationService, p
 }
 
 // returns a map which consists of a list of grpc methods and allowed roles for each of them
-func getProtectedMethodsWithAllowedRoles() map[string][]model.Role {
-	const authServicePath = "/accommodation.AccommodationService/"
-
-	return map[string][]model.Role{
-		authServicePath + "GetAllMy":       {model.Host},
-		authServicePath + "Create":         {model.Host},
-		authServicePath + "DeleteByHostId": {model.Host},
-	}
-}
+//func getProtectedMethodsWithAllowedRoles() map[string][]model.Role {
+//	const authServicePath = "/accommodation.AccommodationService/"
+//
+//	return map[string][]model.Role{
+//		authServicePath + "GetAllMy":       {model.Host},
+//		authServicePath + "Create":         {model.Host},
+//		authServicePath + "DeleteByHostId": {model.Host},
+//	}
+//}

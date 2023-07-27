@@ -1,9 +1,6 @@
 package startup
 
 import (
-	"authorization_service/domain/model"
-	"authorization_service/domain/token"
-	"authorization_service/interceptor"
 	reservation "common/proto/reservation_service/generated"
 	"common/saga/messaging"
 	"common/saga/messaging/nats"
@@ -69,35 +66,36 @@ func (server *Server) startGrpcServer(reservationHandler *handler.ReservationHan
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	tokenMaker, _ := token.NewPasetoMaker("12345678901234567890123456789012")
-	protectedMethodsWithAllowedRoles := getProtectedMethodsWithAllowedRoles()
-	authInterceptor := interceptor.NewAuthServerInterceptor(tokenMaker, protectedMethodsWithAllowedRoles)
+	//tokenMaker, _ := token.NewPasetoMaker("12345678901234567890123456789012")
+	//protectedMethodsWithAllowedRoles := getProtectedMethodsWithAllowedRoles()
+	//authInterceptor := interceptor.NewAuthServerInterceptor(tokenMaker, protectedMethodsWithAllowedRoles)
 
 	grpcServer := grpc.NewServer(
-		grpc.ChainUnaryInterceptor(middleware.NewGRPUnaryServerInterceptor(), authInterceptor.Unary()),
-		grpc.StreamInterceptor(authInterceptor.Stream()),
-	)
+		grpc.ChainUnaryInterceptor(middleware.NewGRPUnaryServerInterceptor()))/*authInterceptor.Unary()),
+	grpc.StreamInterceptor(authInterceptor.Stream())*/
+
 	reservation.RegisterReservationServiceServer(grpcServer, reservationHandler)
 	if err := grpcServer.Serve(listener); err != nil {
 		log.Fatalf("failed to serve: %s", err)
 	}
 }
 
-// returns a map which consists of a list of grpc methods and allowed roles for each of them
-func getProtectedMethodsWithAllowedRoles() map[string][]model.Role {
-	const authServicePath = "/reservation.ReservationService/"
-
-	return map[string][]model.Role{
-		authServicePath + "GetAllMy":                   {model.Host},
-		authServicePath + "GetAllPendingReservations":  {model.Host},
-		authServicePath + "GetAllAcceptedReservations": {model.Host},
-		authServicePath + "AcceptReservation":          {model.Host},
-		authServicePath + "RejectReservation":          {model.Host},
-		authServicePath + "CancelReservation":          {model.Guest},
-		authServicePath + "GetAllReservationsForGuest": {model.Guest},
-		authServicePath + "CreateReservation":          {model.Guest},
-	}
-}
+// // returns a map which consists of a list of grpc methods and allowed roles for each of them
+//
+//	func getProtectedMethodsWithAllowedRoles() map[string][]model.Role {
+//		const authServicePath = "/reservation.ReservationService/"
+//
+//		return map[string][]model.Role{
+//			authServicePath + "GetAllMy":                   {model.Host},
+//			authServicePath + "GetAllPendingReservations":  {model.Host},
+//			authServicePath + "GetAllAcceptedReservations": {model.Host},
+//			authServicePath + "AcceptReservation":          {model.Host},
+//			authServicePath + "RejectReservation":          {model.Host},
+//			authServicePath + "CancelReservation":          {model.Guest},
+//			authServicePath + "GetAllReservationsForGuest": {model.Guest},
+//			authServicePath + "CreateReservation":          {model.Guest},
+//		}
+//	}
 func (server *Server) initDeleteSubscriber(subject, queueGroup string) messaging.Subscriber {
 	subscriber, err := nats.NewNATSSubscriber(
 		server.config.NatsHost, server.config.NatsPort,

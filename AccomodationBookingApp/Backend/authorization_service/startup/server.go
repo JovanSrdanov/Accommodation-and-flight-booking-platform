@@ -3,10 +3,8 @@ package startup
 import (
 	"authorization_service/communication/handler"
 	"authorization_service/communication/middleware"
-	"authorization_service/domain/model"
 	"authorization_service/domain/service"
 	"authorization_service/domain/token"
-	"authorization_service/interceptor"
 	"authorization_service/persistence/repository"
 	"common/event_sourcing"
 	authorization "common/proto/authorization_service/generated"
@@ -128,12 +126,12 @@ func (server *Server) startGrpcServer(
 		log.Fatalf("failed to listen: %v", err)
 	}
 	// interceptor initialization for auth
-	protectedMethodsWithAllowedRoles := getProtectedMethodsWithAllowedRoles()
-	authInterceptor := interceptor.NewAuthServerInterceptor(maker, protectedMethodsWithAllowedRoles)
+	//protectedMethodsWithAllowedRoles := getProtectedMethodsWithAllowedRoles()
+	//authInterceptor := interceptor.NewAuthServerInterceptor(maker, protectedMethodsWithAllowedRoles)
 
 	grpcServer := grpc.NewServer(
-		grpc.ChainUnaryInterceptor(middleware.NewGRPUnaryServerInterceptor(), authInterceptor.Unary()),
-		grpc.StreamInterceptor(authInterceptor.Stream()),
+		grpc.ChainUnaryInterceptor(middleware.NewGRPUnaryServerInterceptor()), /*authInterceptor.Unary()),
+		grpc.StreamInterceptor(authInterceptor.Stream()*/
 	)
 	authorization.RegisterAuthorizationServiceServer(grpcServer, accountCredentialsHandler)
 	if err := grpcServer.Serve(listener); err != nil {
@@ -142,13 +140,13 @@ func (server *Server) startGrpcServer(
 }
 
 // returns a map which consists of a list of grpc methods and allowed roles for each of them
-func getProtectedMethodsWithAllowedRoles() map[string][]model.Role {
-	const authServicePath = "/authorization.AuthorizationService/"
-
-	return map[string][]model.Role{
-		authServicePath + "GetByUsername":  {model.Guest, model.Host},
-		authServicePath + "ChangeUsername": {model.Guest, model.Host},
-		authServicePath + "ChangePassword": {model.Guest, model.Host},
-		authServicePath + "CheckIfDeleted": {model.Guest, model.Host},
-	}
-}
+//func getProtectedMethodsWithAllowedRoles() map[string][]model.Role {
+//	const authServicePath = "/authorization.AuthorizationService/"
+//
+//	return map[string][]model.Role{
+//		authServicePath + "GetByUsername":  {model.Guest, model.Host},
+//		authServicePath + "ChangeUsername": {model.Guest, model.Host},
+//		authServicePath + "ChangePassword": {model.Guest, model.Host},
+//		authServicePath + "CheckIfDeleted": {model.Guest, model.Host},
+//	}
+//}
