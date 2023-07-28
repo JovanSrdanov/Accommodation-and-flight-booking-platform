@@ -8,14 +8,45 @@ import (
 	rating "common/proto/rating_service/generated"
 	reservation "common/proto/reservation_service/generated"
 	user_profile "common/proto/user_profile_service/generated"
+	"crypto/tls"
+	"crypto/x509"
+	"fmt"
+	"google.golang.org/grpc/credentials"
+	"io/ioutil"
 	"log"
 
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
 
+func loadTLSCredentials() (credentials.TransportCredentials, error) {
+	// Load certificate of the CA who signed the certificates
+	pemServerCA, err := ioutil.ReadFile("/root/cert/ca-cert.pem")
+	if err != nil {
+		return nil, err
+	}
+
+	certPool := x509.NewCertPool()
+	if !certPool.AppendCertsFromPEM(pemServerCA) {
+		return nil, fmt.Errorf("failed to add CA's certificate")
+	}
+
+	// Create the credentials and return it
+	config := &tls.Config{
+		RootCAs: certPool,
+	}
+
+	return credentials.NewTLS(config), nil
+}
+
 func getConnection(address string) (*grpc.ClientConn, error) {
-	return grpc.Dial(address, grpc.WithTransportCredentials(insecure.NewCredentials()),
+	tlsCredentials, err := loadTLSCredentials()
+	if err != nil {
+		log.Fatal("cannot load TLS credentials: ", err)
+	}
+
+	//return grpc.Dial(address, grpc.WithTransportCredentials(insecure.NewCredentials()),
+	//	grpc.WithUnaryInterceptor(middleware.NewGRPUnaryClientInterceptor()))
+	return grpc.Dial(address, grpc.WithTransportCredentials(tlsCredentials),
 		grpc.WithUnaryInterceptor(middleware.NewGRPUnaryClientInterceptor()))
 }
 

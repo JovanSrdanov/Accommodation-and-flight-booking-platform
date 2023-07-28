@@ -5,9 +5,11 @@ import (
 	user_profile "common/proto/user_profile_service/generated"
 	"common/saga/messaging"
 	"common/saga/messaging/nats"
+	"crypto/tls"
 	"fmt"
 	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	"gorm.io/gorm"
 	"log"
 	"net"
@@ -91,6 +93,23 @@ func (server *Server) initPostgresClient() *gorm.DB {
 	}
 	return client
 }
+
+func loadTLSCredentials() (credentials.TransportCredentials, error) {
+	// Load server's certificate and private key
+	serverCert, err := tls.LoadX509KeyPair("/root/cert/user-info-service-cert.pem", "/root/cert/user-info-service-key.pem")
+	if err != nil {
+		return nil, err
+	}
+
+	// Create the credentials and return it
+	config := &tls.Config{
+		Certificates: []tls.Certificate{serverCert},
+		ClientAuth:   tls.NoClientCert,
+	}
+
+	return credentials.NewTLS(config), nil
+}
+
 func (server *Server) startGrpcServer(userProfileHandler *handler.UserProfileHandler) {
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%s", server.config.Port))
 	if err != nil {
@@ -102,8 +121,15 @@ func (server *Server) startGrpcServer(userProfileHandler *handler.UserProfileHan
 	//
 	//authInterceptor := interceptor.NewAuthServerInterceptor(tokenMaker, protectedMethodsWithAllowedRoles)
 
+	// Enable TLS
+	tlsCredentials, err := loadTLSCredentials()
+	if err != nil {
+		log.Fatal("cannot load TLS credentials: ", err)
+	}
+
 	grpcServer := grpc.NewServer(
-		grpc.ChainUnaryInterceptor(middleware.NewGRPUnaryServerInterceptor()))/*authInterceptor.Unary()),
+		grpc.Creds(tlsCredentials),
+		grpc.ChainUnaryInterceptor(middleware.NewGRPUnaryServerInterceptor())) /*authInterceptor.Unary()),
 	grpc.StreamInterceptor(authInterceptor.Stream())*/
 
 	user_profile.RegisterUserProfileServiceServer(grpcServer, userProfileHandler)

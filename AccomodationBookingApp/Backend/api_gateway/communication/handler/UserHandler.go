@@ -17,6 +17,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"google.golang.org/grpc/metadata"
+	"log"
 	"net/http"
 	"time"
 )
@@ -75,7 +76,7 @@ func (handler UserHandler) GetUserInfo(ctx *gin.Context) {
 	// because it has the auth header embedded in it
 	err := handler.addAccountCredentialsInfo(&userInfo, username, ctxGrpc)
 	if err != nil {
-		ctx.JSON(http.StatusNotFound, "User with given username not found")
+		ctx.JSON(http.StatusNotFound, err.Error())
 		middleware.HttpReqCountTotal.Inc()
 		middleware.HttpReqCountFail.Inc()
 		middleware.HttpReqCountNotFound.WithLabelValues("/user/:username/info").Inc()
@@ -102,6 +103,7 @@ func (handler UserHandler) addAccountCredentialsInfo(userInfo *dto.UserInfo, use
 	accountCredentialsInfo, err := authorizationClient.GetByUsername(ctx, &authorization.GetByUsernameRequest{Username: username})
 
 	if err != nil {
+		log.Println("Greska se desilaaaaaaaa")
 		return err
 	}
 
@@ -117,6 +119,7 @@ func (handler UserHandler) addUserProfileInfo(userInfo *dto.UserInfo, ctx contex
 	userProfileInfo, err := userProfileClient.GetById(ctx, &user_profile.GetByIdRequest{Id: userInfo.UserProfileID.String()})
 
 	if err != nil {
+		log.Println("GRESKA: ", err)
 		return err
 	}
 

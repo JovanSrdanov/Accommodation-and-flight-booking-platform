@@ -10,9 +10,11 @@ import (
 	authorization "common/proto/authorization_service/generated"
 	"common/saga/messaging"
 	"common/saga/messaging/nats"
+	"crypto/tls"
 	"fmt"
 	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	"gorm.io/gorm"
 	"log"
 	"net"
@@ -117,6 +119,22 @@ func (server *Server) initDeleteHandler(service *service.AccountCredentialsServi
 	}
 }
 
+func loadTLSCredentials() (credentials.TransportCredentials, error) {
+	// Load server's certificate and private key
+	serverCert, err := tls.LoadX509KeyPair("/root/cert/auth-service-cert.pem", "/root/cert/auth-service-key.pem")
+	if err != nil {
+		return nil, err
+	}
+
+	// Create the credentials and return it
+	config := &tls.Config{
+		Certificates: []tls.Certificate{serverCert},
+		ClientAuth:   tls.NoClientCert,
+	}
+
+	return credentials.NewTLS(config), nil
+}
+
 func (server *Server) startGrpcServer(
 	accountCredentialsHandler *handler.AccountCredentialsHandler,
 	maker token.Maker,
@@ -129,7 +147,14 @@ func (server *Server) startGrpcServer(
 	//protectedMethodsWithAllowedRoles := getProtectedMethodsWithAllowedRoles()
 	//authInterceptor := interceptor.NewAuthServerInterceptor(maker, protectedMethodsWithAllowedRoles)
 
+	// Enable TLS
+	tlsCredentials, err := loadTLSCredentials()
+	if err != nil {
+		log.Fatal("cannot load TLS credentials: ", err)
+	}
+
 	grpcServer := grpc.NewServer(
+		grpc.Creds(tlsCredentials),
 		grpc.ChainUnaryInterceptor(middleware.NewGRPUnaryServerInterceptor()), /*authInterceptor.Unary()),
 		grpc.StreamInterceptor(authInterceptor.Stream()*/
 	)

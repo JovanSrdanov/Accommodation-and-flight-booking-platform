@@ -6,20 +6,15 @@ import (
 	"common/saga/messaging"
 	"common/saga/messaging/nats"
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.mongodb.org/mongo-driver/mongo"
+	"google.golang.org/grpc/credentials"
+	"io/ioutil"
 	"log"
 	"net/http"
-
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
-	"github.com/gorilla/websocket"
-	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 
 	"api_gateway/communication/handler"
 	"api_gateway/communication/middleware"
@@ -30,6 +25,13 @@ import (
 	rating "common/proto/rating_service/generated"
 	reservation "common/proto/reservation_service/generated"
 	user_profile "common/proto/user_profile_service/generated"
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+	"github.com/gorilla/websocket"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
+	"google.golang.org/grpc"
 )
 
 type Server struct {
@@ -137,12 +139,39 @@ func (server *Server) handleWebSocket(c *gin.Context) {
 	delete(wsConnections, userID)
 }
 
+func loadTLSCredentials() (credentials.TransportCredentials, error) {
+	// Load certificate of the CA who signed the certificates
+	pemServerCA, err := ioutil.ReadFile("/root/cert/ca-cert.pem")
+	if err != nil {
+		return nil, err
+	}
+
+	certPool := x509.NewCertPool()
+	if !certPool.AppendCertsFromPEM(pemServerCA) {
+		return nil, fmt.Errorf("failed to add CA's certificate")
+	}
+
+	// Create the credentials and return it
+	config := &tls.Config{
+		RootCAs: certPool,
+	}
+
+	return credentials.NewTLS(config), nil
+}
+
 func (server *Server) initGrpcHandlers(mux *runtime.ServeMux) {
-	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials()),
+	tlsCredentials, err := loadTLSCredentials()
+	if err != nil {
+		log.Fatal("cannot load TLS credentials: ", err)
+	}
+
+	//opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials()),
+	//	grpc.WithChainUnaryInterceptor(middleware.NewGRPUnaryClientInterceptor())}
+	opts := []grpc.DialOption{grpc.WithTransportCredentials(tlsCredentials),
 		grpc.WithChainUnaryInterceptor(middleware.NewGRPUnaryClientInterceptor())}
 
 	authorizationEndpoint := fmt.Sprintf("%s:%s", server.config.AuthorizationHost, server.config.AuthorizationPort)
-	err := authorization.RegisterAuthorizationServiceHandlerFromEndpoint(context.TODO(), mux, authorizationEndpoint, opts)
+	err = authorization.RegisterAuthorizationServiceHandlerFromEndpoint(context.TODO(), mux, authorizationEndpoint, opts)
 	if err != nil {
 		panic(err)
 	}
