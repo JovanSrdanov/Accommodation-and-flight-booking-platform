@@ -1,37 +1,36 @@
 package startup
 
 import (
-	"api_gateway/persistance/repository"
-	"common/NotificationMessaging"
-	"common/saga/messaging"
-	"common/saga/messaging/nats"
-	"context"
-	"crypto/tls"
-	"crypto/x509"
-	"fmt"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"go.mongodb.org/mongo-driver/mongo"
-	"google.golang.org/grpc/credentials"
-	"io/ioutil"
-	"log"
-	"net/http"
-
 	"api_gateway/communication/handler"
 	"api_gateway/communication/middleware"
+	"api_gateway/persistance/repository"
 	"authorization_service/domain/token"
+	"common/NotificationMessaging"
 	accommodation "common/proto/accommodation_service/generated"
 	authorization "common/proto/authorization_service/generated"
 	notification "common/proto/notification_service/generated"
 	rating "common/proto/rating_service/generated"
 	reservation "common/proto/reservation_service/generated"
 	user_profile "common/proto/user_profile_service/generated"
+	"common/saga/messaging"
+	"common/saga/messaging/nats"
+	"context"
+	"crypto/tls"
+	"crypto/x509"
+	"fmt"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
+	"io/ioutil"
+	"log"
+	"net/http"
 )
 
 type Server struct {
@@ -151,9 +150,16 @@ func loadTLSCredentials() (credentials.TransportCredentials, error) {
 		return nil, fmt.Errorf("failed to add CA's certificate")
 	}
 
+	// Load client's certificate and private key
+	clientCert, err := tls.LoadX509KeyPair("/root/cert/api-gateway-cert.pem", "/root/cert/api-gateway-key.pem")
+	if err != nil {
+		return nil, err
+	}
+
 	// Create the credentials and return it
 	config := &tls.Config{
-		RootCAs: certPool,
+		Certificates: []tls.Certificate{clientCert},
+		RootCAs:      certPool,
 	}
 
 	return credentials.NewTLS(config), nil

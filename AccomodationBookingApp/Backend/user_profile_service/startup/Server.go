@@ -6,11 +6,13 @@ import (
 	"common/saga/messaging"
 	"common/saga/messaging/nats"
 	"crypto/tls"
+	"crypto/x509"
 	"fmt"
 	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"gorm.io/gorm"
+	"io/ioutil"
 	"log"
 	"net"
 	"user_profile_service/communication/handler"
@@ -101,10 +103,22 @@ func loadTLSCredentials() (credentials.TransportCredentials, error) {
 		return nil, err
 	}
 
+	// Load certificate of the CA who signed the certificate
+	pemServerCA, err := ioutil.ReadFile("/root/cert/ca-cert.pem")
+	if err != nil {
+		return nil, err
+	}
+
+	certPool := x509.NewCertPool()
+	if !certPool.AppendCertsFromPEM(pemServerCA) {
+		return nil, fmt.Errorf("failed to add the CA certificate")
+	}
+
 	// Create the credentials and return it
 	config := &tls.Config{
 		Certificates: []tls.Certificate{serverCert},
-		ClientAuth:   tls.NoClientCert,
+		ClientAuth:   tls.RequireAndVerifyClientCert,
+		ClientCAs:    certPool,
 	}
 
 	return credentials.NewTLS(config), nil
