@@ -9,7 +9,11 @@ import (
 	accommodation "common/proto/accommodation_service/generated"
 	"common/saga/messaging"
 	"common/saga/messaging/nats"
+	"crypto/tls"
+	"crypto/x509"
 	"fmt"
+	"google.golang.org/grpc/credentials"
+	"io/ioutil"
 	"log"
 	"net"
 
@@ -79,6 +83,35 @@ func initUserProfileRepo(mongoClient *mongo.Client) *repository.AccommodationRep
 	}
 	return repo
 }
+
+func loadTLSCredentials() (credentials.TransportCredentials, error) {
+	// Load server's certificate and private key
+	serverCert, err := tls.LoadX509KeyPair("/root/cert/accommodation-service-cert.pem", "/root/cert/accommodation-service-key.pem")
+	if err != nil {
+		return nil, err
+	}
+
+	// Load certificate of the CA who signed the certificate
+	pemServerCA, err := ioutil.ReadFile("/root/cert/ca-cert.pem")
+	if err != nil {
+		return nil, err
+	}
+
+	certPool := x509.NewCertPool()
+	if !certPool.AppendCertsFromPEM(pemServerCA) {
+		return nil, fmt.Errorf("failed to add the CA certificate")
+	}
+
+	// Create the credentials and return it
+	config := &tls.Config{
+		Certificates: []tls.Certificate{serverCert},
+		ClientAuth:   tls.RequireAndVerifyClientCert,
+		ClientCAs:    certPool,
+	}
+
+	return credentials.NewTLS(config), nil
+}
+
 func (server *Server) startGrpcServer(userProfileHandler *handler.AccommodationHandler) {
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%s", server.config.Port))
 	if err != nil {
@@ -89,10 +122,18 @@ func (server *Server) startGrpcServer(userProfileHandler *handler.AccommodationH
 	//protectedMethodsWithAllowedRoles := getProtectedMethodsWithAllowedRoles()
 	//authInterceptor := interceptor.NewAuthServerInterceptor(tokenMaker, protectedMethodsWithAllowedRoles)
 
+	// Enable TLS
+	tlsCredentials, err := loadTLSCredentials()
+	if err != nil {
+		log.Fatal("cannot load TLS credentials: ", err)
+	}
+
 	grpcServer := grpc.NewServer(
+		grpc.Creds(tlsCredentials),
 		grpc.ChainUnaryInterceptor(middleware.NewGRPUnaryServerInterceptor() /*, authInterceptor.Unary()*/),
 		/*grpc.StreamInterceptor(authInterceptor.Stream()),*/
 	)
+
 	accommodation.RegisterAccommodationServiceServer(grpcServer, userProfileHandler)
 	if err := grpcServer.Serve(listener); err != nil {
 		log.Fatalf("failed to serve: %s", err)

@@ -4,7 +4,11 @@ import (
 	reservation "common/proto/reservation_service/generated"
 	"common/saga/messaging"
 	"common/saga/messaging/nats"
+	"crypto/tls"
+	"crypto/x509"
 	"fmt"
+	"google.golang.org/grpc/credentials"
+	"io/ioutil"
 	"log"
 	"net"
 	"reservation_service/communication/handler"
@@ -59,6 +63,35 @@ func initReservationRepo(mongoClient *mongo.Client, publisher messaging.Publishe
 	}
 	return repo
 }
+
+func loadTLSCredentials() (credentials.TransportCredentials, error) {
+	// Load server's certificate and private key
+	serverCert, err := tls.LoadX509KeyPair("/root/cert/reservation-service-cert.pem", "/root/cert/reservation-service-key.pem")
+	if err != nil {
+		return nil, err
+	}
+
+	// Load certificate of the CA who signed the certificate
+	pemServerCA, err := ioutil.ReadFile("/root/cert/ca-cert.pem")
+	if err != nil {
+		return nil, err
+	}
+
+	certPool := x509.NewCertPool()
+	if !certPool.AppendCertsFromPEM(pemServerCA) {
+		return nil, fmt.Errorf("failed to add the CA certificate")
+	}
+
+	// Create the credentials and return it
+	config := &tls.Config{
+		Certificates: []tls.Certificate{serverCert},
+		ClientAuth:   tls.RequireAndVerifyClientCert,
+		ClientCAs:    certPool,
+	}
+
+	return credentials.NewTLS(config), nil
+}
+
 func (server *Server) startGrpcServer(reservationHandler *handler.ReservationHandler) {
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%s", server.config.Port))
 	log.Println("port: " + server.config.Port)
@@ -70,8 +103,15 @@ func (server *Server) startGrpcServer(reservationHandler *handler.ReservationHan
 	//protectedMethodsWithAllowedRoles := getProtectedMethodsWithAllowedRoles()
 	//authInterceptor := interceptor.NewAuthServerInterceptor(tokenMaker, protectedMethodsWithAllowedRoles)
 
+	// Enable TLS
+	tlsCredentials, err := loadTLSCredentials()
+	if err != nil {
+		log.Fatal("cannot load TLS credentials: ", err)
+	}
+
 	grpcServer := grpc.NewServer(
-		grpc.ChainUnaryInterceptor(middleware.NewGRPUnaryServerInterceptor()))/*authInterceptor.Unary()),
+		grpc.Creds(tlsCredentials),
+		grpc.ChainUnaryInterceptor(middleware.NewGRPUnaryServerInterceptor())) /*authInterceptor.Unary()),
 	grpc.StreamInterceptor(authInterceptor.Stream())*/
 
 	reservation.RegisterReservationServiceServer(grpcServer, reservationHandler)
