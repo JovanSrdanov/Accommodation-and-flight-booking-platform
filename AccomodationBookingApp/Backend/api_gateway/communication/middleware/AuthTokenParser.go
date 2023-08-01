@@ -42,7 +42,7 @@ func AuthTokenParser(tokenMaker token.Maker) gin.HandlerFunc {
 
 		providedRole := tokenPayload.Role
 		if foundRole(allowedRoles, providedRole) {
-			appendTokenInfoToContext(ctx, tokenPayload, providedRole)
+			//appendTokenInfoToContext(ctx, tokenPayload, providedRole)
 			ctx.Next()
 			return
 		}
@@ -61,15 +61,15 @@ func foundRole(allowedRoles []model.Role, providedRole model.Role) bool {
 	return false
 }
 
-func appendTokenInfoToContext(ctx *gin.Context, tokenPayload *token.Payload, providedRole model.Role) {
-	//if len(ctx.Keys) == 0 {
-	//	ctx.Keys = make(map[string]interface{})
-	//}
-	ctx.Set("id", tokenPayload.ID)
-	ctx.Set("Role", providedRole)
-	ctx.Keys["id"] = tokenPayload.ID
-	ctx.Keys["Role"] = providedRole
-}
+//func appendTokenInfoToContext(ctx *gin.Context, tokenPayload *token.Payload, providedRole model.Role) {
+//	//if len(ctx.Keys) == 0 {
+//	//	ctx.Keys = make(map[string]interface{})
+//	//}
+//	ctx.Set("id", tokenPayload.ID)
+//	ctx.Set("Role", providedRole)
+//	ctx.Keys["id"] = tokenPayload.ID
+//	ctx.Keys["Role"] = providedRole
+//}
 
 func replaceUUIDsWithParam(endpoint string) string {
 	// Regular expression to match UUIDs in the provided format

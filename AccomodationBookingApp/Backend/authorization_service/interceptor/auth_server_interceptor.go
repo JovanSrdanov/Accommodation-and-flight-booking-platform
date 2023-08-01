@@ -4,22 +4,19 @@ import (
 	"authorization_service/domain/model"
 	"authorization_service/domain/token"
 	"context"
-	"log"
-	"strings"
-
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"log"
 )
 
 type AuthServerInterceptor struct {
-	tokenMaker                       token.Maker
 	protectedMethodsWithAllowedRoles map[string][]model.Role
 }
 
 func NewAuthServerInterceptor(tokenMaker token.Maker, accessibleRoles map[string][]model.Role) *AuthServerInterceptor {
-	return &AuthServerInterceptor{tokenMaker: tokenMaker, protectedMethodsWithAllowedRoles: accessibleRoles}
+	return &AuthServerInterceptor{protectedMethodsWithAllowedRoles: accessibleRoles}
 }
 
 func (interceptor *AuthServerInterceptor) Unary() grpc.UnaryServerInterceptor {
@@ -68,25 +65,28 @@ func (interceptor *AuthServerInterceptor) authorize(ctx context.Context, method 
 		log.Println("Method: " + method + " not found in the list of allowed methods")
 		return nil, nil
 	}
+
+	callerServiceName := ""
+
 	metaData, ok := metadata.FromIncomingContext(ctx)
+	log.Println("METADATAAAAAAA: ", metaData)
 	if !ok {
 		return status.Errorf(codes.Unauthenticated, "metadata is not provided"), nil
 	}
 
 	values := metaData["authorization"]
-	if len(values) == 0 {
-		return status.Errorf(codes.Unauthenticated, "authorization token not provided"), nil
+	if len(values) > 0 {
+		callerServiceName = "api_gateway"
+	} else {
+		authority := metaData.Get(":authority")
+		if len(authority) == 0 {
+			return status.Errorf(codes.Unauthenticated, "caller service not authorized"), nil
+		}
+		callerServiceName = authority[0]
 	}
 
-	accessToken := strings.TrimPrefix(values[0], "Bearer ")
-	tokenPayload, err := interceptor.tokenMaker.VerifyToken(accessToken)
-	if err != nil {
-		return status.Errorf(codes.Unauthenticated, "access token is invalid: ", err), nil
-	}
-
-	ctx = context.WithValue(ctx, "id", tokenPayload.ID)
-
-	providedRole := tokenPayload.Role
+	// Get service role from the database
+	providedRole := getServiceRoleByName(callerServiceName)
 
 	for _, role := range allowedRoles {
 		if role == providedRole {
@@ -95,6 +95,10 @@ func (interceptor *AuthServerInterceptor) authorize(ctx context.Context, method 
 	}
 
 	return status.Error(codes.PermissionDenied, "no permission to access this RPC"), nil
+}
+
+func getServiceRoleByName(name string) interface{} {
+	return nil
 }
 
 type wrappedServerStream struct {
