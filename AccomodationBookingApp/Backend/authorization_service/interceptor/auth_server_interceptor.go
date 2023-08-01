@@ -2,21 +2,23 @@ package interceptor
 
 import (
 	"authorization_service/domain/model"
-	"authorization_service/domain/token"
 	"context"
+	"crypto/x509"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/status"
 	"log"
+	"regexp"
+	"strings"
 )
 
 type AuthServerInterceptor struct {
-	protectedMethodsWithAllowedRoles map[string][]model.Role
 }
 
-func NewAuthServerInterceptor(tokenMaker token.Maker, accessibleRoles map[string][]model.Role) *AuthServerInterceptor {
-	return &AuthServerInterceptor{protectedMethodsWithAllowedRoles: accessibleRoles}
+func NewAuthServerInterceptor() *AuthServerInterceptor {
+	return &AuthServerInterceptor{}
 }
 
 func (interceptor *AuthServerInterceptor) Unary() grpc.UnaryServerInterceptor {
@@ -59,46 +61,100 @@ func (interceptor *AuthServerInterceptor) Stream() grpc.StreamServerInterceptor 
 
 func (interceptor *AuthServerInterceptor) authorize(ctx context.Context, method string) (error, context.Context) {
 
-	allowedRoles, ok := interceptor.protectedMethodsWithAllowedRoles[method]
+	allowedRoles, ok := getProtectedMethodsWithAllowedRoles()[method]
 	if !ok {
 		// if a provided method is not in the accessible roles map, it means that everyone can use it
 		log.Println("Method: " + method + " not found in the list of allowed methods")
 		return nil, nil
 	}
 
-	callerServiceName := ""
-
-	metaData, ok := metadata.FromIncomingContext(ctx)
-	log.Println("METADATAAAAAAA: ", metaData)
-	if !ok {
-		return status.Errorf(codes.Unauthenticated, "metadata is not provided"), nil
+	clientCert, err := getCertificateFromContext(ctx)
+	if err != nil {
+		return status.Error(codes.Internal, "failed to get certificate from context"), nil
 	}
 
-	values := metaData["authorization"]
-	if len(values) > 0 {
-		callerServiceName = "api_gateway"
-	} else {
-		authority := metaData.Get(":authority")
-		if len(authority) == 0 {
-			return status.Errorf(codes.Unauthenticated, "caller service not authorized"), nil
+	providedRole := model.ROLE_UNKNOWN
+
+	// Extract the custom role from the certificate (using the custom OID "1.2.3.4.5").
+	for _, ext := range clientCert.Extensions {
+		if ext.Id.String() == "1.2.3.4.5" {
+			providedRole = getRoleFromExtension(ext.Value)
+			//log.Printf("Value of rol: %q", providedRole)
+			break
 		}
-		callerServiceName = authority[0]
 	}
 
-	// Get service role from the database
-	providedRole := getServiceRoleByName(callerServiceName)
+	if providedRole == model.ROLE_UNKNOWN {
+		log.Println("NEPOZNAT SERVIS")
+		return status.Error(codes.PermissionDenied, "no permission to access this RPC"), nil
+	}
 
 	for _, role := range allowedRoles {
 		if role == providedRole {
+			log.Println("AUTHORIZATION SUCCESSFUL")
 			return nil, ctx
 		}
 	}
 
+	log.Println("NEVALIDNA ROLA")
 	return status.Error(codes.PermissionDenied, "no permission to access this RPC"), nil
 }
 
-func getServiceRoleByName(name string) interface{} {
-	return nil
+func getRoleFromExtension(extensionValue []byte) model.ServiceRole {
+	// Use regular expression to remove non-printable characters
+	re := regexp.MustCompile(`[[:cntrl:]]`)
+	role := re.ReplaceAllString(strings.TrimSpace(string(extensionValue)), "")
+	return convertToEnum(role)
+}
+
+func convertToEnum(role string) model.ServiceRole {
+	switch role {
+	case "ROLE_ACCOMMODATION_SERVICE":
+		return model.ROLE_ACCOMMODATION_SERVICE
+	case "ROLE_API_GATEWAY":
+		return model.ROLE_API_GATEWAY
+	case "ROLE_AUTHORIZATION_SERVICE":
+		return model.ROLE_AUTHORIZATION_SERVICE
+	case "ROLE_NOTIFICATION_SERVICE":
+		return model.ROLE_NOTIFICATION_SERVICE
+	case "ROLE_RATING_SERVICE":
+		return model.ROLE_RATING_SERVICE
+	case "ROLE_RESERVATION_SERVICE":
+		return model.ROLE_RESERVATION_SERVICE
+	case "ROLE_USER_PROFILE_SERVICE":
+		return model.ROLE_USER_PROFILE_SERVICE
+	default:
+		return model.ROLE_UNKNOWN
+	}
+}
+
+func getCertificateFromContext(ctx context.Context) (*x509.Certificate, error) {
+	// Get the peer certificate from the context.
+	peerTest, ok := peer.FromContext(ctx)
+	if !ok {
+		return nil, status.Errorf(codes.Internal, "Failed to extract peer from context")
+	}
+
+	// Extract the client certificate from the peer.
+	info, ok := peerTest.AuthInfo.(credentials.TLSInfo)
+	if !ok {
+		return nil, status.Errorf(codes.Internal, "Failed to extract TLSInfo from peer")
+	}
+
+	return info.State.PeerCertificates[0], nil
+}
+
+// returns a map which consists of a list of grpc methods and allowed roles for each of them
+func getProtectedMethodsWithAllowedRoles() map[string][]model.ServiceRole {
+	const authServicePath = "/authorization.AuthorizationService/"
+
+	return map[string][]model.ServiceRole{
+		authServicePath + "GetByUsername":  {model.ROLE_API_GATEWAY},
+		authServicePath + "ChangeUsername": {model.ROLE_API_GATEWAY},
+		authServicePath + "ChangePassword": {model.ROLE_API_GATEWAY},
+		authServicePath + "CheckIfDeleted": {model.ROLE_API_GATEWAY},
+		authServicePath + "GetById":        {model.ROLE_API_GATEWAY, model.ROLE_USER_PROFILE_SERVICE},
+	}
 }
 
 type wrappedServerStream struct {

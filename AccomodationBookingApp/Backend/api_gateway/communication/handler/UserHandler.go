@@ -103,7 +103,7 @@ func (handler UserHandler) addAccountCredentialsInfo(userInfo *dto.UserInfo, use
 	accountCredentialsInfo, err := authorizationClient.GetByUsername(ctx, &authorization.GetByUsernameRequest{Username: username})
 
 	if err != nil {
-		log.Println("Greska se desilaaaaaaaa")
+		log.Println("Greska se desilaaaaaaaa: ", err)
 		return err
 	}
 

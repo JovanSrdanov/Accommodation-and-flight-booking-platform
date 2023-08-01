@@ -1,1 +1,2 @@
 subjectAltName=DNS:rating_service,IP:0.0.0.0
+1.2.3.4.5 = ASN1:UTF8String:ROLE_RATING_SERVICE

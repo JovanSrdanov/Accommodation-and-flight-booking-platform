@@ -5,6 +5,7 @@ import (
 	"authorization_service/communication/middleware"
 	"authorization_service/domain/service"
 	"authorization_service/domain/token"
+	"authorization_service/interceptor"
 	"authorization_service/persistence/repository"
 	"common/event_sourcing"
 	authorization "common/proto/authorization_service/generated"
@@ -157,9 +158,8 @@ func (server *Server) startGrpcServer(
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
-	// interceptor initialization for auth
-	//protectedMethodsWithAllowedRoles := getProtectedMethodsWithAllowedRoles()
-	//authInterceptor := interceptor.NewAuthServerInterceptor(maker, protectedMethodsWithAllowedRoles)
+	//interceptor initialization for auth
+	authInterceptor := interceptor.NewAuthServerInterceptor()
 
 	// Enable TLS
 	tlsCredentials, err := loadTLSCredentials()
@@ -169,23 +169,11 @@ func (server *Server) startGrpcServer(
 
 	grpcServer := grpc.NewServer(
 		grpc.Creds(tlsCredentials),
-		grpc.ChainUnaryInterceptor(middleware.NewGRPUnaryServerInterceptor()), /*authInterceptor.Unary()),
-		grpc.StreamInterceptor(authInterceptor.Stream()*/
+		grpc.ChainUnaryInterceptor(middleware.NewGRPUnaryServerInterceptor(), authInterceptor.Unary()),
+		grpc.StreamInterceptor(authInterceptor.Stream()),
 	)
 	authorization.RegisterAuthorizationServiceServer(grpcServer, accountCredentialsHandler)
 	if err := grpcServer.Serve(listener); err != nil {
 		log.Fatalf("failed to serve: %s", err)
 	}
 }
-
-// returns a map which consists of a list of grpc methods and allowed roles for each of them
-//func getProtectedMethodsWithAllowedRoles() map[string][]model.Role {
-//	const authServicePath = "/authorization.AuthorizationService/"
-//
-//	return map[string][]model.Role{
-//		authServicePath + "GetByUsername":  {model.Guest, model.Host},
-//		authServicePath + "ChangeUsername": {model.Guest, model.Host},
-//		authServicePath + "ChangePassword": {model.Guest, model.Host},
-//		authServicePath + "CheckIfDeleted": {model.Guest, model.Host},
-//	}
-//}
