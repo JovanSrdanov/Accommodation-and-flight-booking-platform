@@ -6,7 +6,9 @@ import (
 	"context"
 	"fmt"
 	"github.com/google/uuid"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"user_profile_service/communication"
 	"user_profile_service/domain/service"
@@ -47,7 +49,14 @@ func (handler UserProfileHandler) Update(ctx context.Context, req *user_profile.
 
 	// get account credentials from acc cred microservice
 	accCredClient := communication.NewAccountCredentialsClient(handler.authorizationServiceAddress)
-	accCred, err := accCredClient.GetById(ctx, &authorization.GetByIdRequest{Id: loggedInId.String()})
+
+	ctxGrpc, err := appendServiceNameToMetadata(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	//accCred, err := accCredClient.GetById(ctx, &authorization.GetByIdRequest{Id: loggedInId.String()})
+	accCred, err := accCredClient.GetById(ctxGrpc, &authorization.GetByIdRequest{Id: loggedInId.String()})
 	if err != nil {
 		return nil, err
 	}
@@ -102,7 +111,12 @@ func (handler UserProfileHandler) DeleteUser(ctx context.Context, in *user_profi
 
 	// get account credentials from acc cred microservice
 	accCredClient := communication.NewAccountCredentialsClient(handler.authorizationServiceAddress)
-	accCred, err := accCredClient.GetById(ctx, &authorization.GetByIdRequest{Id: loggedInId.String()})
+	ctxGrpc, err := appendServiceNameToMetadata(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	accCred, err := accCredClient.GetById(ctxGrpc, &authorization.GetByIdRequest{Id: loggedInId.String()})
 	if err != nil {
 		return nil, err
 	}
@@ -123,4 +137,17 @@ func (handler UserProfileHandler) DeleteUser(ctx context.Context, in *user_profi
 	}
 
 	return &user_profile.DeleteResponse{Message: "Account deleted"}, err
+}
+
+func appendServiceNameToMetadata(ctx context.Context) (context.Context, error) {
+	oldMetadata, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return nil, grpc.Errorf(grpc.Code(nil), "Failed to extract metadata from context")
+	}
+
+	authority := oldMetadata.Get(":authority")
+	newMetadata := metadata.New(map[string]string{"calling-service": authority[0]})
+	ctxGrpc := metadata.NewOutgoingContext(context.TODO(), newMetadata)
+
+	return ctxGrpc, nil
 }

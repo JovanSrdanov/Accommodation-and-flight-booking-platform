@@ -41,7 +41,7 @@ func AuthTokenParser(tokenMaker token.Maker) gin.HandlerFunc {
 		}
 
 		providedRole := tokenPayload.Role
-		if foundRole(ctx, allowedRoles, providedRole) {
+		if foundRole(allowedRoles, providedRole) {
 			appendTokenInfoToContext(ctx, tokenPayload, providedRole)
 			ctx.Next()
 			return
@@ -52,10 +52,9 @@ func AuthTokenParser(tokenMaker token.Maker) gin.HandlerFunc {
 	}
 }
 
-func foundRole(ctx *gin.Context, allowedRoles []model.Role, providedRole model.Role) bool {
+func foundRole(allowedRoles []model.Role, providedRole model.Role) bool {
 	for _, role := range allowedRoles {
 		if role == providedRole {
-			ctx.Next()
 			return true
 		}
 	}
