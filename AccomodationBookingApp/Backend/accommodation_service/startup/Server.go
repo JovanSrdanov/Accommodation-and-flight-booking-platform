@@ -4,6 +4,7 @@ import (
 	"accommodation_service/communication/handler"
 	"accommodation_service/communication/middleware"
 	"accommodation_service/domain/service"
+	"accommodation_service/interceptor"
 	"accommodation_service/persistence/repository"
 	"common/event_sourcing"
 	accommodation "common/proto/accommodation_service/generated"
@@ -118,9 +119,7 @@ func (server *Server) startGrpcServer(userProfileHandler *handler.AccommodationH
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	//tokenMaker, _ := token.NewPasetoMaker("12345678901234567890123456789012")
-	//protectedMethodsWithAllowedRoles := getProtectedMethodsWithAllowedRoles()
-	//authInterceptor := interceptor.NewAuthServerInterceptor(tokenMaker, protectedMethodsWithAllowedRoles)
+	authInterceptor := interceptor.NewAuthServerInterceptor()
 
 	// Enable TLS
 	tlsCredentials, err := loadTLSCredentials()
@@ -130,8 +129,8 @@ func (server *Server) startGrpcServer(userProfileHandler *handler.AccommodationH
 
 	grpcServer := grpc.NewServer(
 		grpc.Creds(tlsCredentials),
-		grpc.ChainUnaryInterceptor(middleware.NewGRPUnaryServerInterceptor() /*, authInterceptor.Unary()*/),
-		/*grpc.StreamInterceptor(authInterceptor.Stream()),*/
+		grpc.ChainUnaryInterceptor(middleware.NewGRPUnaryServerInterceptor(), authInterceptor.Unary()),
+		grpc.StreamInterceptor(authInterceptor.Stream()),
 	)
 
 	accommodation.RegisterAccommodationServiceServer(grpcServer, userProfileHandler)
@@ -166,14 +165,3 @@ func (server *Server) initDeleteHandler(service *service.AccommodationService, p
 		log.Fatal(err)
 	}
 }
-
-// returns a map which consists of a list of grpc methods and allowed roles for each of them
-//func getProtectedMethodsWithAllowedRoles() map[string][]model.Role {
-//	const authServicePath = "/accommodation.AccommodationService/"
-//
-//	return map[string][]model.Role{
-//		authServicePath + "GetAllMy":       {model.Host},
-//		authServicePath + "Create":         {model.Host},
-//		authServicePath + "DeleteByHostId": {model.Host},
-//	}
-//}

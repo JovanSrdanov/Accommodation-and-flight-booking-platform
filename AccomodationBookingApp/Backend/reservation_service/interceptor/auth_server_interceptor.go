@@ -1,7 +1,6 @@
 package interceptor
 
 import (
-	"authorization_service/domain/model"
 	"context"
 	"crypto/x509"
 	"google.golang.org/grpc"
@@ -11,6 +10,7 @@ import (
 	"google.golang.org/grpc/status"
 	"log"
 	"regexp"
+	"reservation_service/domain/model"
 	"strings"
 )
 
@@ -91,7 +91,7 @@ func (interceptor *AuthServerInterceptor) authorize(ctx context.Context, method 
 
 	for _, role := range allowedRoles {
 		if role == providedRole {
-			log.Println("AUTHORIZATION SUCCESSFUL")
+			log.Println("authorization successful")
 			return nil, ctx
 		}
 	}
@@ -146,14 +146,20 @@ func getCertificateFromContext(ctx context.Context) (*x509.Certificate, error) {
 
 // returns a map which consists of a list of grpc methods and allowed roles for each of them
 func getProtectedMethodsWithAllowedRoles() map[string][]model.ServiceRole {
-	const authServicePath = "/authorization.AuthorizationService/"
+	const authServicePath = "/reservation.ReservationService/"
 
 	return map[string][]model.ServiceRole{
-		authServicePath + "GetByUsername":  {model.ROLE_API_GATEWAY},
-		authServicePath + "ChangeUsername": {model.ROLE_API_GATEWAY},
-		authServicePath + "ChangePassword": {model.ROLE_API_GATEWAY},
-		authServicePath + "CheckIfDeleted": {model.ROLE_API_GATEWAY},
-		authServicePath + "GetById":        {model.ROLE_API_GATEWAY, model.ROLE_USER_PROFILE_SERVICE},
+		authServicePath + "GetAllMy":                   {model.ROLE_API_GATEWAY},
+		authServicePath + "GetAllPendingReservations":  {model.ROLE_API_GATEWAY},
+		authServicePath + "GetAllAcceptedReservations": {model.ROLE_API_GATEWAY},
+		authServicePath + "AcceptReservation":          {model.ROLE_API_GATEWAY},
+		authServicePath + "RejectReservation":          {model.ROLE_API_GATEWAY},
+		authServicePath + "CancelReservation":          {model.ROLE_API_GATEWAY},
+		authServicePath + "GetAllReservationsForGuest": {model.ROLE_API_GATEWAY},
+		authServicePath + "CreateReservation":          {model.ROLE_API_GATEWAY},
+		authServicePath + "CreateAvailabilityBase":     {model.ROLE_API_GATEWAY, model.ROLE_ACCOMMODATION_SERVICE},
+		authServicePath + "GuestHasActiveReservations": {model.ROLE_API_GATEWAY, model.ROLE_USER_PROFILE_SERVICE},
+		authServicePath + "HostHasActiveReservations":  {model.ROLE_API_GATEWAY, model.ROLE_USER_PROFILE_SERVICE},
 	}
 }
 

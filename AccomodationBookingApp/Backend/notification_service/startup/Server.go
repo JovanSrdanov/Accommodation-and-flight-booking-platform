@@ -18,6 +18,7 @@ import (
 	"notification_service/communication/handler"
 	"notification_service/communication/middleware"
 	"notification_service/domain/service"
+	"notification_service/interceptor"
 	"notification_service/persistence/repository"
 )
 
@@ -176,9 +177,7 @@ func (server *Server) startGrpcServer(notificationConsentHandler *handler.Notifi
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	//var tokenMaker, _ = token.NewPasetoMaker("12345678901234567890123456789012")
-	//protectedMethodsWithAllowedRoles := getProtectedMethodsWithAllowedRoles()
-	//authInterceptor := interceptor.NewAuthServerInterceptor(tokenMaker, protectedMethodsWithAllowedRoles)
+	authInterceptor := interceptor.NewAuthServerInterceptor()
 
 	// Enable TLS
 	tlsCredentials, err := loadTLSCredentials()
@@ -188,21 +187,11 @@ func (server *Server) startGrpcServer(notificationConsentHandler *handler.Notifi
 
 	grpcServer := grpc.NewServer(
 		grpc.Creds(tlsCredentials),
-		grpc.ChainUnaryInterceptor(middleware.NewGRPUnaryServerInterceptor()), /*authInterceptor.Unary()),
-		grpc.StreamInterceptor(authInterceptor.Stream()),*/)
+		grpc.ChainUnaryInterceptor(middleware.NewGRPUnaryServerInterceptor(), authInterceptor.Unary()),
+		grpc.StreamInterceptor(authInterceptor.Stream()))
 
 	notification.RegisterNotificationServiceServer(grpcServer, notificationConsentHandler)
 	if err := grpcServer.Serve(listener); err != nil {
 		log.Fatalf("failed to serve: %s", err)
 	}
 }
-
-// returns a map which consists of a list of grpc methods and allowed roles for each of them
-//func getProtectedMethodsWithAllowedRoles() map[string][]model.Role {
-//	const authServicePath = "/notification.NotificationService/"
-//
-//	return map[string][]model.Role{
-//		authServicePath + "UpdateMyNotificationConsent": {model.Guest, model.Host},
-//		authServicePath + "GetMyNotificationSettings":   {model.Guest, model.Host},
-//	}
-//}

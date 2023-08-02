@@ -16,6 +16,7 @@ import (
 	"rating_service/communication/handler"
 	"rating_service/communication/middleware"
 	"rating_service/domain/service"
+	"rating_service/interceptor"
 	"rating_service/persistence/repository"
 )
 
@@ -97,9 +98,7 @@ func (server Server) startGrpcServer(ratingHandler *handler.RatingHandler) {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	//tokenMaker, _ := token.NewPasetoMaker("12345678901234567890123456789012")
-	//protectedMethodsWithAllowedRoles := getProtectedMethodsWithAllowedRoles()
-	//authInterceptor := interceptor.NewAuthServerInterceptor(tokenMaker, protectedMethodsWithAllowedRoles)
+	authInterceptor := interceptor.NewAuthServerInterceptor()
 
 	// Enable TLS
 	tlsCredentials, err := loadTLSCredentials()
@@ -109,23 +108,11 @@ func (server Server) startGrpcServer(ratingHandler *handler.RatingHandler) {
 
 	grpcServer := grpc.NewServer(
 		grpc.Creds(tlsCredentials),
-		grpc.ChainUnaryInterceptor(middleware.NewGRPUnaryServerInterceptor()), /*authInterceptor.Unary()),
-		grpc.StreamInterceptor(authInterceptor.Stream()*/
-	)
+		grpc.ChainUnaryInterceptor(middleware.NewGRPUnaryServerInterceptor(), authInterceptor.Unary()),
+		grpc.StreamInterceptor(authInterceptor.Stream()))
+
 	rating.RegisterRatingServiceServer(grpcServer, ratingHandler)
 	if err := grpcServer.Serve(listener); err != nil {
 		log.Fatalf("failed to serve: %s", err)
 	}
 }
-
-//// returns a map which consists of a list of grpc methods and allowed roles for each of them
-//func getProtectedMethodsWithAllowedRoles() map[string][]model.Role {
-//	const authServicePath = "/rating.RatingService/"
-//
-//	return map[string][]model.Role{
-//		authServicePath + "RateAccommodation":            {model.Guest},
-//		authServicePath + "RateHost":                     {model.Guest},
-//		authServicePath + "DeleteRatingForAccommodation": {model.Guest},
-//		authServicePath + "DeleteRatingForHost":          {model.Guest},
-//	}
-//}

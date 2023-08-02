@@ -1,7 +1,6 @@
 package interceptor
 
 import (
-	"authorization_service/domain/model"
 	"context"
 	"crypto/x509"
 	"google.golang.org/grpc"
@@ -10,6 +9,7 @@ import (
 	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/status"
 	"log"
+	"rating_service/domain/model"
 	"regexp"
 	"strings"
 )
@@ -91,7 +91,7 @@ func (interceptor *AuthServerInterceptor) authorize(ctx context.Context, method 
 
 	for _, role := range allowedRoles {
 		if role == providedRole {
-			log.Println("AUTHORIZATION SUCCESSFUL")
+			log.Println("authorization successful")
 			return nil, ctx
 		}
 	}
@@ -146,14 +146,13 @@ func getCertificateFromContext(ctx context.Context) (*x509.Certificate, error) {
 
 // returns a map which consists of a list of grpc methods and allowed roles for each of them
 func getProtectedMethodsWithAllowedRoles() map[string][]model.ServiceRole {
-	const authServicePath = "/authorization.AuthorizationService/"
+	const authServicePath = "/rating.RatingService/"
 
 	return map[string][]model.ServiceRole{
-		authServicePath + "GetByUsername":  {model.ROLE_API_GATEWAY},
-		authServicePath + "ChangeUsername": {model.ROLE_API_GATEWAY},
-		authServicePath + "ChangePassword": {model.ROLE_API_GATEWAY},
-		authServicePath + "CheckIfDeleted": {model.ROLE_API_GATEWAY},
-		authServicePath + "GetById":        {model.ROLE_API_GATEWAY, model.ROLE_USER_PROFILE_SERVICE},
+		authServicePath + "RateAccommodation":            {model.ROLE_API_GATEWAY},
+		authServicePath + "RateHost":                     {model.ROLE_API_GATEWAY},
+		authServicePath + "DeleteRatingForAccommodation": {model.ROLE_API_GATEWAY},
+		authServicePath + "DeleteRatingForHost":          {model.ROLE_API_GATEWAY},
 	}
 }
 

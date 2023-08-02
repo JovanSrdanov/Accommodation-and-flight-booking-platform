@@ -19,6 +19,7 @@ import (
 	"user_profile_service/communication/middleware"
 	"user_profile_service/communication/orchestrator"
 	"user_profile_service/domain/service"
+	"user_profile_service/interceptor"
 	"user_profile_service/persistence/repository"
 )
 
@@ -130,10 +131,7 @@ func (server *Server) startGrpcServer(userProfileHandler *handler.UserProfileHan
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	//tokenMaker, _ := token.NewPasetoMaker("12345678901234567890123456789012")
-	//protectedMethodsWithAllowedRoles := getProtectedMethodsWithAllowedRoles()
-	//
-	//authInterceptor := interceptor.NewAuthServerInterceptor(tokenMaker, protectedMethodsWithAllowedRoles)
+	authInterceptor := interceptor.NewAuthServerInterceptor()
 
 	// Enable TLS
 	tlsCredentials, err := loadTLSCredentials()
@@ -143,8 +141,8 @@ func (server *Server) startGrpcServer(userProfileHandler *handler.UserProfileHan
 
 	grpcServer := grpc.NewServer(
 		grpc.Creds(tlsCredentials),
-		grpc.ChainUnaryInterceptor(middleware.NewGRPUnaryServerInterceptor())) /*authInterceptor.Unary()),
-	grpc.StreamInterceptor(authInterceptor.Stream())*/
+		grpc.ChainUnaryInterceptor(middleware.NewGRPUnaryServerInterceptor(), authInterceptor.Unary()),
+		grpc.StreamInterceptor(authInterceptor.Stream()))
 
 	user_profile.RegisterUserProfileServiceServer(grpcServer, userProfileHandler)
 	if err := grpcServer.Serve(listener); err != nil {
@@ -193,13 +191,3 @@ func (server *Server) initDeleteUserHandler(userProfileService *service.UserProf
 	}
 
 }
-
-//// returns a map which consists of a list of grpc methods and allowed roles for each of them
-//func getProtectedMethodsWithAllowedRoles() map[string][]model.Role {
-//	const authServicePath = "/user_profile.UserProfileService/"
-//
-//	return map[string][]model.Role{
-//		authServicePath + "Update":     {model.Guest, model.Host},
-//		authServicePath + "DeleteUser": {model.Guest, model.Host},
-//	}
-//}
