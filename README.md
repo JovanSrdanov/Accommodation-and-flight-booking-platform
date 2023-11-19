@@ -1,11 +1,13 @@
-# Accommodation and flight booking platform  
+# Accommodation and Flight Booking Platform
 
-## XML Godina 2022-2023 FTN E2 PRNII  
-### Platforma za rezervisanje smeštaja i letova  
-Projekat iz predmeta XML i veb servisi   
-Fakultet tehničkih nauka  
-Računarstvo i automatika  
-Primenjene računarske nauke i informatika  
+## XML Year 2022-2023 FTN E2 PRNII
+### Platform for Accommodation and Flight Reservations
+Project for the subject XML and Web Services
+Faculty of Technical Sciences
+Computer Science and Automation
+Applied Computer Science and Informatics
+
+Within the scope of the project, a platform for accommodation offers and reservations, along with an application enabling users to purchase airline tickets, has been successfully implemented using a microservice architecture.
 
 * Student 1: RA 145/2019 - Jovan Srdanov  
 * Student 2: RA 152/2019 - Strahinja Eraković   
