@@ -2,10 +2,10 @@
 
 ## XML Year 2022-2023 FTN E2 PRNII
 ### Platform for Accommodation and Flight Reservations
-Project for the subject XML and Web Services
-Faculty of Technical Sciences
-Computer Science and Automation
-Applied Computer Science and Informatics
+Project for the subject XML and Web Services  
+Faculty of Technical Sciences  
+Computer Science and Automation  
+Applied Computer Science and Informatics  
 
 Within the scope of the project, a platform for accommodation offers and reservations, along with an application enabling users to purchase airline tickets, has been successfully implemented using a microservice architecture.
 
