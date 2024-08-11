@@ -5,7 +5,13 @@
 Project for the subject XML and Web Services  
 Faculty of Technical Sciences  
 Computer Science and Automation  
-Applied Computer Science and Informatics  
+Applied Computer Science and Informatics 
+
+Technologies:  
+Front-end: React - JavaScript (npm)  
+Back-end: GoLang   
+Database: PostgreSQL, MongoDB, Neo4j  
+Message queue: Nats     
 
 Within the scope of the project, a platform for accommodation offers and reservations, along with an application enabling users to purchase airline tickets, has been successfully implemented using a microservice architecture.
 
